@@ -1,0 +1,15 @@
+Only generating Task process is multi-threaded. Everything else is controlled by the game loop in a mono-threaded fashion.
+
+Mouse click movement:
+  Frame 1:
+	1. IController picks up the mouse click event.
+	2. IController validates this event corresponds to a movement task.
+	3. IController calculates and stores destination in side the entity.
+  Frame 2:
+	1. IController gets updated by Game loop and finds that there is a destination available,
+	   so IController generates a MoveTask and pass in the entity.
+	2. IController then sends out a move packet to the server.
+  Frame 3:
+    1. IController checks the entity has not reached the destination, therefore it does not
+       remove the destination and generates another MoveTask and pass in the entity.
+	
