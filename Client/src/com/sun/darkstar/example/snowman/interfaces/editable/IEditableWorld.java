@@ -2,7 +2,6 @@ package com.sun.darkstar.example.snowman.interfaces.editable;
 
 import java.util.ArrayList;
 
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainCluster;
 import com.sun.darkstar.example.snowman.interfaces.IAbstractWorld;
 
 /**
@@ -28,7 +27,7 @@ import com.sun.darkstar.example.snowman.interfaces.IAbstractWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 24:39 EST
- * @version Modified date: 07-02-2008 13:36 EST
+ * @version Modified date: 07-08-2008 16:27 EST
  */
 public interface IEditableWorld extends IAbstractWorld, IEditable {
 
@@ -43,12 +42,6 @@ public interface IEditableWorld extends IAbstractWorld, IEditable {
 	 * @param view The <code>IEditableView</code> to be detached.
 	 */
 	public void detachView(IEditableView view);
-	
-	/**
-	 * Retrieve the terrain cluster of this world..
-	 * @return The <code>TerrainCluster</code> instance.
-	 */
-	public TerrainCluster getTerrainCluster();
 	
 	/**
 	 * Retrieve a shallow copy of the list of editable views.

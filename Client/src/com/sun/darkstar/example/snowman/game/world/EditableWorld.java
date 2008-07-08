@@ -8,12 +8,10 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+
 import com.sun.darkstar.example.snowman.data.enumn.EWorld;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.game.entity.influence.util.InfluenceManager;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainCluster;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.interfaces.IFinal;
 import com.sun.darkstar.example.snowman.interfaces.IInfluence;
@@ -37,7 +35,7 @@ import com.sun.darkstar.example.snowman.interfaces.editable.IEditableWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 14:50 EST
- * @version Modified date: 07-01-2008 21:07 EST
+ * @version Modified date: 07-08-2008 16:28 EST
  */
 public class EditableWorld extends Node implements IEditableWorld {
 	/**
@@ -52,10 +50,6 @@ public class EditableWorld extends Node implements IEditableWorld {
 	 * The <code>ArrayList</code> of <code>IEditableView</code>.
 	 */
 	private ArrayList<IEditableView> views;
-	/**
-	 * The <code>TerrainCluster</code> instance.
-	 */
-	private TerrainCluster terrain;
 	
 	/**
 	 * Constructor of <code>EditableWorld</code>.
@@ -98,29 +92,18 @@ public class EditableWorld extends Node implements IEditableWorld {
 	public void attachView(IEditableView view) {
 		if(this.views.contains(view) || view == null) return;
 		this.views.add(view);
-		if(view.getEntity().getEnumn() == EEntity.Terrain) {
-			this.terrain = ((TerrainView)view).getTerrainCluster();
-		}
 	}
 
 	@Override
 	public void detachView(IEditableView view) {
 		if(view == null) return;
 		this.views.remove(view);
-		if(view.getEntity().getEnumn() == EEntity.Terrain) {
-			this.terrain = null;
-		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public ArrayList<IEditableView> getViews() {
 		return (ArrayList<IEditableView>)this.views.clone();
-	}
-
-	@Override
-	public TerrainCluster getTerrainCluster() {
-		return this.terrain;
 	}
 
 	@Override
@@ -134,7 +117,6 @@ public class EditableWorld extends Node implements IEditableWorld {
 		OutputCapsule oc = ex.getCapsule(this);
 		oc.write(this.enumn.toString(), "Enumeration", null);
 		oc.writeSavableArrayList(this.views, "Views", null);
-		oc.write(this.terrain, "TerrainCluster", null);
 	}
 
 	@Override
@@ -145,6 +127,5 @@ public class EditableWorld extends Node implements IEditableWorld {
 		this.enumn = EWorld.valueOf(ic.readString("Enumeration", null));
 		this.setName("World"+this.enumn.toString());
 		this.views = ic.readSavableArrayList("Views", null);
-		this.terrain = (TerrainCluster)ic.readSavable("TerrainCluster", null);
 	}
 }
