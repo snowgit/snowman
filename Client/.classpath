@@ -2,12 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman Client Required"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Environment jME2.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FengGUI1.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME2.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MD5Importer jME2.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Darkstar Client"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman Client Required"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
