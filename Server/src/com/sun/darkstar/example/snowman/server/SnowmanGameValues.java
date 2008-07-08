@@ -36,6 +36,7 @@ import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.NameNotBoundException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  * This is an experimental class thatw as used to expose some values to the 
@@ -72,4 +73,6 @@ public class SnowmanGameValues implements Serializable, ManagedObject{
     public int getNumberOfAIperSession(){
         return numberOfAIperSession;
     }
+    
+    
 }

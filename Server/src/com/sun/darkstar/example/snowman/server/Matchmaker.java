@@ -48,6 +48,7 @@ public class Matchmaker implements Serializable, ManagedObject {
     public static final long serialVersionUID = 1L;
     ManagedReference<SnowmanPlayer>[] waiting =
             new ManagedReference[4];
+    private long gameCount = 0;
 
     public Matchmaker() {
         clearQueue();
@@ -93,7 +94,7 @@ public class Matchmaker implements Serializable, ManagedObject {
     }
     
     private void launchGameSession(){
-        SnowmanGame.create(waiting);
+        SnowmanGame.create("Game"+(gameCount++),waiting);
         clearQueue();
     }
 }

@@ -32,10 +32,14 @@
 
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
+import com.sun.sgs.app.ClientSession;
+import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  * This object represents an actual running game session of Project Snowman,
@@ -44,10 +48,10 @@ import java.io.Serializable;
 class SnowmanGame implements ManagedObject, Serializable {
     static final long serialVersionUID = 1L;
     static final String CHANPREFIX = "_GAMECHAN_";
-    ManagedReference<Channel> channelref;
+    ManagedReference<Channel> channelRef;
         
-    static SnowmanGame create(ManagedReference<SnowmanPlayer>[] playerRefs) {
-        return new SnowmanGame(playerRefs);
+    static SnowmanGame create(String name, ManagedReference<SnowmanPlayer>[] playerRefs) {
+        return new SnowmanGame(name, playerRefs);
     }
     
     private ManagedReference<SnowmanPlayer>[] playerRefs;
@@ -57,7 +61,14 @@ class SnowmanGame implements ManagedObject, Serializable {
                 new ManagedReference[playerRefs.length];
         System.arraycopy(playerRefs, 0, this.playerRefs, 0,
                 playerRefs.length);
-        
+        channelRef = AppContext.getDataManager().createReference(
+                AppContext.getChannelManager().createChannel(
+                CHANPREFIX+gameName, null, Delivery.RELIABLE));
+    }
+    
+    public void send(ClientSession sess, ByteBuffer buff){
+        buff.flip();
+        channelRef.get().send(sess, buff);
     }
 
 }

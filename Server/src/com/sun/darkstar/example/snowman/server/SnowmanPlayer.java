@@ -173,7 +173,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void chatText(String text) {
-        currentAreaRef.get().send(mySession, 
+        currentGameRef.get().send(mySession, 
                 ClientProtocol.getInstance().createChatPkt(text));
     }
 
