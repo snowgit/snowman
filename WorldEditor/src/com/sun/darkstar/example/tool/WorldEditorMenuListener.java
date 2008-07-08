@@ -42,8 +42,7 @@ public interface WorldEditorMenuListener {
     public void doNew();
     public void doOpen();
     public void doImportModel();
-    public void doImportTexture();
-    public void doExportScene(); 
+    public void doExportWorld(); 
     public void doExportSelected();
     public void doExit();
     public void doAttachTo();

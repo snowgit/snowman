@@ -4,9 +4,8 @@ MenuBar
         Open=doOpen
         Import
             Model=doImportModel
-            Texture=doImportTexture
         Export
-            World=doExportScene 
+            World=doExportWorld 
             Selected=doExportSelected
         Exit=doExit
     Edit

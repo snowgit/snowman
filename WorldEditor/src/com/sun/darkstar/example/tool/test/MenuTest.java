@@ -65,7 +65,7 @@ public class MenuTest extends JFrame{
                  System.out.print("doExportTexture");
             }
 
-            public void doExportScene() {
+            public void doExportWorld() {
                   System.out.print("doExportScene");
             }
 

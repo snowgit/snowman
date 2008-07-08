@@ -292,13 +292,12 @@ public class WorldEditor extends JFrame {
 				@Override
 				public void enumSet(Enum actualEnum) {
 					currentMode = (ModeEnum)actualEnum;
-					mouseListener.setMode(currentMode);
 					if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth
 							|| currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
-						if(world == null || world.getTerrainCluster() == null) return;
+						if(world == null || terrainView == null) return;
 						if(brush.getParent() == null) world.attachChild(brush);
 					} else {
-						if(world == null || world.getTerrainCluster() == null) return;
+						if(world == null || terrainView == null) return;
 						world.detachChild(brush);
 					}
 					if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth) {
@@ -306,6 +305,7 @@ public class WorldEditor extends JFrame {
 					} else if(currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
 						brush.setColor(ColorRGBA.blue);
 					}
+					mouseListener.setMode(currentMode);
 					brush.updateRenderState();
 				}
 			});
@@ -442,7 +442,7 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doCreateTextureLayer() {
-					if(world == null || world.getTerrainCluster() == null || terrainView == null) return;
+					if(world == null || terrainView == null) return;
 					JFileChooser chooser = new JFileChooser();
 					FileNameExtensionFilter filter = new FileNameExtensionFilter(
 							"Color Map Images", "jpg","bmp","tga");
@@ -461,8 +461,8 @@ public class WorldEditor extends JFrame {
 					}
 					File alphaMap = chooser.getSelectedFile();
 					DefaultListModel mdl = (DefaultListModel) textures.getModel();
-					float xBound = ((BoundingBox)world.getTerrainCluster().getWorldBound()).xExtent;
-					float zBound = ((BoundingBox)world.getTerrainCluster().getWorldBound()).zExtent;
+					float xBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).xExtent;
+					float zBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).zExtent;
 					TextureLayer layer = new TextureLayer(colorMap,alphaMap, xBound, zBound);
 					mdl.add(mdl.size(),layer);
 					terrainView.attachPass(layer.createPass(blend));
@@ -497,12 +497,11 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doExit() {
-					// TODO Auto-generated method stub
-
+					dispose();
 				}
 
 				@Override
-				public void doExportScene() {
+				public void doExportWorld() {
 					// TODO Auto-generated method stub
 
 				}
@@ -521,14 +520,7 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doImportModel() {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void doImportTexture() {
-					// TODO Auto-generated method stub
-
+					// TODO
 				}
 
 				@Override
@@ -690,6 +682,7 @@ public class WorldEditor extends JFrame {
 	 *            The path on the tree to the node that was selected for action
 	 */
 	public void doAddEntity(TreePath path) {
+		if(world == null) return;
 		Node node = (Node) path.getLastPathComponent();
 		String[] names = new String[EEntity.values().length];
 		for (int i = 0; i < names.length; i++) {
@@ -699,8 +692,7 @@ public class WorldEditor extends JFrame {
 				WorldEditor.this, "What kind of entity", "Create Entity",
 				JOptionPane.PLAIN_MESSAGE, null, names, names[0]);
 		EEntity selectedEntity = EEntity.valueOf(selected);
-		if (selectedEntity == null)
-			return;
+		if (selectedEntity == null)	return;
 		EditableEntity entity = (EditableEntity) EntityManager.getInstance().createEntity(selectedEntity);
 		if (selectedEntity == EEntity.Terrain) {
 			TerrainDialog dialog = new TerrainDialog(this);
@@ -1018,7 +1010,7 @@ public class WorldEditor extends JFrame {
 			if(pressed) {
 				if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth) {
 					ESculpt enumn = ESculpt.valueOf(currentMode.toString());
-					world.getTerrainCluster().sculptCluster(enumn, brush.getWorldBound().getCenter(),
+					terrainView.getTerrainCluster().sculptCluster(enumn, brush.getWorldBound().getCenter(),
 							brush.getWorldTranslation(), brush.getRadius(), brush.getIntensity());
 				}
 			}
@@ -1110,7 +1102,7 @@ public class WorldEditor extends JFrame {
 	}
 
 	public TerrainCluster getTerrain() {
-		return this.world.getTerrainCluster();
+		return this.terrainView.getTerrainCluster();
 	}
 
 	public Canvas getCanvas() {
