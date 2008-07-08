@@ -145,7 +145,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.lwjgl.opengl.Display;
 
 import com.sun.darkstar.example.snowman.game.entity.EditableEntity;
 import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
