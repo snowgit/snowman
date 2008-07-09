@@ -14,7 +14,10 @@ import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.client.Client;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
+import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
+import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
+import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
 
@@ -32,7 +35,7 @@ import com.sun.darkstar.example.snowman.interfaces.IComponent;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:02 EST
- * @version Modified date: 06-06-2008 17:30 EST
+ * @version Modified date: 07-09-2008 24:05 EST
  */
 public class Game extends BaseGame implements IComponent{
 	/**
@@ -63,6 +66,14 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>BasicPassManager</code> instance.
 	 */
 	private BasicPassManager passManager;
+	/**
+	 * The key board converter.
+	 */
+	private KeyInputConverter keyConverter;
+	/**
+	 * The mouse converter.
+	 */
+	private MouseInputConverter mouseConverter;
 	/**
 	 * The update interpolation value.
 	 */
@@ -169,8 +180,15 @@ public class Game extends BaseGame implements IComponent{
 
 	@Override
 	protected void initGame() {
+		LoginState login = new LoginState(this);
+		this.stateManager.attachChild(login);
+		login.initialize();
 		// TODO Auto-generated method stub
-
+	}
+	
+	private void buildConverters() {
+//		this.keyConverter = new KeyInputConverter(this.display);
+//		this.mouseConverter = new MouseInputConverter(this.display);
 	}
 
 	@Override
@@ -220,5 +238,13 @@ public class Game extends BaseGame implements IComponent{
 	@Override
 	public boolean isActive() {
 		return this.active;
+	}
+	
+	/**
+	 * Retrieve the render pass manager.
+	 * @return The <code>BasicPassManager</code> instance.
+	 */
+	public BasicPassManager getPassManager() {
+		return this.passManager;
 	}
 }

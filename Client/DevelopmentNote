@@ -1,3 +1,10 @@
+TODO:
+1. Create IInputConverter interface for GUI input converters. Methods include setActive(boolean) and
+setDisplay(Display).
+2. Update KeyInputConverter and MouseInputConverter to implement IInputConverter.
+3. Update Game to create converters.
+4. Update LoginState to add converters to the GUI.
+
 Only generating Task process is multi-threaded. Everything else is controlled by the game loop in a mono-threaded fashion.
 
 Mouse click movement:
