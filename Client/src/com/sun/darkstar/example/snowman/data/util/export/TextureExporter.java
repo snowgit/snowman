@@ -16,7 +16,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-13-2008 10:47 EST
- * @version Modified date: 06-20-2008 14:28 EST
+ * @version Modified date: 07-09-2008 17:50 EST
  */
 public class TextureExporter extends Exporter {
 	/**
@@ -48,6 +48,7 @@ public class TextureExporter extends Exporter {
 	 */
 	public TextureExporter() {
 		super("com/sun/darkstar/example/snowman/data/texture/");
+		Texture.DEFAULT_STORE_TEXTURE = true;
 		TextureManager.COMPRESS_BY_DEFAULT = false;
 	}
 

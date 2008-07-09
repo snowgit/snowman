@@ -31,7 +31,7 @@ public abstract class RealTimeTask extends Task implements IRealTimeTask {
 	 * @param enumn The <code>ETask</code> enumeration of this </code>Task</code>.
 	 * @param game The <code>Game</code> instance.
 	 */
-	public RealTimeTask(ETask enumn, Game game, int sourceID) {
+	public RealTimeTask(ETask enumn, Game game) {
 		super(enumn, game);
 		this.timestamp = System.currentTimeMillis();
 	}

@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import com.jme.image.Texture;
-import com.jme.scene.TriMesh;
+import com.jme.scene.SharedMesh;
 import com.jme.util.TextureManager;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
@@ -38,7 +38,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-09-2008 14:48 EST
- * @version Modified date: 06-29-2008 18:21 EST
+ * @version Modified date: 07-09-2008 17:36 EST
  */
 public class DataManager extends Manager {
 	/**
@@ -50,9 +50,9 @@ public class DataManager extends Manager {
 	 */
 	private final HashMap<EAnimation, JointAnimation> animationPool;
 	/**
-	 * The <code>TriMesh</code> asset pool.
+	 * The <code>SharedMesh</code> asset pool.
 	 */
-	private final HashMap<EEntity, TriMesh> meshPool;
+	private final HashMap<EEntity, SharedMesh> meshPool;
 	/**
 	 * The character <code>ModelNode</code> asset pool.
 	 */
@@ -96,7 +96,7 @@ public class DataManager extends Manager {
 	private DataManager() {
 		super(EManager.DataManager);
 		this.animationPool = new HashMap<EAnimation, JointAnimation>();
-		this.meshPool = new HashMap<EEntity, TriMesh>();
+		this.meshPool = new HashMap<EEntity, SharedMesh>();
 		this.characterPool = new HashMap<EEntity, ModelNode>();
 		this.texturePool = new HashMap<ETexture, Texture>();
 		this.worldDir = "com/sun/darkstar/example/snowman/data/world/";
@@ -160,12 +160,12 @@ public class DataManager extends Manager {
 	/**
 	 * Retrieve the cached static mesh resource with given entity ID.
 	 * @param enumn The <code>EEntity</code> enumeration.
-	 * @return The cached <code>TriMesh</code> with given ID.
+	 * @return The cached <code>SharedMesh</code> with given ID.
 	 */
-	public TriMesh getMeshData(EEntity enumn) {
-		TriMesh mesh = this.meshPool.get(enumn);
+	public SharedMesh getMeshData(EEntity enumn) {
+		SharedMesh mesh = this.meshPool.get(enumn);
 		if(mesh == null) {
-			mesh = (TriMesh)this.getResource(this.meshDir + enumn.toString());
+			mesh = (SharedMesh)this.getResource(this.meshDir + enumn.toString());
 			this.meshPool.put(enumn, mesh);
 		}
 		return mesh;

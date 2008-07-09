@@ -12,7 +12,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  */
 public enum ETask {
 
-	;
+	LoginTask(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.
