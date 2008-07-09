@@ -20,7 +20,7 @@ import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-03-2008 13:39 EST
- * @version Modified date: 07-09-2008 24:06 EST
+ * @version Modified date: 07-09-2008 11:59 EST
  */
 public class LoginState extends GameState {
 
@@ -48,6 +48,10 @@ public class LoginState extends GameState {
 	
 	private class LoginGUI extends GUIPass {
 		/**
+		 * Serial version.
+		 */
+		private static final long serialVersionUID = -1020458021673923988L;
+		/**
 		 * The status note.
 		 */
 		private Label noteLabel;
@@ -61,7 +65,7 @@ public class LoginState extends GameState {
 		private TextEditor txtPassword;
 		
 		@Override
-		public void initialize() {
+		public void buildWidgets() {
 			this.buildNote();
 			this.buildTexts();
 			this.buildButton();
@@ -108,12 +112,6 @@ public class LoginState extends GameState {
 			btnPlay.setSize(75, 20);
 			btnPlay.setXY(this.txtPassword.getX()+this.txtPassword.getWidth()-btnPlay.getWidth(), this.txtPassword.getY()-40);
 			this.display.addWidget(btnPlay);
-			//login.addButtonPressedListener(this.game.getLoginHandler());
-//			Button local = new Button("Load local IP");
-//			local.setSize(75, 20);
-//			local.setXY(this.ip.getX()-75, login.getY());
-//			local.addButtonPressedListener(this.game.getLoginHandler());
-//			this.display.addWidget(local);
 		}
 	}
 }

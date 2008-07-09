@@ -5,6 +5,7 @@ import java.net.URL;
 import com.jme.app.BaseGame;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -35,7 +36,7 @@ import com.sun.darkstar.example.snowman.interfaces.IComponent;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:02 EST
- * @version Modified date: 07-09-2008 24:05 EST
+ * @version Modified date: 07-09-2008 11:44 EST
  */
 public class Game extends BaseGame implements IComponent{
 	/**
@@ -66,14 +67,6 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>BasicPassManager</code> instance.
 	 */
 	private BasicPassManager passManager;
-	/**
-	 * The key board converter.
-	 */
-	private KeyInputConverter keyConverter;
-	/**
-	 * The mouse converter.
-	 */
-	private MouseInputConverter mouseConverter;
 	/**
 	 * The update interpolation value.
 	 */
@@ -123,6 +116,7 @@ public class Game extends BaseGame implements IComponent{
 	protected void initSystem() {
 		this.display = DisplaySystem.getDisplaySystem(this.settings.getRenderer());
 		this.display.setTitle("Snowman");
+		this.timer = Timer.getTimer();
 //		try {
 //			Texture icon = AssetLoader.getInstance().loadTexture(TextureData.Icon_Big);
 //			Texture iconSmall = AssetLoader.getInstance().loadTexture(TextureData.Icon_Small);
@@ -132,12 +126,9 @@ public class Game extends BaseGame implements IComponent{
 //		}
 		this.initializeWindow();
 		this.initializeCamera();
+		this.initializeManagers();
+		this.initializeConverters();
 		this.initializeHotkey();
-		this.timer = Timer.getTimer();
-		this.taskManager = TaskManager.getInstance();
-		this.physicsManager = PhysicsManager.getInstance();
-		this.stateManager = GameStateManager.create();
-		this.passManager = new BasicPassManager();
 	}
 	
 	/**
@@ -171,24 +162,37 @@ public class Game extends BaseGame implements IComponent{
 	}
 
 	/**
+	 * Initialize all the system managers.
+	 */
+	private void initializeManagers() {
+		this.taskManager = TaskManager.getInstance();
+		this.physicsManager = PhysicsManager.getInstance();
+		this.stateManager = GameStateManager.create();
+		this.passManager = new BasicPassManager();
+	}
+
+	/**
+	 * Initialize the GUI input converters.
+	 */
+	private void initializeConverters() {
+		KeyInput.get().addListener(KeyInputConverter.getInstance());
+		MouseInput.get().addListener(MouseInputConverter.getInstance());
+	}
+
+	/**
 	 * Initialize the hot keys.
 	 */
 	private void initializeHotkey() {
 		KeyBindingManager.getKeyBindingManager().set("exit", KeyInput.KEY_ESCAPE);
 		KeyBindingManager.getKeyBindingManager().set("screenshot", KeyInput.KEY_F1);
 	}
-
+	
 	@Override
 	protected void initGame() {
 		LoginState login = new LoginState(this);
 		this.stateManager.attachChild(login);
 		login.initialize();
 		// TODO Auto-generated method stub
-	}
-	
-	private void buildConverters() {
-//		this.keyConverter = new KeyInputConverter(this.display);
-//		this.mouseConverter = new MouseInputConverter(this.display);
 	}
 
 	@Override

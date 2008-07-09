@@ -9,6 +9,8 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
+import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
 
 /**
  * <code>GUIPass</code> renders {@link FengGUI} widgets in its own separate
@@ -22,13 +24,12 @@ import com.jme.system.DisplaySystem;
  * Subclasses which extends <code>GUIPass</code> need to implement initialize
  * method to create all GUI widgets and add them to the <code>Display</code>.
  * <p>
- * <code>GUIPass</code> is only responsible for rendering the GUI widgets.
- * Input conversion from @{@link jME} to {@link FengGUI} needs to be handled
- * separately.
+ * <code>GUIPass</code> automatically invokes <code>IInputConverter</code> to
+ * set the {@link FengGUI} <code>Display</code> instance for input conversion.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-21-2008 17:14 EST
- * @version Modified date: 05-28-2008 13:54 EST
+ * @version Modified date: 07-09-2008 11:58 EST
  */
 public abstract class GUIPass extends Pass {
 	/**
@@ -36,11 +37,11 @@ public abstract class GUIPass extends Pass {
 	 */
 	private static final long serialVersionUID = -284580225155562862L;
 	/**
-	 * FengGUI <code>Display</code> instance.
+	 * The {@link FengGUI} <code>Display</code> instance.
 	 */
 	protected final Display display;
 	/**
-	 * Temporary <code>TextureState</code> to render FengGUI.
+	 * The temporary <code>TextureState</code> to render FengGUI.
 	 */
 	private final TextureState tempTextureState;
 	
@@ -59,9 +60,18 @@ public abstract class GUIPass extends Pass {
 	}
 	
 	/**
-	 * Initialize the graphical user interface widgets.
+	 * Initialize the graphical user pass.
 	 */
-	public abstract void initialize();
+	public void initialize() {
+		this.buildWidgets();
+		KeyInputConverter.getInstance().setDisplay(this.getDisplay());
+		MouseInputConverter.getInstance().setDisplay(this.getDisplay());
+	}
+	
+	/**
+	 * Build the graphical user interface widgets.
+	 */
+	protected abstract void buildWidgets();
 
 	@Override
 	protected void doRender(Renderer r) {
@@ -70,8 +80,8 @@ public abstract class GUIPass extends Pass {
 	}
 	
 	/**
-	 * Retrieve the GUI <code>Display</code> instance.
-	 * @return The GUI <code>Display</code> instance.
+	 * Retrieve the {@link FengGUI} <code>Display</code> instance.
+	 * @return The {@link FengGUI} <code>Display</code> instance.
 	 */
 	public Display getDisplay() {
 		return this.display;
