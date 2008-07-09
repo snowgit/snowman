@@ -34,7 +34,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 06-29-2008 17:56 EST
+ * @version Modified date: 07-09-2008 13:53 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -130,11 +130,11 @@ public class TaskManager extends Manager {
 			try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		// Check real time tasks.
-		if(task.getType().equals(ETaskType.RealTime)) {
+		if(task.getEnumn().getType() == ETaskType.RealTime) {
 			final IRealTimeTask given = (IRealTimeTask)task;
 			IRealTimeTask inQueue = null;
 			for(ITask t : this.taskQueue) {
-				if(t.getType().equals(ETaskType.RealTime)) {
+				if(t.getEnumn().getType() == ETaskType.RealTime) {
 					inQueue = (IRealTimeTask)t;
 					if(inQueue.equals(given)) {
 						// Remove existing one.

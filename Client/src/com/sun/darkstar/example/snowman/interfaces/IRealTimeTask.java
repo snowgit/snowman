@@ -11,13 +11,12 @@ package com.sun.darkstar.example.snowman.interfaces;
  * <code>IRealTimeTask</code> provides the functionality to compare with another
  * <code>IRealTimeTask</code> and determine the order of construction.
  * <p>
- * Two <code>IRealTimeTask</code> are considered 'equal' or the same if and only
- * if both <code>IRealTimeTask</code> have exactly the same <code>ETaskID</code>
- * and source <code>IEntity</code>.
+ * Realizations of <code>IRealTimeTask</code> are required to override 'equals'
+ * method with detailed comparisons based on the information the task maintains.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-05-2008 12:44 EST
- * @version Modified date: 06-05-2008 12:56 EST
+ * @version Modified date: 07-09-2008 14:54 EST
  */
 public interface IRealTimeTask extends ITask {
 	

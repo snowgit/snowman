@@ -2,7 +2,6 @@ package com.sun.darkstar.example.snowman.game.task;
 
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
-import com.sun.darkstar.example.snowman.game.task.enumn.ETask.ETaskType;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 
 /**
@@ -17,7 +16,7 @@ import com.sun.darkstar.example.snowman.interfaces.ITask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 16:47 EST
- * @version Modified date: 07-02-2008 24:22 EST
+ * @version Modified date: 07-09-2008 13:51 EST
  */
 public abstract class Task implements ITask {
 	/**
@@ -39,11 +38,6 @@ public abstract class Task implements ITask {
 		this.game = game;
 	}
 
-	@Override
-	public ETaskType getType() {
-		return this.enumn.getType();
-	}
-	
 	@Override
 	public ETask getEnumn() {
 		return this.enumn;
