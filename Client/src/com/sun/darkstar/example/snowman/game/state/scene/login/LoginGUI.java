@@ -17,7 +17,7 @@ import com.sun.darkstar.example.snowman.game.gui.enumn.EButton;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-09-2008 15:43 EST
- * @version Modified date: 07-09-2008 16:12 EST
+ * @version Modified date: 07-10-2008 14:55 EST
  */
 public class LoginGUI extends GUIPass {
 	/**
@@ -31,15 +31,27 @@ public class LoginGUI extends GUIPass {
 	/**
 	 * The status note.
 	 */
-	private Label noteLabel;
+	private Label labelStatus;
+	/**
+	 * The user name label.
+	 */
+	private Label labelUsername;
+	/**
+	 * The password label.
+	 */
+	private Label labelPassword;
 	/**
 	 * The IP address text editor.
 	 */
-	private TextEditor txtUsername;
+	private TextEditor textUsername;
 	/**
 	 * The name text editor.
 	 */
-	private TextEditor txtPassword;
+	private TextEditor textPassword;
+	/**
+	 * The play <code>Button</code>
+	 */
+	private Button buttonPlay;
 	
 	/**
 	 * Constructor of <code>LoginGUI</code>.
@@ -60,14 +72,14 @@ public class LoginGUI extends GUIPass {
 	 * Build the status note.
 	 */
 	private void buildNote() {
-		this.noteLabel = new Label("Please enter username and password to play.");
+		this.labelStatus = new Label("Please enter username and password to play");
 		java.awt.Font awtFont = new java.awt.Font("Sans", java.awt.Font.BOLD, 16);
-		this.noteLabel.getAppearance().setFont(FontFactory.renderStandardFont(awtFont, true, Alphabet.getDefaultAlphabet()));
-		this.noteLabel.setSizeToMinSize();
-		this.noteLabel.setHeight(60);
-		this.noteLabel.setXY(this.display.getWidth()/2-this.noteLabel.getWidth()/2, this.display.getHeight()/2 + 30);
-		this.noteLabel.getAppearance().setTextColor(Color.WHITE);
-		this.display.addWidget(this.noteLabel);
+		this.labelStatus.getAppearance().setFont(FontFactory.renderStandardFont(awtFont, true, Alphabet.getDefaultAlphabet()));
+		this.labelStatus.setSizeToMinSize();
+		this.labelStatus.setHeight(60);
+		this.labelStatus.setXY(this.display.getWidth()/2-this.labelStatus.getWidth()/2, this.display.getHeight()/4);
+		this.labelStatus.getAppearance().setTextColor(Color.WHITE);
+		this.display.addWidget(this.labelStatus);
 	}
 	
 	/**
@@ -75,38 +87,54 @@ public class LoginGUI extends GUIPass {
 	 */
 	private void buildTexts() {
 		// IP text.
-		Label ip = new Label("Username:         ");
-		ip.setSizeToMinSize();
-		ip.getAppearance().setTextColor(Color.WHITE);
-		ip.setXY(this.display.getWidth()/2 - (75+ip.getWidth()/2), this.display.getHeight()/2 - 10);
-		this.display.addWidget(ip);
-		this.txtUsername = new TextEditor();
-		this.txtUsername.setSize(150, 20);
-		this.txtUsername.setXY(ip.getX()+ip.getWidth(), ip.getY());
-		this.txtUsername.setMultiline(false);
-		this.display.addWidget(this.txtUsername);
+		this.labelUsername = new Label("Username:         ");
+		this.labelUsername.setSizeToMinSize();
+		this.labelUsername.getAppearance().setTextColor(Color.WHITE);
+		this.labelUsername.setXY(this.display.getWidth()/2 - (75+this.labelUsername.getWidth()/2), this.display.getHeight()/5);
+		this.display.addWidget(this.labelUsername);
+		this.textUsername = new TextEditor();
+		this.textUsername.setSize(150, 20);
+		this.textUsername.setXY(this.labelUsername.getX()+this.labelUsername.getWidth(), this.labelUsername.getY());
+		this.textUsername.setMultiline(false);
+		this.display.addWidget(this.textUsername);
 		// Name text.
-		Label name = new Label("Password:       ");
-		name.setSizeToMinSize();
-		name.getAppearance().setTextColor(Color.WHITE);
-		name.setXY(ip.getX(), ip.getY()-30);
-		this.display.addWidget(name);
-		this.txtPassword = new TextEditor();
-		this.txtPassword.setSize(150, 20);
-		this.txtPassword.setXY(this.txtUsername.getX(), name.getY());
-		this.txtPassword.setMultiline(false);
-		this.display.addWidget(this.txtPassword);
+		this.labelPassword = new Label("Password:       ");
+		this.labelPassword.setSizeToMinSize();
+		this.labelPassword.getAppearance().setTextColor(Color.WHITE);
+		this.labelPassword.setXY(this.labelUsername.getX(), this.labelUsername.getY()-30);
+		this.display.addWidget(this.labelPassword);
+		this.textPassword = new TextEditor();
+		this.textPassword.setSize(150, 20);
+		this.textPassword.setXY(this.textUsername.getX(), this.labelPassword.getY());
+		this.textPassword.setMultiline(false);
+		this.display.addWidget(this.textPassword);
 	}
 	
 	/**
 	 * Build the button.
 	 */
 	private void buildButton() {
-		Button btnPlay = new Button(EButton.Play.toString());
-		btnPlay.setSize(75, 20);
-		btnPlay.setXY(this.txtPassword.getX()+this.txtPassword.getWidth()-btnPlay.getWidth(), this.txtPassword.getY()-40);
-		btnPlay.addButtonPressedListener(this.buttonHandler);
-		this.display.addWidget(btnPlay);
+		this.buttonPlay = new Button(EButton.Play.toString());
+		this.buttonPlay.setSize(this.textPassword.getX()+this.textPassword.getWidth()-this.labelPassword.getX(), 20);
+		this.buttonPlay.setXY(this.labelUsername.getX(), this.textPassword.getY()-40);
+		this.buttonPlay.addButtonPressedListener(this.buttonHandler);
+		this.display.addWidget(this.buttonPlay);
+	}
+	
+	/**
+	 * Set the status text.
+	 * @param text The <code>String</code> status text to be set.
+	 */
+	public void setStatus(String text) {
+		this.labelStatus.setText(text);
+	}
+	
+	/**
+	 * Set the text displayed on the button.
+	 * @param text The <code>String</code> text to be set.
+	 */
+	public void setButtonText(String text) {
+		this.buttonPlay.setText(text);
 	}
 	
 	/**
@@ -114,7 +142,7 @@ public class LoginGUI extends GUIPass {
 	 * @return The <code>String</code> user name entered.
 	 */
 	public String getUsername() {
-		return this.txtUsername.getText();
+		return this.textUsername.getText();
 	}
 	
 	/**
@@ -122,6 +150,6 @@ public class LoginGUI extends GUIPass {
 	 * @return The <code>String</code> password entered.
 	 */
 	public String getPassword() {
-		return this.txtPassword.getText();
+		return this.textPassword.getText();
 	}
 }

@@ -14,9 +14,13 @@ import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-03-2008 13:39 EST
- * @version Modified date: 07-09-2008 16:38 EST
+ * @version Modified date: 07-10-2008 14:32 EST
  */
 public class LoginState extends GameState {
+	/**
+	 * The <code>LoginGUI</code> instance.
+	 */
+	private LoginGUI gui;
 
 	/**
 	 * Constructor of <code>LoginState</code>.
@@ -46,14 +50,22 @@ public class LoginState extends GameState {
 	 */
 	private void buildGUIPass() {
 		MouseInput.get().setCursorVisible(true);
-		LoginGUI gui = new LoginGUI();
-		gui.initialize();
-		this.game.getPassManager().add(gui);
+		this.gui = new LoginGUI();
+		this.gui.initialize();
+		this.game.getPassManager().add(this.gui);
 	}
 
 	@Override
 	protected void updateState(float interpolation) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * Retrieve the <code>LoginGUI</code> instance.
+	 * @return The <code>LoginGUI</code> instance.
+	 */
+	public LoginGUI getGUI() {
+		return this.gui;
 	}
 }

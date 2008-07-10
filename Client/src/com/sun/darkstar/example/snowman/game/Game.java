@@ -36,7 +36,7 @@ import com.sun.darkstar.example.snowman.interfaces.IComponent;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:02 EST
- * @version Modified date: 07-09-2008 11:44 EST
+ * @version Modified date: 07-10-2008 14:40 EST
  */
 public class Game extends BaseGame implements IComponent{
 	/**
@@ -165,7 +165,7 @@ public class Game extends BaseGame implements IComponent{
 	 * Initialize all the system managers.
 	 */
 	private void initializeManagers() {
-		this.taskManager = TaskManager.getInstance();
+		this.taskManager = TaskManager.create(this);
 		this.physicsManager = PhysicsManager.getInstance();
 		this.stateManager = GameStateManager.create();
 		this.passManager = new BasicPassManager();
@@ -242,6 +242,14 @@ public class Game extends BaseGame implements IComponent{
 	@Override
 	public boolean isActive() {
 		return this.active;
+	}
+	
+	/**
+	 * Retrieve the <code>Client</code> instance.
+	 * @return The <code>Client</code> instance.
+	 */
+	public Client getClient() {
+		return this.client;
 	}
 	
 	/**
