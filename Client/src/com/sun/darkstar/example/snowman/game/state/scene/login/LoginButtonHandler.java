@@ -32,7 +32,7 @@ public class LoginButtonHandler implements IButtonPressedListener {
 	@Override
 	public void buttonPressed(ButtonPressedEvent e) {
 		if(e.getTrigger().getText().equalsIgnoreCase(EButton.Play.toString())) {
-			TaskManager.getInstance().createTask(ETask.Login, this.gui.getUsername(), this.gui.getPassword());
+			TaskManager.getInstance().createTask(ETask.Authenticate, this.gui.getUsername(), this.gui.getPassword());
 		}
 	}
 }

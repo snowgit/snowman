@@ -1,6 +1,5 @@
 TODO:
-1. Implement LoginTask.
-2. Updated LoginButtonHandler to construct LoginTask.
+
 
 Only generating Task process is multi-threaded. Everything else is controlled by the game loop in a mono-threaded fashion.
 

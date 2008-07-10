@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
 import com.sun.sgs.client.simple.SimpleClientListener;
@@ -21,7 +23,7 @@ import com.sun.sgs.client.simple.SimpleClientListener;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 15:24 EST
- * @version Modified date: 06-10-2008 16:52 EST
+ * @version Modified date: 07-10-2008 18:08 EST
  */
 public class MessageListener implements SimpleClientListener{
 	/**
@@ -39,8 +41,7 @@ public class MessageListener implements SimpleClientListener{
 
 	@Override
 	public PasswordAuthentication getPasswordAuthentication() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.handler.getAuthentication();
 	}
 
 	@Override
@@ -51,14 +52,12 @@ public class MessageListener implements SimpleClientListener{
 
 	@Override
 	public void loginFailed(String reason) {
-		// TODO Auto-generated method stub
-		
+		TaskManager.getInstance().createTask(ETask.ResetLogin);
 	}
 
 	@Override
 	public void disconnected(boolean graceful, String reason) {
-		// TODO Auto-generated method stub
-		
+		this.handler.getGame().finish();
 	}
 
 	@Override

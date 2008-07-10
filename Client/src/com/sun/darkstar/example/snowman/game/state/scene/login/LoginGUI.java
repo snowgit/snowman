@@ -17,7 +17,7 @@ import com.sun.darkstar.example.snowman.game.gui.enumn.EButton;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-09-2008 15:43 EST
- * @version Modified date: 07-10-2008 14:55 EST
+ * @version Modified date: 07-10-2008 18:24 EST
  */
 public class LoginGUI extends GUIPass {
 	/**
@@ -28,6 +28,10 @@ public class LoginGUI extends GUIPass {
 	 * The <code>LoginButtonHandler</code> instance.
 	 */
 	private final LoginButtonHandler buttonHandler;
+	/**
+	 * The default status text.
+	 */
+	private final String defaultStatus;
 	/**
 	 * The status note.
 	 */
@@ -52,6 +56,10 @@ public class LoginGUI extends GUIPass {
 	 * The play <code>Button</code>
 	 */
 	private Button buttonPlay;
+	/**
+	 * The failed label.
+	 */
+	private Label labelFailed;
 	
 	/**
 	 * Constructor of <code>LoginGUI</code>.
@@ -59,20 +67,22 @@ public class LoginGUI extends GUIPass {
 	public LoginGUI() {
 		super();
 		this.buttonHandler = new LoginButtonHandler(this);
+		this.defaultStatus = "Please enter username and password to play";
 	}
 	
 	@Override
 	public void buildWidgets() {
-		this.buildNote();
+		this.buildStatus();
 		this.buildTexts();
 		this.buildButton();
+		this.buildFailedLabel();
 	}
 	
 	/**
 	 * Build the status note.
 	 */
-	private void buildNote() {
-		this.labelStatus = new Label("Please enter username and password to play");
+	private void buildStatus() {
+		this.labelStatus = new Label(this.defaultStatus);
 		java.awt.Font awtFont = new java.awt.Font("Sans", java.awt.Font.BOLD, 16);
 		this.labelStatus.getAppearance().setFont(FontFactory.renderStandardFont(awtFont, true, Alphabet.getDefaultAlphabet()));
 		this.labelStatus.setSizeToMinSize();
@@ -122,6 +132,16 @@ public class LoginGUI extends GUIPass {
 	}
 	
 	/**
+	 * Build the failed label.
+	 */
+	private void buildFailedLabel() {
+		this.labelFailed = new Label("Last authentication failed.");
+		this.labelFailed.setSizeToMinSize();
+		this.labelFailed.setXY(this.display.getWidth()/2-this.labelFailed.getWidth()/2, this.buttonPlay.getY()-40);
+		this.labelFailed.getAppearance().setTextColor(Color.WHITE);
+	}
+	
+	/**
 	 * Set the status text.
 	 * @param text The <code>String</code> status text to be set.
 	 */
@@ -135,6 +155,46 @@ public class LoginGUI extends GUIPass {
 	 */
 	public void setButtonText(String text) {
 		this.buttonPlay.setText(text);
+	}
+	
+	/**
+	 * Set the text of the user name text field.
+	 * @param username The <code>String</code> text.
+	 */
+	public void setUsername(String username) {
+		this.textUsername.setText(username);
+	}
+	
+	/**
+	 * Set the text of the password text field.
+	 * @param password The <code>String</code> text.
+	 */
+	public void setPassword(String password) {
+		this.textPassword.setText(password);
+	}
+	
+	/**
+	 * Enabled the failed text label.
+	 */
+	public void enableFailedLabel() {
+		if(this.labelFailed.isInWidgetTree()) return;
+		this.display.addWidget(this.labelFailed);
+	}
+	
+	/**
+	 * Retrieve the default status text.
+	 * @return The default <code>String</code> status text.
+	 */
+	public String getDefaultStatus() {
+		return this.defaultStatus;
+	}
+	
+	/**
+	 * Retrieve the default button text.
+	 * @return The default <code>String</code> button text.
+	 */
+	public String getDefaultButton() {
+		return EButton.Play.toString();
 	}
 	
 	/**

@@ -19,7 +19,7 @@ import com.sun.sgs.client.simple.SimpleClient;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:52 EST
- * @version Modified date: 07-10-2008 14:26 EST
+ * @version Modified date: 07-10-2008 17:12 EST
  */
 public class Client extends Component{
 	/**
@@ -62,5 +62,13 @@ public class Client extends Component{
 	 */
 	public SimpleClient getConnection() {
 		return this.connection;
+	}
+	
+	/**
+	 * Retrieve the <code>ClientHandler</code> instance.
+	 * @return The <code>ClientHandler</code> instance.
+	 */
+	public ClientHandler getHandler() {
+		return this.handler;
 	}
 }

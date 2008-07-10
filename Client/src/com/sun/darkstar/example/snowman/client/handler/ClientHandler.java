@@ -1,5 +1,7 @@
 package com.sun.darkstar.example.snowman.client.handler;
 
+import java.net.PasswordAuthentication;
+
 import com.sun.darkstar.example.snowman.client.handler.message.MessageListener;
 import com.sun.darkstar.example.snowman.client.handler.message.MessageProcessor;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
@@ -35,6 +37,10 @@ public class ClientHandler extends Component {
 	 * The <code>Game</code> instance.
 	 */
 	private Game game;
+	/**
+	 * The <code>PasswordAuthentication</code> instance.
+	 */
+	private PasswordAuthentication authentication;
 	
 	/**
 	 * Constructor of <code>ClientHandler</code>.
@@ -64,6 +70,15 @@ public class ClientHandler extends Component {
 	}
 	
 	/**
+	 * Create the authentication object for authentication purpose.
+	 * @param username The <code>String</code> user name.
+	 * @param password The <code>String</code> password.
+	 */
+	public void authenticate(String username, String password) {
+		this.authentication = new PasswordAuthentication(username ,password.toCharArray());
+	}
+	
+	/**
 	 * Retrieve the <code>Game</code> <code>Component</code>.
 	 * @return The <code>Game</code> instance.
 	 */
@@ -85,5 +100,13 @@ public class ClientHandler extends Component {
 	 */
 	public MessageProcessor getProcessor() {
 		return this.processor;
+	}
+	
+	/**
+	 * Retrieve the <code>PasswordAuthentication</code> instance.
+	 * @return The <code>PasswordAuthentication</code> instance.
+	 */
+	public PasswordAuthentication getAuthentication() {
+		return this.authentication;
 	}
 }
