@@ -86,7 +86,7 @@ public class Matchmaker implements Serializable, ManagedObject {
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         for (int i=0;i<waiting.length;i++){
-            if (waiting[i].equals(playerRef)){
+            if ((waiting[i]!=null )&&(waiting[i].equals(playerRef))){
                 waiting[i] = null;
                 return;
             }

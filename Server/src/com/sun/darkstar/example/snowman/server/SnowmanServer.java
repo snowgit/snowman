@@ -40,6 +40,7 @@ import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * This class is the app listener for Project Snowman
@@ -47,6 +48,7 @@ import java.util.Properties;
  * @author Jeffrey Kesselman
  */
 public class SnowmanServer implements ManagedObject, Serializable, AppListener{
+    private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     public static long serialVersionUID = 1L;
     ManagedReference<Matchmaker> matchMakerRef;
     
@@ -56,6 +58,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     }
 
     public ClientSessionListener loggedIn(ClientSession arg0) {
+        logger.info("Player "+arg0.getName()+" logged in");
         SnowmanPlayer player =  SnowmanPlayer.find(arg0);
         matchMakerRef.get().addWaitingPlayer(player);
         return player;

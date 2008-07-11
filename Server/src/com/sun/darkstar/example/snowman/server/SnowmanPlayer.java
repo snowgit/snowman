@@ -44,6 +44,7 @@ import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.NameNotBoundException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 /**
  * This class is the player's "proxy" in the world of managed
@@ -55,10 +56,11 @@ import java.nio.ByteBuffer;
  */
 class SnowmanPlayer implements Serializable, ManagedObject, 
         ClientSessionListener, IServerProcessor {
-
-    public static long serialVersionUID = 1L;
+    private static Logger logger = Logger.getLogger(SnowmanPlayer.class.getName());
+    public static final long serialVersionUID = 1L;
     private static final String PREFIX = "__PLAYER_";
-    private ClientSession mySession;
+    private ManagedReference<ClientSession> sessionRef;
+    private String name;
     private int wins;
     private int losses;
     float x;
@@ -86,7 +88,8 @@ class SnowmanPlayer implements Serializable, ManagedObject,
    
 
     private SnowmanPlayer(ClientSession session) {
-        // pevents direct instantiation
+        name = session.getName();
+        setSession(session);
     }
 
     public void receivedMessage(ByteBuffer arg0) {
@@ -98,6 +101,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             currentMatchMakerRef.get().removeWaitingPlayer(this);
             currentMatchMakerRef = null;
         }
+        logger.info("Player "+name+" logged out");
     }
 
     void setMatchMaker(Matchmaker matcher) {
@@ -106,7 +110,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     private void setSession(ClientSession arg0) {
-        mySession = arg0;
+        sessionRef = AppContext.getDataManager().createReference(arg0);
     }
     
     public void setArea(SnowmanGame game){
@@ -136,11 +140,11 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     
     public void send(ByteBuffer buff){
         buff.flip();
-        mySession.send(buff);
+        sessionRef.get().send(buff);
     }
     
     public ClientSession getSession(){
-        return mySession;
+        return sessionRef.get();
     }
     
      // IServerProcessor Messages
@@ -173,7 +177,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void chatText(String text) {
-        currentGameRef.get().send(mySession, 
+        currentGameRef.get().send(sessionRef.get(), 
                 ClientProtocol.getInstance().createChatPkt(text));
     }
 
