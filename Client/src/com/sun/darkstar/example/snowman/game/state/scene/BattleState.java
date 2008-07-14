@@ -3,9 +3,12 @@ package com.sun.darkstar.example.snowman.game.state.scene;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
+import com.sun.darkstar.example.snowman.data.enumn.EWorld;
+import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.world.World;
 
 /**
  * <code>BattleState</code> extends <code>GameState</code> to define the world
@@ -35,10 +38,18 @@ public class BattleState extends GameState {
 	@Override
 	protected void initializeState() {
 		// TODO Auto-generated method stub
+		// this.buildWorld();
 		Box b = new Box("", new Vector3f(0, -10, -50), 5, 5, 5);
 		b.setModelBound(new BoundingBox());
 		b.updateModelBound();
 		this.rootNode.attachChild(b);
+	}
+	
+	/**
+	 * Build the battle field world.
+	 */
+	private void buildWorld() {
+		this.rootNode.attachChild((World)DataManager.getInstance().getWorld(EWorld.Battle));
 	}
 
 	@Override

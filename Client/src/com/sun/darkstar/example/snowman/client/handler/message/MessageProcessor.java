@@ -4,6 +4,9 @@ import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 
 /**
  * <code>MessageProcessor</code> is a processing unit responsible for
@@ -18,7 +21,7 @@ import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcess
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 05-29-2008 16:11 EST
+ * @version Modified date: 05-29-2008 16:59 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -35,15 +38,12 @@ public class MessageProcessor implements IClientProcessor {
 	}
 
 	@Override
-	public void enterLounge(int myID) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void enterLounge(int myID) {}
 
 	@Override
 	public void newGame(int myID, String mapname) {
-		// TODO Auto-generated method stub
-		
+		TaskManager.getInstance().createTask(ETask.ChangeState, EGameState.BattleState);
+		TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
 	}
 
 	@Override
@@ -60,8 +60,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void addMOB(int objectID, float x, float y, EMOBType objType) {
-		// TODO Auto-generated method stub
-		
+		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y);
 	}
 
 	@Override
