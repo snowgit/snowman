@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.sgs.client.ClientChannel;
@@ -25,7 +26,7 @@ import com.sun.sgs.client.simple.SimpleClientListener;
  * @version Creation date: 05-23-2008 15:24 EST
  * @version Modified date: 07-10-2008 18:08 EST
  */
-public class MessageListener implements SimpleClientListener{
+public class MessageListener implements SimpleClientListener {
 	/**
 	 * The <code>ClientHandler</code> this listener is attached to.
 	 */
@@ -46,8 +47,7 @@ public class MessageListener implements SimpleClientListener{
 
 	@Override
 	public void loggedIn() {
-		// TODO Auto-generated method stub
-		
+		TaskManager.getInstance().createTask(ETask.ChangeState, EGameState.BattleState);
 	}
 
 	@Override

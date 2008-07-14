@@ -18,6 +18,8 @@ import com.sun.darkstar.example.snowman.exception.MissingComponentException;
 import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
 import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
+import com.sun.darkstar.example.snowman.game.state.GameState;
+import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
@@ -36,7 +38,7 @@ import com.sun.darkstar.example.snowman.interfaces.IComponent;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:02 EST
- * @version Modified date: 07-10-2008 14:40 EST
+ * @version Modified date: 07-14-2008 12:02 EST
  */
 public class Game extends BaseGame implements IComponent{
 	/**
@@ -67,6 +69,10 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>BasicPassManager</code> instance.
 	 */
 	private BasicPassManager passManager;
+	/**
+	 * The current active <code>GameState</code>.
+	 */
+	private GameState activeState;
 	/**
 	 * The update interpolation value.
 	 */
@@ -191,10 +197,14 @@ public class Game extends BaseGame implements IComponent{
 	protected void initGame() {
 		LoginState login = new LoginState(this);
 		this.stateManager.attachChild(login);
+		login.setActive(true);
 		login.initialize();
-		// TODO Auto-generated method stub
+		BattleState battle = new BattleState(this);
+		battle.setActive(false);
+		this.stateManager.attachChild(battle);
+		this.activeState = login;
 	}
-
+	
 	@Override
 	protected void update(float interpolation) {
 		// Update the timer to get the frame rate.
@@ -212,8 +222,9 @@ public class Game extends BaseGame implements IComponent{
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
 			this.finish();		
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
-			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
-			this.count++;
+//			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
+//			this.count++;
+			this.client.getHandler().getListener().loggedIn();
 		}
 	}
 
@@ -242,6 +253,22 @@ public class Game extends BaseGame implements IComponent{
 	@Override
 	public boolean isActive() {
 		return this.active;
+	}
+	
+	/**
+	 * Set the current active game state.
+	 * @param state The <code>GameState</code> that is active.
+	 */
+	public void setActiveState(GameState state) {
+		this.activeState = state;
+	}
+	
+	/**
+	 * Retrieve the current active game state.
+	 * @return The current active <code>GameState</code>.
+	 */
+	public GameState getActiveState() {
+		return this.activeState;
 	}
 	
 	/**

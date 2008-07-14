@@ -1,4 +1,4 @@
-package com.sun.darkstar.example.snowman.game.task.login;
+package com.sun.darkstar.example.snowman.game.task.state.login;
 
 import java.io.IOException;
 import java.util.Properties;

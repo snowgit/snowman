@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask.ETaskType;
-import com.sun.darkstar.example.snowman.game.task.login.AuthenticateTask;
-import com.sun.darkstar.example.snowman.game.task.login.ResetLoginTask;
+import com.sun.darkstar.example.snowman.game.task.state.ChangeStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
 import com.sun.darkstar.example.snowman.interfaces.IRealTimeTask;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -41,7 +43,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 07-10-2008 18:22 EST
+ * @version Modified date: 07-14-2008 12:08 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -151,6 +153,7 @@ public class TaskManager extends Manager {
 		switch(enumn) {
 		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
 		case ResetLogin: task = new ResetLoginTask(this.game); break;
+		case ChangeState: task = new ChangeStateTask(this.game, (EGameState)args[0]); break;
 		}
 		return this.submit(task);
 	}

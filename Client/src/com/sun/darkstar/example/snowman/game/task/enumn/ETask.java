@@ -8,10 +8,9 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 07-10-2008 18:21 EST
+ * @version Modified date: 07-14-2008 11:43 EST
  */
 public enum ETask {
-
 	/**
 	 * The task used to authenticate the user inputs with the server.
 	 */
@@ -19,7 +18,11 @@ public enum ETask {
 	/**
 	 * The task used to reset the login state after login attempt failed.
 	 */
-	ResetLogin(ETaskType.RealTime);
+	ResetLogin(ETaskType.RealTime),
+	/**
+	 * The task used to change game state.
+	 */
+	ChangeState(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.
