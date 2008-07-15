@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
-import com.sun.darkstar.example.snowman.game.util.CollisionManager;
+import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.tool.WorldEditor.ModeEnum;
 
 public class WorldEditorMouseListener extends MouseInputAdapter {
