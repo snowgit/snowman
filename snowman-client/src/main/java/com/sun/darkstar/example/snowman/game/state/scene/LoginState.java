@@ -52,7 +52,7 @@ public class LoginState extends GameState {
 	 * Build the world.
 	 */
 	private void buildWorld() {
-		this.rootNode.attachChild((World)DataManager.getInstance().getWorld(EWorld.Login));
+		//this.rootNode.attachChild((World)DataManager.getInstance().getWorld(EWorld.Login));
 	}
 
 	@Override
