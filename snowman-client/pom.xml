@@ -1,0 +1,155 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- The chat-client module is a standard jar package of chat classes
+       used exclusively by the client -->
+
+  <parent>
+    <groupId>com.projectdarkstar.example.projectsnowman</groupId>
+    <artifactId>projectsnowman</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>snowman-client</artifactId>
+  <name>Project Snowman Client</name>
+  <packaging>jar</packaging>
+  <description>
+    Client module for the Project Snowman example.
+  </description>
+
+  <dependencies>
+    <!-- Compile time dependencies -->
+    <dependency>
+      <groupId>com.projectdarkstar.client</groupId>
+      <artifactId>sgs-client-api</artifactId>
+    </dependency>
+
+    <!-- Runtime dependencies -->
+    <dependency>
+      <groupId>com.projectdarkstar.client</groupId>
+      <artifactId>sgs-client</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+      <artifactId>lwjgl-binaries</artifactId>
+      <type>zip</type>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Compile and Runtime dependencies -->
+    <dependency>
+      <groupId>com.projectdarkstar.example.projectsnowman</groupId>
+      <artifactId>snowman-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.fenggui</groupId>
+      <artifactId>fenggui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.neakor</groupId>
+      <artifactId>environmentsystem</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.neakor</groupId>
+      <artifactId>md5importer</artifactId>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <!-- The jwjgl binary package must be retrieved and unpacked
+	   Before the test phase so that they are available during
+	   runtime of the application-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-lwjgl-binaries</id>
+	    <goals>
+	      <goal>unpack</goal>
+            </goals>
+            <configuration>
+	      <artifactItems>
+                <artifactItem>
+                  <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+                  <artifactId>lwjgl-binaries</artifactId>
+		  <type>zip</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>
+		    ${project.build.directory}/
+		  </outputDirectory>
+                </artifactItem>
+	      </artifactItems>
+            </configuration>
+          </execution>
+
+	  <!-- Unbind the bdb-binaries unpack -->
+	  <execution>
+	    <id>unpack-bdb-binaries</id>
+	    <phase></phase>
+	  </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+
+  <profiles>
+
+
+    <!-- The test-run profile enables the antrun plugin
+	 to run the application in the process-test-resources
+	 phase of the lifecycle
+	 In order to run, use the following command:
+	 mvn process-test-resources -Prun-client -->
+    <profile>
+      <id>run-client</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      <execution>
+		<id>run-client</id>
+		<phase>process-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <java classname="com.sun.darkstar.example.snowman.ClientApplication"
+			  fork="true">
+		      <jvmarg line="${run.jvm.args}"/>
+		      <sysproperty key="java.library.path" 
+				   file="${project.build.directory}/lwjgl-binaries/native/linux"/>
+		      <classpath>
+			<path refid="maven.test.classpath"/>
+		      </classpath>
+		    </java>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+  <properties>
+    <run.jvm.args></run.jvm.args>
+  </properties>
+
+
+</project>

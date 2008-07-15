@@ -1,0 +1,143 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Inherit from the global SGS super POM -->
+  <parent>
+    <groupId>com.projectdarkstar</groupId>
+    <artifactId>sgs</artifactId>
+    <version>6</version>
+  </parent>
+
+  <groupId>com.projectdarkstar.example.projectsnowman</groupId>
+  <artifactId>projectsnowman</artifactId>
+  <name>Project Snowman</name>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <description>
+    Parent POM for the Project Snowman example.
+  </description>
+
+  <modules>
+    <module>snowman-common</module>
+    <module>snowman-server</module>
+    <module>snowman-client</module>
+    <module>snowman-client-simulator</module>
+    <module>snowman-world-editor</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+	<groupId>com.projectdarkstar.example.projectsnowman</groupId>
+	<artifactId>snowman-common</artifactId>
+	<version>${version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.example.projectsnowman</groupId>
+	<artifactId>snowman-client</artifactId>
+	<version>${version}</version>
+      </dependency>
+
+      <dependency>
+	<groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+	<artifactId>jme</artifactId>
+	<version>${jme.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.ext.fenggui</groupId>
+	<artifactId>fenggui</artifactId>
+	<version>${fenggui.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.ext.neakor</groupId>
+	<artifactId>environmentsystem</artifactId>
+	<version>${environmentsystem.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.ext.neakor</groupId>
+	<artifactId>md5importer</artifactId>
+	<version>${md5importer.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.ext.jeffpk</groupId>
+	<artifactId>saddl</artifactId>
+	<version>${saddl.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+	<artifactId>lwjgl-binaries</artifactId>
+	<type>zip</type>
+	<version>${lwjgl.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+
+    <plugins>
+
+      <!-- Always attach a sources jar where applicable -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <id>attach-sources</id>
+	  </execution>
+	</executions>
+      </plugin>
+
+      <!-- Always attach a javadoc jar where applicable -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-javadoc-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <id>attach-javadocs</id>
+	  </execution>
+	</executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+
+
+  <repositories>
+    <repository>
+      <id>java.net</id>
+      <name>java.net Maven2 Repository</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <id>games-darkstar.snapshots</id>
+      <name>games-darkstar SNAPSHOT Repository</name>
+      <url>https://games-darkstar.dev.java.net/nonav/snapshots</url>
+      <layout>default</layout>
+    </repository>
+    
+    <!-- TEMPORARY -->
+    <repository>
+      <id>frizbee.east</id>
+      <name>Owen Maven Repository</name>
+      <url>http://frizbee.east.sun.com/maven/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <sgs.version>0.9.7-SNAPSHOT</sgs.version>
+    <sgs-shared.version>1.0</sgs-shared.version>
+    <jme.version>2.0-SNAPSHOT</jme.version>
+    <fenggui.version>Rev359_lwjgl2.0rc1</fenggui.version>
+    <environmentsystem.version>1.0</environmentsystem.version>
+    <md5importer.version>1.2.2</md5importer.version>
+    <saddl.version>B1.0</saddl.version>
+    <lwjgl.version>2.0rc1</lwjgl.version>
+  </properties>
+
+</project>
