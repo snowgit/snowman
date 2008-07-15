@@ -34,7 +34,6 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
-import com.sun.darkstar.example.snowman.game.util.CollisionManager;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
 import com.sun.sgs.client.simple.SimpleClient;
@@ -57,6 +56,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 
 /**
  *
