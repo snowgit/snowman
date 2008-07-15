@@ -10,11 +10,10 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * add a MOB to the <code>BattleState</code>.
  * <p>
  * <code>AddMOBTask</code> execution logic:
- * 1. Validate if <code>World</code> is initialized. If not, requeue the task.
- * 2. Convert <code>EMOBType</code> to <code>EEntity</code> enumeration.
- * 3. Create corresponding <code>DynamicEntity</code>.
- * 4. Create corresponding <code>DynamicView</code>.
- * 5. Attach the <code>DynamicView</code> to <code>World</code>.
+ * 1. Convert <code>EMOBType</code> to <code>EEntity</code> enumeration.
+ * 2. Create corresponding <code>DynamicEntity</code>.
+ * 3. Create corresponding <code>DynamicView</code>.
+ * 4. Attach the <code>DynamicView</code> to <code>World</code>.
  * <p>
  * <code>AddMOBTask</code> comparison is based on the given ID number and the
  * <code>EMOBType</code>. Two <code>AddMOBTask</code> are considered 'equal'
