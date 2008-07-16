@@ -49,6 +49,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
+import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
@@ -59,6 +60,7 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
@@ -67,6 +69,7 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.Debugger;
 import com.jme.util.lwjgl.LWJGLTextureUpdater;
 import com.jme.util.stat.StatCollector;
@@ -85,6 +88,7 @@ import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
 import com.sun.darkstar.example.snowman.data.enumn.EWorld;
 import com.sun.darkstar.example.snowman.game.world.EditableWorld;
+import com.sun.darkstar.example.snowman.game.world.World;
 import com.worldwizards.saddl.SADDL;
 import com.worldwizards.saddl.Tuple;
 import java.awt.BorderLayout;
@@ -502,13 +506,40 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doExportWorld() {
-					// TODO Auto-generated method stub
-
+					ExportDialog dlg = new ExportDialog(WorldEditor.this);
+					if (dlg.showDialog()){
+						if(dlg.hasFile()) {
+							World node = (World)world.constructFinal();
+							if(!dlg.exportTextures()) {
+								this.stripTexure(node);
+								Texture.DEFAULT_STORE_TEXTURE = false;
+							} else Texture.DEFAULT_STORE_TEXTURE = true;
+							try {
+								BinaryExporter.getInstance().save(node, dlg.getFile());
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				
+				private void stripTexure(Node node) {
+					node.clearRenderState(RenderState.RS_TEXTURE);
+					for(int i = 0; i < node.getQuantity(); i++) {
+						Spatial child = node.getChild(i);
+						if(child instanceof PassNode) ((PassNode)child).clearAll();
+						else if(child instanceof Node) this.stripTexure((Node)child);
+						else child.clearRenderState(RenderState.RS_TEXTURE);
+					}
 				}
 
 				@Override
 				public void doExportSelected() {
-					// TODO Auto-generated method stub
+					ExportDialog dlg = new ExportDialog(WorldEditor.this);
+					if (dlg.showDialog()){
+						String exportName = dlg.getName();
+						boolean exportTextures = dlg.exportTextures();
+					}
 
 				}
 
