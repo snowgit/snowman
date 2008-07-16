@@ -15,13 +15,10 @@ import com.jme.scene.TriMesh;
 /**
  * <code>CollisionManager</code> is a <code>Manager</code> that is responsible
  * for processing all collision detection tasks.
- * <p>
- * <code>CollisionManager</code> requires synchronized access. All invocations
- * of <code>CollisonManager</code> need to be mono-threaded.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-02-2008 24:26 EST
- * @version Modified date: 07-15-2008 15:01 EST
+ * @version Modified date: 07-16-2008 11:40 EST
  */
 public class CollisionManager {
 	/**
