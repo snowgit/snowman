@@ -28,39 +28,11 @@ public class CollisionManager {
 	 * The <code>CollisionManager</code> instance.
 	 */
 	private static CollisionManager instance;
-	/**
-	 * The <code>TrianglePickResults</code> for object check.
-	 */
-	private final TrianglePickResults objectResults;
-	/**
-	 * The <code>TrianglePickResults</code> for intersection check.
-	 */
-	private final TrianglePickResults intersectionResults;
-	/**
-	 * The array of <code>Vector3f</code> for intersection check.
-	 */
-	private final Vector3f[] tempVertices;
-	/**
-	 * The temporary destination <code>Vector3f</code>.
-	 */
-	private final Vector3f destination;
-	/**
-	 * The temporary <code>Ray</code> used to validate movement.
-	 */
-	private final Ray ray;
 
 	/**
 	 * Constructor of <code>CollisionManager</code>.
 	 */
-	private CollisionManager() {
-		this.objectResults = new TrianglePickResults();
-		this.objectResults.setCheckDistance(true);
-		this.intersectionResults = new TrianglePickResults();
-		this.intersectionResults.setCheckDistance(true);
-		this.tempVertices = new Vector3f[3];
-		this.destination = new Vector3f();
-		this.ray = new Ray();
-	}
+	private CollisionManager() {}
 
 	/**
 	 * Retrieve the <code>CollisionManager</code> instance.
@@ -82,10 +54,11 @@ public class CollisionManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public Spatial getIntersectObject(Ray ray, Node parent, Class reference) {
-		this.objectResults.clear();
-		parent.findPick(ray, this.objectResults);
-		for(int i = 0; i < this.objectResults.getNumber(); i++) {
-			Spatial mesh = this.objectResults.getPickData(i).getTargetMesh();
+		TrianglePickResults results = new TrianglePickResults();
+		results.setCheckDistance(true);
+		parent.findPick(ray, results);
+		for(int i = 0; i < results.getNumber(); i++) {
+			Spatial mesh = results.getPickData(i).getTargetMesh();
 			if(mesh.getClass().equals(reference)) return mesh;
 			else {
 				while(mesh.getParent() != null) {
@@ -113,21 +86,23 @@ public class CollisionManager {
 	 */
 	public Vector3f getIntersection(Ray ray, Spatial parent, Vector3f store, boolean local) {
 		if(store == null) store = new Vector3f();
-		this.intersectionResults.clear();
-		parent.findPick(ray, this.intersectionResults);
+		TrianglePickResults results = new TrianglePickResults();
+		results.setCheckDistance(true);
+		Vector3f[] vertices = new Vector3f[3];
+		parent.findPick(ray, results);
 		boolean hit = false;
-		if(this.intersectionResults.getNumber() > 0) {
-			PickData data = this.intersectionResults.getPickData(0);
+		if(results.getNumber() > 0) {
+			PickData data = results.getPickData(0);
 			ArrayList<Integer> triangles = data.getTargetTris();
 			if(!triangles.isEmpty()) {
 				TriMesh mesh = (TriMesh)data.getTargetMesh();
-				mesh.getTriangle(triangles.get(0).intValue(), this.tempVertices);
-				for(int j = 0; j < this.tempVertices.length; j++) {
-					this.tempVertices[j].multLocal(mesh.getWorldScale());
-					mesh.getWorldRotation().mult(this.tempVertices[j], this.tempVertices[j]);
-					this.tempVertices[j].addLocal(mesh.getWorldTranslation());
+				mesh.getTriangle(triangles.get(0).intValue(), vertices);
+				for(int j = 0; j < vertices.length; j++) {
+					vertices[j].multLocal(mesh.getWorldScale());
+					mesh.getWorldRotation().mult(vertices[j], vertices[j]);
+					vertices[j].addLocal(mesh.getWorldTranslation());
 				}
-				hit = ray.intersectWhere(this.tempVertices[0], this.tempVertices[1], this.tempVertices[2], store);
+				hit = ray.intersectWhere(vertices[0], vertices[1], vertices[2], store);
 				if(hit && local) {
 					parent.worldToLocal(store, store);					
 					return store;
@@ -149,15 +124,17 @@ public class CollisionManager {
 	 * @return True if this movement is valid. False otherwise.
 	 */
 	public boolean validate(Vector3f position, Vector2f displacement, Spatial spatial, float angle) {
-		this.destination.set(position);
-		this.destination.x += displacement.x;
-		this.destination.y += 1000;
-		this.destination.z += displacement.y;
-		this.ray.setOrigin(this.destination);
-		this.ray.setDirection(this.destination.normalizeLocal());
-		Vector3f value = this.getIntersection(this.ray, spatial, this.destination, true);
+		Vector3f destination = new Vector3f();
+		Ray ray = new Ray();
+		destination.set(position);
+		destination.x += displacement.x;
+		destination.y += 1000;
+		destination.z += displacement.y;
+		ray.setOrigin(destination);
+		ray.setDirection(Vector3f.UNIT_Y.negate());
+		Vector3f value = this.getIntersection(ray, spatial, destination, true);
 		if(value == null) return false;
-		if(FastMath.abs(this.destination.angleBetween(position)) > FastMath.abs(angle)) return false;
+		if(FastMath.abs(destination.angleBetween(position)) > FastMath.abs(angle)) return false;
 		else return true;
 	}
 }
