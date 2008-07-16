@@ -114,6 +114,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -265,6 +266,10 @@ public class WorldEditor extends JFrame {
 	private TerrainView terrainView;
 
 	private TextureLayer selectedLayer;
+	
+	private Callable exportAction;
+	
+	private ExportDialog dlg;
 
 	/**
 	 * Holds brush properties
@@ -506,30 +511,36 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doExportWorld() {
-					ExportDialog dlg = new ExportDialog(WorldEditor.this);
+					dlg = new ExportDialog(WorldEditor.this);
 					if (dlg.showDialog()){
-						if(dlg.hasFile()) {
-							World node = (World)world.constructFinal();
-							if(!dlg.exportTextures()) {
-								this.stripTexure(node);
-								Texture.DEFAULT_STORE_TEXTURE = false;
-							} else Texture.DEFAULT_STORE_TEXTURE = true;
-							try {
-								BinaryExporter.getInstance().save(node, dlg.getFile());
-							} catch (IOException e) {
-								e.printStackTrace();
+						exportAction = new Callable() {
+							@Override
+							public Object call() throws Exception {
+									if(dlg.hasFile()) {
+										World node = (World)world.constructFinal();
+										if(!dlg.exportTextures()) {
+											this.stripTexure(node);
+											Texture.DEFAULT_STORE_TEXTURE = false;
+										} else Texture.DEFAULT_STORE_TEXTURE = true;
+										try {
+											BinaryExporter.getInstance().save(node, dlg.getFile());
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+									}
+								return null;
 							}
-						}
-					}
-				}
-				
-				private void stripTexure(Node node) {
-					node.clearRenderState(RenderState.RS_TEXTURE);
-					for(int i = 0; i < node.getQuantity(); i++) {
-						Spatial child = node.getChild(i);
-						if(child instanceof PassNode) ((PassNode)child).clearAll();
-						else if(child instanceof Node) this.stripTexure((Node)child);
-						else child.clearRenderState(RenderState.RS_TEXTURE);
+							
+							private void stripTexure(Node node) {
+								node.clearRenderState(RenderState.RS_TEXTURE);
+								for(int i = 0; i < node.getQuantity(); i++) {
+									Spatial child = node.getChild(i);
+									if(child instanceof PassNode) ((PassNode)child).clearAll();
+									else if(child instanceof Node) this.stripTexure((Node)child);
+									else child.clearRenderState(RenderState.RS_TEXTURE);
+								}
+							}
+						};
 					}
 				}
 
@@ -932,7 +943,14 @@ public class WorldEditor extends JFrame {
 
 		@Override
 		public void simpleUpdate() {
-
+			if(exportAction != null) {
+				try {
+					exportAction.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				exportAction = null;
+			}
 			/** Check for key/mouse updates. */
 			input.update(tpf);
 
