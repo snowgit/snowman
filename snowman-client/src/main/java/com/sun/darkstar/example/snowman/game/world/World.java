@@ -11,6 +11,7 @@ import com.jme.util.export.OutputCapsule;
 import com.sun.darkstar.example.snowman.data.enumn.EWorld;
 import com.sun.darkstar.example.snowman.game.entity.influence.util.InfluenceManager;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
+import com.sun.darkstar.example.snowman.game.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.interfaces.IInfluence;
 import com.sun.darkstar.example.snowman.interfaces.IStaticEntity;
@@ -84,7 +85,12 @@ public class World extends Node implements IWorld {
 		if(editable instanceof EditableWorld) {
 			EditableWorld given = (EditableWorld)editable;
 			for(IEditableView v : given.getViews()) {
-				this.views.add((IStaticView)v.constructFinal());
+				StaticView view = (StaticView)v.constructFinal();
+				this.views.add(view);
+			}
+			// TODO Do quad-tree optimization here.
+			for(IStaticView view : this.views) {
+				view.attachTo(this);
 			}
 		}
 	}

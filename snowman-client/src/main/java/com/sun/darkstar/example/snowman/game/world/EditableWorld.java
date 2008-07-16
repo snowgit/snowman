@@ -35,7 +35,7 @@ import com.sun.darkstar.example.snowman.interfaces.editable.IEditableWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 14:50 EST
- * @version Modified date: 07-08-2008 16:28 EST
+ * @version Modified date: 07-16-2008 14:47 EST
  */
 public class EditableWorld extends Node implements IEditableWorld {
 	/**
@@ -92,12 +92,14 @@ public class EditableWorld extends Node implements IEditableWorld {
 	public void attachView(IEditableView view) {
 		if(this.views.contains(view) || view == null) return;
 		this.views.add(view);
+		view.attachTo(this);
 	}
 
 	@Override
 	public void detachView(IEditableView view) {
 		if(view == null) return;
 		this.views.remove(view);
+		view.detachFromParent();
 	}
 
 	@Override

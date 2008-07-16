@@ -56,11 +56,6 @@ public enum EEntity {
 		return this.mass;
 	}
 	
-	@Override
-	public String toString() {
-		return this.type.toString() + super.toString();
-	}
-	
 	/**
 	 * <code>EEntityType</code> defines all the types of <code>IEntity</code>
 	 * in the system.

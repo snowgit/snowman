@@ -1,6 +1,5 @@
 package com.sun.darkstar.example.snowman.game.entity.view;
 
-import com.jme.scene.Spatial;
 import com.sun.darkstar.example.snowman.interfaces.IStaticEntity;
 import com.sun.darkstar.example.snowman.interfaces.IStaticView;
 import com.sun.darkstar.example.snowman.interfaces.editable.IEditable;
@@ -43,8 +42,8 @@ public class StaticView extends View implements IStaticView {
 		if(editable instanceof EditableView) {
 			EditableView given = (EditableView)editable;
 			if(given.getChildren() == null) return;
-			for(Spatial s : given.getChildren()) {
-				this.attachChild(s);
+			for(int i = 0; i < given.getQuantity(); i++) {
+				this.attachChild(given.getChild(i));
 			}
 			this.setLocalTranslation(given.getLocalTranslation());
 		}
