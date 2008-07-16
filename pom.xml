@@ -120,13 +120,6 @@
       <url>https://games-darkstar.dev.java.net/nonav/snapshots</url>
       <layout>default</layout>
     </repository>
-    
-    <!-- TEMPORARY -->
-    <repository>
-      <id>frizbee.east</id>
-      <name>Owen Maven Repository</name>
-      <url>http://frizbee.east.sun.com/maven/</url>
-    </repository>
   </repositories>
 
   <properties>
