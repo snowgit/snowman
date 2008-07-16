@@ -6,7 +6,7 @@ package com.sun.darkstar.example.snowman.unit.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-09-2008 12:20 EST
- * @version Modified date: 06-29-2008 16:49 EST
+ * @version Modified date: 07-16-2008 11:29 EST
  */
 public enum EManager {
 	/**
@@ -36,5 +36,9 @@ public enum EManager {
 	/**
 	 * <code>CollisionManager</code> enumeration.
 	 */
-	CollisionManager
+	CollisionManager,
+	/**
+	 * <code>InputManager</code> enumeration.
+	 */
+	InputManager
 }

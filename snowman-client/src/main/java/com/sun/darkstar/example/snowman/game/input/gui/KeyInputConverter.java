@@ -1,52 +1,27 @@
-package com.sun.darkstar.example.snowman.game.gui.input;
+package com.sun.darkstar.example.snowman.game.input.gui;
 
-import org.fenggui.Display;
 import org.fenggui.event.Key;
 import org.lwjgl.input.Keyboard;
 
 import com.jme.input.KeyInputListener;
-import com.sun.darkstar.example.snowman.interfaces.IInputConverter;
 
 /**
- * <code>KeyInputConverter</code> implements <code>IInputConverter</code> and
- * <code>KeyInputListener</code> to define the singleton utility class which
+ * <code>KeyInputConverter</code> extends <code>InputConverter</code> and
+ * implements <code>KeyInputListener</code> to define the utility class which
  * converts {@link jME} key inputs into {@link FengGUI} events for the GUI
  * systems to process.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-28-2008 12:14 EST
- * @version Modified date: 07-09-2008 11:46 EST
+ * @version Modified date: 07-16-2008 00:22 EST
  */
-public class KeyInputConverter implements IInputConverter, KeyInputListener {
-	/**
-	 * The <code>KeyInputConverter</code> instance.
-	 */
-	private static KeyInputConverter instance;
-	/**
-	 * The {@link FengGUI }<code>Display</code> instance.
-	 */
-	private Display display;
-	/**
-	 * The flag indicates if this converter is enabled.
-	 */
-	private boolean enabled;
+public class KeyInputConverter extends InputConverter implements KeyInputListener {
 
 	/**
 	 * Constructor of <code>KeyInputConverter</code>.
 	 */
-	private KeyInputConverter() {
-		this.enabled = true;
-	}
-
-	/**
-	 * Retrieve the <code>KeyInputConverter</code> instance.
-	 * @return The <code>KeyInputConverter</code> instance.
-	 */
-	public static KeyInputConverter getInstance() {
-		if(KeyInputConverter.instance == null) {
-			KeyInputConverter.instance = new KeyInputConverter();
-		}
-		return KeyInputConverter.instance;
+	public KeyInputConverter() {
+		super();
 	}
 
 	/**
@@ -56,7 +31,7 @@ public class KeyInputConverter implements IInputConverter, KeyInputListener {
 	 * @param pressed True if key was pressed, false if released.
 	 */
 	public void onKey(char character, int keyCode, boolean pressed) {
-		if(!this.enabled || this.display == null) return;
+		if(!this.active || this.display == null) return;
 		// Convert the last pressed LWJGL key to FengGUI key event.
 		Key keyEvent = this.convertKeyEvent();
 		// If the key was pressed, fire both KeyPressedEvent and KeyTypedEvent.
@@ -110,20 +85,5 @@ public class KeyInputConverter implements IInputConverter, KeyInputListener {
 		break;
 		}
 		return GUIKey;
-	}
-
-	@Override
-	public void setDisplay(Display display) {
-		this.display = display;
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return this.enabled;
 	}
 }

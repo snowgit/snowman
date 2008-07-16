@@ -5,7 +5,9 @@ import java.net.URL;
 import com.jme.app.BaseGame;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
 import com.jme.input.MouseInput;
+import com.jme.input.MouseInputListener;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -15,8 +17,8 @@ import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.client.Client;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
-import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
-import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EConverter;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
@@ -38,7 +40,7 @@ import com.sun.darkstar.example.snowman.interfaces.IComponent;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-23-2008 14:02 EST
- * @version Modified date: 07-14-2008 12:02 EST
+ * @version Modified date: 07-16-2008 11:30 EST
  */
 public class Game extends BaseGame implements IComponent{
 	/**
@@ -69,6 +71,10 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>BasicPassManager</code> instance.
 	 */
 	private BasicPassManager passManager;
+	/**
+	 * The <code>InputManager</code> instance.
+	 */
+	private InputManager inputManager;
 	/**
 	 * The current active <code>GameState</code>.
 	 */
@@ -175,14 +181,15 @@ public class Game extends BaseGame implements IComponent{
 		this.physicsManager = PhysicsManager.getInstance();
 		this.stateManager = GameStateManager.create();
 		this.passManager = new BasicPassManager();
+		this.inputManager = InputManager.getInstance();
 	}
 
 	/**
 	 * Initialize the GUI input converters.
 	 */
 	private void initializeConverters() {
-		KeyInput.get().addListener(KeyInputConverter.getInstance());
-		MouseInput.get().addListener(MouseInputConverter.getInstance());
+		KeyInput.get().addListener((KeyInputListener)this.inputManager.getConverter(EConverter.KeyboardConverter));
+		MouseInput.get().addListener((MouseInputListener)this.inputManager.getConverter(EConverter.MouseConverter));
 	}
 
 	/**
@@ -222,9 +229,8 @@ public class Game extends BaseGame implements IComponent{
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
 			this.finish();		
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
-//			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
-//			this.count++;
-			this.client.getHandler().getListener().loggedIn();
+			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
+			this.count++;
 		}
 	}
 

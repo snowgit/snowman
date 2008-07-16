@@ -9,8 +9,8 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
-import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EConverter;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 
 /**
  * <code>GUIPass</code> renders {@link FengGUI} widgets in its own separate
@@ -64,8 +64,8 @@ public abstract class GUIPass extends Pass {
 	 */
 	public void initialize() {
 		this.buildWidgets();
-		KeyInputConverter.getInstance().setDisplay(this.getDisplay());
-		MouseInputConverter.getInstance().setDisplay(this.getDisplay());
+		InputManager.getInstance().getConverter(EConverter.KeyboardConverter).setDisplay(this.display);
+		InputManager.getInstance().getConverter(EConverter.MouseConverter).setDisplay(this.display);
 	}
 	
 	/**

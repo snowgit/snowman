@@ -2,8 +2,7 @@ package com.sun.darkstar.example.snowman.game.task.state.login;
 
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.game.Game;
-import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
-import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
@@ -19,7 +18,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 2. Reset <code>LoginGUI</code> button text.
  * 3. Enable <code>LoginGUI</code> failed text.
  * 4. Clear <code>LoginGUI</code> text fields.
- * 5. Enable all GUI inputs by enabling GUI input conversions.
+ * 5. Enable all input.
  * <p>
  * <code>ResetLoginTask</code> does not have a more detailed 'equals'
  * comparison. All <code>ResetLoginTask</code> are considered 'equal',
@@ -27,7 +26,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-10-2008 18:20 EST
- * @version Modified date: 07-10-2008 18:35 EST
+ * @version Modified date: 07-16-2008 11:34 EST
  */
 public class ResetLoginTask extends RealTimeTask {
 
@@ -43,7 +42,6 @@ public class ResetLoginTask extends RealTimeTask {
 		gui.enableFailedLabel();
 		gui.setUsername("");
 		gui.setPassword("");
-		KeyInputConverter.getInstance().setEnabled(true);
-		MouseInputConverter.getInstance().setEnabled(true);
+		InputManager.getInstance().setInputActive(true);
 	}
 }

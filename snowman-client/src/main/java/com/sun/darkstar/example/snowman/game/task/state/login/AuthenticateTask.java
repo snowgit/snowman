@@ -5,8 +5,7 @@ import java.util.Properties;
 
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.game.Game;
-import com.sun.darkstar.example.snowman.game.gui.input.KeyInputConverter;
-import com.sun.darkstar.example.snowman.game.gui.input.MouseInputConverter;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
@@ -18,7 +17,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * user into the server application.
  * <p>
  * <code>AuthenticateTask</code> execution logic:
- * 1. Disable all GUI inputs by disabling GUI input conversions.
+ * 1. Deactivate all input.
  * 2. Updates the status label of <code>LoginGUI</code>.
  * 3. Change 'Play' button text to 'Please wait...'.
  * 4. Invoke <code>Client</code> to login to the server.
@@ -30,7 +29,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-09-2008 17:02 EST
- * @version Modified date: 07-09-2008 15:00 EST
+ * @version Modified date: 07-16-2008 11:33 EST
  */
 public class AuthenticateTask extends RealTimeTask {
 	/**
@@ -63,8 +62,7 @@ public class AuthenticateTask extends RealTimeTask {
 	public void execute() {
 		final LoginGUI gui = ((LoginState)GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
 		gui.setStatus(this.status);
-		KeyInputConverter.getInstance().setEnabled(false);
-		MouseInputConverter.getInstance().setEnabled(false);
+		InputManager.getInstance().setInputActive(false);
 		gui.setButtonText("Please wait...");
 		this.game.getClient().getHandler().authenticate(this.username, this.password);
 //		try {
