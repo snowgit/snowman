@@ -86,7 +86,6 @@ import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
-import com.sun.darkstar.example.snowman.data.enumn.EWorld;
 import com.sun.darkstar.example.snowman.game.world.EditableWorld;
 import com.sun.darkstar.example.snowman.game.world.World;
 import com.worldwizards.saddl.SADDL;
@@ -160,6 +159,7 @@ import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainCluster;
 import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.game.entity.view.terrain.enumn.ESculpt;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 
 /**
  * This is the main class for the World Editor gui It uses Swing and JME
