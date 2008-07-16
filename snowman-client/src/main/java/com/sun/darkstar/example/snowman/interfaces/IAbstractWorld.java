@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
 import com.jme.util.export.Savable;
-import com.sun.darkstar.example.snowman.data.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 
 /**
  * <code>IAbstractWorld</code> defines the interface of a basic abstraction

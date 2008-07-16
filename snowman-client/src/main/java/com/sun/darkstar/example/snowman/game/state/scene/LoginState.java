@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.input.MouseInput;
-import com.sun.darkstar.example.snowman.data.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.GameState;
