@@ -36,6 +36,7 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
+import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
@@ -63,11 +64,13 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private String name;
     private int wins;
     private int losses;
+    private int id;
     float x;
     float y;
-    private int id;
+    TEAMCOLOR teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<Matchmaker> currentMatchMakerRef;
+    
    
     
 
@@ -104,9 +107,23 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         logger.info("Player "+name+" logged out");
     }
 
+    void setID(int id) {
+        this.id = id;
+    }
+
     void setMatchMaker(Matchmaker matcher) {
         currentMatchMakerRef = 
                 AppContext.getDataManager().createReference(matcher);
+    }
+
+    void setPosition(int x, int y) {
+       this.x = x;
+       this.y = y;
+    }
+
+    void setTeamColor(TEAMCOLOR color) {
+        AppContext.getDataManager().markForUpdate(this);
+        teamColor = color;
     }
 
     private void setSession(ClientSession arg0) {

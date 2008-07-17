@@ -32,6 +32,9 @@
 
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
@@ -40,6 +43,8 @@ import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This object represents an actual running game session of Project Snowman,
@@ -48,19 +53,18 @@ import java.nio.ByteBuffer;
 class SnowmanGame implements ManagedObject, Serializable {
     static final long serialVersionUID = 1L;
     static final String CHANPREFIX = "_GAMECHAN_";
+    static final int[] playerStarts = {0,0,10,0,0,10,10,10};
     ManagedReference<Channel> channelRef;
         
-    static SnowmanGame create(String name, ManagedReference<SnowmanPlayer>[] playerRefs) {
-        return new SnowmanGame(name, playerRefs);
+    static SnowmanGame create(String name) {
+        return new SnowmanGame(name);
     }
     
-    private ManagedReference<SnowmanPlayer>[] playerRefs;
+    private List<ManagedReference<SnowmanPlayer>>  playerRefs = 
+            new ArrayList<ManagedReference<SnowmanPlayer>>();
     
-    private SnowmanGame(String gameName, ManagedReference<SnowmanPlayer>[] playerRefs){
-        this.playerRefs = 
-                new ManagedReference[playerRefs.length];
-        System.arraycopy(playerRefs, 0, this.playerRefs, 0,
-                playerRefs.length);
+    private SnowmanGame(String gameName){
+        
         channelRef = AppContext.getDataManager().createReference(
                 AppContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
@@ -69,6 +73,30 @@ class SnowmanGame implements ManagedObject, Serializable {
     public void send(ClientSession sess, ByteBuffer buff){
         buff.flip();
         channelRef.get().send(sess, buff);
+    }
+
+    void addPlayer(SnowmanPlayer player, TEAMCOLOR color) {
+        ManagedReference<SnowmanPlayer> playerRef = 
+                AppContext.getDataManager().createReference(player);
+        playerRefs.add(playerRef);
+        int id = playerRefs.indexOf(playerRef);
+        player.setID(id);
+        player.setPosition(playerStarts[id*2],playerStarts[(id*2)+1]);
+        player.setTeamColor(color);
+        player.send(ServerProtocol.getInstance().createNewGamePkt(id, 
+                "default_map"));
+        channelRef.get().join(player.getSession());
+    }
+    
+    public void sendMapInfo(){
+        for(ManagedReference<SnowmanPlayer> ref : playerRefs){
+            SnowmanPlayer player = ref.get();
+            send(null,ServerProtocol.getInstance().createAddMOBPkt(
+                    player.getID(), player.getX(), player.getY(), 
+                    EMOBType.SNOWMAN));
+        }
+        // TODO send flags
+        
     }
 
 }
