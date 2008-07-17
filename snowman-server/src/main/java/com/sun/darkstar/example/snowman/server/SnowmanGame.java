@@ -53,8 +53,17 @@ import java.util.List;
 class SnowmanGame implements ManagedObject, Serializable {
     static final long serialVersionUID = 1L;
     static final String CHANPREFIX = "_GAMECHAN_";
-    static final int[] playerStarts = {0,0,10,0,0,10,10,10};
+    static final private int FLAGBASEID = 100;
+    // player starts == x1,y1,x2,y2....
+    static final float[] playerStarts = {0,0,10,0,0,10,10,10};
+    // flag starts == x1,y1,x2,y2.....
+    static final float[] flagStarts={1,1,9,9};
+    // flag goals == x1,y1,r1,x2,y2,r2 ...
+    static final float[] flagGoals={1,1,1,9,9,1};
     ManagedReference<Channel> channelRef;
+    List<ManagedReference<SnowmanFlag>> flags = 
+            new ArrayList<ManagedReference<SnowmanFlag>>();
+    
         
     static SnowmanGame create(String name) {
         return new SnowmanGame(name);
@@ -68,11 +77,23 @@ class SnowmanGame implements ManagedObject, Serializable {
         channelRef = AppContext.getDataManager().createReference(
                 AppContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
+        
+        for(TEAMCOLOR color : TEAMCOLOR.values()){
+            int idx = color.ordinal();
+            SnowmanFlag flag = new SnowmanFlag(color,
+                    flagGoals[idx*3],flagGoals[idx*3+1],flagGoals[idx*3+2]); 
+            flag.SetLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
+            ManagedReference<SnowmanFlag> ref =
+                    AppContext.getDataManager().createReference(flag);
+            flags.add(ref);
+            flag.setID(FLAGBASEID+flags.indexOf(ref));
+        }
     }
     
     public void send(ClientSession sess, ByteBuffer buff){
         buff.flip();
         channelRef.get().send(sess, buff);
+        
     }
 
     void addPlayer(SnowmanPlayer player, TEAMCOLOR color) {
@@ -95,7 +116,12 @@ class SnowmanGame implements ManagedObject, Serializable {
                     player.getID(), player.getX(), player.getY(), 
                     EMOBType.SNOWMAN));
         }
-        // TODO send flags
+        for(ManagedReference<SnowmanFlag> flagRef : flags){
+            SnowmanFlag flag = flagRef.get();
+            send(null,ServerProtocol.getInstance().createAddMOBPkt(
+                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG));
+        }
+        
         
     }
 

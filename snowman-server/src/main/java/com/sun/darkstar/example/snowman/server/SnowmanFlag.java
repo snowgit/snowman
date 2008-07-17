@@ -28,6 +28,7 @@ public class SnowmanFlag implements ManagedObject, Serializable {
     private float goalRadius;
     private ManagedReference<SnowmanPlayer> heldByRef = null;
     private TEAMCOLOR flagColor;
+    private int id;
 
     public SnowmanFlag(TEAMCOLOR teamColor, float flagGoalX, float flagGoalY,
             float flagGoalRadius) {
@@ -78,5 +79,13 @@ public class SnowmanFlag implements ManagedObject, Serializable {
         float deltaX = x-goalX;
         float deltaY = y-goalY;
         return((goalRadius*goalRadius)<= ((deltaX*deltaX)+(deltaY*deltaY)));
+    }
+
+    public void setID(int i) {
+        id = i;
+    }
+    
+    public int getID(){
+        return id;
     }
 }

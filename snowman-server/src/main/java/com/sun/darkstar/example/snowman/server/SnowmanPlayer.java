@@ -116,7 +116,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
                 AppContext.getDataManager().createReference(matcher);
     }
 
-    void setPosition(int x, int y) {
+    void setPosition(float x, float y) {
        this.x = x;
        this.y = y;
     }
