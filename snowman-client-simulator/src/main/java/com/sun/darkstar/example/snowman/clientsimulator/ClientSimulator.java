@@ -170,6 +170,10 @@ public class ClientSimulator extends JFrame {
             state = PLAYERSTATE.LoggingIn;
             simpleClient.login(props);
             pktHandler = new IClientProcessor() {
+                
+                public void ready() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
 
                 public void enterLounge(int myID) {
                     throw new UnsupportedOperationException("Not supported yet.");
@@ -191,11 +195,15 @@ public class ClientSimulator extends JFrame {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
 
-                public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
+                public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 public void removeMOB(int objectID) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+                
+                public void stopMOB(int objectID, float x, float y) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
 
@@ -254,7 +262,10 @@ public class ClientSimulator extends JFrame {
             if (state != PLAYERSTATE.Playing) {
                 return;
             }
-        // player AI logic goes here
+            // player AI logic goes here
+            // NOTE: this is no longer correct, we need to pass
+            // the starting position of the player in the packet
+            // as well
             Vector3f ray = new Vector3f(random.nextFloat()-0.5f,
                     random.nextFloat()-0.5f,0.0f);
             ray = ray.normalize();    
@@ -262,7 +273,7 @@ public class ClientSimulator extends JFrame {
             ray = ray.add(new Vector3f(x,y,0.0f));
             ray = lookForBlocking(ray);
             try {
-                simpleClient.send(ClientProtocol.getInstance().createMoveMePkt(ray.x, ray.y));
+                simpleClient.send(ClientProtocol.getInstance().createMoveMePkt(0.0f, 0.0f, ray.x, ray.y));
             } catch (IOException ex) {
                 Logger.getLogger(ClientSimulator.class.getName()).log(Level.SEVERE, null, ex);
             }

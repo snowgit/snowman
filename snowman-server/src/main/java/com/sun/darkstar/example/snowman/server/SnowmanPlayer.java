@@ -170,18 +170,11 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void matchMe() {
+    public void moveMe(long timestamp, float x, float y, float endx, float endy) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void moveMe(float newx, float newy) {
-        x = newx;
-        y = newy;
-        currentGameRef.get().send(null,
-                ClientProtocol.getInstance().createMoveMePkt(x, y));
-    }
-
-    public void attack(int targetID) {
+    public void attack(long timestamp, int targetID, float x, float y) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -189,13 +182,8 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void requestInfo(int objectID) {
+    public void stopMe(long timestamp, float x, float y) {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void chatText(String text) {
-        currentGameRef.get().send(sessionRef.get(), 
-                ClientProtocol.getInstance().createChatPkt(text));
     }
 
    

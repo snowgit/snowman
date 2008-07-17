@@ -72,6 +72,13 @@
 	<type>zip</type>
 	<version>${lwjgl.version}</version>
       </dependency>
+
+      <dependency>
+	<groupId>org.easymock</groupId>
+	<artifactId>easymock</artifactId>
+	<version>${easymock.version}</version>
+	<scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -120,6 +127,12 @@
       <url>https://games-darkstar.dev.java.net/nonav/snapshots</url>
       <layout>default</layout>
     </repository>
+    <repository>
+      <id>easymock.repository</id>
+      <name>Easymock Repository</name>
+      <url>http://www.easymock.org/maven/repository</url>
+      <layout>default</layout>
+    </repository>
   </repositories>
 
   <properties>
@@ -131,6 +144,7 @@
     <md5importer.version>1.2.2</md5importer.version>
     <saddl.version>B1.0</saddl.version>
     <lwjgl.version>2.0rc1</lwjgl.version>
+    <easymock.version>2.4</easymock.version>
   </properties>
 
 </project>
