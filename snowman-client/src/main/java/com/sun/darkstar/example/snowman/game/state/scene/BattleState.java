@@ -38,11 +38,11 @@ public class BattleState extends GameState {
 	@Override
 	protected void initializeState() {
 		// TODO Auto-generated method stub
-		// this.buildWorld();
-		Box b = new Box("", new Vector3f(0, -10, -50), 5, 5, 5);
-		b.setModelBound(new BoundingBox());
-		b.updateModelBound();
-		this.rootNode.attachChild(b);
+		this.buildWorld();
+//		Box b = new Box("", new Vector3f(0, -10, -50), 5, 5, 5);
+//		b.setModelBound(new BoundingBox());
+//		b.updateModelBound();
+//		this.rootNode.attachChild(b);
 	}
 	
 	/**

@@ -125,13 +125,13 @@ public class ViewManager extends Manager {
 			switch(entity.getType()) {
 			case Static:
 				view = new StaticView((IStaticEntity)entity);
-				view.attachMesh(DataManager.getInstance().getMeshData(entity.getEnumn()));
+				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 				((StaticView)view).lock();
 				break;
 			case Dynamic: break; // TODO
 			case Editable:
 				view = new EditableView((IEditableEntity)entity);
-				view.attachMesh(DataManager.getInstance().getMeshData(entity.getEnumn()));
+				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 				break;
 			}
 			break;

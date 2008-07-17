@@ -229,8 +229,9 @@ public class Game extends BaseGame implements IComponent{
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
 			this.finish();		
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
-			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
-			this.count++;
+//			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
+//			this.count++;
+			this.client.getHandler().getProcessor().newGame(0, null);
 		}
 	}
 
