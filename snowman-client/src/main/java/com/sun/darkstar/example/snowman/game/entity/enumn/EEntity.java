@@ -1,7 +1,5 @@
 package com.sun.darkstar.example.snowman.game.entity.enumn;
 
-import com.sun.darkstar.example.snowman.game.physics.enumn.EMass;
-
 /**
  * <code>EEntity</code> defines the enumerations of all types of entities in
  * the game world. It also maintains the default mass value of each type of
@@ -9,17 +7,21 @@ import com.sun.darkstar.example.snowman.game.physics.enumn.EMass;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-04-2008 14:52 EST
- * @version Modified date: 07-02-2008 24:19 EST
+ * @version Modified date: 07-17-2008 11:59 EST
  */
 public enum EEntity {
 	/**
 	 * The terrain entity.
 	 */
-	Terrain(EEntityType.Editable, EMass.Terrain),
+	Terrain(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
 	 * The snowman entity.
 	 */
-	Snowman(EEntityType.Dynamic, EMass.Snowman);
+	Snowman(EEntityType.Dynamic, 10),
+	/**
+	 * The flag entity.
+	 */
+	Flag(EEntityType.Dynamic, Float.POSITIVE_INFINITY);
 	
 	/**	
 	 * The <code>EEntityType</code> value.
@@ -33,11 +35,10 @@ public enum EEntity {
 	/**
 	 * Constructor of <code>EEntity</code>
 	 * @param type The <code>EEntityType</code> enumeration.
-	 * @param mass The <code>EMass</code> enumeration.
 	 */
-	private EEntity(EEntityType type, EMass mass) {
+	private EEntity(EEntityType type, float mass) {
 		this.type = type;
-		this.mass = mass.getValue();
+		this.mass = mass;
 	}
 	
 	/**

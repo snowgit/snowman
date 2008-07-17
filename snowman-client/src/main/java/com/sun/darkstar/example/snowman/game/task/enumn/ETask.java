@@ -24,6 +24,10 @@ public enum ETask {
 	 */
 	ChangeState(ETaskType.RealTime),
 	/**
+	 * The task used to create a new game.
+	 */
+	NewGame(ETaskType.RealTime),
+	/**
 	 * The task used to add a MOB.
 	 */
 	AddMOB(ETaskType.RealTime);

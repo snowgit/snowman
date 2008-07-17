@@ -1,6 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.world.World;
 
 /**
  * <code>IGameState</code> defines the interface for all types of game states
@@ -13,7 +14,7 @@ import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-29-2008 15:35 EST
- * @version Modified date: 06-29-2008 17:15 EST
+ * @version Modified date: 07-17-2008 12:06 EST
  */
 public interface IGameState {
 
@@ -27,6 +28,12 @@ public interface IGameState {
 	 * @return The <code>EGameState</code> enumeration.
 	 */
 	public EGameState getType();
+	
+	/**
+	 * Retrieve the world of this game state.
+	 * @return The <code>World</code> data.
+	 */
+	public World getWorld();
 	
 	/**
 	 * Check if this game state has been initialized.

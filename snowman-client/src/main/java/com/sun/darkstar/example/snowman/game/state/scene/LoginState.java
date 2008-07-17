@@ -16,7 +16,7 @@ import com.sun.darkstar.example.snowman.game.world.World;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-03-2008 13:39 EST
- * @version Modified date: 07-14-2008 12:12 EST
+ * @version Modified date: 07-17-2008 12:05 EST
  */
 public class LoginState extends GameState {
 	/**
@@ -33,9 +33,13 @@ public class LoginState extends GameState {
 	}
 
 	@Override
+	protected void initializeWorld() {
+		//this.world = (World)DataManager.getInstance().getWorld(EWorld.Login);
+	}
+
+	@Override
 	protected void initializeState() {
 		this.buildGUIPass();
-		this.buildWorld();
 	}
 	
 	/**
@@ -48,13 +52,6 @@ public class LoginState extends GameState {
 		this.game.getPassManager().add(this.gui);
 	}
 	
-	/**
-	 * Build the world.
-	 */
-	private void buildWorld() {
-		//this.rootNode.attachChild((World)DataManager.getInstance().getWorld(EWorld.Login));
-	}
-
 	@Override
 	protected void updateState(float interpolation) {
 		// TODO Auto-generated method stub

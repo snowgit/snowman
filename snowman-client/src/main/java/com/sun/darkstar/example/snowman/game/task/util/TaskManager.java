@@ -6,12 +6,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
-import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.game.task.enumn.*;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask.ETaskType;
-import com.sun.darkstar.example.snowman.game.task.state.ChangeStateTask;
-import com.sun.darkstar.example.snowman.game.task.state.battle.AddMOBTask;
-import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
-import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
+import com.sun.darkstar.example.snowman.game.task.state.*;
+import com.sun.darkstar.example.snowman.game.task.state.battle.*;
+import com.sun.darkstar.example.snowman.game.task.state.login.*;
 import com.sun.darkstar.example.snowman.interfaces.IRealTimeTask;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -45,7 +44,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 07-14-2008 16:58 EST
+ * @version Modified date: 07-17-2008 16:40 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -65,9 +64,9 @@ public class TaskManager extends Manager {
 	 */
 	private final ConcurrentLinkedQueue<ITask> taskQueue;
 	/**
-	 * The temporary <code>ArrayList</code> buffer of executed <code>ITask</code>
+	 * The temporary <code>ArrayList</code> buffer of submitted <code>ITask</code>.
 	 */
-	private final ArrayList<ITask> executed;
+	private final ArrayList<ITask> submitted;
 	/**
 	 * The time before the last execution started in nanoseconds.
 	 */
@@ -81,9 +80,9 @@ public class TaskManager extends Manager {
 	 */
 	private float totaltime;
 	/**
-	 * The flag indicates if the <code>TaskManager</code> is executing tasks.
+	 * The flag indicates if the <code>TaskManager</code> is enqueuing tasks.
 	 */
-	private boolean executing;
+	private boolean enqueuing;
 	
 	/**
 	 * Constructor of <code>TaskManager</code>.
@@ -94,7 +93,7 @@ public class TaskManager extends Manager {
 		this.game = game;
 		this.maxtime = 10;
 		this.taskQueue = new ConcurrentLinkedQueue<ITask>();
-		this.executed = new ArrayList<ITask>();
+		this.submitted = new ArrayList<ITask>();
 	}
 	
 	/**
@@ -123,24 +122,22 @@ public class TaskManager extends Manager {
 	 * Update the <code>TaskManager</code> to execute the buffered task.
 	 */
 	public void update() {
-		// Block for execution.
-		this.executing = true;
 		// Execute as many tasks as possible.
-		for(ITask task : this.taskQueue) {
-			if(this.totaltime >= this.maxtime) break;
+		while(!this.taskQueue.isEmpty() && this.totaltime < this.maxtime) {
 			this.starttime = System.nanoTime();
-			task.execute();
-			this.executed.add(task);
+			this.taskQueue.poll().execute();
 			this.endtime = System.nanoTime();
 			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
 		}
-		// Remove all the executed tasks.
-		for(ITask task : this.executed) {
-			this.taskQueue.remove(task);
-		}
-		this.executed.clear();
 		this.totaltime = 0;
-		this.executing = false;
+		// Lock enqueuing.
+		this.enqueuing = true;
+		for(ITask task : this.submitted) {
+			this.enqueue(task);
+		}
+		this.submitted.clear();
+		// Unlock enqueuing.
+		this.enqueuing = false;
 	}
 	
 	/**
@@ -166,20 +163,28 @@ public class TaskManager extends Manager {
 	
 	/**
 	 * Submit the given task to the <code>TaskManager</code> for later execution.
+	 * However, there is no guarantee that the given task will be enqueued.
+	 * @see <code>RealTimeTask</code> for 'equal' determination details.
+	 * @param task The <code>ITask</code> to be submitted.
+	 * @return True if the task is successfully submitted.
+	 */
+	public boolean submit(ITask task) {
+		if(task == null) return false;
+		if(this.enqueuing) try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
+		return this.submitted.add(task);
+	}
+	
+	/**
+	 * Enqueue the given task to the <code>TaskManager</code> for later execution.
 	 * If there is an earlier <code>RealTimeTask</code> that is considered 'equal'
 	 * as the newly given one, the older version is automatically removed before
 	 * the new one is added. If the given task is earlier than the 'equal' one in
 	 * the queue, the given task is discarded.
 	 * @see <code>RealTimeTask</code> for 'equal' determination details.
 	 * @param task The <code>ITask</code> to be added.
-	 * @return True if the task is successfully submitted. False if the given task is discarded.
+	 * @return True if the task is successfully enqueued. False if the given task is discarded.
 	 */
-	private boolean submit(ITask task) {
-		if(task == null) return false;
-		// Wait for execution to be finished.
-		while(this.executing) {
-			try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
-		}
+	private void enqueue(ITask task) {
 		// Check real time tasks.
 		if(task.getEnumn().getType() == ETaskType.RealTime) {
 			final IRealTimeTask given = (IRealTimeTask)task;
@@ -196,13 +201,12 @@ public class TaskManager extends Manager {
 						// Discard the given one.
 						} else {
 							this.logger.info("Discarded given real time task " + given.getEnumn());
-							return false;
 						}
 					}
 				}
 			}
 		}
-		return this.taskQueue.add(task);
+		this.taskQueue.add(task);
 	}
 	
 	/**

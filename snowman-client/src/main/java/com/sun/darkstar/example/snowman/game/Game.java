@@ -217,6 +217,8 @@ public class Game extends BaseGame implements IComponent{
 		// Update the timer to get the frame rate.
 		this.timer.update();
 		this.interpolation = this.timer.getTimePerFrame();
+		// Update input manager.
+		this.inputManager.update(this.interpolation);
 		// Execute tasks.
 		this.taskManager.update();
 		// Update physics.
