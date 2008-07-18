@@ -64,6 +64,7 @@ class SnowmanGame implements ManagedObject, Serializable {
     List<ManagedReference<SnowmanFlag>> flags = 
             new ArrayList<ManagedReference<SnowmanFlag>>();
     
+    
         
     static SnowmanGame create(String name) {
         return new SnowmanGame(name);
@@ -96,7 +97,7 @@ class SnowmanGame implements ManagedObject, Serializable {
         
     }
 
-    void addPlayer(SnowmanPlayer player, TEAMCOLOR color) {
+    public void addPlayer(SnowmanPlayer player, TEAMCOLOR color) {
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         playerRefs.add(playerRef);
@@ -109,20 +110,43 @@ class SnowmanGame implements ManagedObject, Serializable {
         channelRef.get().join(player.getSession());
     }
     
+    public void removePlayer(SnowmanPlayer player){
+         ManagedReference<SnowmanPlayer> playerRef = 
+                AppContext.getDataManager().createReference(player);
+         int idx = playerRefs.indexOf(playerRef);
+        playerRefs.set(idx, null);
+    }
+    
     public void sendMapInfo(){
+        long time = System.currentTimeMillis();
         for(ManagedReference<SnowmanPlayer> ref : playerRefs){
             SnowmanPlayer player = ref.get();
             send(null,ServerProtocol.getInstance().createAddMOBPkt(
-                    player.getID(), player.getX(), player.getY(), 
+                    player.getID(), player.getX(time), player.getY(time), 
                     EMOBType.SNOWMAN));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flags){
             SnowmanFlag flag = flagRef.get();
             send(null,ServerProtocol.getInstance().createAddMOBPkt(
-                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG));
+                    flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
         }
+        send(null,ServerProtocol.getInstance().createReadyPkt());
         
-        
+    }
+    
+    public void checkReadyToPlay(){
+        for(ManagedReference<SnowmanPlayer> playerRef : playerRefs){
+            if (playerRef != null){
+                if (!playerRef.get().isReadyToPlay()){
+                    return;
+                }
+            }
+        }
+        startGame();
+    }
+
+    private void startGame() {
+        send(null,ServerProtocol.getInstance().createStartGamePkt());
     }
 
 }
