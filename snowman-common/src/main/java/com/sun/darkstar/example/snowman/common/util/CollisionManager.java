@@ -77,26 +77,45 @@ public class CollisionManager {
 	/**
 	 * Retrieve the intersecting object under the given node.
 	 * @param ray The <code>Ray</code> to check with.
-	 * @param parent The parent <code>Node</code> to check against.
+	 * @param root The root <code>Node</code> to check against.
 	 * @param reference The <code>Class</code> reference of the expected object.
-	 * @return The <code>Spatial</code> that extends the given reference <code>Class</code>.
+	 * @param iterate True if all intersected objects should be checked. Otherwise only the first is checked.
+	 * @return The <code>Spatial</code> that is of the given reference <code>Class</code>.
 	 */
 	@SuppressWarnings("unchecked")
-	public Spatial getIntersectObject(Ray ray, Node parent, Class reference) {
+	public Spatial getIntersectObject(Ray ray, Node root, Class reference, boolean iterate) {
 		TrianglePickResults results = new TrianglePickResults();
 		results.setCheckDistance(true);
-		parent.findPick(ray, results);
-		for(int i = 0; i < results.getNumber(); i++) {
-			Spatial mesh = results.getPickData(i).getTargetMesh();
-			if(mesh.getClass().equals(reference)) return mesh;
-			else {
-				while(mesh.getParent() != null) {
-					mesh = mesh.getParent();
-					if(mesh == parent) return null; // TODO Should throw an exception here saying reached parent.
-					else if(mesh.getClass().equals(reference)) return mesh;
-				}
-				// TODO Should throw an exception here saying that cannot find the referencing class.
+		root.findPick(ray, results);
+		if(iterate) {
+			for(int i = 0; i < results.getNumber(); i++) {
+				return this.validateClass(root, results.getPickData(i).getTargetMesh(), reference);
 			}
+		} else if(results.getNumber() > 0) {
+			Spatial spatial = results.getPickData(0).getTargetMesh();
+			if(spatial.getClass().equals(reference)) return spatial;
+			else return null;
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieve the spatial with given reference class.
+	 * @param root The root <code>Node</code> to stop check at.
+	 * @param spatial The <code>Spatial</code> to check.
+	 * @param reference The <code>Class</code> reference of the expected object. 
+	 * @return The <code>Spatial</code> that is of the given reference <code>Class</code>.
+	 */
+	@SuppressWarnings("unchecked")
+	private Spatial validateClass(Node root, Spatial spatial, Class reference) {
+		if(spatial.getClass().equals(reference)) return spatial;
+		else{
+			while(spatial.getParent() != null) {
+				spatial = spatial.getParent();
+				if(spatial == root) return null; // TODO Should throw an exception here saying reached parent.
+				else if(spatial.getClass().equals(reference)) return spatial;
+			}
+			// TODO Should throw an exception here saying that cannot find the referencing class.
 		}
 		return null;
 	}
