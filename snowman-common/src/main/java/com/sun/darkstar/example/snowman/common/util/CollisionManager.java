@@ -61,7 +61,7 @@ public class CollisionManager {
 	/**
 	 * Constructor of <code>CollisionManager</code>.
 	 */
-	private CollisionManager() {}
+	protected CollisionManager() {}
 
 	/**
 	 * Retrieve the <code>CollisionManager</code> instance.

@@ -15,7 +15,7 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * @version Creation date: 07-16-2008 16:44 EST
  * @version Modified date: 07-16-2008 16:57 EST
  */
-public final class DataImporter {
+public class DataImporter {
 	/**
 	 * The <code>DataImporter</code> instance.
 	 */
@@ -32,7 +32,7 @@ public final class DataImporter {
 	/**
 	 * Constructor of <code>DataImporter</code>.
 	 */
-	private DataImporter() {
+	protected DataImporter() {
 		this.dir = "com/sun/darkstar/example/snowman/common/data/world";
 		this.extWorld = ".world";
 	}
