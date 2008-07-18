@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 07-14-2008 16:29 EST
+ * @version Modified date: 07-18-2008 11:35 EST
  */
 public enum ETask {
 	/**
@@ -30,7 +30,11 @@ public enum ETask {
 	/**
 	 * The task used to add a MOB.
 	 */
-	AddMOB(ETaskType.RealTime);
+	AddMOB(ETaskType.RealTime),
+	/**
+	 * The task used to change the state of the user controlled snowman.
+	 */
+	SnowmanState(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

@@ -1,4 +1,4 @@
-package com.sun.darkstar.example.snowman.game.entity.controller;
+package com.sun.darkstar.example.snowman.game.input;
 
 import com.sun.darkstar.example.snowman.interfaces.IController;
 import com.sun.darkstar.example.snowman.interfaces.IEntity;
@@ -23,7 +23,7 @@ public abstract class Controller implements IController {
 	/**
 	 * The <code>IEntity</code> this controller controls.
 	 */
-	private final IEntity entity;
+	protected final IEntity entity;
 	/**
 	 * The flag indicates if this controller is active.
 	 */

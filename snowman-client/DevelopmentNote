@@ -1,4 +1,5 @@
 TODO:
+Finish implementing SnowmanStateTask.
 Finish implementing SnowmanController and update InputManager.
 Finish implementing BattleState.
 
