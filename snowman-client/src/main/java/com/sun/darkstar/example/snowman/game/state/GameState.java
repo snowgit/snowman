@@ -4,6 +4,7 @@ import com.jme.renderer.pass.RenderPass;
 import com.jmex.game.state.BasicGameState;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.world.World;
 import com.sun.darkstar.example.snowman.interfaces.IGameState;
 
 /**
@@ -13,7 +14,7 @@ import com.sun.darkstar.example.snowman.interfaces.IGameState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-02-2008 12:29 EST
- * @version Modified date: 07-14-2008 12:12 EST
+ * @version Modified date: 07-17-2008 12:02 EST
  */
 public abstract class GameState extends BasicGameState implements IGameState {
 	/**
@@ -32,6 +33,10 @@ public abstract class GameState extends BasicGameState implements IGameState {
 	 * The flag indicates if this game state is initialized.
 	 */
 	protected boolean initialized;
+	/**
+	 * The <code>World</code> of this game state.
+	 */
+	protected World world;
 
 	/**
 	 * Constructor of <code>GameState</code>.
@@ -46,7 +51,9 @@ public abstract class GameState extends BasicGameState implements IGameState {
 	@Override
 	public void initialize() {
 		this.buildRootPass();
+		this.initializeWorld();
 		this.initializeState();
+		this.rootNode.attachChild(this.world);
 		this.initialized = true;
 	}
 	
@@ -60,10 +67,15 @@ public abstract class GameState extends BasicGameState implements IGameState {
 	}
 	
 	/**
+	 * Initialize the world of the game state.
+	 */
+	protected abstract void initializeWorld();
+
+	/**
 	 * Initialize the actual details of the game state.
 	 */
 	protected abstract void initializeState();
-
+	
 	@Override
 	public void update(float interpolation) {
 		if(this.active) this.updateState(interpolation);
@@ -83,6 +95,11 @@ public abstract class GameState extends BasicGameState implements IGameState {
 	@Override
 	public EGameState getType() {
 		return this.enumn;
+	}
+	
+	@Override
+	public World getWorld() {
+		return this.world;
 	}
 
 	@Override

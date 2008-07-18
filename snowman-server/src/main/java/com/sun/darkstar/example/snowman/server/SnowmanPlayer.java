@@ -32,6 +32,7 @@
 package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
@@ -60,16 +61,23 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private static Logger logger = Logger.getLogger(SnowmanPlayer.class.getName());
     public static final long serialVersionUID = 1L;
     private static final String PREFIX = "__PLAYER_";
+    private static float POSITIONTOLERANCESQD = .5f * .5f;
     private ManagedReference<ClientSession> sessionRef;
     private String name;
     private int wins;
     private int losses;
     private int id;
-    float x;
-    float y;
+    float startX;
+    float startY;
+    long timestamp;
+    float destX;
+    float destY;
+    float deltaX;
+    float deltaY;
     TEAMCOLOR teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<Matchmaker> currentMatchMakerRef;
+    private boolean readyToPlay = false;
     
    
     
@@ -104,6 +112,11 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             currentMatchMakerRef.get().removeWaitingPlayer(this);
             currentMatchMakerRef = null;
         }
+        if (currentGameRef != null) {
+            currentGameRef.get().removePlayer(this);
+            currentGameRef = null;
+        }
+        readyToPlay = false;
         logger.info("Player "+name+" logged out");
     }
 
@@ -117,13 +130,19 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     void setPosition(float x, float y) {
-       this.x = x;
-       this.y = y;
+       startX = destX = x;
+       startY = destY = y;
+       deltaX = deltaY = 0;
     }
 
     void setTeamColor(TEAMCOLOR color) {
         AppContext.getDataManager().markForUpdate(this);
         teamColor = color;
+    }
+
+    private float getMovePerMS() {
+        //TODO: replace with real Hp based values
+        return 10;
     }
 
     private void setSession(ClientSession arg0) {
@@ -143,16 +162,39 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         return 1000f*wins/losses;
     }
     
-    public float getX(){
-        return x;
+    public float getX(long time){
+        if ((deltaX==0)&&(deltaY==0)){ // stopped
+            return startX;
+        } else {
+            // interpolate
+            long dur = time - timestamp;
+            return startX + (deltaX*dur);
+        }
     }
     
-    public float getY(){
-        return y;
+    public float getY(long time){
+        if ((deltaX==0)&&(deltaY==0)){ // stopped
+            return startY;
+        } else {
+            long dur = time - timestamp;
+            return startY + (deltaY*dur);
+        }
+    }
+    
+    private boolean checkXY(long time, float xPrime, float yPrime){
+        float currentX = getX(time);
+        float currentY = getY(time);
+        float dx = currentX - xPrime;
+        float dy = currentY - yPrime;
+        return ((dx*dx)+(dy*dy) < POSITIONTOLERANCESQD);
     }
     
     public int getID(){
         return id;
+    }
+    
+    public boolean isReadyToPlay(){
+        return readyToPlay;
     }
     
     public void send(ByteBuffer buff){
@@ -167,11 +209,25 @@ class SnowmanPlayer implements Serializable, ManagedObject,
      // IServerProcessor Messages
 
     public void ready() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        readyToPlay=true;
+        currentGameRef.get().checkReadyToPlay();
     }
 
     public void moveMe(long timestamp, float x, float y, float endx, float endy) {
-        throw new UnsupportedOperationException("Not supported yet.");
+       if (checkXY(timestamp,x,y)){
+           startX = x;
+           startY = y;
+           float dx = endx-x;
+           float dy = endy - y;
+           float dist = (float)Math.sqrt((dx*dx)+(dy*dy));
+           float time = dist/getMovePerMS();
+           deltaX = dx/time;
+           deltaY = dy/time;
+           this.timestamp = timestamp;
+           currentGameRef.get().send(null,
+                   ServerProtocol.getInstance().createMoveMOBPkt(
+                   id, startX, startX, endx, endy, timestamp));
+       }
     }
 
     public void attack(long timestamp, int targetID, float x, float y) {
@@ -183,7 +239,12 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void stopMe(long timestamp, float x, float y) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (checkXY(timestamp,x,y)){
+            setPosition(x,y);
+            currentGameRef.get().send(
+                    null,
+                    ServerProtocol.getInstance().createStopMOBPkt(id, x, y));
+        }
     }
 
    

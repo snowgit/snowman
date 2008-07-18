@@ -39,6 +39,8 @@ import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -51,6 +53,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     public static long serialVersionUID = 1L;
     ManagedReference<Matchmaker> matchMakerRef;
+    
     
     public void initialize(Properties arg0) {
         Matchmaker matchMaker = new Matchmaker();

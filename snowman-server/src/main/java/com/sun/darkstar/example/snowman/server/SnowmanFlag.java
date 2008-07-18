@@ -48,19 +48,19 @@ public class SnowmanFlag implements ManagedObject, Serializable {
         this.y = y;
     }
 
-    public float getX() {
+    public float getX(long time) {
         if (heldByRef == null) {
             return x;
         } else {
-            return heldByRef.get().getX();
+            return heldByRef.get().getX(time);
         }
     }
 
-    public float getY() {
+    public float getY(long time) {
         if (heldByRef == null ) {
             return goalY;
         } else {
-            return heldByRef.get().getY();
+            return heldByRef.get().getY(time);
         }
     }
     

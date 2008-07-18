@@ -6,7 +6,7 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EConverter;
 import com.sun.darkstar.example.snowman.game.input.gui.KeyInputConverter;
 import com.sun.darkstar.example.snowman.game.input.gui.MouseInputConverter;
 import com.sun.darkstar.example.snowman.interfaces.IController;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
+import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.interfaces.IInputConverter;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
@@ -16,6 +16,9 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * for managing all <code>IInputConverter</code> and <code>IController</code>
  * instances. It is responsible for the creation, retrieval and destruction
  * of all the input handling instances.
+ * <p>
+ * <code>InputManager</code> is invoked by <code>Game</code> every frame
+ * to update all the maintained <code>IController</code> instances.
  * <p>
  * <code>InputManager</code> maintains all <code>IInputConverter</code> as
  * singleton instances. There can only exist a single instance of one type
@@ -32,7 +35,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * @author Yi Wang (Neakor)
  * @author Tim Poliquin (Weenahmen)
  * @version Creation date: 07-15-2008 23:18 EST
- * @version Modified date: 07-16-2008 11:22 EST
+ * @version Modified date: 07-17-2008 12:11 EST
  */
 public final class InputManager extends Manager {
 	/**
@@ -45,10 +48,10 @@ public final class InputManager extends Manager {
 	 */
 	private final HashMap<EConverter, IInputConverter> converters;
 	/**
-	 * The <code>HashMap</code> of <code>IEntity</code> key and
+	 * The <code>HashMap</code> of <code>IDynamicEntity</code> key and
 	 * <code>IController</code> pairs.
 	 */
-	private final HashMap<IEntity, IController> controllers;
+	private final HashMap<IDynamicEntity, IController> controllers;
 
 	/**
 	 * Constructor of <code>InputManager</code>.
@@ -56,7 +59,7 @@ public final class InputManager extends Manager {
 	private InputManager() {
 		super(EManager.InputManager);
 		this.converters = new HashMap<EConverter, IInputConverter>();
-		this.controllers = new HashMap<IEntity, IController>();
+		this.controllers = new HashMap<IDynamicEntity, IController>();
 	}
 	
 	/**
@@ -68,6 +71,16 @@ public final class InputManager extends Manager {
 			InputManager.instance = new InputManager();
 		}
 		return InputManager.instance;
+	}
+	
+	/**
+	 * Update the entity controllers.
+	 * @param interpolation The frame rate interpolation value.
+	 */
+	public void update(float interpolation) {
+		for(IController controller : this.controllers.values()) {
+			if(controller.isActive()) controller.update(interpolation);
+		}
 	}
 	
 	/**
@@ -97,10 +110,10 @@ public final class InputManager extends Manager {
 	
 	/**
 	 * Retrieve the entity controller with given enumeration.
-	 * @param enumn The <code>IEntity</code> that is being controlled.
+	 * @param enumn The <code>IDynamicEntity</code> that is being controlled.
 	 * @return The <code>IController</code> that controls the given entity.
 	 */
-	public IController getController(IEntity entity) {
+	public IController getController(IDynamicEntity entity) {
 		IController controller = this.controllers.get(entity);
 		if(controller == null) controller = this.createController(entity);
 		return controller;
@@ -124,14 +137,14 @@ public final class InputManager extends Manager {
 	
 	/**
 	 * Create an entity controller based on given enumeration.
-	 * @param entity The <code>IEntity</code> controller by the created controller.
+	 * @param entity The <code>IDynamicEntity</code> controller by the created controller.
 	 * @return The <code>IController</code> with given enumeration.
 	 */
-	private IController createController(IEntity entity) {
+	private IController createController(IDynamicEntity entity) {
 		IController controller = null;
 		switch(entity.getEnumn()) {
-		// TODO
-		//default: throw new IllegalArgumentException("Invalid controller enumeration.");
+		case Snowman: break; // TODO
+		default: throw new IllegalArgumentException("Invalid controller enumeration.");
 		}
 		this.controllers.put(entity, controller);
 		return controller;

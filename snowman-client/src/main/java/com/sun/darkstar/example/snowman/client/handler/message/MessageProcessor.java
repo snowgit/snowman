@@ -45,7 +45,7 @@ public class MessageProcessor implements IClientProcessor {
 
     @Override
     public void newGame(int myID, String mapname) {
-        TaskManager.getInstance().createTask(ETask.ChangeState, EGameState.BattleState);
+		TaskManager.getInstance().createTask(ETask.ChangeState, EGameState.BattleState);
         TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
     }
 

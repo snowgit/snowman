@@ -1,11 +1,9 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
-import com.jme.bounding.BoundingBox;
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.world.World;
@@ -23,7 +21,7 @@ import com.sun.darkstar.example.snowman.game.world.World;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 12:25 EST
- * @version Modified date: 07-11-2008 12:25 EST
+ * @version Modified date: 07-17-2008 16:59 EST
  */
 public class BattleState extends GameState {
 
@@ -36,25 +34,26 @@ public class BattleState extends GameState {
 	}
 
 	@Override
+	protected void initializeWorld() {
+		this.world = (World)DataManager.getInstance().getWorld(EWorld.Battle);
+	}
+
+	@Override
 	protected void initializeState() {
 		// TODO Auto-generated method stub
-		// this.buildWorld();
-		Box b = new Box("", new Vector3f(0, -10, -50), 5, 5, 5);
-		b.setModelBound(new BoundingBox());
-		b.updateModelBound();
-		this.rootNode.attachChild(b);
-	}
-	
-	/**
-	 * Build the battle field world.
-	 */
-	private void buildWorld() {
-		this.rootNode.attachChild((World)DataManager.getInstance().getWorld(EWorld.Battle));
 	}
 
 	@Override
 	protected void updateState(float interpolation) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	/**
+	 * Initialize a chase camera with the given dynamic view as target.
+	 * @param view The target <code>DynamicView</code> instance.
+	 */
+	public void initializeChaseCam(DynamicView view) {
+		// TODO
 	}
 }

@@ -217,6 +217,8 @@ public class Game extends BaseGame implements IComponent{
 		// Update the timer to get the frame rate.
 		this.timer.update();
 		this.interpolation = this.timer.getTimePerFrame();
+		// Update input manager.
+		this.inputManager.update(this.interpolation);
 		// Execute tasks.
 		this.taskManager.update();
 		// Update physics.
@@ -229,8 +231,9 @@ public class Game extends BaseGame implements IComponent{
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
 			this.finish();		
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
-			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
-			this.count++;
+//			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
+//			this.count++;
+			this.client.getHandler().getProcessor().newGame(0, null);
 		}
 	}
 
