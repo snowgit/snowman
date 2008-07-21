@@ -99,7 +99,10 @@ public class TestGameWorldService
     }
     
     
-    
+    @Test
+    public void testTrimPath() {
+        
+    }
     
     
     
