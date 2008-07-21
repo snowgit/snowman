@@ -34,12 +34,20 @@ package com.sun.darkstar.example.snowman.server.service;
 
 import com.sun.sgs.kernel.ComponentRegistry;
 import com.sun.sgs.service.Service;
+import com.sun.sgs.service.Transaction;
 import com.sun.sgs.service.TransactionProxy;
+import com.sun.sgs.service.NonDurableTransactionParticipant;
+import com.sun.sgs.kernel.TaskScheduler;
+import com.sun.sgs.kernel.TransactionScheduler;
+import com.sun.sgs.kernel.TaskReservation;
 import com.sun.sgs.app.Channel;
-import com.sun.darkstar.example.snowman.common.util.DataImporter;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.jme.scene.Spatial;
 import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -50,11 +58,25 @@ import java.util.Properties;
  * 
  * @author Owen Kellett
  */
-public class GameWorldService implements Service {
+public class GameWorldService implements Service, NonDurableTransactionParticipant {
+    
+    /** The logger for this class. */
+    private static Logger logger = Logger.getLogger(GameWorldService.class.getName());
     
     private static final float THROWHEIGHT = 10.0f;
     private static final float PATHHEIGHT = 10.0f;
     private static final float BACKOFFDISTANCE = 5.0f;
+    
+    /** The TaskScheduler from the registry */
+    private final TaskScheduler taskScheduler;
+    /** The TransactionScheduler from the registry */
+    private final TransactionScheduler txnScheduler;
+    /** The TransactionProxy of the system*/
+    private final TransactionProxy txnProxy;
+    
+    /** Map used to map calling transactions to reserved task */
+    private final ConcurrentHashMap<Transaction, HashSet<TaskReservation>> txnMap =
+            new ConcurrentHashMap<Transaction, HashSet<TaskReservation>>();
     
     /** Current game world **/
     private Spatial gameWorld;
@@ -63,7 +85,11 @@ public class GameWorldService implements Service {
     public GameWorldService(Properties properties,
                             ComponentRegistry registry,
                             TransactionProxy txnProxy) {
-        //gameWorld = DataImporter.getInstance().getWorld(EWorld.Battle);
+        this.taskScheduler = registry.getComponent(TaskScheduler.class);
+        this.txnScheduler = registry.getComponent(TransactionScheduler.class);
+        this.txnProxy = txnProxy;
+        
+        this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
     }
 
     /** @inheritDoc **/
@@ -140,4 +166,41 @@ public class GameWorldService implements Service {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    private void joinCurrentTransaction() {
+        Transaction txn = txnProxy.getCurrentTransaction();
+        HashSet<TaskReservation> set = txnMap.get(txn);
+        
+        if(set == null) {
+            set = new HashSet<TaskReservation>();
+            txnMap.put(txn, set);
+            txn.join(this);
+        }
+    }
+    
+    /** @inheritDoc */
+    public void abort(Transaction txn) {
+        for (TaskReservation r : txnMap.remove(txn))
+            r.cancel();
+    }
+
+    /** @inheritDoc */
+    public void commit(Transaction txn) {
+        for(TaskReservation r : txnMap.remove(txn))
+            r.use();
+    }
+
+    /** @inheritDoc */
+    public String getTypeName() {
+        return getName();
+    }
+
+    /** @inheritDoc */
+    public boolean prepare(Transaction txn) throws Exception {
+        return false;
+    }
+
+    /** @inheritDoc */
+    public void prepareAndCommit(Transaction txn) throws Exception {
+        commit(txn);
+    }
 }
