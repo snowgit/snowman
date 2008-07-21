@@ -156,24 +156,15 @@ public class CollisionManagerImpl implements CollisionManager
         return null;
     }
 
-    /** {@inheritDoc} */
-    public boolean validate(Vector3f position, Vector2f displacement, Spatial spatial, float angle) {
-        Vector3f destination = new Vector3f();
-        Ray ray = new Ray();
-        destination.set(position);
-        destination.x += displacement.x;
-        destination.y += 1000;
-        destination.z += displacement.y;
-        ray.setOrigin(destination);
-        ray.setDirection(Vector3f.UNIT_Y.negate());
-        Vector3f value = this.getIntersection(ray, spatial, destination, true);
-        if (value == null) {
-            return false;
-        }
-        if (FastMath.abs(destination.angleBetween(position)) > FastMath.abs(angle)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    @Override
+	public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
