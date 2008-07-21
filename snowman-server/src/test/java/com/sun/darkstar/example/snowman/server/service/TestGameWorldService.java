@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.DataImporter;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
@@ -61,41 +62,12 @@ public class TestGameWorldService
     private TaskScheduler mockTaskScheduler;
     private TransactionScheduler mockTransactionScheduler;
     
+    /** mock singletons */
+    private DataImporter mockDataImporter;
+    private CollisionManager mockCollisionManager;
+    
     /** dummy spatial object representing dummy game world */
     private static Spatial dummyWorld = new Node();
-    
-    /** mock implementation of the DataImporter of the game world */
-    private static class MockDataImporter extends DataImporter {
-        private static DataImporter mockInstance;
-        
-        protected MockDataImporter() {}
-        
-        public static DataImporter getInstance() {
-            if (MockDataImporter.mockInstance == null) {
-                MockDataImporter.mockInstance = new MockDataImporter();
-            }
-            return MockDataImporter.mockInstance;
-	}
-        
-        @Override
-        public Spatial getWorld(EWorld enumn) {
-            return dummyWorld;
-        }
-    }
-    
-    /** mock implementation of the CollisionManager */
-    private static class MockCollisionManager extends CollisionManager {
-        private static CollisionManager mockInstance;
-        
-        protected MockCollisionManager() {}
-        
-        public static CollisionManager getInstance() {
-            if (MockCollisionManager.mockInstance == null) {
-                MockCollisionManager.mockInstance = new MockCollisionManager();
-            }
-            return MockCollisionManager.mockInstance;
-        }
-    }
     
     @Before
     public void mockKernelInterfaces() {
@@ -114,8 +86,20 @@ public class TestGameWorldService
     
     @Before
     public void mockSingletons() {
+        //create the mock singletons
+        this.mockDataImporter = EasyMock.createMock(DataImporter.class);
+        this.mockCollisionManager = EasyMock.createMock(CollisionManager.class);
         
+        //configure behavior of the data importer to return a dummy world
+        EasyMock.expect(mockDataImporter.getWorld(EWorld.Battle)).andReturn(dummyWorld);
+        
+        //load the singletons into the registry
+        SingletonRegistry.setDataImporter(mockDataImporter);
+        SingletonRegistry.setCollisionManager(mockCollisionManager);
     }
+    
+    
+    
     
     
     
@@ -125,6 +109,12 @@ public class TestGameWorldService
         this.mockTxnProxy = null;
         this.mockTaskScheduler = null;
         this.mockTransactionScheduler = null;
+    }
+    
+    @After
+    public void cleanupSingletons() {
+        SingletonRegistry.setDataImporter(null);
+        SingletonRegistry.setCollisionManager(null);
     }
 
 }

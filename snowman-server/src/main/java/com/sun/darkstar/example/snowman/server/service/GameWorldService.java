@@ -41,7 +41,7 @@ import com.sun.sgs.kernel.TaskScheduler;
 import com.sun.sgs.kernel.TransactionScheduler;
 import com.sun.sgs.kernel.TaskReservation;
 import com.sun.sgs.app.Channel;
-import com.sun.darkstar.example.snowman.common.util.DataImporter;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.jme.scene.Spatial;
 import java.util.Properties;
@@ -89,17 +89,7 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
         this.txnScheduler = registry.getComponent(TransactionScheduler.class);
         this.txnProxy = txnProxy;
         
-        this.gameWorld = getDataImporter().getWorld(EWorld.Battle);
-    }
-    
-    /**
-     * This method retrieves the evil singleton so that it can be mocked
-     * in unit tests.
-     * 
-     * @return The instance of the DataImporter singleton
-     */
-    protected DataImporter getDataImporter() {
-        return DataImporter.getInstance();
+        this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
     }
 
     /** @inheritDoc **/
