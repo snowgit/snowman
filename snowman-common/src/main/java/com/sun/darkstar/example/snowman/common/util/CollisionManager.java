@@ -73,17 +73,26 @@ public interface CollisionManager {
      * @return If hit, the <code>Vector3f</code> intersection is returned. Otherwise <code>null</code> is returned.
      */
     public Vector3f getIntersection(Ray ray, Spatial parent, Vector3f store, boolean local);
+    
+    /**
+     * Retrieve the valid destination point based on the given coordinate values.
+     * @param x1 The x coordinate of the starting position in the given spatial's local coordinate system.
+     * @param z1 The z coordinate of the starting position in the given spatial's local coordinate system.
+     * @param x2 The x coordinate of the clicking position in the given spatial's local coordinate system.
+     * @param z2 The z coordinate of the clicking position in the given spatial's local coordinate system.
+     * @param spatial The <code>Spatial</code> instance to check against.
+     * @return The valid <code>Vector3f</code> destination.
+     */
+    public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial);
 
     /**
-     * Validate the movement from the given position to the destination
-     * defined by the given displacement.
-     * @param position The <code>Vector3f</code> starting movement position in local
-     * coordinate system relative to the given <code>Spatial</code>.
-     * @param displacement The <code>Vector2f</code> planar displacement of movement
-     * in local coordinate system relative to the given <code>Spatial</code>.
-     * @param spatial The <code>Spatial</code> to check the movement on.
-     * @param angle The maximum allowed movement angle in degrees.
-     * @return True if this movement is valid. False otherwise.
+     * Validate if there is any static objects between the given points.
+     * @param x1 The x coordinate of the starting position in the given spatial's local coordinate system.
+     * @param z1 The z coordinate of the starting position in the given spatial's local coordinate system.
+     * @param x2 The x coordinate of the clicking position in the given spatial's local coordinate system.
+     * @param z2 The z coordinate of the clicking position in the given spatial's local coordinate system.
+     * @param spatial The <code>Spatial</code> instance to check against.
+     * @return True if there is no occlusion objects. False otherwise.
      */
-    public boolean validate(Vector3f position, Vector2f displacement, Spatial spatial, float angle);
+    public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial);
 }

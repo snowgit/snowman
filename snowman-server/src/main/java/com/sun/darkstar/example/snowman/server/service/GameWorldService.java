@@ -44,6 +44,7 @@ import com.sun.sgs.app.Channel;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.jme.scene.Spatial;
+import com.jme.math.Vector3f;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.HashSet;
@@ -165,6 +166,8 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
                               float endy) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+
 
     private void joinCurrentTransaction() {
         Transaction txn = txnProxy.getCurrentTransaction();

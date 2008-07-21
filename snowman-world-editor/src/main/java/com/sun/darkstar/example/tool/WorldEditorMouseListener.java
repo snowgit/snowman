@@ -44,6 +44,7 @@ import com.jme.renderer.Camera;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.tool.WorldEditor.ModeEnum;
 
 public class WorldEditorMouseListener extends MouseInputAdapter {
@@ -133,7 +134,7 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 					cameraLocation.set(cam.getLocation());
 					ray.getOrigin().set(cameraLocation);
 					ray.getDirection().set(worldcoords.subtractLocal(cameraLocation).normalizeLocal());
-					CollisionManager.getInstance().getIntersection(ray, editor.getWorld(), intersection, true);
+					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getWorld(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
 					return null;
 				}
@@ -156,7 +157,7 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 					cameraLocation.set(cam.getLocation());
 					ray.getOrigin().set(cameraLocation);
 					ray.getDirection().set(worldcoords.subtractLocal(cameraLocation).normalizeLocal());
-					CollisionManager.getInstance().getIntersection(ray, editor.getTerrain(), intersection, true);
+					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getTerrain(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
 					return null;
 				}
