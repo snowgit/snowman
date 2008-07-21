@@ -5,8 +5,10 @@ import java.util.HashMap;
 
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.game.entity.view.StaticView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowmanView;
 import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
@@ -121,6 +123,10 @@ public class ViewManager extends Manager {
 		IView view = null;
 		switch(entity.getEnumn()) {
 		case Terrain: view = new TerrainView((IEditableEntity)entity); break;
+		case Snowman:
+			view = new SnowmanView((SnowmanEntity)entity);
+			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			break;
 		default:
 			switch(entity.getType()) {
 			case Static:

@@ -9,10 +9,10 @@ import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
 /**
- * <code>ChangeStateTask</code> extends <code>RealTimeTask</code> to change
+ * <code>GameStateTask</code> extends <code>RealTimeTask</code> to change
  * the current active <code>GameState</code>.
  * <p>
- * <code>ChangeStateTask</code> execution logic:
+ * <code>GameStateTask</code> execution logic:
  * 1. Validate the given enumeration is not the current active state.
  * 2. Disable the current active <code>GameState</code>.
  * 3. Clear the <code>BasicPassManager</code>.
@@ -22,26 +22,26 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 7. Set the current active <code>GameState</code> to be the new one.
  * 8. Activate all input.
  * <p>
- * <code>ChangeStateTask</code> does not have a more detailed 'equals'
- * comparison. All <code>ChangeStateTask</code> are considered 'equal',
+ * <code>GameStateTask</code> does not have a more detailed 'equals'
+ * comparison. All <code>GameStateTask</code> are considered 'equal',
  * therefore, a newer version can always replace the older one.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 11:42 EST
  * @version Modified date: 07-16-2008 11:33 EST
  */
-public class ChangeStateTask extends RealTimeTask {
+public class GameStateTask extends RealTimeTask {
 	/**
 	 * The <code>EGameState</code> enumeration of the state to be activated.
 	 */
 	private final EGameState enumn;
 
 	/**
-	 * Constructor of <code>ChangeStateTask</code>.
+	 * Constructor of <code>GameStateTask</code>.
 	 * @param game The <code>Game</code> instance.
 	 * @param enumn The <code>EGameState</code> enumeration of the state to be activated.
 	 */
-	public ChangeStateTask(Game game, EGameState enumn) {
+	public GameStateTask(Game game, EGameState enumn) {
 		super(ETask.ChangeState, game);
 		this.enumn = enumn;
 	}

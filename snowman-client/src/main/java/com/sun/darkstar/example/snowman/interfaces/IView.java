@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
 import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
+import com.jme.scene.Spatial;
 import com.jme.util.export.Savable;
 
 /**
@@ -31,9 +31,9 @@ public interface IView extends Savable {
 
 	/**
 	 * Attach the given mesh to this view.
-	 * @param mesh The <code>TriMesh</code> to be attached.
+	 * @param mesh The <code>Spatial</code> to be attached.
 	 */
-	public void attachMesh(TriMesh mesh);
+	public void attachMesh(Spatial mesh);
 	
 	/**
 	 * Attach this view to the given <code>Node</code>.

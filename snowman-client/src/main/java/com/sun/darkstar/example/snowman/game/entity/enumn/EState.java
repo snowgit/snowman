@@ -6,7 +6,7 @@ package com.sun.darkstar.example.snowman.game.entity.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:07 EST
- * @version Modified date: 07-18-2008 11:09 EST
+ * @version Modified date: 07-21-2008 11:52 EST
  */
 public enum EState {
 	/**
@@ -14,7 +14,15 @@ public enum EState {
 	 */
 	Idle,
 	/**
+	 * The moving state.
+	 */
+	Moving,
+	/**
 	 * The targeting other snowman state.
 	 */
-	Targeting
+	Targeting,
+	/**
+	 * The grabbing flag state.
+	 */
+	Grabbing
 }

@@ -17,7 +17,7 @@ import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.client.Client;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
-import com.sun.darkstar.example.snowman.game.input.enumn.EConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
@@ -188,8 +188,8 @@ public class Game extends BaseGame implements IComponent{
 	 * Initialize the GUI input converters.
 	 */
 	private void initializeConverters() {
-		KeyInput.get().addListener((KeyInputListener)this.inputManager.getConverter(EConverter.KeyboardConverter));
-		MouseInput.get().addListener((MouseInputListener)this.inputManager.getConverter(EConverter.MouseConverter));
+		KeyInput.get().addListener((KeyInputListener)this.inputManager.getConverter(EInputConverter.KeyboardConverter));
+		MouseInput.get().addListener((MouseInputListener)this.inputManager.getConverter(EInputConverter.MouseConverter));
 	}
 
 	/**

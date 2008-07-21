@@ -1,7 +1,8 @@
-package com.sun.darkstar.example.snowman.game.input.gui;
+package com.sun.darkstar.example.snowman.game.input;
 
 import org.fenggui.Display;
 
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.interfaces.IInputConverter;
 
 /**
@@ -11,9 +12,13 @@ import com.sun.darkstar.example.snowman.interfaces.IInputConverter;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 16:53 EST
- * @version Modified date: 07-11-2008 16:58 EST
+ * @version Modified date: 07-21-2008 12:11 EST
  */
 public abstract class InputConverter implements IInputConverter {
+	/**
+	 * The <code>EInputConverter</code> enumeration.
+	 */
+	protected final EInputConverter enumn;
 	/**
 	 * The {@link FengGUI }<code>Display</code> instance.
 	 */
@@ -25,8 +30,10 @@ public abstract class InputConverter implements IInputConverter {
 	
 	/**
 	 * Constructor of <code>InputConverter</code>.
+	 * @param enumn The <code>EInputConverter</code> enumeration.
 	 */
-	protected InputConverter() {
+	protected InputConverter(EInputConverter enumn) {
+		this.enumn = enumn;
 		this.active = true;
 	}
 
@@ -39,6 +46,11 @@ public abstract class InputConverter implements IInputConverter {
 	@Override
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	@Override
+	public EInputConverter getEnumn() {
+		return this.enumn;
 	}
 
 	@Override

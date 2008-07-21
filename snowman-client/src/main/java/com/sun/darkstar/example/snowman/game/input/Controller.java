@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.input;
 
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.interfaces.IController;
 import com.sun.darkstar.example.snowman.interfaces.IEntity;
 
@@ -17,13 +18,17 @@ import com.sun.darkstar.example.snowman.interfaces.IEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 15:35 EST
- * @version Modified date: 07-11-2008 17:02 EST
+ * @version Modified date: 07-21-2008 12:05 EST
  */
 public abstract class Controller implements IController {
 	/**
 	 * The <code>IEntity</code> this controller controls.
 	 */
 	protected final IEntity entity;
+	/**
+	 * The <code>EInputType</code> enumeration.
+	 */
+	protected final EInputType type;
 	/**
 	 * The flag indicates if this controller is active.
 	 */
@@ -33,9 +38,10 @@ public abstract class Controller implements IController {
 	 * Constructor of <code>Controller</code>.
 	 * @param entity The <code>IEntity</code> this controller controls.
 	 */
-	public Controller(IEntity entity) {
+	public Controller(IEntity entity, EInputType type) {
 		if(entity == null) throw new IllegalArgumentException("Null entity.");
 		this.entity = entity;
+		this.type = type;
 	}
 	
 	@Override
@@ -52,6 +58,11 @@ public abstract class Controller implements IController {
 	@Override
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	@Override
+	public EInputType getInputType() {
+		return this.type;
 	}
 
 	@Override

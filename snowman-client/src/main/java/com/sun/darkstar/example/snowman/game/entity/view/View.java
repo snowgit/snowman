@@ -3,7 +3,7 @@ package com.sun.darkstar.example.snowman.game.entity.view;
 import java.io.IOException;
 
 import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -54,7 +54,7 @@ public abstract class View extends Node implements IView {
 	}
 	
 	@Override
-	public void attachMesh(TriMesh mesh) {
+	public void attachMesh(Spatial mesh) {
 		this.attachChild(mesh);
 	}
 

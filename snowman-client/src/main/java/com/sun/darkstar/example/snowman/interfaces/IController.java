@@ -1,5 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
+
 /**
  * <code>IController</code> defines the interface for all types of entity
  * controller in the system which follows the MVC (Model View Controller)
@@ -18,7 +20,7 @@ package com.sun.darkstar.example.snowman.interfaces;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 14:53 EST
- * @version Modified date: 07-11-2008 16:35 EST
+ * @version Modified date: 07-21-2008 12:01 EST
  */
 public interface IController {
 
@@ -34,6 +36,12 @@ public interface IController {
 	 */
 	public void setActive(boolean active);
 
+	/**
+	 * Retrieve the input type of this controller.
+	 * @return The <Code>EInputType</code> enumeration.
+	 */
+	public EInputType getInputType();
+	
 	/**
 	 * Retrieve the entity this controller controls.
 	 * @return The <code>IEntity</code> instance.
