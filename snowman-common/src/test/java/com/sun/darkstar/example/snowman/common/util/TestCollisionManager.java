@@ -53,6 +53,9 @@ import org.easymock.EasyMock;
  */
 public class TestCollisionManager {
     
+    /** Acceptable delta for float comparisons */
+    private static float DELTA = 0.01f;
+    
     /** Test world of objects */
     private Node testWorld;
     private Box box;
@@ -69,19 +72,19 @@ public class TestCollisionManager {
     @Before
     public void createTestWorld() {
         //create and position the box
-        box = new Box("TestBox", new Vector3f(0,0,0), new Vector3f(10,10,10));
-        box.setLocalTranslation(new Vector3f(-5, -5, 15));
+        box = new Box("TestBox", new Vector3f(0f,0f,0f), new Vector3f(10f,10f,10f));
+        box.setLocalTranslation(new Vector3f(-5f, -5f, 15f));
         box.setModelBound(new BoundingBox());
         box.updateModelBound();
         
         //create and position the sphere
-        sphere = new Sphere("TestSphere", new Vector3f(0,0,40), 10, 10, 5);
+        sphere = new Sphere("TestSphere", new Vector3f(0f,0f,40f), 10, 10, 5f);
         sphere.setModelBound(new BoundingSphere());
         sphere.updateModelBound();
         
         //create and position the pyramid
-        pyramid = new Pyramid("TestPyramid", 10, 10);
-        pyramid.setLocalTranslation(new Vector3f(0, -5, 55));
+        pyramid = new Pyramid("TestPyramid", 10f, 10f);
+        pyramid.setLocalTranslation(new Vector3f(0f, -5f, 55f));
         pyramid.setModelBound(new BoundingBox());
         pyramid.updateModelBound();
         
@@ -97,6 +100,16 @@ public class TestCollisionManager {
         testWorld.updateWorldBound();
     }
     
+    /**
+     * Move the test world in the world coordinate system
+     * 
+     * @param transpose vector to use to move the world
+     */
+    private void moveWorld(Vector3f transpose) {
+        testWorld.setLocalTranslation(transpose);
+        testWorld.updateGeometricState(0.0f, true);
+    }
+    
     
     /**
      * This method will check the getIntersectObject method of the
@@ -110,10 +123,11 @@ public class TestCollisionManager {
      */
     private void testGetIntersectObject(Class reference, Spatial result, boolean iterate) {
         //create the ray that goes through all objects
-        Vector3f origin = new Vector3f(0,0,0);
-        Vector3f destination = new Vector3f(0,0,100);
+        Vector3f origin = new Vector3f(0f,0f,0f);
+        Vector3f destination = new Vector3f(0f,0f,100f);
+        Vector3f direction = destination.subtractLocal(origin).normalizeLocal();
         
-        Ray ray = new Ray(origin, destination);
+        Ray ray = new Ray(origin, direction);
         
         //call the collision manager
         Spatial actualResult = SingletonRegistry.getCollisionManager().getIntersectObject(ray, testWorld, reference, iterate);
@@ -187,8 +201,8 @@ public class TestCollisionManager {
     @Test
     public void testGetIntersectObjectNoCollision() {
         //create the ray that doesn't go through any objects
-        Vector3f origin = new Vector3f(0,0,0);
-        Vector3f destination = new Vector3f(0,0,-100);
+        Vector3f origin = new Vector3f(0f,0f,0f);
+        Vector3f destination = new Vector3f(0f,0f,-100f);
         
         Ray ray = new Ray(origin, destination);
         
@@ -200,6 +214,278 @@ public class TestCollisionManager {
     }
     
     
+    /**
+     * Verify the getIntersection method works on a positive test
+     * against the box in the test world.  If the local parameter is set to true,
+     * the testWorld will be moved relative to the world so that its local
+     * coordinates are different than the world's.
+     * 
+     * @param nullVector true if we should use a null vector as a parameter in the test
+     * @param local true if the result should be converted to local coordinates
+     */
+    private void testGetIntersectionWithBox(boolean nullVector, boolean local) {
+        //create the ray that goes through all objects
+        Vector3f origin = new Vector3f(0f,0f,0f);
+        Vector3f destination = new Vector3f(0f,0f,100f);
+        Vector3f direction = destination.subtractLocal(origin).normalizeLocal();
+        Ray ray = new Ray(origin, direction);
+        
+        //intersection should always be at this point
+        Vector3f intersection = new Vector3f(0f,0f,15f);
+        
+        //configure the store
+        Vector3f store = null;
+        if(!nullVector)
+            store = new Vector3f();
+        
+        //if we are converting to local coordinates, move the test world and
+        //the ray so that we can test the transposition of the result
+        if(local) {
+            Vector3f transpose = new Vector3f(50f,50f,50f);
+            origin.addLocal(transpose);
+            destination.addLocal(transpose);
+            direction = destination.subtractLocal(origin).normalizeLocal();
+            ray = new Ray(origin, direction);
+            moveWorld(transpose);
+        }
+        
+        //call the collision manager
+        Vector3f result = SingletonRegistry.getCollisionManager().getIntersection(ray, testWorld, store, local);
+        
+        //verify that the resulting intersection is the same as the expected result
+        Assert.assertNotNull(result);
+        Assert.assertEquals(intersection.getX(), result.getX(), DELTA);
+        Assert.assertEquals(intersection.getY(), result.getY(), DELTA);
+        Assert.assertEquals(intersection.getZ(), result.getZ(), DELTA);
+        //verity that the store is actually used for the result
+        if(!nullVector)
+            Assert.assertSame(result, store);
+    }
+    
+    /**
+     * Verify negative test of getIntersection method of the CollisionManager
+     * A Ray that does not intersect the world is passed in and null should
+     * be returned.
+     * 
+     * @param nullVector true if we should use a null vector as a parameter in the test
+     * @param local true if the result should be converted to local coordinates
+     */
+    private void testGetIntersectionNegative(boolean nullVector, boolean local) {
+        //create the ray that misses the objects
+        Vector3f origin = new Vector3f(0f,0f,0f);
+        Vector3f destination = new Vector3f(0f,0f,-100f);
+        Vector3f direction = destination.subtractLocal(origin).normalizeLocal();
+        Ray ray = new Ray(origin, direction);
+        
+        //configure the store
+        Vector3f store = null;
+        if(!nullVector)
+            store = new Vector3f();
+        
+        //if we are converting to local coordinates, move the test world and
+        //the ray so that we can test the transposition of the result
+        if(local) {
+            Vector3f transpose = new Vector3f(50f,50f,50f);
+            origin.addLocal(transpose);
+            destination.addLocal(transpose);
+            direction = destination.subtractLocal(origin).normalizeLocal();
+            ray = new Ray(origin, direction);
+            moveWorld(transpose);
+        }
+        
+        //call the collision manager
+        Vector3f result = SingletonRegistry.getCollisionManager().getIntersection(ray, testWorld, store, local);
+        
+        //verify that the resulting intersection is null
+        Assert.assertNull(result);
+    }
+    
+    /**
+     * Verify locally transposed result vector with null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionWithBoxNullLocal() {
+        testGetIntersectionWithBox(true, true);
+    }
+    
+    /**
+     * Verify global result vector with null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionWithBoxNullWorld() {
+        testGetIntersectionWithBox(true, false);
+    }
+    
+    /**
+     * Verify locally transposed result vector with not null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionWithBoxNotNullLocal() {
+        testGetIntersectionWithBox(false, true);
+    }
+    
+    /**
+     * Verify global result vector with not null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionWithBoxNotNullWorld() {
+        testGetIntersectionWithBox(false, false);
+    }
+    
+    
+    /**
+     * Verify locally transposed result vector with null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionNegativeNullLocal() {
+        testGetIntersectionNegative(true, true);
+    }
+    
+    /**
+     * Verify global result vector with null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionNegativeNullWorld() {
+        testGetIntersectionNegative(true, false);
+    }
+    
+    /**
+     * Verify locally transposed result vector with not null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionNegativeNotNullLocal() {
+        testGetIntersectionNegative(false, true);
+    }
+    
+    /**
+     * Verify global result vector with not null
+     * store works properly
+     */
+    @Test
+    public void testGetIntersectionNegativeNotNullWorld() {
+        testGetIntersectionNegative(false, false);
+    }
+    
+    
+    
+    /**
+     * Verify getDestination works properly when there is a standard
+     * collision (distance is greater than BACKOFFDISTANCE value).
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testGetDestinationCollision(boolean local) {
+        //calculate the starting and ending positions
+        //starting position should be backed off by the BACKOFFDISTANCE
+        float startx = 0.0f;
+        float startz = 0.0f - CollisionManager.BACKOFFDISTANCE;
+        float endx = 0.0f;
+        float endz = 50.0f;
+
+        //in the test world, trimmed destination should always be:
+        Vector3f trimmed = new Vector3f(0.0f, 0.0f, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        Vector3f result = SingletonRegistry.getCollisionManager().getDestination(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getX(), trimmed.getX(), DELTA);
+        Assert.assertEquals(result.getY(), trimmed.getY(), DELTA);
+        Assert.assertEquals(result.getZ(), trimmed.getZ(), DELTA);
+    }
+    
+    @Test public void testGetDestinationCollisionLocal() {
+        testGetDestinationCollision(true);
+    }
+    @Test public void testGetDestinationCollisionNotLocal() {
+        testGetDestinationCollision(false);
+    }
+    
+    /**
+     * Verify getDestination works properly when there is no collision
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testGetDestinationMiss(boolean local) {
+        //calculate the starting and ending positions
+        float startx = 0.0f;
+        float startz = 0.0f;
+        float endx = 0.0f;
+        float endz = -50.0f;
+
+        //in the test world, trimmed destination should always be:
+        Vector3f trimmed = new Vector3f(0.0f, 0.0f, -50.0f);
+        
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        Vector3f result = SingletonRegistry.getCollisionManager().getDestination(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getX(), trimmed.getX(), DELTA);
+        Assert.assertEquals(result.getY(), trimmed.getY(), DELTA);
+        Assert.assertEquals(result.getZ(), trimmed.getZ(), DELTA);
+    }
+    
+    @Test public void testGetDestinationMissLocal() {
+        testGetDestinationMiss(true);
+    }
+    @Test public void testGetDestinationMissNotLocal() {
+        testGetDestinationMiss(false);
+    }
+    
+    /**
+     * Verify getDestination works properly when there is no collision but
+     * the end point is within the BACKOFFDISTANCE
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testGetDestinationNearMiss(boolean local) {
+        //calculate the starting and ending positions
+        //starting position should be backed off by the BACKOFFDISTANCE
+        float startx = 0.0f;
+        float startz = 0.0f - CollisionManager.BACKOFFDISTANCE;
+        float endx = 0.0f;
+        float endz = 15.0f - CollisionManager.BACKOFFDISTANCE/2.0f;
+
+        //in the test world, trimmed destination should always be:
+        Vector3f trimmed = new Vector3f(0.0f, 0.0f, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        Vector3f result = SingletonRegistry.getCollisionManager().getDestination(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getX(), trimmed.getX(), DELTA);
+        Assert.assertEquals(result.getY(), trimmed.getY(), DELTA);
+        Assert.assertEquals(result.getZ(), trimmed.getZ(), DELTA);
+    }
+    
+    @Test public void testGetDestinationNearMissLocal() {
+        testGetDestinationNearMiss(true);
+    }
+    @Test public void testGetDestinationNearMissNotLocal() {
+        testGetDestinationNearMiss(false);
+    }
     
     @After
     public void cleanupTestWorld() {

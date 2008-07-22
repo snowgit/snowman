@@ -156,8 +156,49 @@ public class CollisionManagerImpl implements CollisionManager
 
     @Override
     public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
-        // TODO Auto-generated method stub
-        return null;
+        //generate the start and destination points
+        Vector3f start = new Vector3f(x1, 0.0f, z1);
+        Vector3f destination = new Vector3f(x2, 0.0f, z2);
+        
+        //convert points to world coordinate system
+        spatial.localToWorld(start, start);
+        spatial.localToWorld(destination, destination);
+        
+        System.out.println("START:"+start);
+        System.out.println("END:"+destination);
+        
+        //generate Ray for intersection detection
+        Vector3f direction = destination.subtract(start).normalizeLocal();
+        Ray moveRay = new Ray(start, direction);
+        
+        //calculate the intersection between the move ray and the spatial
+        Vector3f hitPoint = getIntersection(moveRay, spatial, null, false);
+        
+        //if there are no obstacles, return the destination directly
+        if(hitPoint == null) {
+            spatial.worldToLocal(destination, destination);
+            return destination;
+        }
+        else {
+            float originalDistance = destination.distance(start);
+            float newDistance = hitPoint.distance(start);
+            
+            if(originalDistance > newDistance - BACKOFFDISTANCE) {
+                //we are either trying to go through a hit point
+                //or get to close to one
+                System.out.println("BACK:"+direction);
+                direction.multLocal(BACKOFFDISTANCE);
+                System.out.println("BACK:"+direction);
+                Vector3f newDestination = hitPoint.subtractLocal(direction);
+                spatial.worldToLocal(newDestination, newDestination);
+                return newDestination;
+            } else {
+                //destination is not close to any hit points so
+                //we can just return it directly
+                spatial.worldToLocal(destination, destination);
+                return destination;
+            }
+        }
     }
 
     @Override
