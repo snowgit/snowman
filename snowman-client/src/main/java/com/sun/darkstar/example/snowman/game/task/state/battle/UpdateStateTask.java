@@ -77,28 +77,33 @@ public class UpdateStateTask extends RealTimeTask {
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
 		CollisionManager collisionManager = SingletonRegistry.getCollisionManager();
 		Vector3f worldCoords = new Vector3f();
+		Vector3f camLocation = display.getRenderer().getCamera().getLocation().clone();
 		display.getWorldCoordinates(new Vector2f(this.x, this.y), 1, worldCoords);
 		Ray ray = new Ray();
-		ray.setOrigin(display.getRenderer().getCamera().getLocation());
-		ray.setDirection(worldCoords.subtractLocal(display.getRenderer().getCamera().getLocation()).normalizeLocal());
+		ray.setOrigin(camLocation);
+		ray.setDirection(worldCoords.subtractLocal(camLocation).normalizeLocal());
 		Spatial result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), StaticView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.Idle);
-			// Change cursor to walking.
+			System.out.println("Idle");
+			// TODO Change cursor to walking.
 			return;
 		}
 		result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), SnowmanView.class, false);
 		if(result != null) {
+			if(((SnowmanView)result).getEntity() == this.snowman) return;
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
-				// Change cursor to targeting.
+				System.out.println("Targeting");
+				// TODO Change cursor to targeting.
 			}
 			return;
 		}
 		result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), DynamicView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.Grabbing);
-			// Change cursor to grabbing.
+			System.out.println("Grabbing");
+			// TODO Change cursor to grabbing.
 			return;
 		}
 	}

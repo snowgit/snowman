@@ -148,7 +148,6 @@ public class TaskManager extends Manager {
 	 * @return True if the task is successfully submitted. False if the given task is discarded.
 	 */
 	public boolean createTask(ETask enumn, Object... args) {
-		// TODO Create task and invoke submit.
 		ITask task = null;
 		switch(enumn) {
 		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
@@ -160,6 +159,7 @@ public class TaskManager extends Manager {
 			break;
 		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
 		case SetDestination: task = new SetDestinationTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
+		case UpdateMovement: task = new UpdateMovementTask(this.game, (SnowmanEntity)args[0], (Float)args[1]); break;
 		}
 		return this.submit(task);
 	}

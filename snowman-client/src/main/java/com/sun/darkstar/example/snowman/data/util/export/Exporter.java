@@ -10,8 +10,8 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.resource.MultiFormatResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
-import com.jme.util.resource.SimpleResourceLocator;
 
 /**
  * <code>Exporter</code> defines the basic abstraction of all types of
@@ -60,7 +60,9 @@ public abstract class Exporter extends SimpleGame {
 	private void setupTextureKey() {
 		URL url = this.getClass().getClassLoader().getResource(this.sourceDir);
 		try {
-			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, new SimpleResourceLocator(url));
+			MultiFormatResourceLocator locator = new MultiFormatResourceLocator(url, 
+					new String[]{".tga", ".bmp", ".png", ".jpg", ".texture", ".jme"});
+			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
@@ -78,7 +80,7 @@ public abstract class Exporter extends SimpleGame {
 	 */
 	protected void export(String output, Savable object) {
 		URL url = this.getClass().getClassLoader().getResource(this.outputDir);
-		String raw = url.toString().replaceAll("%20", " ").replace("bin", "src");
+		String raw = url.toString().replaceAll("%20", " ").replace("bin", "src/main/java");
 		String path = raw.substring(raw.indexOf("/")+1, raw.length());
 		File file = new File(path + output);
 		try {

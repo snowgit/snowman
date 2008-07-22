@@ -123,7 +123,7 @@ public final class InputManager extends Manager {
 			else KeyInput.get().addListener((KeyInputListener)listener); return true;
 		case Mouse:
 			if(MouseInput.get().containsListener((MouseInputListener)listener)) return false;
-			else MouseInput.get().addListener((MouseInputListener)listener);
+			else MouseInput.get().addListener((MouseInputListener)listener); return true;
 		default: throw new IllegalArgumentException("Invalid input type: " + enumn.toString());
 		}
 	}

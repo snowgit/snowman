@@ -3,6 +3,7 @@ package com.sun.darkstar.example.snowman.data.util.export;
 import java.net.URL;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.scene.shape.Quad;
@@ -22,11 +23,11 @@ public class TextureExporter extends Exporter {
 	/**
 	 * The source image file name with extension.
 	 */
-	private final String inputFile = "UpperDayCloud.png";
+	private final String inputFile = "Snowman.tga";
 	/**
 	 * The output binary file with extension.
 	 */
-	private final String outputFile = "UpperDayCloud.tex";
+	private final String outputFile = "Snowman.tex";
 	/**
 	 * The <code>AlphaState</code> for transparency.
 	 */
@@ -34,7 +35,7 @@ public class TextureExporter extends Exporter {
 	/**
 	 * The <code>Texture</code> instance.
 	 */
-	private Texture texture;
+	private Image texture;
 
 	/**
 	 * Main method.
@@ -48,7 +49,6 @@ public class TextureExporter extends Exporter {
 	 */
 	public TextureExporter() {
 		super("com/sun/darkstar/example/snowman/data/texture/");
-		Texture.DEFAULT_STORE_TEXTURE = true;
 		TextureManager.COMPRESS_BY_DEFAULT = false;
 	}
 
@@ -80,11 +80,12 @@ public class TextureExporter extends Exporter {
 		q.updateModelBound();
 		q.setRenderState(this.alpha);
 		URL url = this.getClass().getClassLoader().getResource(this.sourceDir + this.inputFile);
-		this.texture = TextureManager.loadTexture(url, Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 16, true);
+		Texture t = TextureManager.loadTexture(url, Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 16, true);
 		TextureState ts = this.display.getRenderer().createTextureState();
-		ts.setTexture(this.texture);
+		ts.setTexture(t);
 		q.setRenderState(ts);
 		this.rootNode.attachChild(q);
+		this.texture = t.getImage();
 	}
 
 	@Override

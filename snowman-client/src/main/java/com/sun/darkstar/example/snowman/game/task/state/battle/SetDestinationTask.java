@@ -1,10 +1,13 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import java.io.IOException;
+
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
@@ -19,9 +22,9 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * set the destination of the user controlled <code>SnowmanEntity</code>.
  * <p>
  * <code>SetDestinationTask</code> execution logic:
- * 1. Create a <code>Ray</code> goes into the screen based on mouse screen
- * coordinates.
- * 2. Find and set the valid destination using <code>CollisionManager</code>.
+ * 1. Find the click position based on screen coordinates.
+ * 2. Send server a 'moveme' packet.
+ * 3. Find and set the valid destination based on clicked position.
  * <p>
  * Two <code>SetDestinationTask</code> are considered 'equal' if and only
  * if both of them are setting on the same <code>SnowmanEntity</code>.
@@ -69,11 +72,14 @@ public class SetDestinationTask extends RealTimeTask {
 		ray.setDirection(worldCoords.subtractLocal(display.getRenderer().getCamera().getLocation()).normalizeLocal());
 		Vector3f click = collisionManager.getIntersection(ray, this.game.getActiveState().getWorld(), new Vector3f(), true);
 		try {
-			Spatial view = (Spatial) ViewManager.getInstance().getView(this.snowman);
+			Spatial view = (Spatial)ViewManager.getInstance().getView(this.snowman);
 			Vector3f local = view.getLocalTranslation();
+			this.game.getClient().getConnection().send(ClientProtocol.getInstance().createMoveMePkt(local.x, local.z, click.x, click.z));
 			Vector3f destination = collisionManager.getDestination(local.x, local.z, click.x, click.z, this.game.getActiveState().getWorld());
 			this.snowman.setDestination(destination);
 		} catch (ObjectNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

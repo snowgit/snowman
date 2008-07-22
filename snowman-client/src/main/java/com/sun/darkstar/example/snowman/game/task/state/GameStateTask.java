@@ -5,6 +5,7 @@ import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -16,11 +17,12 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 1. Validate the given enumeration is not the current active state.
  * 2. Disable the current active <code>GameState</code>.
  * 3. Clear the <code>BasicPassManager</code>.
- * 4. Deactivate all input.
- * 5. Initialize the new active <code>GameState</code>.
- * 6. Activate the new <code>GameState</code>.
- * 7. Set the current active <code>GameState</code> to be the new one.
- * 8. Activate all input.
+ * 4. Clear the GUI <code>Display</code>.
+ * 5. Deactivate all input.
+ * 6. Initialize the new active <code>GameState</code>.
+ * 7. Activate the new <code>GameState</code>.
+ * 8. Set the current active <code>GameState</code> to be the new one.
+ * 9. Activate all input.
  * <p>
  * <code>GameStateTask</code> does not have a more detailed 'equals'
  * comparison. All <code>GameStateTask</code> are considered 'equal',
@@ -51,10 +53,13 @@ public class GameStateTask extends RealTimeTask {
 		if(this.game.getActiveState().getType() == this.enumn) return;
 		this.game.getActiveState().setActive(false);
 		this.game.getPassManager().clearAll();
+		if(this.game.getActiveState().getType() == EGameState.LoginState) {
+			((LoginState)this.game.getActiveState()).getGUI().getDisplay().removeAllWidgets();
+		}
 		InputManager.getInstance().setInputActive(false);
 		GameState state = ((GameState)GameStateManager.getInstance().getChild(this.enumn.toString()));
 		state.initialize();
-		state.setActive(true);
+		state.setActive(false);
 		this.game.setActiveState(state);
 		InputManager.getInstance().setInputActive(true);
 	}
