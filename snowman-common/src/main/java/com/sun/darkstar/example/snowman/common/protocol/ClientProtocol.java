@@ -80,8 +80,8 @@ public class ClientProtocol extends Protocol{
      * to move towards the given destination.
      * @param x The x coordinate of the start point.
      * @param y The y coordinate of the start point.
-     * @param endx The x coordinate of the destination.
-     * @param endy The y coordinate of the destination.
+     * @param endx The x coordinate of the clicked position.
+     * @param endy The y coordinate of the clicked position.
      * @return The <code>ByteBuffer</code> "move me" packet.
      */
     public ByteBuffer createMoveMePkt(float x, float y, float endx, float endy) {
