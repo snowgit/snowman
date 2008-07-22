@@ -64,6 +64,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
+import com.jme.system.canvas.JMECanvas;
+import com.jme.system.canvas.SimplePassCanvasImpl;
 import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
@@ -78,9 +80,6 @@ import com.jme.util.stat.graph.DefColorFadeController;
 import com.jme.util.stat.graph.GraphFactory;
 import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
-import com.jmex.awt.JMECanvas;
-import com.jmex.awt.SimpleCanvasImpl;
-import com.jmex.awt.SimplePassCanvasImpl;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.terrain.TerrainPage;
@@ -652,7 +651,7 @@ public class WorldEditor extends JFrame {
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
 		display.setMinSamples(2);
-		final Canvas comp = display.createCanvas(1024, 768);
+		final Canvas comp = (Canvas)display.createCanvas(1024, 768);
 		canvas = comp;
 
 		// add a listener... if window is resized, we can do something about it.
