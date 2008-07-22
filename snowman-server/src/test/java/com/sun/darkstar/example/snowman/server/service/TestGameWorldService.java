@@ -40,14 +40,19 @@ import com.sun.sgs.kernel.ComponentRegistry;
 import com.sun.sgs.service.TransactionProxy;
 import com.sun.sgs.kernel.TaskScheduler;
 import com.sun.sgs.kernel.TransactionScheduler;
+import com.sun.sgs.service.Transaction;
+import com.sun.sgs.kernel.TaskReservation;
+import com.sun.sgs.kernel.KernelRunnable;
+import com.sun.sgs.auth.Identity;
+import com.sun.sgs.app.TransactionException;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
-import com.jme.math.Ray;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
 import org.easymock.EasyMock;
+import java.util.Properties;
 
 /**
  * Verify behavior of the <code>GameWorldService</code>
@@ -82,6 +87,7 @@ public class TestGameWorldService
         //configure the behavior of the registry
         EasyMock.expect(mockRegistry.getComponent(TaskScheduler.class)).andReturn(mockTaskScheduler);
         EasyMock.expect(mockRegistry.getComponent(TransactionScheduler.class)).andReturn(mockTransactionScheduler);
+        EasyMock.replay(mockRegistry);
     }
     
     @Before
@@ -92,6 +98,7 @@ public class TestGameWorldService
         
         //configure behavior of the data importer to return a dummy world
         EasyMock.expect(mockDataImporter.getWorld(EWorld.Battle)).andReturn(dummyWorld);
+        EasyMock.replay(mockDataImporter);
         
         //load the singletons into the registry
         SingletonRegistry.setDataImporter(mockDataImporter);
@@ -99,12 +106,134 @@ public class TestGameWorldService
     }
     
     
+    /**
+     * Verify that the trimPath method of the GameWorldService
+     * is properly scheduled and executed when the calling transaction
+     * is committed
+     */
     @Test
-    public void testTrimPath() {
+    public void testTrimPathOnCommit() {
+        //setup a fake transaction to be used as the current transaction
+        Transaction mockTransaction = EasyMock.createMock(Transaction.class);
+        EasyMock.expect(mockTxnProxy.getCurrentTransaction()).andReturn(mockTransaction);
+        Identity mockIdentity = EasyMock.createMock(Identity.class);
+        EasyMock.expect(mockTxnProxy.getCurrentOwner()).andReturn(mockIdentity).anyTimes();
+        EasyMock.replay(mockTxnProxy);
         
+        //setup a fake TaskReservation 
+        TaskReservation mockReservation = EasyMock.createMock(TaskReservation.class);
+        EasyMock.expect(mockTaskScheduler.reserveTask(
+                        (KernelRunnable) EasyMock.anyObject(), 
+                        (Identity) EasyMock.anyObject())).andStubReturn(mockReservation);
+        EasyMock.replay(mockTaskScheduler);
+        
+        //create the GameWorldService with the mock environment
+        GameWorldService service = new GameWorldService(new Properties(),
+                                                        mockRegistry,
+                                                        mockTxnProxy);
+        
+        //record that we expect to join the current transaction
+        mockTransaction.join(service);
+        EasyMock.replay(mockTransaction);
+        
+        //record that we expect the mock reservation to be run
+        mockReservation.use();
+        EasyMock.replay(mockReservation);
+        
+        //dummy callback
+        GameWorldServiceCallback dummyCallback = EasyMock.createMock(GameWorldServiceCallback.class);
+        
+        //call the service
+        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, dummyCallback);
+        
+        //simulate committed transaction
+        service.commit(mockTransaction);
+        
+        //verify recorded actions
+        EasyMock.verify(mockTransaction);
+        EasyMock.verify(mockReservation);
     }
     
+    /**
+     * Verify that the trimPath method of the GameWorldService
+     * is *not* executed when the calling transaction
+     * is aborted
+     */
+    @Test
+    public void testTrimPathOnAbort() {
+        //setup a fake transaction to be used as the current transaction
+        Transaction mockTransaction = EasyMock.createMock(Transaction.class);
+        EasyMock.expect(mockTxnProxy.getCurrentTransaction()).andReturn(mockTransaction);
+        Identity mockIdentity = EasyMock.createMock(Identity.class);
+        EasyMock.expect(mockTxnProxy.getCurrentOwner()).andReturn(mockIdentity).anyTimes();
+        EasyMock.replay(mockTxnProxy);
+        
+        //setup a fake TaskReservation 
+        TaskReservation mockReservation = EasyMock.createMock(TaskReservation.class);
+        EasyMock.expect(mockTaskScheduler.reserveTask(
+                        (KernelRunnable) EasyMock.anyObject(), 
+                        (Identity) EasyMock.anyObject())).andStubReturn(mockReservation);
+        EasyMock.replay(mockTaskScheduler);
+        
+        //create the GameWorldService with the mock environment
+        GameWorldService service = new GameWorldService(new Properties(),
+                                                        mockRegistry,
+                                                        mockTxnProxy);
+        
+        //record that we expect to join the current transaction
+        mockTransaction.join(service);
+        EasyMock.replay(mockTransaction);
+        
+        //record that we expect the mock reservation to be cancelled
+        mockReservation.cancel();
+        EasyMock.replay(mockReservation);
+        
+        //dummy callback
+        GameWorldServiceCallback dummyCallback = EasyMock.createMock(GameWorldServiceCallback.class);
+        
+        //call the service
+        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, dummyCallback);
+        
+        //simulate aborted transaction
+        service.abort(mockTransaction);
+        
+        //verify recorded actions
+        EasyMock.verify(mockTransaction);
+        EasyMock.verify(mockReservation);
+    }
     
+    /**
+     * Verify that the trimPath method of the GameWorldService
+     * is scheduled immediately when there is no transaction
+     */
+    @Test
+    public void testTrimPathOnNoTransaction() {
+        //schedule an exception to be thrown when current transaction is requested
+        EasyMock.expect(mockTxnProxy.getCurrentTransaction()).andThrow(new TransactionException("test"));
+        Identity mockIdentity = EasyMock.createMock(Identity.class);
+        EasyMock.expect(mockTxnProxy.getCurrentOwner()).andReturn(mockIdentity).anyTimes();
+        EasyMock.replay(mockTxnProxy);
+        
+        //record that we expect the task scheduler to be called directly
+        mockTaskScheduler.scheduleTask((KernelRunnable) EasyMock.anyObject(), 
+                                       (Identity) EasyMock.anyObject());
+        EasyMock.replay(mockTaskScheduler);
+        
+        //create the GameWorldService with the mock environment
+        GameWorldService service = new GameWorldService(new Properties(),
+                                                        mockRegistry,
+                                                        mockTxnProxy);
+        
+        
+        //dummy callback
+        GameWorldServiceCallback dummyCallback = EasyMock.createMock(GameWorldServiceCallback.class);
+        
+        //call the service
+        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, dummyCallback);
+        
+        //verify recorded actions
+        EasyMock.verify(mockTaskScheduler);
+    }
     
     @After 
     public void cleanupMocks() {

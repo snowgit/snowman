@@ -157,14 +157,14 @@ public class CollisionManagerImpl implements CollisionManager
     }
 
     @Override
-	public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

@@ -32,59 +32,46 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
-import com.sun.sgs.app.Channel;
-
 /**
- * The <code>GameWorldManager</code> provides application level access
- * to the {@link GameWorldService} running inside of the 
- * Project Darkstar stack.  
+ * Callback interface to notify users of the <code>GameWorldService</code>
+ * of results.
  * 
  * @author Owen Kellett
  */
-public class GameWorldManager {
-    
-    private final GameWorldService backingService;
-    
-    public GameWorldManager(GameWorldService backingService) {
-        this.backingService = backingService;
-    }
+public interface GameWorldServiceCallback {
 
     /**
-     * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * trimPath method.
-     * </p>
+     * Called when the <code>GameWorldService</code> completes trimming
+     * the path for the given player id from the start position at the
+     * given start time.  The endx and endy parameters are equivalent to the
+     * new destination location of the move path.
      * 
-     * @see GameWorldService#trimPath trimPath
+     * @param playerId id of the player being moved
+     * @param startx x coordinate of the start position
+     * @param starty y coordinate of the start position
+     * @param endx x coordinate of the trimmed destination position
+     * @param endy y coordinate of the trimmed destination position
+     * @param timestart timestamp that the player began moving
      */
-    public void trimPath(int playerId,
-                         float startx,
-                         float starty, 
-                         float endx, 
-                         float endy, 
-                         long timestart,
-                         GameWorldServiceCallback callback) {
-        backingService.trimPath(playerId,
-                                startx, 
-                                starty, 
-                                endx, 
-                                endy, 
-                                timestart,
-                                callback);
-    }
+    public void trimPathComplete(int playerId,
+                                 float startx,
+                                 float starty,
+                                 float endx,
+                                 float endy,
+                                 long timestart);
     
     /**
-     * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * validThrow method.
-     * </p>
+     * Called when the <code>GameWorldService</code> is unable to complete
+     * a trim path calculation request due to resource limitations or some
+     * other problem.
      * 
-     * @see GameWorldService#validThrow validThrow
+     * @param playerId id of the player being moved
+     * @param startx x coordinate of the start position
+     * @param starty y coordinate of the start position
+     * @param timestart timestamp that the player began moving
      */
-    public boolean validThrow(float startx,
-                              float starty, 
-                              float endx,
-                              float endy) {
-        return backingService.validThrow(startx, starty, endx, endy);
-    }
+    public void trimPathFailure(int playerId,
+                                float startx, 
+                                float stary,
+                                long timestart);
 }
