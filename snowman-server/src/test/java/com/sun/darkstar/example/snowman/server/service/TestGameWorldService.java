@@ -40,14 +40,19 @@ import com.sun.sgs.kernel.ComponentRegistry;
 import com.sun.sgs.service.TransactionProxy;
 import com.sun.sgs.kernel.TaskScheduler;
 import com.sun.sgs.kernel.TransactionScheduler;
+import com.sun.sgs.service.Transaction;
+import com.sun.sgs.kernel.TaskReservation;
+import com.sun.sgs.kernel.KernelRunnable;
+import com.sun.sgs.auth.Identity;
+import com.sun.sgs.app.Channel;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
-import com.jme.math.Ray;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
 import org.easymock.EasyMock;
+import java.util.Properties;
 
 /**
  * Verify behavior of the <code>GameWorldService</code>
@@ -99,9 +104,45 @@ public class TestGameWorldService
     }
     
     
+    /**
+     * Verify that the trimPath method of the GameWorldService
+     * is properly scheduled and executed when the calling transaction
+     * is committed
+     */
     @Test
-    public void testTrimPath() {
+    public void testTrimPathOnCommit() {
+        //setup a fake transaction to be used as the current transaction
+        Transaction mockTransaction = EasyMock.createMock(Transaction.class);
+        EasyMock.expect(mockTxnProxy.getCurrentTransaction()).andReturn(mockTransaction);
         
+        //setup a fake TaskReservation 
+        TaskReservation mockReservation = EasyMock.createMock(TaskReservation.class);
+        EasyMock.expect(mockTaskScheduler.reserveTask(
+                        (KernelRunnable) EasyMock.anyObject(), 
+                        (Identity) EasyMock.anyObject())).andStubReturn(mockReservation);
+        
+        //create the GameWorldService with the mock environment
+        GameWorldService service = new GameWorldService(new Properties(),
+                                                        mockRegistry,
+                                                        mockTxnProxy);
+        
+        //record that we expect to join the current transaction
+        mockTransaction.join(service);
+        EasyMock.replay(mockTransaction);
+        
+        //record that we expect the mock reservation to be run
+        mockReservation.use();
+        EasyMock.replay(mockReservation);
+        
+        //call the service
+        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, EasyMock.createMock(Channel.class));
+        
+        //simulate committed transaction
+        service.commit(mockTransaction);
+        
+        //verify recorded actions
+        EasyMock.verify(mockTransaction);
+        EasyMock.verify(mockReservation);
     }
     
     

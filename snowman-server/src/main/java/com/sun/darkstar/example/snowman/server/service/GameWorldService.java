@@ -64,10 +64,6 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
     /** The logger for this class. */
     private static Logger logger = Logger.getLogger(GameWorldService.class.getName());
     
-    private static final float THROWHEIGHT = 10.0f;
-    private static final float PATHHEIGHT = 10.0f;
-    private static final float BACKOFFDISTANCE = 5.0f;
-    
     /** The TaskScheduler from the registry */
     private final TaskScheduler taskScheduler;
     /** The TransactionScheduler from the registry */
@@ -113,19 +109,19 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
      * Calculate the actual path of a snowman attempting to walk
      * from the given start point to the given end point.  This method
      * will check if any barriers are in the snowman's path by checking
-     * for an intersection with the <code>Spatial</code> game world.
-     * The line segment that is checked is one going from the start point
-     * to the end point at the static PATHHEIGHT.
+     * for an intersection with the <code>Spatial</code> game world by
+     * using the <code>CollisionManager</code>. 
+     * If there is a collision, then a new destination location will be
+     * calculated and returned by the <code>CollisionManager</code>.
      * </p>
      * 
      * <p>
-     * If there is a collision, then a new destination location will be
-     * calculated based on the collision point backed off by the 
-     * static BACKOFFDISTANCE.  This method will schedule a new
+     * This method will schedule a new
      * <code>Task</code> when it completes that will broadcast a 
      * MOVEMOB message to all clients on the channel indicating that
      * the player is attempting to move from the start position to the
-     * newly calculated destination position.
+     * newly calculated destination position.  The <code>Task</code> will not be
+     * executed until the calling transaction (if there is one) commits.
      * </p>
      * 
      * @param playerId id of the player being moved
@@ -164,10 +160,8 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
                               float starty, 
                               float endx,
                               float endy) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return SingletonRegistry.getCollisionManager().validate(startx, starty, endx, endy, gameWorld);
     }
-    
-
 
     private void joinCurrentTransaction() {
         Transaction txn = txnProxy.getCurrentTransaction();
