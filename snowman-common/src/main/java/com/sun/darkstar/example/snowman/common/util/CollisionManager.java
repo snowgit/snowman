@@ -49,6 +49,9 @@ import com.jme.scene.Spatial;
  */
 public interface CollisionManager {
 	
+    public static final float BACKOFFDISTANCE = 5.0f;
+    public static final float PATHHEIGHT = 5.0f;
+    public static final float THROWHEIGHT = 5.0f;
 
     /**
      * Retrieve the intersecting object under the given node.
