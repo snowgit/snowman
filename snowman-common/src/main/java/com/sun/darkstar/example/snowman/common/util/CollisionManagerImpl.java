@@ -35,7 +35,9 @@ package com.sun.darkstar.example.snowman.common.util;
 import java.util.ArrayList;
 
 import com.jme.intersection.PickData;
+import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
+import com.jme.intersection.BoundingPickResults;
 import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
@@ -80,20 +82,18 @@ public class CollisionManagerImpl implements CollisionManager
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     public Spatial getIntersectObject(Ray ray, Node root, Class reference, boolean iterate) {
-        TrianglePickResults results = new TrianglePickResults();
+        PickResults results = new TrianglePickResults();
         results.setCheckDistance(true);
         root.findPick(ray, results);
         if (iterate) {
+            System.out.println(results.getNumber());
             for (int i = 0; i < results.getNumber(); i++) {
-                return this.validateClass(root, results.getPickData(i).getTargetMesh(), reference);
+                Spatial collision = this.validateClass(root, results.getPickData(i).getTargetMesh(), reference);
+                if (collision != null)
+                    return collision;
             }
         } else if (results.getNumber() > 0) {
-            Spatial spatial = results.getPickData(0).getTargetMesh();
-            if (spatial.getClass().equals(reference)) {
-                return spatial;
-            } else {
-                return null;
-            }
+            return this.validateClass(root, results.getPickData(0).getTargetMesh(), reference);
         }
         return null;
     }
