@@ -34,7 +34,7 @@ package com.sun.darkstar.example.snowman.server.service;
 
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.sgs.kernel.KernelRunnable;
-import com.sun.sgs.app.Channel;
+import com.jme.scene.Spatial;
 import com.jme.math.Vector3f;
 
 /**
@@ -55,7 +55,8 @@ public class TrimPathTask implements KernelRunnable
     private float endx;
     private float endy;
     private long timestart;
-    private Channel gameChannel;
+    private GameWorldServiceCallback callback;
+    private Spatial gameWorld;
     private CollisionManager collisionManager;
 
     public TrimPathTask(int playerId,
@@ -64,7 +65,8 @@ public class TrimPathTask implements KernelRunnable
                         float endx,
                         float endy,
                         long timestart,
-                        Channel gameChannel,
+                        GameWorldServiceCallback callback,
+                        Spatial gameWorld,
                         CollisionManager collisionManager) {
         this.playerId = playerId;
         this.startx = startx;
@@ -72,7 +74,8 @@ public class TrimPathTask implements KernelRunnable
         this.endx = endx;
         this.endy = endy;
         this.timestart = timestart;
-        this.gameChannel = gameChannel;
+        this.callback = callback;
+        this.gameWorld = gameWorld;
         this.collisionManager = collisionManager;
     }
     
@@ -89,6 +92,7 @@ public class TrimPathTask implements KernelRunnable
      * @throws java.lang.Exception
      */
     public void run() throws Exception {
-        
+        Vector3f destination = collisionManager.getDestination(startx, starty, endx, endy, gameWorld);
+        callback.trimPathComplete(playerId, startx, starty, destination.getX(), destination.getZ(), timestart);
     }
 }

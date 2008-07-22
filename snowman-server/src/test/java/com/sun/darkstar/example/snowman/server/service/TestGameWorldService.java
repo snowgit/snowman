@@ -87,6 +87,7 @@ public class TestGameWorldService
         //configure the behavior of the registry
         EasyMock.expect(mockRegistry.getComponent(TaskScheduler.class)).andReturn(mockTaskScheduler);
         EasyMock.expect(mockRegistry.getComponent(TransactionScheduler.class)).andReturn(mockTransactionScheduler);
+        EasyMock.replay(mockRegistry);
     }
     
     @Before
@@ -97,6 +98,7 @@ public class TestGameWorldService
         
         //configure behavior of the data importer to return a dummy world
         EasyMock.expect(mockDataImporter.getWorld(EWorld.Battle)).andReturn(dummyWorld);
+        EasyMock.replay(mockDataImporter);
         
         //load the singletons into the registry
         SingletonRegistry.setDataImporter(mockDataImporter);
@@ -114,12 +116,16 @@ public class TestGameWorldService
         //setup a fake transaction to be used as the current transaction
         Transaction mockTransaction = EasyMock.createMock(Transaction.class);
         EasyMock.expect(mockTxnProxy.getCurrentTransaction()).andReturn(mockTransaction);
+        Identity mockIdentity = EasyMock.createMock(Identity.class);
+        EasyMock.expect(mockTxnProxy.getCurrentOwner()).andReturn(mockIdentity).anyTimes();
+        EasyMock.replay(mockTxnProxy);
         
         //setup a fake TaskReservation 
         TaskReservation mockReservation = EasyMock.createMock(TaskReservation.class);
         EasyMock.expect(mockTaskScheduler.reserveTask(
                         (KernelRunnable) EasyMock.anyObject(), 
                         (Identity) EasyMock.anyObject())).andStubReturn(mockReservation);
+        EasyMock.replay(mockTaskScheduler);
         
         //create the GameWorldService with the mock environment
         GameWorldService service = new GameWorldService(new Properties(),
@@ -134,8 +140,11 @@ public class TestGameWorldService
         mockReservation.use();
         EasyMock.replay(mockReservation);
         
+        //dummy callback
+        GameWorldServiceCallback dummyCallback = EasyMock.createMock(GameWorldServiceCallback.class);
+        
         //call the service
-        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, EasyMock.createMock(Channel.class));
+        service.trimPath(1, 1.0f, 2.0f, 3.0f, 4.0f, 20l, dummyCallback);
         
         //simulate committed transaction
         service.commit(mockTransaction);
@@ -144,8 +153,6 @@ public class TestGameWorldService
         EasyMock.verify(mockTransaction);
         EasyMock.verify(mockReservation);
     }
-    
-    
     
     @After 
     public void cleanupMocks() {

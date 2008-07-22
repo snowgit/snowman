@@ -40,11 +40,11 @@ import com.sun.sgs.service.NonDurableTransactionParticipant;
 import com.sun.sgs.kernel.TaskScheduler;
 import com.sun.sgs.kernel.TransactionScheduler;
 import com.sun.sgs.kernel.TaskReservation;
-import com.sun.sgs.app.Channel;
+import com.sun.sgs.app.TransactionException;
+import com.sun.sgs.app.TaskRejectedException;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.jme.scene.Spatial;
-import com.jme.math.Vector3f;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.HashSet;
@@ -117,11 +117,10 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
      * 
      * <p>
      * This method will schedule a new
-     * <code>Task</code> when it completes that will broadcast a 
-     * MOVEMOB message to all clients on the channel indicating that
-     * the player is attempting to move from the start position to the
-     * newly calculated destination position.  The <code>Task</code> will not be
+     * <code>Task</code> to calculate the new destination position.
+     * The <code>Task</code> will not be
      * executed until the calling transaction (if there is one) commits.
+     * The given callback interface will then be notified of the results.
      * </p>
      * 
      * @param playerId id of the player being moved
@@ -130,7 +129,7 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
      * @param endx x coordinate of the destination position
      * @param endy y coordinate of the destination position
      * @param timestart timestamp that the player began moving
-     * @param gameChannel channel to broadcast the resulting MOVEMOB message
+     * @param callback callback interface to notify of results
      */
     public void trimPath(int playerId,
                          float startx,
@@ -138,8 +137,32 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
                          float endx, 
                          float endy, 
                          long timestart,
-                         Channel gameChannel) {
-        throw new UnsupportedOperationException("Not supported yet.");
+                         GameWorldServiceCallback callback) {
+        //first we create a new task to calculate the trimmed path
+        TrimPathTask task = new TrimPathTask(playerId,
+                                             startx,
+                                             starty,
+                                             endx,
+                                             endy,
+                                             timestart,
+                                             callback,
+                                             gameWorld,
+                                             SingletonRegistry.getCollisionManager());
+        
+        //join the current transaction if it exists
+        //and save the task for use during commit
+        try {
+            HashSet<TaskReservation> reservations = joinCurrentTransaction();
+            TaskReservation reservation = taskScheduler.reserveTask(task, txnProxy.getCurrentOwner());
+            reservations.add(reservation);
+        } catch (TransactionException e) {
+            //if there is no transaction, schedule the task immediately
+            taskScheduler.scheduleTask(task, txnProxy.getCurrentOwner());
+        } catch (TaskRejectedException e) {
+            //if a reservation is denied, log the error and callback a failure
+            logger.warning("Unable to reserve task: "+e.getMessage());
+            callback.trimPathFailure(playerId, startx, starty, timestart);
+        }
     }
     
     /**
@@ -163,7 +186,7 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
         return SingletonRegistry.getCollisionManager().validate(startx, starty, endx, endy, gameWorld);
     }
 
-    private void joinCurrentTransaction() {
+    private HashSet<TaskReservation> joinCurrentTransaction() {
         Transaction txn = txnProxy.getCurrentTransaction();
         HashSet<TaskReservation> set = txnMap.get(txn);
         
@@ -172,6 +195,8 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
             txnMap.put(txn, set);
             txn.join(this);
         }
+        
+        return set;
     }
     
     /** @inheritDoc */
