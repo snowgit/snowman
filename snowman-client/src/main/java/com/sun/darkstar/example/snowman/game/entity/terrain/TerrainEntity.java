@@ -44,11 +44,10 @@ public class TerrainEntity extends EditableEntity {
 	
 	/**
 	 * Constructor of <code>TerrainEntity</code>.
-	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @param id The integer ID number of this entity.
 	 */
-	public TerrainEntity(EEntity enumn, int id) {
-		super(enumn, id);
+	public TerrainEntity(int id) {
+		super(EEntity.Terrain, id);
 	}
 	
 	/**

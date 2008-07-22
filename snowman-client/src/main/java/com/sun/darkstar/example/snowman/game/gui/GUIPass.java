@@ -9,7 +9,7 @@ import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.Pass;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.sun.darkstar.example.snowman.game.input.enumn.EConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 
 /**
@@ -64,8 +64,8 @@ public abstract class GUIPass extends Pass {
 	 */
 	public void initialize() {
 		this.buildWidgets();
-		InputManager.getInstance().getConverter(EConverter.KeyboardConverter).setDisplay(this.display);
-		InputManager.getInstance().getConverter(EConverter.MouseConverter).setDisplay(this.display);
+		InputManager.getInstance().getConverter(EInputConverter.KeyboardConverter).setDisplay(this.display);
+		InputManager.getInstance().getConverter(EInputConverter.MouseConverter).setDisplay(this.display);
 	}
 	
 	/**

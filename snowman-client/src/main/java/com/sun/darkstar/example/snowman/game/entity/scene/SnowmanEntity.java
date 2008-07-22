@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.entity.scene;
 
+import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
@@ -10,7 +11,7 @@ import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:09 EST
- * @version Modified date: 07-18-2008 11:16 EST
+ * @version Modified date: 07-21-2008 17:44 EST
  */
 public class SnowmanEntity extends DynamicEntity {
 	/**
@@ -21,6 +22,10 @@ public class SnowmanEntity extends DynamicEntity {
 	 * The current <code>EState</code>.
 	 */
 	private EState state;
+	/**
+	 * The current <code>Vector3f</code> destination.
+	 */
+	private Vector3f destination;
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
@@ -37,6 +42,14 @@ public class SnowmanEntity extends DynamicEntity {
 	 */
 	public void setHP(int hp) {
 		this.hp = hp;
+	}
+	
+	/**
+	 * Set the destination of this snowman.
+	 * @param destination The <code>Vector3f</code> destination to be set.
+	 */
+	public void setDestination(Vector3f destination) {
+		this.destination = destination;
 	}
 	
 	/**
@@ -61,5 +74,13 @@ public class SnowmanEntity extends DynamicEntity {
 	 */
 	public EState getState() {
 		return this.state;
+	}
+	
+	/**
+	 * Retrieve the destination of this snowman.
+	 * @return The <code>Vector3f</code> destination.
+	 */
+	public Vector3f getDestination() {
+		return this.destination;
 	}
 }

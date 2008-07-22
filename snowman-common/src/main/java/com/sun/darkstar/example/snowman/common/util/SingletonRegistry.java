@@ -42,43 +42,49 @@ package com.sun.darkstar.example.snowman.common.util;
  */
 public class SingletonRegistry 
 {
-    /**
-     * The <code>SingletonRegistry</code> instance
-     */
-    private static SingletonRegistry instance;
-    
-    private DataImporter dataImporter;
-    private CollisionManager collisionManager;
-    
-    protected SingletonRegistry() {}
-    
-    public static SingletonRegistry getInstance() {
-        if(SingletonRegistry.instance == null) {
-            SingletonRegistry.instance = new SingletonRegistry();
-        }
-        return SingletonRegistry.instance;
-    }
-    
-    
-    
-    public static DataImporter getDataImporter() {
-        if(getInstance().dataImporter == null) {
-            getInstance().dataImporter = DataImporterImpl.getInstance();
-        }
-        return getInstance().dataImporter;
-    }
-    public static CollisionManager getCollisionManager() {
-        if(getInstance().collisionManager == null) {
-            getInstance().collisionManager = CollisionManagerImpl.getInstance();
-        }
-        return getInstance().collisionManager;
-    }
-    
-    public static void setDataImporter(DataImporter dataImporter) {
-        getInstance().dataImporter = dataImporter;
-    }
-    public static void setCollisionManager(CollisionManager collisionManager) {
-        getInstance().collisionManager = collisionManager;
-    }
+	/**
+	 * The <code>SingletonRegistry</code> instance
+	 */
+	private static SingletonRegistry instance;
+
+	private DataImporter dataImporter;
+	private CollisionManager collisionManager;
+	private IHPConverter hpConverter;
+
+	protected SingletonRegistry() {}
+
+	public static SingletonRegistry getInstance() {
+		if(SingletonRegistry.instance == null) {
+			SingletonRegistry.instance = new SingletonRegistry();
+		}
+		return SingletonRegistry.instance;
+	}
+
+	public static IHPConverter getHPConverter() {
+		if(SingletonRegistry.getInstance().hpConverter == null) {
+			SingletonRegistry.getInstance().hpConverter = HPConverter.getInstance();
+		}
+		return SingletonRegistry.getInstance().hpConverter;
+	}
+
+	public static DataImporter getDataImporter() {
+		if(getInstance().dataImporter == null) {
+			getInstance().dataImporter = DataImporterImpl.getInstance();
+		}
+		return getInstance().dataImporter;
+	}
+	public static CollisionManager getCollisionManager() {
+		if(getInstance().collisionManager == null) {
+			getInstance().collisionManager = CollisionManagerImpl.getInstance();
+		}
+		return getInstance().collisionManager;
+	}
+
+	public static void setDataImporter(DataImporter dataImporter) {
+		getInstance().dataImporter = dataImporter;
+	}
+	public static void setCollisionManager(CollisionManager collisionManager) {
+		getInstance().collisionManager = collisionManager;
+	}
 
 }

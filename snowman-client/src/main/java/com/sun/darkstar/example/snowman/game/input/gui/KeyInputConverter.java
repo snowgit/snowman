@@ -4,6 +4,8 @@ import org.fenggui.event.Key;
 import org.lwjgl.input.Keyboard;
 
 import com.jme.input.KeyInputListener;
+import com.sun.darkstar.example.snowman.game.input.InputConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 
 /**
  * <code>KeyInputConverter</code> extends <code>InputConverter</code> and
@@ -13,7 +15,7 @@ import com.jme.input.KeyInputListener;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-28-2008 12:14 EST
- * @version Modified date: 07-16-2008 00:22 EST
+ * @version Modified date: 07-21-2008 12:11 EST
  */
 public class KeyInputConverter extends InputConverter implements KeyInputListener {
 
@@ -21,7 +23,7 @@ public class KeyInputConverter extends InputConverter implements KeyInputListene
 	 * Constructor of <code>KeyInputConverter</code>.
 	 */
 	public KeyInputConverter() {
-		super();
+		super(EInputConverter.KeyboardConverter);
 	}
 
 	/**

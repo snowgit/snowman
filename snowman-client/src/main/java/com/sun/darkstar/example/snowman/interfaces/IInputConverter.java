@@ -2,6 +2,8 @@ package com.sun.darkstar.example.snowman.interfaces;
 
 import org.fenggui.Display;
 
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
+
 /**
  * <code>IInputConverter</code> defines the interface for converters that
  * converts {@link jME} input events to {@link FengGUI} events.
@@ -17,7 +19,7 @@ import org.fenggui.Display;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-09-2008 11:01 EST
- * @version Modified date: 07-11-2008 15:29 EST
+ * @version Modified date: 07-21-2008 12:10 EST
  */
 public interface IInputConverter {
 
@@ -32,6 +34,12 @@ public interface IInputConverter {
 	 * @param active True if conversion should be activated. False otherwise.
 	 */
 	public void setActive(boolean active);
+	
+	/**
+	 * Retrieve the type enumeration of this converter.
+	 * @return The <code>EInputConverter</code> enumeration.
+	 */
+	public EInputConverter getEnumn();
 	
 	/**
 	 * Check if the input conversion process is active.

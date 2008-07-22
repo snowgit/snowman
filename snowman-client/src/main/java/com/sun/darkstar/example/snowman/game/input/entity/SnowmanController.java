@@ -1,7 +1,9 @@
-package com.sun.darkstar.example.snowman.game.input;
+package com.sun.darkstar.example.snowman.game.input.entity;
 
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
+import com.sun.darkstar.example.snowman.game.input.Controller;
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 
@@ -22,7 +24,7 @@ public class SnowmanController extends Controller implements MouseInputListener 
 	 * @param entity The <code>SnowmanEntity</code> instance.
 	 */
 	public SnowmanController(SnowmanEntity entity) {
-		super(entity);
+		super(entity, EInputType.Mouse);
 	}
 
 	@Override
@@ -34,13 +36,18 @@ public class SnowmanController extends Controller implements MouseInputListener 
 	@Override
 	public void onButton(int button, boolean pressed, int x, int y) {
 		if(button == 0 && pressed) {
-			
+			switch(((SnowmanEntity)this.entity).getState()) {
+			case Idle: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y);
+			case Moving: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y);
+			case Targeting: 
+			case Grabbing: 
+			}
 		}
 	}
 
 	@Override
 	public void onMove(int delta, int delta2, int newX, int newY) {
-		TaskManager.getInstance().createTask(ETask.SnowmanState, this.entity, newX, newY);
+		TaskManager.getInstance().createTask(ETask.UpdateState, this.entity, newX, newY);
 	}
 
 	@Override

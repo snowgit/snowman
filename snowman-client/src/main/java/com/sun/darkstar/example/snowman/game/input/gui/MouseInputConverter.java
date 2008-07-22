@@ -3,6 +3,8 @@ package com.sun.darkstar.example.snowman.game.input.gui;
 import org.fenggui.event.mouse.MouseButton;
 
 import com.jme.input.MouseInputListener;
+import com.sun.darkstar.example.snowman.game.input.InputConverter;
+import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 
 /**
  * <code>MouseInputConverter</code> extends <code>InputConverter</code> and
@@ -12,7 +14,7 @@ import com.jme.input.MouseInputListener;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-28-2008 12:20 EST
- * @version Modified date: 07-16-2008 16:23 EST
+ * @version Modified date: 07-21-2008 12:11 EST
  */
 public class MouseInputConverter extends InputConverter implements MouseInputListener {
 	/**
@@ -28,7 +30,7 @@ public class MouseInputConverter extends InputConverter implements MouseInputLis
 	 * Constructor of <code>MouseInputConverter</code>.
 	 */
 	public MouseInputConverter() {
-		super();
+		super(EInputConverter.MouseConverter);
 	}
 
 	/**

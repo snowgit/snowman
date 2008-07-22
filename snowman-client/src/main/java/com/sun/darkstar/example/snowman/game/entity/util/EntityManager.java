@@ -7,6 +7,7 @@ import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.EditableEntity;
 import com.sun.darkstar.example.snowman.game.entity.StaticEntity;
 import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -103,7 +104,8 @@ public class EntityManager extends Manager {
 		if(enumn == EEntity.Terrain) id = 0;
 		IEntity entity = null;
 		switch(enumn) {
-		case Terrain: entity = new TerrainEntity(enumn, id); break;
+		case Terrain: entity = new TerrainEntity(id); break;
+		case Snowman: entity = new SnowmanEntity(id); break;
 		default:
 			switch(enumn.getType()) {
 			case Static: entity = new StaticEntity(enumn, id); break;

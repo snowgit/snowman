@@ -32,9 +32,13 @@ public enum ETask {
 	 */
 	AddMOB(ETaskType.RealTime),
 	/**
-	 * The task used to change the state of the user controlled snowman.
+	 * The task used to update all value associated with mouse position.
 	 */
-	SnowmanState(ETaskType.RealTime);
+	UpdateState(ETaskType.RealTime),
+	/**
+	 * The task used to calculate and set the destination of the snowman.
+	 */
+	SetDestination(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

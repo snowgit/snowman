@@ -111,7 +111,11 @@ public class AddMOBTask extends RealTimeTask {
 			if(this.local) {
 				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
 				controller.setActive(true);
+				InputManager.getInstance().registerController(controller);
 				((BattleState)this.game.getActiveState()).initializeChaseCam((DynamicView)view);
+			} else {
+				// TODO Add some other type of controller that needs to be updated every frame to add
+				// forces toward the destination.
 			}
 			view.attachTo(this.game.getActiveState().getWorld());
 		} catch (DuplicatedIDException e) {
