@@ -105,6 +105,7 @@ class SnowmanGame implements ManagedObject, Serializable {
         player.setID(id);
         player.setPosition(playerStarts[id*2],playerStarts[(id*2)+1]);
         player.setTeamColor(color);
+        player.setArea(this);
         player.send(ServerProtocol.getInstance().createNewGamePkt(id, 
                 "default_map"));
         channelRef.get().join(player.getSession());
