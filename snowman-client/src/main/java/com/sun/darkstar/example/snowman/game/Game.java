@@ -233,7 +233,7 @@ public class Game extends BaseGame implements IComponent{
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
 //			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
 //			this.count++;
-			this.client.getHandler().getProcessor().newGame(0, null);
+			this.client.getHandler().getProcessor().newGame(-1, null);
 		}
 	}
 

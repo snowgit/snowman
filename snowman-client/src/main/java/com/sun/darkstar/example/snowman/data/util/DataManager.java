@@ -1,12 +1,15 @@
 package com.sun.darkstar.example.snowman.data.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.scene.SharedMesh;
+import com.jme.util.ImageLoader;
 import com.jme.util.TextureManager;
 import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryImporter;
@@ -87,8 +90,14 @@ public class DataManager extends Manager {
 	private void setupLocator() {
 		URL base = this.loader.getResource(EDataType.Texture.getDirectory());
 		try {
-			MultiFormatResourceLocator locator = new MultiFormatResourceLocator(base, ".tex");
+			MultiFormatResourceLocator locator = new MultiFormatResourceLocator(base, EDataType.Texture.getExtension());
 			ResourceLocatorTool.addResourceLocator(ResourceLocatorTool.TYPE_TEXTURE, locator);
+			TextureManager.registerHandler(EDataType.Texture.getExtension(), new ImageLoader() {
+				@Override
+				public Image load(InputStream is) throws IOException {
+					return (Image)BinaryImporter.getInstance().load(is);
+				}
+			});
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}

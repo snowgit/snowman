@@ -86,11 +86,9 @@ public class CollisionManagerImpl implements CollisionManager
         results.setCheckDistance(true);
         root.findPick(ray, results);
         if (iterate) {
-            System.out.println(results.getNumber());
             for (int i = 0; i < results.getNumber(); i++) {
                 Spatial collision = this.validateClass(root, results.getPickData(i).getTargetMesh(), reference);
-                if (collision != null)
-                    return collision;
+                if (collision != null) return collision;
             }
         } else if (results.getNumber() > 0) {
             return this.validateClass(root, results.getPickData(0).getTargetMesh(), reference);

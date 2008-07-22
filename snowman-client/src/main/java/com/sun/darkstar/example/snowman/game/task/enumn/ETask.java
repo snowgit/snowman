@@ -38,7 +38,11 @@ public enum ETask {
 	/**
 	 * The task used to calculate and set the destination of the snowman.
 	 */
-	SetDestination(ETaskType.RealTime);
+	SetDestination(ETaskType.RealTime),
+	/**
+	 * The task used to check if the snowman has reached the destination.
+	 */
+	UpdateMovement(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

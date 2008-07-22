@@ -1,5 +1,10 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
+import com.jme.bounding.BoundingBox;
+import com.jme.input.ChaseCamera;
+import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
+import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
@@ -24,6 +29,10 @@ import com.sun.darkstar.example.snowman.game.world.World;
  * @version Modified date: 07-17-2008 16:59 EST
  */
 public class BattleState extends GameState {
+	/**
+	 * The chase camera objet.
+	 */
+	private ChaseCamera chaseCam;
 
 	/**
 	 * Constructor of <code>BattleState</code>.
@@ -45,8 +54,7 @@ public class BattleState extends GameState {
 
 	@Override
 	protected void updateState(float interpolation) {
-		// TODO Auto-generated method stub
-
+		this.chaseCam.update(interpolation);
 	}
 	
 	/**
@@ -54,6 +62,23 @@ public class BattleState extends GameState {
 	 * @param view The target <code>DynamicView</code> instance.
 	 */
 	public void initializeChaseCam(DynamicView view) {
-		// TODO
+		view.updateGeometricState(0, false);
+		this.chaseCam = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), view);
+		this.chaseCam.setMaintainAzimuth(true);
+		this.chaseCam.getMouseLook().setLookMouseButton(1);
+		this.chaseCam.setStayBehindTarget(true);
+		this.chaseCam.setSpringK(25);
+		this.chaseCam.setDampingK(10);
+		Vector3f targetOffset = new Vector3f(0,0,0);
+		targetOffset.setY(((BoundingBox)view.getWorldBound()).yExtent*0.2f);
+		this.chaseCam.setTargetOffset(targetOffset);
+		this.chaseCam.setActionSpeed(0.2f);
+		this.chaseCam.getMouseLook().setMaxAscent(50 * FastMath.DEG_TO_RAD);
+		this.chaseCam.getMouseLook().setMinAscent(-30 * FastMath.DEG_TO_RAD);
+		this.chaseCam.getMouseLook().setMaxRollOut(5);
+		this.chaseCam.getMouseLook().setMinRollOut(2);
+		this.chaseCam.getMouseLook().setMouseRollMultiplier(4);
+		this.chaseCam.setIdealSphereCoords(new Vector3f(5, 0, 40*FastMath.DEG_TO_RAD));
+		this.active = true;
 	}
 }

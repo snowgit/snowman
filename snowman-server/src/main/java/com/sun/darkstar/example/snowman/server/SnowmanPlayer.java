@@ -44,6 +44,7 @@ import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.NameNotBoundException;
+import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
@@ -61,6 +62,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private static Logger logger = Logger.getLogger(SnowmanPlayer.class.getName());
     public static final long serialVersionUID = 1L;
     private static final String PREFIX = "__PLAYER_";
+    private static long DEATHDELAYMS = 10 * 1000;
     private static float POSITIONTOLERANCESQD = .5f * .5f;
     private ManagedReference<ClientSession> sessionRef;
     private String name;
@@ -78,6 +80,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<Matchmaker> currentMatchMakerRef;
     private boolean readyToPlay = false;
+    private int hitPoints = 10;
     
    
     
@@ -101,6 +104,10 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private SnowmanPlayer(ClientSession session) {
         name = session.getName();
         setSession(session);
+    }
+    
+    public void reset(){
+        setHP(10);
     }
 
     public void receivedMessage(ByteBuffer arg0) {
@@ -231,7 +238,9 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void attack(long timestamp, int targetID, float x, float y) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (checkXY(timestamp,x,y)){
+            currentGameRef.get().attack(this,x,y,targetID,timestamp);
+        }
     }
 
     public void getFlag(int flagID) {
@@ -245,6 +254,35 @@ class SnowmanPlayer implements Serializable, ManagedObject,
                     null,
                     ServerProtocol.getInstance().createStopMOBPkt(id, x, y));
         }
+    }
+    
+    public float getThrowDistanceSqd(){
+        //TODO put in Yis function
+        return 10.0f; // temporary
+    }
+    
+    public void setHP(int hp){
+        AppContext.getDataManager().markForUpdate(this);
+        hitPoints = hp;
+        currentGameRef.get().send(null, 
+                ServerProtocol.getInstance().createSetHPPkt(id, hitPoints));
+        if (hitPoints<=0){ // newly dead
+            AppContext.getTaskManager().scheduleTask(new Task(){
+                ManagedReference<SnowmanPlayer> playerRef = 
+                        AppContext.getDataManager().createReference(
+                            SnowmanPlayer.this);
+                public void run() throws Exception {
+                    playerRef.get().reset();
+                }
+            }, DEATHDELAYMS);
+        }
+    }
+    
+    public void doHit(){
+        if (hitPoints<=0){ // already dead
+            setHP(hitPoints-1);
+        }
+        
     }
 
    

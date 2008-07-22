@@ -118,6 +118,7 @@ public class AddMOBTask extends RealTimeTask {
 				// forces toward the destination.
 			}
 			view.attachTo(this.game.getActiveState().getWorld());
+			this.game.getActiveState().getWorld().updateRenderState();
 		} catch (DuplicatedIDException e) {
 			e.printStackTrace();
 		}

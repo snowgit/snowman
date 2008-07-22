@@ -78,6 +78,7 @@ public abstract class GameState extends BasicGameState implements IGameState {
 	
 	@Override
 	public void update(float interpolation) {
+		super.update(interpolation);
 		if(this.active) this.updateState(interpolation);
 	}
 	

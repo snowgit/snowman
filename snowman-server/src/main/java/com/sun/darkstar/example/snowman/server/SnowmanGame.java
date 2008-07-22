@@ -145,6 +145,21 @@ class SnowmanGame implements ManagedObject, Serializable {
         }
         startGame();
     }
+    
+    public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
+            long timestamp){
+        SnowmanPlayer attacked = playerRefs.get(attackedID).get();
+        float dx = x-attacked.getX(timestamp);
+        float dy = y-attacked.getY(timestamp);
+        
+        if ((dx*dx)+(dy*dy) <= attacker.getThrowDistanceSqd()){
+            send(null,ServerProtocol.getInstance().createAttackedPkt(
+                    attacker.getID(), attackedID));
+            attacked.doHit();
+        }
+                
+        
+    }
 
     private void startGame() {
         send(null,ServerProtocol.getInstance().createStartGamePkt());

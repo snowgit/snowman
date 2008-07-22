@@ -34,6 +34,7 @@ public class SnowmanEntity extends DynamicEntity {
 	public SnowmanEntity(int id) {
 		super(EEntity.Snowman, id);
 		this.hp = 100;
+		this.state = EState.Idle;
 	}
 	
 	/**
