@@ -30,19 +30,16 @@ public final class HPConverter implements IHPConverter {
 		return HPConverter.instance;
 	}
 
-	@Override
 	public float convertRange(int hp) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@Override
 	public float convertScale(int hp) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@Override
 	public float convertSpeed(int hp) {
 		// TODO Auto-generated method stub
 		return 0;
