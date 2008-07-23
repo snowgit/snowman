@@ -157,15 +157,12 @@ public class CollisionManagerImpl implements CollisionManager
     @Override
     public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
         //generate the start and destination points
-        Vector3f start = new Vector3f(x1, 0.0f, z1);
-        Vector3f destination = new Vector3f(x2, 0.0f, z2);
+        Vector3f start = new Vector3f(x1, CollisionManager.PATHHEIGHT, z1);
+        Vector3f destination = new Vector3f(x2, CollisionManager.PATHHEIGHT, z2);
         
         //convert points to world coordinate system
         spatial.localToWorld(start, start);
         spatial.localToWorld(destination, destination);
-        
-        System.out.println("START:"+start);
-        System.out.println("END:"+destination);
         
         //generate Ray for intersection detection
         Vector3f direction = destination.subtract(start).normalizeLocal();
@@ -186,9 +183,7 @@ public class CollisionManagerImpl implements CollisionManager
             if(originalDistance > newDistance - BACKOFFDISTANCE) {
                 //we are either trying to go through a hit point
                 //or get to close to one
-                System.out.println("BACK:"+direction);
                 direction.multLocal(BACKOFFDISTANCE);
-                System.out.println("BACK:"+direction);
                 Vector3f newDestination = hitPoint.subtractLocal(direction);
                 spatial.worldToLocal(newDestination, newDestination);
                 return newDestination;
@@ -203,7 +198,6 @@ public class CollisionManagerImpl implements CollisionManager
 
     @Override
     public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
-        // TODO Auto-generated method stub
         return false;
     }
 }
