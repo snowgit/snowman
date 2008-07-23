@@ -39,19 +39,26 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
- *
+ * This class is the simple Project Snowman matchmaker.  It keeps a
+ * list of 4 logged in players,  When all four "seats" are filled, it
+ * launches a game session and assigns them to it
  * @author Jeffrey Kesselman
  */
 public class Matchmaker implements Serializable, ManagedObject {
 
     private static Logger logger = Logger.getLogger(Matchmaker.class.getName());
     public static final long serialVersionUID = 1L;
+    /**
+     * The list of waiting players
+     */
     ManagedReference<SnowmanPlayer>[] waiting =
             new ManagedReference[4];
-    private long gameCount = 0;
+    public String name;
+    
 
-    public Matchmaker() {
+    public Matchmaker(String name) {
         clearQueue();
+        this.name = name;
     }
 
     private void clearQueue() {
@@ -80,7 +87,7 @@ public class Matchmaker implements Serializable, ManagedObject {
         player.setMatchMaker(this);
         waiting[idx] = AppContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
-            launchGameSession();
+            launchGameSession(name);
         }
     }
 
@@ -96,9 +103,9 @@ public class Matchmaker implements Serializable, ManagedObject {
         }
     }
 
-    private void launchGameSession() {
+    private void launchGameSession(String name) {
         AppContext.getDataManager().markForUpdate(this);
-        SnowmanGame game = SnowmanGame.create("Game" + (gameCount++));
+        SnowmanGame game = SnowmanGame.create(name);
         TEAMCOLOR color = TEAMCOLOR.values()[0];
         for (int i = 0; i < waiting.length; i++) {
             game.addPlayer(waiting[i].get(), color);

@@ -53,10 +53,11 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     public static long serialVersionUID = 1L;
     ManagedReference<Matchmaker> matchMakerRef;
+    private int gameCount=0;
     
     
     public void initialize(Properties arg0) {
-        Matchmaker matchMaker = new Matchmaker();
+        Matchmaker matchMaker = new Matchmaker("Game"+(gameCount++));
         matchMakerRef = AppContext.getDataManager().createReference(matchMaker);
     }
 
