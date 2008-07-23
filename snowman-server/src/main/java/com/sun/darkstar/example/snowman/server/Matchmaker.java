@@ -31,6 +31,7 @@
  */
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
 import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ManagedObject;
@@ -47,12 +48,13 @@ import java.util.logging.Logger;
 public class Matchmaker implements Serializable, ManagedObject {
 
     private static Logger logger = Logger.getLogger(Matchmaker.class.getName());
+    private static final int NUMPLAYERSPERGAME = 2;
     public static final long serialVersionUID = 1L;
     /**
      * The list of waiting players
      */
     ManagedReference<SnowmanPlayer>[] waiting =
-            new ManagedReference[4];
+            new ManagedReference[NUMPLAYERSPERGAME];
     
     /**
      * The name of the game to launch
@@ -142,10 +144,14 @@ public class Matchmaker implements Serializable, ManagedObject {
         SnowmanGame game = SnowmanGame.create(name);
         TEAMCOLOR color = TEAMCOLOR.values()[0];
         for (int i = 0; i < waiting.length; i++) {
+        	waiting[i].get().send(ServerProtocol.getInstance().createNewGamePkt(i, 
+            	"default_map"));
             game.addPlayer(waiting[i].get(), color);
             color = TEAMCOLOR.values()[
                     (color.ordinal()+1)%TEAMCOLOR.values().length];
         }
+        game.sendMapInfo();
+      
         clearQueue();
     }
 }

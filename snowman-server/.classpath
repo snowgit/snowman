@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Darkstar Server"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME2.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SnowmanSerevr Required"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

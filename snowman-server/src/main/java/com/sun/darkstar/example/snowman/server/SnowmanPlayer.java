@@ -31,7 +31,6 @@
 */ 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
 import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
@@ -111,7 +110,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void receivedMessage(ByteBuffer arg0) {
-        ClientProtocol.getInstance().parsePacket(arg0,this);
+        ServerProtocol.getInstance().parsePacket(arg0,this);
     }
 
     public void disconnected(boolean arg0) {

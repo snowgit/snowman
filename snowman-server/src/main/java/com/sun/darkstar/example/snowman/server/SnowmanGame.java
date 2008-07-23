@@ -85,6 +85,8 @@ class SnowmanGame implements ManagedObject, Serializable {
  
     static final float[] flagGoals={1,1,1,9,9,1};
     
+    static final int PLAYERIDSTART = 1;
+    
     /**
      * A reference to a channel that is used to send game packets to
      * all the players in this game session
@@ -137,13 +139,11 @@ class SnowmanGame implements ManagedObject, Serializable {
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         playerRefs.add(playerRef);
-        int id = playerRefs.indexOf(playerRef);
+        int id = playerRefs.indexOf(playerRef)+PLAYERIDSTART;
         player.setID(id);
         player.setPosition(playerStarts[id*2],playerStarts[(id*2)+1]);
         player.setTeamColor(color);
         player.setArea(this);
-        player.send(ServerProtocol.getInstance().createNewGamePkt(id, 
-                "default_map"));
         channelRef.get().join(player.getSession());
     }
     
@@ -158,17 +158,23 @@ class SnowmanGame implements ManagedObject, Serializable {
         long time = System.currentTimeMillis();
         for(ManagedReference<SnowmanPlayer> ref : playerRefs){
             SnowmanPlayer player = ref.get();
-            send(null,ServerProtocol.getInstance().createAddMOBPkt(
+            multiSend(ServerProtocol.getInstance().createAddMOBPkt(
                     player.getID(), player.getX(time), player.getY(time), 
                     EMOBType.SNOWMAN));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flags){
             SnowmanFlag flag = flagRef.get();
-            send(null,ServerProtocol.getInstance().createAddMOBPkt(
+            multiSend(ServerProtocol.getInstance().createAddMOBPkt(
                     flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
         }
-        send(null,ServerProtocol.getInstance().createReadyPkt());
+        multiSend(ServerProtocol.getInstance().createReadyPkt());
         
+    }
+    
+    private void multiSend(ByteBuffer buff){
+    	 for(ManagedReference<SnowmanPlayer> ref : playerRefs){
+    		 ref.get().send(buff);
+    	 }
     }
     
     public void checkReadyToPlay(){
@@ -182,9 +188,13 @@ class SnowmanGame implements ManagedObject, Serializable {
         startGame();
     }
     
+    private SnowmanPlayer getPlayer(int id){
+    	return playerRefs.get(id-PLAYERIDSTART).get();
+    }
+    
     public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
             long timestamp){
-        SnowmanPlayer attacked = playerRefs.get(attackedID).get();
+        SnowmanPlayer attacked = getPlayer(attackedID);
         float dx = x-attacked.getX(timestamp);
         float dy = y-attacked.getY(timestamp);
         
@@ -194,7 +204,6 @@ class SnowmanGame implements ManagedObject, Serializable {
             attacked.doHit();
         }
                 
-        
     }
 
     private void startGame() {
