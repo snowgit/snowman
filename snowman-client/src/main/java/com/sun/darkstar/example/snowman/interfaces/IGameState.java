@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
-import com.sun.darkstar.example.snowman.game.world.World;
 
 /**
  * <code>IGameState</code> defines the interface for all types of game states

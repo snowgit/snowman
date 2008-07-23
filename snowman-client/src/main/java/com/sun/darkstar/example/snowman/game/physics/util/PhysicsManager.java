@@ -2,7 +2,7 @@ package com.sun.darkstar.example.snowman.game.physics.util;
 
 import java.util.ArrayList;
 
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 

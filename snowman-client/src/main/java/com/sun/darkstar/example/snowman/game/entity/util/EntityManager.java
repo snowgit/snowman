@@ -2,14 +2,14 @@ package com.sun.darkstar.example.snowman.game.entity.util;
 
 import java.util.HashMap;
 
+import com.sun.darkstar.example.snowman.common.entity.EditableEntity;
+import com.sun.darkstar.example.snowman.common.entity.StaticEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.exception.DuplicatedIDException;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
-import com.sun.darkstar.example.snowman.game.entity.EditableEntity;
-import com.sun.darkstar.example.snowman.game.entity.StaticEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.entity.terrain.TerrainEntity;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 

@@ -6,8 +6,8 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-import com.sun.darkstar.example.snowman.game.entity.influence.enumn.EInfluence;
-import com.sun.darkstar.example.snowman.interfaces.IInfluence;
+import com.sun.darkstar.example.snowman.common.entity.influence.enumn.EInfluence;
+import com.sun.darkstar.example.snowman.common.interfaces.IInfluence;
 
 /**
  * <code>Influence</code> implements <code>IInfluence</code> to define the

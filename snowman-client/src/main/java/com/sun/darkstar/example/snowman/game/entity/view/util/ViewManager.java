@@ -3,19 +3,19 @@ package com.sun.darkstar.example.snowman.game.entity.view.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
+import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IStaticEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IView;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.entity.view.EditableView;
-import com.sun.darkstar.example.snowman.game.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowmanView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
-import com.sun.darkstar.example.snowman.interfaces.IStaticEntity;
-import com.sun.darkstar.example.snowman.interfaces.IView;
-import com.sun.darkstar.example.snowman.interfaces.editable.IEditableEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 

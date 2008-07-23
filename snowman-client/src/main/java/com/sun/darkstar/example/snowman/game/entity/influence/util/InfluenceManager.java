@@ -2,10 +2,10 @@ package com.sun.darkstar.example.snowman.game.entity.influence.util;
 
 import java.util.HashMap;
 
+import com.sun.darkstar.example.snowman.common.entity.influence.enumn.EInfluence;
+import com.sun.darkstar.example.snowman.common.interfaces.IInfluence;
 import com.sun.darkstar.example.snowman.game.entity.influence.BurnedInfluence;
 import com.sun.darkstar.example.snowman.game.entity.influence.SlipperyInfluence;
-import com.sun.darkstar.example.snowman.game.entity.influence.enumn.EInfluence;
-import com.sun.darkstar.example.snowman.interfaces.IInfluence;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 

@@ -1,21 +1,21 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.view.View;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IView;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.exception.DuplicatedIDException;
 import com.sun.darkstar.example.snowman.game.Game;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
-import com.sun.darkstar.example.snowman.game.entity.view.View;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.interfaces.IController;
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
-import com.sun.darkstar.example.snowman.interfaces.IView;
 
 /**
  * <code>AddMOBTask</code> extends <code>RealTimeTask</code> to create and

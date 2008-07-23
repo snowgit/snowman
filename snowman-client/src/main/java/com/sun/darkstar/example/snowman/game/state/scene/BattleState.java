@@ -6,12 +6,12 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
-import com.sun.darkstar.example.snowman.game.world.World;
 
 /**
  * <code>BattleState</code> extends <code>GameState</code> to define the world

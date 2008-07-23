@@ -1,9 +1,9 @@
 package com.sun.darkstar.example.snowman.game.entity.scene;
 
 import com.jme.math.Vector3f;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
 
 /**
  * <code>SnowmanEntity</code> extends <code>DynamicEntity</code> to define

@@ -17,13 +17,19 @@ import com.jme.util.resource.MultiFormatResourceLocator;
 import com.jme.util.resource.ResourceLocatorTool;
 import com.model.md5.JointAnimation;
 import com.model.md5.ModelNode;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IInfluence;
+import com.sun.darkstar.example.snowman.common.interfaces.IStaticEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IStaticView;
+import com.sun.darkstar.example.snowman.common.interfaces.IWorld;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.data.enumn.EAnimation;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
 import com.sun.darkstar.example.snowman.data.enumn.ESystemData;
 import com.sun.darkstar.example.snowman.data.enumn.ETexture;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.interfaces.IWorld;
+import com.sun.darkstar.example.snowman.game.entity.influence.util.InfluenceManager;
+import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
+import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 
@@ -182,12 +188,25 @@ public class DataManager extends Manager {
 	}
 
 	/**
-	 * Retrieve a world resource. The world resource is not cached or cloned.
+	 * Retrieve a world resource and register the information it maintains with
+	 * all the managers. The world resource is not cached or cloned.
 	 * @param enumn The <code>EWorld</code> enumeration.
 	 * @return The <code>IWorld</code> resource with given enumeration.
 	 */
 	public IWorld getWorld(EWorld enumn) {
-		return (IWorld)this.getResource(EDataType.World.toPath(enumn.toString()));
+		IWorld world = (IWorld)this.getResource(EDataType.World.toPath(enumn.toString()));
+		EntityManager entityManager = EntityManager.getInstance();
+		ViewManager viewManager = ViewManager.getInstance();
+		InfluenceManager influenceManager = InfluenceManager.getInstance();
+		for(IStaticView view : world.getViews()) {
+			IStaticEntity entity = (IStaticEntity)view.getEntity();
+			entityManager.registerEntity(entity);
+			viewManager.registerView(view);
+			for(IInfluence influence : entity.getInfluences()) {
+				influenceManager.registerInfluence(influence);
+			}
+		}
+		return world;
 	}
 	
 	/**

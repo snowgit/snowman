@@ -3,11 +3,11 @@ package com.sun.darkstar.example.snowman.game.task.state.battle;
 import java.io.IOException;
 
 import com.jme.math.Vector3f;
+import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.entity.view.View;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
