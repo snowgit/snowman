@@ -85,8 +85,6 @@ import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
-import com.sun.darkstar.example.snowman.game.world.EditableWorld;
-import com.sun.darkstar.example.snowman.game.world.World;
 import com.worldwizards.saddl.SADDL;
 import com.worldwizards.saddl.Tuple;
 import java.awt.BorderLayout;
@@ -149,16 +147,18 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.sun.darkstar.example.snowman.game.entity.EditableEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.game.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
-import com.sun.darkstar.example.snowman.game.entity.view.EditableView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainCluster;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.enumn.ESculpt;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.common.entity.EditableEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
+import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.world.EditableWorld;
+import com.sun.darkstar.example.snowman.common.world.World;
 
 /**
  * This is the main class for the World Editor gui It uses Swing and JME

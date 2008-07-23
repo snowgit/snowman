@@ -46,7 +46,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TexCoords;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.terrain.TerrainPage;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainMesh;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainMesh;
 
 public class Brush extends Line {
 	/**
