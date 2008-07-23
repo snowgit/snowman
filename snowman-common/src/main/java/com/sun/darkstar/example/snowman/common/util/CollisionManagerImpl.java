@@ -154,7 +154,6 @@ public class CollisionManagerImpl implements CollisionManager
         return null;
     }
 
-    @Override
     public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
         //generate the start and destination points
         Vector3f start = new Vector3f(x1, 0.0f, z1);
@@ -201,7 +200,6 @@ public class CollisionManagerImpl implements CollisionManager
         }
     }
 
-    @Override
     public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
         // TODO Auto-generated method stub
         return false;
