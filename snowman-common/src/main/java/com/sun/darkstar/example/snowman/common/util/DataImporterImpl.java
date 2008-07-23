@@ -65,8 +65,8 @@ public class DataImporterImpl implements DataImporter{
      * Constructor of <code>DataImporter</code>.
      */
     protected DataImporterImpl() {
-        this.dir = "com/sun/darkstar/example/snowman/common/data/world";
-        this.extWorld = ".world";
+        this.dir = "com/sun/darkstar/example/snowman/common/data/world/";
+        this.extWorld = ".wld";
     }
 
     /**
