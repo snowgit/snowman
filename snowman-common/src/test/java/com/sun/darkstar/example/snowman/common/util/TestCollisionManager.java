@@ -505,6 +505,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testValidateBasicHit(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
         //start point and end point
         float startx = 0.0f;
         float startz = 0.0f;
@@ -519,7 +523,7 @@ public class TestCollisionManager {
         boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
         
         //verify
-        Assert.assertTrue(result);
+        Assert.assertFalse(result);
     }
     
     @Test public void testValidateBasicHitLocal() {
@@ -536,6 +540,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testValidateMiss(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
         //start point and end point
         float startx = 0.0f;
         float startz = 0.0f;
@@ -550,7 +558,7 @@ public class TestCollisionManager {
         boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
         
         //verify
-        Assert.assertFalse(result);
+        Assert.assertTrue(result);
     }
     
     @Test public void testValidateMissLocal() {
@@ -567,6 +575,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testValidateComplexHit(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
         //start point and end point
         float startx = -5.0f;
         float startz = -5.0f;
@@ -581,7 +593,7 @@ public class TestCollisionManager {
         boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
         
         //verify
-        Assert.assertTrue(result);
+        Assert.assertFalse(result);
     }
     
     @Test public void testValidateComplexHitLocal() {

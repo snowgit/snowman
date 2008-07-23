@@ -198,6 +198,25 @@ public class CollisionManagerImpl implements CollisionManager
 
     @Override
     public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
-        return false;
+        //generate the start and destination points
+        Vector3f start = new Vector3f(x1, CollisionManager.THROWHEIGHT, z1);
+        Vector3f destination = new Vector3f(x2, CollisionManager.THROWHEIGHT, z2);
+        
+        //convert points to world coordinate system
+        spatial.localToWorld(start, start);
+        spatial.localToWorld(destination, destination);
+        
+        //generate Ray for intersection detection
+        Vector3f direction = destination.subtract(start).normalizeLocal();
+        Ray moveRay = new Ray(start, direction);
+        
+        //calculate the intersection between the move ray and the spatial
+        Vector3f hitPoint = getIntersection(moveRay, spatial, null, false);
+        
+        //if there are no obstacles, it's a valid throw
+        if(hitPoint == null)
+            return true;
+        else
+            return false;
     }
 }
