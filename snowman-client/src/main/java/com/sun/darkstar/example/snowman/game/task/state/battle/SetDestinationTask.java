@@ -1,7 +1,5 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
-import java.io.IOException;
-
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -10,10 +8,12 @@ import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -70,16 +70,16 @@ public class SetDestinationTask extends RealTimeTask {
 		Ray ray = new Ray();
 		ray.setOrigin(display.getRenderer().getCamera().getLocation());
 		ray.setDirection(worldCoords.subtractLocal(display.getRenderer().getCamera().getLocation()).normalizeLocal());
-		Vector3f click = collisionManager.getIntersection(ray, this.game.getActiveState().getWorld(), new Vector3f(), true);
+		World world = this.game.getGameState(EGameState.BattleState).getWorld();
+		Vector3f click = collisionManager.getIntersection(ray, world, new Vector3f(), true);
+		if(click == null) return;
 		try {
 			Spatial view = (Spatial)ViewManager.getInstance().getView(this.snowman);
 			Vector3f local = view.getLocalTranslation();
-			this.game.getClient().getConnection().send(ClientProtocol.getInstance().createMoveMePkt(local.x, local.z, click.x, click.z));
-			Vector3f destination = collisionManager.getDestination(local.x, local.z, click.x, click.z, this.game.getActiveState().getWorld());
+			this.game.getClient().send(ClientProtocol.getInstance().createMoveMePkt(local.x, local.z, click.x, click.z));
+			Vector3f destination = collisionManager.getDestination(local.x, local.z, click.x, click.z, world);
 			this.snowman.setDestination(destination);
 		} catch (ObjectNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

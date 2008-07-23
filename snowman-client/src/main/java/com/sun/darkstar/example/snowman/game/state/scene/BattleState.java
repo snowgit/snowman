@@ -30,9 +30,17 @@ import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
  */
 public class BattleState extends GameState {
 	/**
-	 * The chase camera objet.
+	 * The expected number of entities.
+	 */
+	private final int expected;
+	/**
+	 * The chase camera object.
 	 */
 	private ChaseCamera chaseCam;
+	/**
+	 * The number of added entities.
+	 */
+	private int count;
 
 	/**
 	 * Constructor of <code>BattleState</code>.
@@ -40,6 +48,7 @@ public class BattleState extends GameState {
 	 */
 	public BattleState(Game game) {
 		super(EGameState.BattleState, game);
+		this.expected = 4;
 	}
 
 	@Override
@@ -79,6 +88,28 @@ public class BattleState extends GameState {
 		this.chaseCam.getMouseLook().setMinRollOut(2);
 		this.chaseCam.getMouseLook().setMouseRollMultiplier(4);
 		this.chaseCam.setIdealSphereCoords(new Vector3f(5, 0, 40*FastMath.DEG_TO_RAD));
-		this.active = true;
+	}
+	
+	/**
+	 * Increment the number of entities have been added.
+	 */
+	public void incrementCount() {
+		this.count++;
+	}
+	
+	/**
+	 * Retrieve the expected number of added entities.
+	 * @return The expected number of added entities.
+	 */
+	public int getExpected() {
+		return this.expected;
+	}
+	
+	/**
+	 * Retrieve the number of entities have been added.
+	 * @return The number of entities have been added.
+	 */
+	public int getCount() {
+		return this.count;
 	}
 }

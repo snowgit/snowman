@@ -25,7 +25,7 @@ import com.sun.sgs.client.simple.SimpleClientListener;
  * @version Creation date: 05-23-2008 15:24 EST
  * @version Modified date: 07-14-2008 16:20 EST
  */
-public class MessageListener implements SimpleClientListener {
+public class MessageListener implements SimpleClientListener, ClientChannelListener {
 	/**
 	 * The <code>ClientHandler</code> this listener is attached to.
 	 */
@@ -59,8 +59,7 @@ public class MessageListener implements SimpleClientListener {
 
 	@Override
 	public ClientChannelListener joinedChannel(ClientChannel channel) {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
@@ -78,5 +77,16 @@ public class MessageListener implements SimpleClientListener {
 	public void reconnecting() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void leftChannel(ClientChannel channel) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void receivedMessage(ClientChannel channel, ByteBuffer message) {
+		ClientProtocol.getInstance().parsePacket(message, this.handler.getProcessor());
 	}
 }

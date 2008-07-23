@@ -1,7 +1,5 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
-import java.io.IOException;
-
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
@@ -63,18 +61,18 @@ public class UpdateMovementTask extends RealTimeTask {
 			View view = (View)ViewManager.getInstance().getView(this.snowman);
 			if(this.validatePosition(view)) {
 				this.snowman.setDestination(null);
-				this.game.getClient().getConnection().send(ClientProtocol.getInstance().createStopMePkg(
+				this.game.getClient().send(ClientProtocol.getInstance().createStopMePkg(
 						view.getLocalTranslation().x, view.getLocalTranslation().z));
 				return;
 			} else {
 				Vector3f direction = this.snowman.getDestination().subtract(view.getLocalTranslation()).normalizeLocal();
+				direction.y = 0;
+				view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
 				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
 				this.snowman.addForce(force);
 				PhysicsManager.getInstance().markForUpdate(this.snowman);
 			}
 		} catch (ObjectNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

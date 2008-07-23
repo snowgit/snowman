@@ -21,6 +21,7 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
@@ -75,10 +76,6 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>InputManager</code> instance.
 	 */
 	private InputManager inputManager;
-	/**
-	 * The current active <code>GameState</code>.
-	 */
-	private GameState activeState;
 	/**
 	 * The update interpolation value.
 	 */
@@ -209,7 +206,6 @@ public class Game extends BaseGame implements IComponent{
 		BattleState battle = new BattleState(this);
 		battle.setActive(false);
 		this.stateManager.attachChild(battle);
-		this.activeState = login;
 	}
 	
 	@Override
@@ -265,22 +261,6 @@ public class Game extends BaseGame implements IComponent{
 	}
 	
 	/**
-	 * Set the current active game state.
-	 * @param state The <code>GameState</code> that is active.
-	 */
-	public void setActiveState(GameState state) {
-		this.activeState = state;
-	}
-	
-	/**
-	 * Retrieve the current active game state.
-	 * @return The current active <code>GameState</code>.
-	 */
-	public GameState getActiveState() {
-		return this.activeState;
-	}
-	
-	/**
 	 * Retrieve the <code>Client</code> instance.
 	 * @return The <code>Client</code> instance.
 	 */
@@ -294,5 +274,14 @@ public class Game extends BaseGame implements IComponent{
 	 */
 	public BasicPassManager getPassManager() {
 		return this.passManager;
+	}
+	
+	/**
+	 * Retrieve the game state with given enumeration.
+	 * @param enumn The <code>EGameState</code> enumeration.
+	 * @return
+	 */
+	public GameState getGameState(EGameState enumn) {
+		return (GameState)this.stateManager.getChild(enumn.toString());
 	}
 }

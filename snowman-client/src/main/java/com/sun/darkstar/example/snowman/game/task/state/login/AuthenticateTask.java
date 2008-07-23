@@ -1,6 +1,5 @@
 package com.sun.darkstar.example.snowman.game.task.state.login;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import com.jmex.game.state.GameStateManager;
@@ -44,7 +43,7 @@ public class AuthenticateTask extends RealTimeTask {
 	 * The <code>String</code> password to login with.
 	 */
 	private final String password;
-	
+
 	/**
 	 * Constructor of <code>AuthenticateTask</code>.
 	 * @param game The <code>Game</code> instance.
@@ -65,13 +64,9 @@ public class AuthenticateTask extends RealTimeTask {
 		InputManager.getInstance().setInputActive(false);
 		gui.setButtonText("Please wait...");
 		this.game.getClient().getHandler().authenticate(this.username, this.password);
-//		try {
-//			Properties properties = new Properties();
-//			properties.setProperty("host", "localhost");
-//			properties.setProperty("port", "1138");
-//			this.game.getClient().getConnection().login(properties);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		Properties properties = new Properties();
+		properties.setProperty("host", "localhost");
+		properties.setProperty("port", "3000");
+		this.game.getClient().login(properties);
 	}
 }

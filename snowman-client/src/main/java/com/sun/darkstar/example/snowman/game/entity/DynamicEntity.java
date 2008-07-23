@@ -16,7 +16,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-13-2008 14:41 EST
- * @version Modified date: 07-01-2008 15:28 EST
+ * @version Modified date: 07-23-2008 12:25 EST
  */
 public class DynamicEntity extends Entity implements IDynamicEntity {
 	/**
@@ -42,6 +42,11 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	@Override
 	public void addForce(Vector3f force) {
 		this.force.addLocal(force);
+	}
+
+	@Override
+	public void resetForce() {
+		this.force.zero();
 	}
 
 	@Override

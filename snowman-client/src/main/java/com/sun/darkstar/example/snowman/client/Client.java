@@ -1,5 +1,9 @@
 package com.sun.darkstar.example.snowman.client;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Properties;
+
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
@@ -56,12 +60,21 @@ public class Client extends Component{
 		}
 	}
 	
-	/**
-	 * Retrieve the actual client server connection.
-	 * @return The <code>SimpleClient</code> connection.
-	 */
-	public SimpleClient getConnection() {
-		return this.connection;
+	public void login(Properties properties) {
+		try {
+			this.connection.login(properties);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void send(ByteBuffer message) {
+		message.flip();
+		try {
+			this.connection.send(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

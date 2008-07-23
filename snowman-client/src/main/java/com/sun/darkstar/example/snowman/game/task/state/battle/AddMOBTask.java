@@ -12,6 +12,7 @@ import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
@@ -37,7 +38,7 @@ import com.sun.darkstar.example.snowman.interfaces.IController;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:30 EST
- * @version Modified date: 07-17-2008 17:00 EST
+ * @version Modified date: 07-23-2008 17:41 EST
  */
 public class AddMOBTask extends RealTimeTask {
 	/**
@@ -74,8 +75,8 @@ public class AddMOBTask extends RealTimeTask {
 		this.enumn = enumn;
 		this.local = local;
 		// TODO Set the default spawn position.
-		this.x = 0;
-		this.z = 0;
+		this.x = 20;
+		this.z = 20;
 	}
 	
 	/**
@@ -104,7 +105,12 @@ public class AddMOBTask extends RealTimeTask {
 		default: throw new IllegalArgumentException("Invalid entity type: " + this.enumn.toString());
 		}
 		try {
+			BattleState state = ((BattleState)this.game.getGameState(EGameState.BattleState));
 			IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id);
+			if(entity == null) {
+				state.incrementCount();
+				return; // TODO A flag might be created.
+			}
 			IView view = ViewManager.getInstance().createView(entity);
 			((View)view).getLocalTranslation().x = this.x;
 			((View)view).getLocalTranslation().z = this.z;
@@ -112,13 +118,14 @@ public class AddMOBTask extends RealTimeTask {
 				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
 				controller.setActive(true);
 				InputManager.getInstance().registerController(controller);
-				((BattleState)this.game.getActiveState()).initializeChaseCam((DynamicView)view);
+				state.initializeChaseCam((DynamicView)view);
 			} else {
 				// TODO Add some other type of controller that needs to be updated every frame to add
 				// forces toward the destination.
 			}
-			view.attachTo(this.game.getActiveState().getWorld());
-			this.game.getActiveState().getWorld().updateRenderState();
+			view.attachTo(this.game.getGameState(EGameState.BattleState).getWorld());
+			state.getWorld().updateRenderState();
+			state.incrementCount();
 		} catch (DuplicatedIDException e) {
 			e.printStackTrace();
 		}

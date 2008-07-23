@@ -22,7 +22,7 @@ public enum ETask {
 	/**
 	 * The task used to change game state.
 	 */
-	ChangeState(ETaskType.RealTime),
+	GameState(ETaskType.RealTime),
 	/**
 	 * The task used to create a new game.
 	 */
@@ -31,6 +31,14 @@ public enum ETask {
 	 * The task used to add a MOB.
 	 */
 	AddMOB(ETaskType.RealTime),
+	/**
+	 * The task used to initialize chase camera.
+	 */
+	Ready(ETaskType.RealTime),
+	/**
+	 * The task used to start the battle.
+	 */
+	StartGame(ETaskType.RealTime),
 	/**
 	 * The task used to update all value associated with mouse position.
 	 */

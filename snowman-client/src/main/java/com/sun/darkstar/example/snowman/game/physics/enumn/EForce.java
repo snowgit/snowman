@@ -12,7 +12,7 @@ public enum EForce {
 	/**
 	 * The movement force.
 	 */
-	Movement(10);
+	Movement(70);
 	
 	/**
 	 * The float magnitude value of the force.

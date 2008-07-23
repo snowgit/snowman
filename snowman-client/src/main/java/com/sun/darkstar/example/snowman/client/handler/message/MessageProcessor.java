@@ -24,80 +24,83 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * @version Modified date: 05-29-2008 16:59 EST
  */
 public class MessageProcessor implements IClientProcessor {
+	/**
+	 * The <code>ClientHandler</code> this processor is attached to.
+	 */
+	private final ClientHandler handler;
+	/**
+	 * The ID number of the local controlled player.
+	 */
+	private int myID;
 
-    /**
-     * The <code>ClientHandler</code> this processor is attached to.
-     */
-    private final ClientHandler handler;
+	/**
+	 * Constructor of <code>MessageProcessor</code>.
+	 * @param handler The <code>ClientHandler</code> this processor is attached to.
+	 */
+	public MessageProcessor(ClientHandler handler) {
+		this.handler = handler;
+	}
 
-    /**
-     * Constructor of <code>MessageProcessor</code>.
-     * @param handler The <code>ClientHandler</code> this processor is attached to.
-     */
-    public MessageProcessor(ClientHandler handler) {
-        this.handler = handler;
-    }
-    
-    @Override
-    public void ready() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	@Override
+	public void ready() {
+		TaskManager.getInstance().createTask(ETask.Ready);
+	}
 
-    @Override
-    public void newGame(int myID, String mapname) {
-		TaskManager.getInstance().createTask(ETask.ChangeState, EGameState.BattleState);
-        TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
-    }
+	@Override
+	public void newGame(int myID, String mapname) {
+		this.myID = myID;
+		TaskManager.getInstance().createTask(ETask.GameState, EGameState.BattleState);
+	}
 
-    @Override
-    public void startGame() {
-        // TODO Auto-generated method stub
+	@Override
+	public void startGame() {
+		TaskManager.getInstance().createTask(ETask.StartGame);
+	}
 
-    }
+	@Override
+	public void endGame(EEndState endState) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void endGame(EEndState endState) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public void addMOB(int objectID, float x, float y, EMOBType objType) {
+		if(objectID == this.myID)TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
+		else TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y);
+	}
 
-    @Override
-    public void addMOB(int objectID, float x, float y, EMOBType objType) {
-        TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y);
-    }
+	@Override
+	public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public void removeMOB(int objectID) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void removeMOB(int objectID) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public void stopMOB(int objectID, float x, float y) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
-    @Override
-    public void stopMOB(int objectID, float x, float y) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	@Override
+	public void attachObject(int sourceID, int targetID) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void attachObject(int sourceID, int targetID) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public void attacked(int sourceID, int targetID) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void attacked(int sourceID, int targetID) {
-        // TODO Auto-generated method stub
+	}
 
-    }
+	@Override
+	public void setHP(int objectID, int hp) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public void setHP(int objectID, int hp) {
-        // TODO Auto-generated method stub
-
-    }
+	}
 }
