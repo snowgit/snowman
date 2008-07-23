@@ -83,7 +83,7 @@ class SnowmanGame implements ManagedObject, Serializable {
             int idx = color.ordinal();
             SnowmanFlag flag = new SnowmanFlag(color,
                     flagGoals[idx*3],flagGoals[idx*3+1],flagGoals[idx*3+2]); 
-            flag.SetLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
+            flag.setLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
             ManagedReference<SnowmanFlag> ref =
                     AppContext.getDataManager().createReference(flag);
             flags.add(ref);

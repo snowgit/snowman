@@ -53,14 +53,26 @@ public class Matchmaker implements Serializable, ManagedObject {
      */
     ManagedReference<SnowmanPlayer>[] waiting =
             new ManagedReference[4];
+    
+    /**
+     * The name of the game to launch
+     */
     public String name;
     
-
+    /**
+     * The constuctor
+     * @param name The name of the game to launch.  Must be unique
+     */
     public Matchmaker(String name) {
         clearQueue();
         this.name = name;
     }
 
+    /**
+     * This method resets the witing queue to all null
+     * It must be done at initialization to make the places in the list
+     * to set the actual players.
+     */
     private void clearQueue() {
         AppContext.getDataManager().markForUpdate(this);
         for (int i = 0; i < waiting.length; i++) {
@@ -68,6 +80,10 @@ public class Matchmaker implements Serializable, ManagedObject {
         }
     }
 
+    /**
+     * This mehod is used to find an index to assign to a newly added player
+     * @return the first null index in the waiting list
+     */
     private int getNullIdx() {
         for (int i = 0; i < waiting.length; i++) {
             if (waiting[i] == null) {
@@ -77,6 +93,11 @@ public class Matchmaker implements Serializable, ManagedObject {
         return -1;
     }
 
+    /**
+     * This method is called to add a player to the list of players waiting for
+     * this game session to begin
+     * @param player the player to add to the game
+     */
     public void addWaitingPlayer(SnowmanPlayer player) {
         AppContext.getDataManager().markForUpdate(this);
         int idx = getNullIdx();
@@ -91,6 +112,13 @@ public class Matchmaker implements Serializable, ManagedObject {
         }
     }
 
+    /**
+     * This method takes a player off the waiting players list.
+     * It is primarily used by the code that handles dropped users
+     * @param player the player to remove from the waiting list
+     * 
+     * @param player the player to remove from the game
+     */
     public void removeWaitingPlayer(SnowmanPlayer player) {
         AppContext.getDataManager().markForUpdate(this);
         ManagedReference<SnowmanPlayer> playerRef =
@@ -103,6 +131,12 @@ public class Matchmaker implements Serializable, ManagedObject {
         }
     }
 
+    /**
+     * This method gets called by the addWaitingPlayer method when the 
+     * fourth player gets added.  It creates the game session and starts it.
+     * Then it clears the queu so it can wait for 4 new players.
+     * @param name The unique name of the game session to launch
+     */
     private void launchGameSession(String name) {
         AppContext.getDataManager().markForUpdate(this);
         SnowmanGame game = SnowmanGame.create(name);
