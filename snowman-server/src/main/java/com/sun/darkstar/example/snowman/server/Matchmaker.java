@@ -144,9 +144,9 @@ public class Matchmaker implements Serializable, ManagedObject {
         SnowmanGame game = SnowmanGame.create(name);
         TEAMCOLOR color = TEAMCOLOR.values()[0];
         for (int i = 0; i < waiting.length; i++) {
-        	waiting[i].get().send(ServerProtocol.getInstance().createNewGamePkt(i, 
+        	game.addPlayer(waiting[i].get(), color);
+        	waiting[i].get().send(ServerProtocol.getInstance().createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
-            game.addPlayer(waiting[i].get(), color);
             color = TEAMCOLOR.values()[
                     (color.ordinal()+1)%TEAMCOLOR.values().length];
         }
