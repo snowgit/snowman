@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Darkstar Client"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Client"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME2.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman ClientSimulator Required"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
