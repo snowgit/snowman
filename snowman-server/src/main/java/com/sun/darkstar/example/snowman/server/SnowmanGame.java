@@ -52,24 +52,60 @@ import java.util.List;
  */
 class SnowmanGame implements ManagedObject, Serializable {
     static final long serialVersionUID = 1L;
+    /**
+     * A prefix that is appended to the darkstar bound name for
+     * all game channels.
+     */
     static final String CHANPREFIX = "_GAMECHAN_";
+    /**
+     * This is a base number for the flag IDs to keep them
+     * unqiue from other object IDs.
+     */
     static final private int FLAGBASEID = 100;
-    // player starts == x1,y1,x2,y2....
+    /**
+     * Where players start at th begging of the game
+     * 
+     * player starts == x1,y1,x2,y2....
+     */
+    
     static final float[] playerStarts = {0,0,10,0,0,10,10,10};
-    // flag starts == x1,y1,x2,y2.....
+
+    /** 
+     * where flags start at the beginning of the game
+     * 
+     * flag starts == x1,y1,x2,y2.....
+     */
     static final float[] flagStarts={1,1,9,9};
-    // flag goals == x1,y1,r1,x2,y2,r2 ...
+    
+    /**
+     * The goals for the flags
+     * 
+     * flag goals == x1,y1,r1,x2,y2,r2 ...
+     */
+ 
     static final float[] flagGoals={1,1,1,9,9,1};
+    
+    /**
+     * A reference to a channel that is used to send game packets to
+     * all the players in this game session
+     */
     ManagedReference<Channel> channelRef;
     List<ManagedReference<SnowmanFlag>> flags = 
             new ArrayList<ManagedReference<SnowmanFlag>>();
     
     
-        
+    /**
+     * A static factory method used to create the new game session
+     * @param name A unique game name
+     * @return the new game session
+     */    
     static SnowmanGame create(String name) {
         return new SnowmanGame(name);
     }
     
+    /**
+     * 
+     */
     private List<ManagedReference<SnowmanPlayer>>  playerRefs = 
             new ArrayList<ManagedReference<SnowmanPlayer>>();
     
