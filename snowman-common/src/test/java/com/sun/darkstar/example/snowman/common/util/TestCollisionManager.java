@@ -59,7 +59,6 @@ public class TestCollisionManager {
     /** Test world of objects */
     private Node testWorld;
     private Box box;
-    private BoundingBox boxBound;
     private Sphere sphere;
     private Pyramid pyramid;
     
@@ -382,6 +381,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testGetDestinationCollision(boolean local) {
+        //move the box up by the PATHHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        
         //calculate the starting and ending positions
         //starting position should be backed off by the BACKOFFDISTANCE
         float startx = 0.0f;
@@ -390,7 +393,7 @@ public class TestCollisionManager {
         float endz = 50.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, 0.0f, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, 15.0f - CollisionManager.BACKOFFDISTANCE);
         
         //transpose the world if necessary
         if(local)
@@ -419,6 +422,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testGetDestinationMiss(boolean local) {
+        //move the box up by the PATHHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        
         //calculate the starting and ending positions
         float startx = 0.0f;
         float startz = 0.0f;
@@ -426,7 +433,7 @@ public class TestCollisionManager {
         float endz = -50.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, 0.0f, -50.0f);
+        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, -50.0f);
         
         //transpose the world if necessary
         if(local)
@@ -456,6 +463,10 @@ public class TestCollisionManager {
      * @param local if the testWorld should be transposed to verify world to local mapping
      */
     private void testGetDestinationNearMiss(boolean local) {
+        //move the box up by the PATHHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        
         //calculate the starting and ending positions
         //starting position should be backed off by the BACKOFFDISTANCE
         float startx = 0.0f;
@@ -464,7 +475,7 @@ public class TestCollisionManager {
         float endz = 15.0f - CollisionManager.BACKOFFDISTANCE/2.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, 0.0f, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, 15.0f - CollisionManager.BACKOFFDISTANCE);
         
         //transpose the world if necessary
         if(local)
@@ -485,6 +496,111 @@ public class TestCollisionManager {
     }
     @Test public void testGetDestinationNearMissNotLocal() {
         testGetDestinationNearMiss(false);
+    }
+    
+    /**
+     * Verify validate works properly when there is a basic perpendicular
+     * collision.
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testValidateBasicHit(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
+        //start point and end point
+        float startx = 0.0f;
+        float startz = 0.0f;
+        float endx = 0.0f;
+        float endz = 100.0f;
+
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertFalse(result);
+    }
+    
+    @Test public void testValidateBasicHitLocal() {
+        testValidateBasicHit(true);
+    }
+    @Test public void testValidateBasicHitNotLocal() {
+        testValidateBasicHit(false);
+    }
+    
+    
+    /**
+     * Verify validate works properly when there is no collision
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testValidateMiss(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
+        //start point and end point
+        float startx = 0.0f;
+        float startz = 0.0f;
+        float endx = 0.0f;
+        float endz = -100.0f;
+
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertTrue(result);
+    }
+    
+    @Test public void testValidateMissLocal() {
+        testValidateMiss(true);
+    }
+    @Test public void testValidateMissNotLocal() {
+        testValidateMiss(false);
+    }
+    
+    
+    /**
+     * Verify validate works properly when there is a non-perpendicular collision
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testValidateComplexHit(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        
+        //start point and end point
+        float startx = -5.0f;
+        float startz = -5.0f;
+        float endx = 0.0f;
+        float endz = 25.0f;
+
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertFalse(result);
+    }
+    
+    @Test public void testValidateComplexHitLocal() {
+        testValidateComplexHit(true);
+    }
+    @Test public void testValidateComplexHitNotLocal() {
+        testValidateComplexHit(false);
     }
     
     @After
