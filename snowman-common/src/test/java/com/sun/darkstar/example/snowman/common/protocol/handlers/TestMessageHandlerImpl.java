@@ -30,104 +30,68 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.sun.darkstar.example.snowman.common.protocol;
+package com.sun.darkstar.example.snowman.common.protocol.handlers;
 
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
+import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
+import com.sun.darkstar.example.snowman.common.protocol.messages.Messages;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.After;
 import org.easymock.EasyMock;
 
 /**
- * Test packet creation with the Client Protocol
+ * Test the MessageHandlerImpl
  * 
  * @author Owen Kellett
  */
-public class TestClientProtocol extends AbstractTestProtocol
+public class TestMessageHandlerImpl 
 {
-
-    @Before
-    public void initializeSource() {
-        this.setSource(ClientProtocol.getInstance());
-    }
-    
-    
     @Test
-    public void testCreateMoveMePkt() {
-        ClientProtocol test = (ClientProtocol)this.getSource();
-        ByteBuffer movePacket = test.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
-        movePacket.flip();
-        this.checkOpcodeAndTimestamp(movePacket, EOPCODE.MOVEME);
+    public void parseServerReadyPkt() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         
-        float startx = movePacket.getFloat();
-        float starty = movePacket.getFloat();
-        float endx = movePacket.getFloat();
-        float endy = movePacket.getFloat();
+        ByteBuffer readyPacket = Messages.createReadyPkt();
+        readyPacket.flip();
         
-        Assert.assertEquals(1.0f, startx);
-        Assert.assertEquals(2.0f, starty);
-        Assert.assertEquals(3.0f, endx);
-        Assert.assertEquals(4.0f, endy);
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+        //record expected processor calls
+        mockProcessor.ready();
+        EasyMock.replay(mockProcessor);
+        
+        parser.parseServerPacket(readyPacket, mockProcessor);
+        
+        EasyMock.verify(mockProcessor);
         
         //ensure we are at the end of the buffer
-        Assert.assertFalse(movePacket.hasRemaining());
+        Assert.assertFalse(readyPacket.hasRemaining());
     }
     
     @Test
-    public void testCreateAttackPkt() {
-        ClientProtocol test = (ClientProtocol)this.getSource();
-        ByteBuffer attackPacket = test.createAttackPkt(5, 1.0f, 2.0f);
-        attackPacket.flip();
-        this.checkOpcodeAndTimestamp(attackPacket, EOPCODE.ATTACK);
+    public void parseClientReadyPkt() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         
-        int id = attackPacket.getInt();
-        float x = attackPacket.getFloat();
-        float y = attackPacket.getFloat();
+        ByteBuffer readyPacket = Messages.createReadyPkt();
+        readyPacket.flip();
         
-        Assert.assertEquals(5, id);
-        Assert.assertEquals(1.0f, x);
-        Assert.assertEquals(2.0f, y);
+        IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
+        //record expected processor calls
+        mockProcessor.ready();
+        EasyMock.replay(mockProcessor);
+        
+        parser.parseClientPacket(readyPacket, mockProcessor);
+        
+        EasyMock.verify(mockProcessor);
         
         //ensure we are at the end of the buffer
-        Assert.assertFalse(attackPacket.hasRemaining());
+        Assert.assertFalse(readyPacket.hasRemaining());
     }
     
-    @Test
-    public void testCreateGetFlagPkg() {
-        ClientProtocol test = (ClientProtocol)this.getSource();
-        ByteBuffer getFlagPacket = test.createGetFlagPkt(10);
-        getFlagPacket.flip();
-        this.checkOpcodeAndTimestamp(getFlagPacket, EOPCODE.GETFLAG);
-        
-        int id = getFlagPacket.getInt();
-        
-        Assert.assertEquals(10, id);
-
-        //ensure we are at the end of the buffer
-        Assert.assertFalse(getFlagPacket.hasRemaining());
-    }
-    
-    @Test
-    public void testCreateStopMePkt() {
-        ClientProtocol test = (ClientProtocol)this.getSource();
-        ByteBuffer stopPacket = test.createStopMePkg(1.0f, 2.0f);
-        stopPacket.flip();
-        this.checkOpcodeAndTimestamp(stopPacket, EOPCODE.STOPME);
-        
-        float x = stopPacket.getFloat();
-        float y = stopPacket.getFloat();
-        
-        Assert.assertEquals(1.0f, x);
-        Assert.assertEquals(2.0f, y);
-        
-        //ensure we are at the end of the buffer
-        Assert.assertFalse(stopPacket.hasRemaining());
-    }
     
     /**
      * Test that the proper processor methods are called when
@@ -135,17 +99,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseNewgame() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer newgame = packetGenerator.createNewGamePkt(10, "map");
+        ByteBuffer newgame = ServerMessages.createNewGamePkt(10, "map");
         newgame.flip();
         // record expected processor calls
         mockProcessor.newGame(10, "map");
         EasyMock.replay(mockProcessor);
         // send it to the parser
-        getSource().parsePacket(newgame, mockProcessor);
+        parser.parseClientPacket(newgame, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -159,17 +123,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseStartgame() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createStartGamePkt();
+        ByteBuffer packet = ServerMessages.createStartGamePkt();
         packet.flip();
         // record expected processor calls
         mockProcessor.startGame();
         EasyMock.replay(mockProcessor);
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -183,17 +147,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseEndgame() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createEndGamePkt(EEndState.WIN);
+        ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.WIN);
         packet.flip();
         // record expected processor calls
         mockProcessor.endGame(EEndState.WIN);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -207,17 +171,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseAddMOB() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
         packet.flip();
         // record expected processor calls
         mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -231,17 +195,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseRemoveMOB() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createRemoveMOBPkt(10);
+        ByteBuffer packet = ServerMessages.createRemoveMOBPkt(10);
         packet.flip();
         // record expected processor calls
         mockProcessor.removeMOB(10);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -255,17 +219,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseMoveMOB() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f, 54321l);
+        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f, 54321l);
         packet.flip();
         // record expected processor calls
         mockProcessor.moveMOB(10, 1.0f, 2.0f, 3.0f, 4.0f, 54321l);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -279,17 +243,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseStopMOB() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createStopMOBPkt(10, 1.0f, 2.0f);
+        ByteBuffer packet = ServerMessages.createStopMOBPkt(10, 1.0f, 2.0f);
         packet.flip();
         // record expected processor calls
         mockProcessor.stopMOB(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -303,17 +267,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseAttachObj() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createAttachObjPkt(10, 20);
+        ByteBuffer packet = ServerMessages.createAttachObjPkt(10, 20);
         packet.flip();
         // record expected processor calls
         mockProcessor.attachObject(10, 20);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -327,17 +291,17 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseAttacked() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createAttackedPkt(10, 20);
+        ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20);
         packet.flip();
         // record expected processor calls
         mockProcessor.attacked(10, 20);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
@@ -351,27 +315,133 @@ public class TestClientProtocol extends AbstractTestProtocol
      */
     @Test
     public void parseSetHP() {
-        ServerProtocol packetGenerator = ServerProtocol.getInstance();
+        MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = packetGenerator.createSetHPPkt(10, 100);
+        ByteBuffer packet = ServerMessages.createSetHPPkt(10, 100);
         packet.flip();
         // record expected processor calls
         mockProcessor.setHP(10, 100);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
-        getSource().parsePacket(packet, mockProcessor);
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
     }
-
     
-    @After
-    public void clearSource() {
-        this.setSource(null);
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseMoveMe() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
+        packet.flip();
+        // record current time
+        long now = System.currentTimeMillis();
+        // record expected processor calls
+        mockProcessor.moveMe(EasyMock.leq(now),
+                             EasyMock.eq(1.0f),
+                             EasyMock.eq(2.0f),
+                             EasyMock.eq(3.0f),
+                             EasyMock.eq(4.0f));
+        EasyMock.replay(mockProcessor);        
+        // send it to the parser
+        parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseAttack() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ClientMessages.createAttackPkt(10, 1.0f, 2.0f);
+        packet.flip();
+        // record current time
+        long now = System.currentTimeMillis();
+        // record expected processor calls
+        mockProcessor.attack(EasyMock.leq(now),
+                             EasyMock.eq(10),
+                             EasyMock.eq(1.0f),
+                             EasyMock.eq(2.0f));
+        EasyMock.replay(mockProcessor);        
+        // send it to the parser
+        parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseGetFlag() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ClientMessages.createGetFlagPkt(10);
+        packet.flip();
+        // record expected processor calls
+        mockProcessor.getFlag(10);
+        EasyMock.replay(mockProcessor);        
+        // send it to the parser
+        parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseStop() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ClientMessages.createStopMePkg(1.0f, 2.0f);
+        packet.flip();
+        // record current time
+        long now = System.currentTimeMillis();
+        // record expected processor calls
+        mockProcessor.stopMe(EasyMock.leq(now),
+                             EasyMock.eq(1.0f),
+                             EasyMock.eq(2.0f));
+        EasyMock.replay(mockProcessor);        
+        // send it to the parser
+        parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
     }
 }

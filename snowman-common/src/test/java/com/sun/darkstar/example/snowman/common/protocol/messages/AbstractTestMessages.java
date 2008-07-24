@@ -30,43 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.sun.darkstar.example.snowman.common.protocol;
+package com.sun.darkstar.example.snowman.common.protocol.messages;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
-import com.sun.darkstar.example.snowman.common.protocol.processor.IProtocolProcessor;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.junit.Assert;
-import org.easymock.EasyMock;
-
 
 /**
- * Test the Protocol class
+ * Test the Messages class
  * 
  * @author Owen Kellett
  */
-public abstract class AbstractTestProtocol 
+public class AbstractTestMessages 
 {
-    private Protocol source;
-    
-    /**
-     * Get the source object to be tested
-     */
-    public Protocol getSource() {
-        return source;
-    }
-    public void setSource(Protocol source) {
-        this.source = source;
-    }
-
-    
     /**
      * Verify that READY packet contains ready opcode and
      * timestamp
      */
     @Test
     public void testCreateReadyPkt() {
-        ByteBuffer readyPacket = getSource().createReadyPkt();
+        ByteBuffer readyPacket = Messages.createReadyPkt();
         readyPacket.flip();
         checkOpcodeAndTimestamp(readyPacket, EOPCODE.READY);
         
@@ -96,25 +80,6 @@ public abstract class AbstractTestProtocol
         
         Assert.assertTrue((now - timestamp) < 20 &&
                           (now - timestamp) >= 0);
-    }
-    
-    
-    @Test
-    public void parseReadyPkt() {
-        ByteBuffer readyPacket = getSource().createReadyPkt();
-        readyPacket.flip();
-        
-        IProtocolProcessor mockProcessor = EasyMock.createMock(IProtocolProcessor.class);
-        //record expected processor calls
-        mockProcessor.ready();
-        EasyMock.replay(mockProcessor);
-        
-        getSource().parsePacket(readyPacket, mockProcessor);
-        
-        EasyMock.verify(mockProcessor);
-        
-        //ensure we are at the end of the buffer
-        Assert.assertFalse(readyPacket.hasRemaining());
     }
 
 }

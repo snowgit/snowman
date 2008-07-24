@@ -32,6 +32,10 @@
 
 package com.sun.darkstar.example.snowman.common.util;
 
+import com.sun.darkstar.example.snowman.common.protocol.handlers.MessageHandler;
+import com.sun.darkstar.example.snowman.common.protocol.handlers.MessageHandlerImpl;
+
+
 
 /**
  * The SingletonRegistry is a Singleton itself that should be a single
@@ -42,49 +46,48 @@ package com.sun.darkstar.example.snowman.common.util;
  */
 public class SingletonRegistry 
 {
-	/**
-	 * The <code>SingletonRegistry</code> instance
-	 */
-	private static SingletonRegistry instance;
+    private static DataImporter dataImporter;
+    private static CollisionManager collisionManager;
+    private static IHPConverter hpConverter;
+    private static MessageHandler messageHandler;
 
-	private DataImporter dataImporter;
-	private CollisionManager collisionManager;
-	private IHPConverter hpConverter;
+    public static IHPConverter getHPConverter() {
+        if (hpConverter == null) {
+            hpConverter = HPConverter.getInstance();
+        }
+        return hpConverter;
+    }
 
-	protected SingletonRegistry() {}
+    public static DataImporter getDataImporter() {
+        if (dataImporter == null) {
+            dataImporter = DataImporterImpl.getInstance();
+        }
+        return dataImporter;
+    }
+    public static CollisionManager getCollisionManager() {
+        if (collisionManager == null) {
+            collisionManager = CollisionManagerImpl.getInstance();
+        }
+        return collisionManager;
+    }
+    public static MessageHandler getMessageHandler() {
+        if (messageHandler == null) {
+            messageHandler = MessageHandlerImpl.getInstance();
+        }
+        return messageHandler;
+    }
 
-	public static SingletonRegistry getInstance() {
-		if(SingletonRegistry.instance == null) {
-			SingletonRegistry.instance = new SingletonRegistry();
-		}
-		return SingletonRegistry.instance;
-	}
-
-	public static IHPConverter getHPConverter() {
-		if(SingletonRegistry.getInstance().hpConverter == null) {
-			SingletonRegistry.getInstance().hpConverter = HPConverter.getInstance();
-		}
-		return SingletonRegistry.getInstance().hpConverter;
-	}
-
-	public static DataImporter getDataImporter() {
-		if(getInstance().dataImporter == null) {
-			getInstance().dataImporter = DataImporterImpl.getInstance();
-		}
-		return getInstance().dataImporter;
-	}
-	public static CollisionManager getCollisionManager() {
-		if(getInstance().collisionManager == null) {
-			getInstance().collisionManager = CollisionManagerImpl.getInstance();
-		}
-		return getInstance().collisionManager;
-	}
-
-	public static void setDataImporter(DataImporter dataImporter) {
-		getInstance().dataImporter = dataImporter;
-	}
-	public static void setCollisionManager(CollisionManager collisionManager) {
-		getInstance().collisionManager = collisionManager;
-	}
+    public static void setDataImporter(DataImporter dataImporter) {
+        SingletonRegistry.dataImporter = dataImporter;
+    }
+    public static void setCollisionManager(CollisionManager collisionManager) {
+        SingletonRegistry.collisionManager = collisionManager;
+    }
+    public static void setHPConverter(IHPConverter hpConverter) {
+        SingletonRegistry.hpConverter = hpConverter;
+    }
+    public static void setMessageHandler(MessageHandler messageHandler) {
+        SingletonRegistry.messageHandler = messageHandler;
+    }
 
 }
