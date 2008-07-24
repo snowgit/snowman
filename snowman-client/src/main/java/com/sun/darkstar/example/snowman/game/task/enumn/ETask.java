@@ -50,7 +50,11 @@ public enum ETask {
 	/**
 	 * The task used to check if the snowman has reached the destination.
 	 */
-	UpdateMovement(ETaskType.RealTime);
+	UpdateMovement(ETaskType.RealTime),
+	/**
+	 * The task used to stop a distributed character.
+	 */
+	StopCharacter(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

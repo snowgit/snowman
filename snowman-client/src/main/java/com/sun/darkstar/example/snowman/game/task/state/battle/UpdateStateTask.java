@@ -14,7 +14,7 @@ import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
-import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowmanView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
@@ -91,9 +91,9 @@ public class UpdateStateTask extends RealTimeTask {
 			// TODO Change cursor to walking.
 			return;
 		}
-		result = collisionManager.getIntersectObject(ray, world, SnowmanView.class, false);
+		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
 		if(result != null) {
-			if(((SnowmanView)result).getEntity() == this.snowman) return;
+			if(((CharacterView)result).getEntity() == this.snowman) return;
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				System.out.println("Targeting");

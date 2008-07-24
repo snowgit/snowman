@@ -67,40 +67,27 @@ public class AddMOBTask extends RealTimeTask {
 	 * @param game The <code>Game</code> instance.
 	 * @param id The ID number of the entity to be added.
 	 * @param enumn The <code>EMOBType</code> enumeration.
-	 * @param local The flag indicates if this mob is controlled locally.
-	 */
-	public AddMOBTask(Game game, int id, EMOBType enumn, boolean local) {
-		super(ETask.AddMOB, game);
-		this.id = id;
-		this.enumn = enumn;
-		this.local = local;
-		// TODO Set the default spawn position.
-		this.x = 20;
-		this.z = 20;
-	}
-	
-	/**
-	 * Constructor of <code>AddMOBTask</code>.
-	 * @param game The <code>Game</code> instance.
-	 * @param id The ID number of the entity to be added.
-	 * @param enumn The <code>EMOBType</code> enumeration.
 	 * @param x The x coordinate of the initial position.
 	 * @param z The z coordinate of the initial position.
+	 * @param local The flag indicates if this mob is controlled locally.
 	 */
-	public AddMOBTask(Game game, int id, EMOBType enumn, float x, float z) {
+	public AddMOBTask(Game game, int id, EMOBType enumn, float x, float z, boolean local) {
 		super(ETask.AddMOB, game);
 		this.id = id;
 		this.enumn = enumn;
-		this.local = false;
 		this.x = x;
 		this.z = z;
+		this.local = local;
 	}
 
 	@Override
 	public void execute() {
 		EEntity enumn = null;
 		switch(this.enumn) {
-		case SNOWMAN: enumn = EEntity.Snowman; break;
+		case SNOWMAN: 
+			if(this.local) enumn = EEntity.SnowmanLocal;
+			else enumn = EEntity.SnowmanDistributed;
+			break;
 		case FLAG: enumn = EEntity.Flag; break;
 		default: throw new IllegalArgumentException("Invalid entity type: " + this.enumn.toString());
 		}
@@ -114,14 +101,11 @@ public class AddMOBTask extends RealTimeTask {
 			IView view = ViewManager.getInstance().createView(entity);
 			((View)view).getLocalTranslation().x = this.x;
 			((View)view).getLocalTranslation().z = this.z;
+			IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
+			controller.setActive(true);
 			if(this.local) {
-				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
-				controller.setActive(true);
 				InputManager.getInstance().registerController(controller);
 				state.initializeChaseCam((DynamicView)view);
-			} else {
-				// TODO Add some other type of controller that needs to be updated every frame to add
-				// forces toward the destination.
 			}
 			view.attachTo(this.game.getGameState(EGameState.BattleState).getWorld());
 			state.getWorld().updateRenderState();

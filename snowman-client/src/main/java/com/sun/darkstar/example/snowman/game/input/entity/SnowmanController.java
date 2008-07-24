@@ -2,7 +2,6 @@ package com.sun.darkstar.example.snowman.game.input.entity;
 
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.input.Controller;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
@@ -17,11 +16,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * @version Creation date: 07-18-2008 11:05 EST
  * @version Modified date: 07-22-2008 17:30 EST
  */
-public class SnowmanController extends Controller implements MouseInputListener {
-	/**
-	 * The movement tolerance value.
-	 */
-	private final float tolerance;
+public class SnowmanController extends CharacterController implements MouseInputListener {
 
 	/**
 	 * Constructor of <code>SnowmanController</code>.
@@ -29,12 +24,6 @@ public class SnowmanController extends Controller implements MouseInputListener 
 	 */
 	public SnowmanController(SnowmanEntity entity) {
 		super(entity, EInputType.Mouse);
-		this.tolerance = 0.5f;
-	}
-
-	@Override
-	protected void updateLogic(float interpolation) {
-		TaskManager.getInstance().createTask(ETask.UpdateMovement, this.entity, this.tolerance);
 	}
 
 	@Override

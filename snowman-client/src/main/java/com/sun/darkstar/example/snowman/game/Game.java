@@ -260,6 +260,10 @@ public class Game extends BaseGame implements IComponent{
 		return this.active;
 	}
 	
+	public float getInterpolation() {
+		return this.interpolation;
+	}
+	
 	/**
 	 * Retrieve the <code>Client</code> instance.
 	 * @return The <code>Client</code> instance.

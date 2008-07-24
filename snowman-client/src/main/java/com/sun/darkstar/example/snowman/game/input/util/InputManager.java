@@ -7,7 +7,9 @@ import com.jme.input.KeyInputListener;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
+import com.sun.darkstar.example.snowman.game.input.entity.CharacterController;
 import com.sun.darkstar.example.snowman.game.input.entity.SnowmanController;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
@@ -188,7 +190,8 @@ public final class InputManager extends Manager {
 	private IController createController(IDynamicEntity entity) {
 		IController controller = null;
 		switch(entity.getEnumn()) {
-		case Snowman: controller = new SnowmanController((SnowmanEntity)entity); break;
+		case SnowmanDistributed: controller = new CharacterController((CharacterEntity)entity, EInputType.None); break;
+		case SnowmanLocal: controller = new SnowmanController((SnowmanEntity)entity); break;
 		default: throw new IllegalArgumentException("Invalid controller enumeration.");
 		}
 		this.controllers.put(entity, controller);

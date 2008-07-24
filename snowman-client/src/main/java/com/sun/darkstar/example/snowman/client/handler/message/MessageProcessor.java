@@ -65,14 +65,12 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void addMOB(int objectID, float x, float y, EMOBType objType) {
-		if(objectID == this.myID)TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
-		else TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y);
+		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y, (objectID == this.myID));
 	}
 
 	@Override
 	public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.SetDestination, objectID, startx, starty, endx, endy);
 	}
 
 	@Override
@@ -83,7 +81,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		TaskManager.getInstance().createTask(ETask.StopCharacter, objectID, x, y);
 	}
 
 	@Override

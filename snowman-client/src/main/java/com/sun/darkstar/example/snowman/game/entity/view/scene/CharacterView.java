@@ -2,18 +2,18 @@ package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
 import com.jme.scene.Spatial;
 import com.model.md5.ModelNode;
-import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 
 /**
- * <code>SnoewmanView</code> extends <code>DynamicView</code> to represent
- * a dynamic animated view of <code>SnowmanEntity</code>.
+ * <code>CharacterView</code> extends <code>DynamicView</code> to represent
+ * a dynamic animated view of <code>CharacterEntity</code>.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-21-2008 14:54 EST
- * @version Modified date: 07-21-2008 14:54 EST
+ * @version Modified date: 07-24-2008 11:45 EST
  */
-public class SnowmanView extends DynamicView {
+public class CharacterView extends DynamicView {
 	/**
 	 * Serial version.
 	 */
@@ -24,12 +24,11 @@ public class SnowmanView extends DynamicView {
 	private ModelNode model;
 	
 	/**
-	 * Constructor of <code>SnowmanView</code>.
-	 * @param snowman The <code>SnowmanEntity</code> instance.
+	 * Constructor of <code>CharacterView</code>.
+	 * @param snowman The <code>CharacterEntity</code> instance.
 	 */
-	public SnowmanView(SnowmanEntity snowman) {
+	public CharacterView(CharacterEntity snowman) {
 		super(snowman);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override

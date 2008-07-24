@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.enumn.*;
@@ -153,15 +154,16 @@ public class TaskManager extends Manager {
 		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
 		case ResetLogin: task = new ResetLoginTask(this.game); break;
 		case GameState: task = new GameStateTask(this.game, (EGameState)args[0]); break;
-		case AddMOB:
-			if(args.length == 3) task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (Boolean)args[2]);
-			else if(args.length == 4) task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (Float)args[2], (Float)args[3]);
-			break;
+		case AddMOB: task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (Float)args[2], (Float)args[3], (Boolean)args[4]); break;
 		case Ready: task = new ReadyTask(this.game); break;
 		case StartGame: task = new StartGameTask(this.game); break;
 		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
-		case SetDestination: task = new SetDestinationTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
-		case UpdateMovement: task = new UpdateMovementTask(this.game, (SnowmanEntity)args[0], (Float)args[1]); break;
+		case SetDestination:
+			if(args.length == 3) task = new SetDestinationTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
+			else task = new SetDestinationTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
+			break;
+		case UpdateMovement: task = new UpdateMovementTask(this.game, (CharacterEntity)args[0], (Float)args[1]); break;
+		case StopCharacter: task = new StopCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2]); break;
 		}
 		return this.submit(task);
 	}
