@@ -138,11 +138,11 @@ public class ClientProtocol extends Protocol{
      * @param y The y coordinate of the stop position
      * @return The <code>ByteBuffer</code> "stop me" packet
      */
-    public ByteBuffer createStopMePkg(float x, float y) {
+    public ByteBuffer createStopMePkg(float x, float y, long timestamp) {
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STOPME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
+        buffer.putLong(timestamp);
         buffer.putFloat(x);
         buffer.putFloat(y);
         return buffer;
