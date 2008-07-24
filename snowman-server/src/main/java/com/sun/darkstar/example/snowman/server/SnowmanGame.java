@@ -141,7 +141,7 @@ class SnowmanGame implements ManagedObject, Serializable {
         playerRefs.add(playerRef);
         int id = playerRefs.indexOf(playerRef)+PLAYERIDSTART;
         player.setID(id);
-        player.setPosition(playerStarts[id*2],playerStarts[(id*2)+1]);
+        player.setPosition(System.currentTimeMillis(),playerStarts[id*2],playerStarts[(id*2)+1]);
         player.setTeamColor(color);
         player.setArea(this);
         channelRef.get().join(player.getSession());
