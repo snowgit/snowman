@@ -55,7 +55,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import com.jme.math.Vector3f;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 
 /**
@@ -273,7 +273,7 @@ public class ClientSimulator extends JFrame {
             ray = ray.add(new Vector3f(x,y,0.0f));
             ray = lookForBlocking(ray);
             try {
-                simpleClient.send(ClientProtocol.getInstance().createMoveMePkt(0.0f, 0.0f, ray.x, ray.y));
+                simpleClient.send(ClientMessages.createMoveMePkt(0.0f, 0.0f, ray.x, ray.y));
             } catch (IOException ex) {
                 Logger.getLogger(ClientSimulator.class.getName()).log(Level.SEVERE, null, ex);
             }

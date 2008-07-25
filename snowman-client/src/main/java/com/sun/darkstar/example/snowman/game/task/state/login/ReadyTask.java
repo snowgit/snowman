@@ -1,6 +1,6 @@
 package com.sun.darkstar.example.snowman.game.task.state.login;
 
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
@@ -31,7 +31,7 @@ public class ReadyTask extends RealTimeTask {
 	public void execute() {
 		BattleState state = (BattleState)this.game.getGameState(EGameState.BattleState);
 		if(state.getCount() == state.getExpected()) {
-			this.game.getClient().send(ClientProtocol.getInstance().createReadyPkt());
+			this.game.getClient().send(ClientMessages.createReadyPkt());
 			return;
 		} else {
 			TaskManager.getInstance().submit(this);

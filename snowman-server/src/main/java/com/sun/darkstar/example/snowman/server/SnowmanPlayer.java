@@ -31,7 +31,8 @@
 */ 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
@@ -110,7 +111,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     public void receivedMessage(ByteBuffer arg0) {
-        ServerProtocol.getInstance().parsePacket(arg0,this);
+        SingletonRegistry.getMessageHandler().parseServerPacket(arg0,this);
     }
 
     public void disconnected(boolean arg0) {
@@ -231,7 +232,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
            deltaY = dy/time;
            this.timestamp = timestamp;
            currentGameRef.get().send(null,
-                   ServerProtocol.getInstance().createMoveMOBPkt(
+                   ServerMessages.createMoveMOBPkt(
                    id, startX, startX, endx, endy, timestamp));
        }
     }
@@ -251,7 +252,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             setPosition(x,y);
             currentGameRef.get().send(
                     null,
-                    ServerProtocol.getInstance().createStopMOBPkt(id, x, y));
+                    ServerMessages.createStopMOBPkt(id, x, y));
         }
     }
     
@@ -264,7 +265,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         AppContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
         currentGameRef.get().send(null, 
-                ServerProtocol.getInstance().createSetHPPkt(id, hitPoints));
+                ServerMessages.createSetHPPkt(id, hitPoints));
         if (hitPoints<=0){ // newly dead
             AppContext.getTaskManager().scheduleTask(new Task(){
                 ManagedReference<SnowmanPlayer> playerRef = 
