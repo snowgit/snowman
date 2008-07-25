@@ -52,7 +52,7 @@ public class AbstractTestMessages
     public void testCreateReadyPkt() {
         ByteBuffer readyPacket = Messages.createReadyPkt();
         readyPacket.flip();
-        checkOpcodeAndTimestamp(readyPacket, EOPCODE.READY);
+        checkOpcode(readyPacket, EOPCODE.READY);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(readyPacket.hasRemaining());
@@ -61,25 +61,15 @@ public class AbstractTestMessages
     /**
      * Verify the standard header of the packet.
      * First check that the given opcode matches the first byte of
-     * the packet.  Then check that the next 8 bytes are a long which
-     * is equivalent to a timestamp approximately equal to now.
-     * (Checks that it is within 20 ms)
+     * the packet. 
      * @param packet packet to check
      * @param opcode opcode to verify against
      */
-    protected void checkOpcodeAndTimestamp(ByteBuffer packet, 
-                                           EOPCODE opcode) {
+    protected void checkOpcode(ByteBuffer packet, EOPCODE opcode) {
         byte opbyte = packet.get();
         Assert.assertTrue((opbyte >= 0) && (opbyte < EOPCODE.values().length));
 
         EOPCODE code = EOPCODE.values()[opbyte];
         Assert.assertTrue(code == opcode);
-        
-        long timestamp = packet.getLong();
-        long now = System.currentTimeMillis();
-        
-        Assert.assertTrue((now - timestamp) < 20 &&
-                          (now - timestamp) >= 0);
     }
-
 }

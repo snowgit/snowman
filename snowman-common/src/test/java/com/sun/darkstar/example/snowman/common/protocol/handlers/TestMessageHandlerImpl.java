@@ -223,10 +223,10 @@ public class TestMessageHandlerImpl
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f, 54321l);
+        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f);
         packet.flip();
         // record expected processor calls
-        mockProcessor.moveMOB(10, 1.0f, 2.0f, 3.0f, 4.0f, 54321l);
+        mockProcessor.moveMOB(10, 1.0f, 2.0f, 3.0f, 4.0f);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);
@@ -405,8 +405,10 @@ public class TestMessageHandlerImpl
         // generate packet
         ByteBuffer packet = ClientMessages.createGetFlagPkt(10);
         packet.flip();
+        // record current time
+        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.getFlag(10);
+        mockProcessor.getFlag(EasyMock.leq(now), EasyMock.eq(10));
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseServerPacket(packet, mockProcessor);

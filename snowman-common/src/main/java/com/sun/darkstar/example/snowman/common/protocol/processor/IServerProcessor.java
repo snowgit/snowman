@@ -74,9 +74,10 @@ public interface IServerProcessor extends IProtocolProcessor {
 
     /**
      * Attach the flag with given ID number to the sending client.
+     * @param timestamp timestamp that the client initiated the get flag
      * @param flagID The ID number of the flag.
      */
-    public void getFlag(int flagID);
+    public void getFlag(long timestamp, int flagID);
     
     /**
      * Stop the sending client at the given position

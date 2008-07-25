@@ -88,68 +88,47 @@ public class MessageHandlerImpl implements MessageHandler
     protected void parseClientPacket(EOPCODE code, ByteBuffer packet, IClientProcessor unit) {
         switch (code) {
             case NEWGAME:
-                //discard timestamp
-                packet.getLong();
                 int myID = packet.getInt();
                 byte[] mapname = new byte[packet.getInt()];
                 packet.get(mapname);
                 unit.newGame(myID, new String(mapname));
                 break;
             case STARTGAME:
-                //discard timestamp
-                packet.getLong();
                 unit.startGame();
                 break;
             case ENDGAME:
-                //discard timestamp
-                packet.getLong();
                 unit.endGame(EEndState.values()[packet.getInt()]);
                 break;
             case ADDMOB:
-                //discard timestamp
-                packet.getLong();
                 unit.addMOB(packet.getInt(), 
                             packet.getFloat(),
                             packet.getFloat(),
                             EMOBType.values()[packet.getInt()]);
                 break;
             case REMOVEMOB:
-                //discard timestamp
-                packet.getLong();
                 unit.removeMOB(packet.getInt());
                 break;
             case MOVEMOB:
-                //discard timestamp
-                packet.getLong();
                 unit.moveMOB(packet.getInt(), 
                              packet.getFloat(),
                              packet.getFloat(),
                              packet.getFloat(), 
-                             packet.getFloat(),
-                             packet.getLong());
+                             packet.getFloat());
                 break;
             case STOPMOB:
-                //discard timestamp
-                packet.getLong();
                 unit.stopMOB(packet.getInt(),
                              packet.getFloat(),
                              packet.getFloat());
                 break;
             case ATTACHOBJ:
-                //discard timestamp
-                packet.getLong();
                 unit.attachObject(packet.getInt(),
                                   packet.getInt());
                 break;
             case ATTACKED:
-                //discard timestamp
-                packet.getLong();
                 unit.attacked(packet.getInt(), 
                               packet.getInt());
                 break;
             case SETHP:
-                //discard timestamp
-                packet.getLong();
                 unit.setHP(packet.getInt(), 
                            packet.getInt());
                 break;
@@ -184,9 +163,8 @@ public class MessageHandlerImpl implements MessageHandler
                             packet.getFloat());
                 break;
             case GETFLAG:
-                //discard timestamp
-                packet.getLong();
-                unit.getFlag(packet.getInt());
+                unit.getFlag(packet.getLong(),
+                             packet.getInt());
                 break;
             case STOPME:
                 unit.stopMe(packet.getLong(),
@@ -210,8 +188,6 @@ public class MessageHandlerImpl implements MessageHandler
         // Parse common code.
         switch (code) {
             case READY:
-                //discard timestamp
-                packet.getLong();
                 processor.ready();
                 break;
             default:

@@ -51,7 +51,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateNewgamePkt() {
         ByteBuffer packet = ServerMessages.createNewGamePkt(10, "map");
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.NEWGAME);
+        checkOpcode(packet, EOPCODE.NEWGAME);
         
         int id = packet.getInt();
         int length = packet.getInt();
@@ -71,7 +71,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateStartgamePkt() {
         ByteBuffer packet = ServerMessages.createStartGamePkt();
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.STARTGAME);
+        checkOpcode(packet, EOPCODE.STARTGAME);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
@@ -81,7 +81,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateEndgamePkt() {
         ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.WIN);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.ENDGAME);
+        checkOpcode(packet, EOPCODE.ENDGAME);
         
         EEndState state = EEndState.values()[packet.getInt()];
         
@@ -95,7 +95,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateAddMOBPkt() {
         ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.ADDMOB);
+        checkOpcode(packet, EOPCODE.ADDMOB);
         
         int id = packet.getInt();
         float x = packet.getFloat();
@@ -115,7 +115,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateRemoveMOBPkt() {
         ByteBuffer packet = ServerMessages.createRemoveMOBPkt(10);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.REMOVEMOB);
+        checkOpcode(packet, EOPCODE.REMOVEMOB);
         
         int id = packet.getInt();
 
@@ -127,23 +127,21 @@ public class TestServerMessages extends AbstractTestMessages
     
     @Test
     public void testCreateMoveMOBPkt() {
-        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f, 1234l);
+        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.MOVEMOB);
+        checkOpcode(packet, EOPCODE.MOVEMOB);
         
         int id = packet.getInt();
         float startx = packet.getFloat();
         float starty = packet.getFloat();
         float endx = packet.getFloat();
         float endy = packet.getFloat();
-        long timestart = packet.getLong();
 
         Assert.assertEquals(id, 10);
         Assert.assertEquals(startx, 1.0f);
         Assert.assertEquals(starty, 2.0f);
         Assert.assertEquals(endx, 3.0f);
         Assert.assertEquals(endy, 4.0f);
-        Assert.assertEquals(timestart, 1234l);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
@@ -153,7 +151,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateStopMOBPkt() {
         ByteBuffer packet = ServerMessages.createStopMOBPkt(10, 1.0f, 2.0f);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.STOPMOB);
+        checkOpcode(packet, EOPCODE.STOPMOB);
         
         int id = packet.getInt();
         float x = packet.getFloat();
@@ -171,7 +169,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateAttachObjPkt() {
         ByteBuffer packet = ServerMessages.createAttachObjPkt(10, 20);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.ATTACHOBJ);
+        checkOpcode(packet, EOPCODE.ATTACHOBJ);
         
         int source = packet.getInt();
         int target = packet.getInt();
@@ -187,7 +185,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateAttackedPkt() {
         ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.ATTACKED);
+        checkOpcode(packet, EOPCODE.ATTACKED);
         
         int source = packet.getInt();
         int target = packet.getInt();
@@ -203,7 +201,7 @@ public class TestServerMessages extends AbstractTestMessages
     public void testCreateSetHPPkt() {
         ByteBuffer packet = ServerMessages.createSetHPPkt(10, 20);
         packet.flip();
-        checkOpcodeAndTimestamp(packet, EOPCODE.SETHP);
+        checkOpcode(packet, EOPCODE.SETHP);
         
         int source = packet.getInt();
         int target = packet.getInt();
