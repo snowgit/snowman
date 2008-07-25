@@ -254,13 +254,10 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public void doHit(){
-        if (hitPoints<=0){ // already dead
+        if (hitPoints>0){ // not already dead
             setHP(hitPoints-1);
         }
-        
     }
-
-   
     
     public SnowmanGame getGame() {
         return currentGameRef == null ? null : currentGameRef.get();

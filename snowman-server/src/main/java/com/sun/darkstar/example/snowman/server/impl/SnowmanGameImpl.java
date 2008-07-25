@@ -139,9 +139,11 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         playerRefs.add(playerRef);
-        int id = playerRefs.indexOf(playerRef)+PLAYERIDSTART;
-        player.setID(id);
-        player.setTimestampLocation(System.currentTimeMillis(),playerStarts[id*2],playerStarts[(id*2)+1]);
+        int index = playerRefs.indexOf(playerRef);
+        player.setID(index + PLAYERIDSTART);
+        player.setTimestampLocation(System.currentTimeMillis(),
+                                    playerStarts[index*2],
+                                    playerStarts[(index*2)+1]);
         player.setTeamColor(color);
         player.setGame(this);
         channelRef.get().join(player.getSession());
