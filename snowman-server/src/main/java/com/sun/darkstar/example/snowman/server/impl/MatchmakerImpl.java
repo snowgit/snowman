@@ -29,11 +29,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sun.darkstar.example.snowman.server;
+package com.sun.darkstar.example.snowman.server.impl;
 
+import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
-import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
-import com.sun.sgs.app.AppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
@@ -45,7 +50,7 @@ import java.util.logging.Logger;
  * launches a game session and assigns them to it
  * @author Jeffrey Kesselman
  */
-public class Matchmaker implements Serializable, ManagedObject {
+public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
 
     private static Logger logger = Logger.getLogger(Matchmaker.class.getName());
     private static final int NUMPLAYERSPERGAME = 2;
@@ -61,13 +66,23 @@ public class Matchmaker implements Serializable, ManagedObject {
      */
     public String name;
     
+    private SnowmanAppContext appContext;
+    private GameFactory gameFactory;
+    private EntityFactory entityFactory;
+    
     /**
      * The constuctor
      * @param name The name of the game to launch.  Must be unique
      */
-    public Matchmaker(String name) {
-        clearQueue();
+    public MatchmakerImpl(String name,
+                          SnowmanAppContext appContext,
+                          GameFactory gameFactory,
+                          EntityFactory entityFactory) {
         this.name = name;
+        this.appContext = appContext;
+        this.gameFactory = gameFactory;
+        this.entityFactory = entityFactory;
+        clearQueue();
     }
 
     /**
@@ -76,7 +91,7 @@ public class Matchmaker implements Serializable, ManagedObject {
      * to set the actual players.
      */
     private void clearQueue() {
-        AppContext.getDataManager().markForUpdate(this);
+        appContext.getDataManager().markForUpdate(this);
         for (int i = 0; i < waiting.length; i++) {
             waiting[i] = null;
         }
@@ -101,14 +116,13 @@ public class Matchmaker implements Serializable, ManagedObject {
      * @param player the player to add to the game
      */
     public void addWaitingPlayer(SnowmanPlayer player) {
-        AppContext.getDataManager().markForUpdate(this);
+        appContext.getDataManager().markForUpdate(this);
         int idx = getNullIdx();
         if (idx == -1) {
             logger.severe("Error: tried to add player to full wait quwue");
             return;
         }
-        player.setMatchMaker(this);
-        waiting[idx] = AppContext.getDataManager().createReference(player);
+        waiting[idx] = appContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
             launchGameSession(name);
         }
@@ -122,9 +136,9 @@ public class Matchmaker implements Serializable, ManagedObject {
      * @param player the player to remove from the game
      */
     public void removeWaitingPlayer(SnowmanPlayer player) {
-        AppContext.getDataManager().markForUpdate(this);
+        appContext.getDataManager().markForUpdate(this);
         ManagedReference<SnowmanPlayer> playerRef =
-                AppContext.getDataManager().createReference(player);
+                appContext.getDataManager().createReference(player);
         for (int i = 0; i < waiting.length; i++) {
             if ((waiting[i] != null) && (waiting[i].equals(playerRef))) {
                 waiting[i] = null;
@@ -140,18 +154,19 @@ public class Matchmaker implements Serializable, ManagedObject {
      * @param name The unique name of the game session to launch
      */
     private void launchGameSession(String name) {
-        AppContext.getDataManager().markForUpdate(this);
-        SnowmanGame game = SnowmanGame.create(name);
-        TEAMCOLOR color = TEAMCOLOR.values()[0];
+        appContext.getDataManager().markForUpdate(this);
+        SnowmanGame game = gameFactory.createSnowmanGame(name, appContext, entityFactory);
+        TeamColor color = TeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);
         	waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
-            color = TEAMCOLOR.values()[
-                    (color.ordinal()+1)%TEAMCOLOR.values().length];
+            color = TeamColor.values()[
+                    (color.ordinal()+1)%TeamColor.values().length];
         }
         game.sendMapInfo();
       
         clearQueue();
     }
 }
+
