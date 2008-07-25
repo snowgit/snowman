@@ -1,5 +1,7 @@
 package com.sun.darkstar.example.snowman.common.entity.enumn;
 
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+
 /**
  * <code>EEntity</code> defines the enumerations of all types of entities in
  * the game world. It also maintains the default mass value of each type of
@@ -17,11 +19,11 @@ public enum EEntity {
 	/**
 	 * The locally controlled snowman entity.
 	 */
-	SnowmanLocal(EEntityType.Dynamic, 10),
+	SnowmanLocal(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
 	/**
 	 * The distributed snowman entity.
 	 */
-	SnowmanDistributed(EEntityType.Dynamic, 10),
+	SnowmanDistributed(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
 	/**
 	 * The flag entity.
 	 */
