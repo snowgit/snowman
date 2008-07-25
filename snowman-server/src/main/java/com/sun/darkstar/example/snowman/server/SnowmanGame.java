@@ -32,7 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
 import com.sun.sgs.app.AppContext;
@@ -141,7 +141,7 @@ class SnowmanGame implements ManagedObject, Serializable {
         playerRefs.add(playerRef);
         int id = playerRefs.indexOf(playerRef)+PLAYERIDSTART;
         player.setID(id);
-        player.setPosition(playerStarts[id*2],playerStarts[(id*2)+1]);
+        player.setPosition(System.currentTimeMillis(),playerStarts[id*2],playerStarts[(id*2)+1]);
         player.setTeamColor(color);
         player.setArea(this);
         channelRef.get().join(player.getSession());
@@ -158,16 +158,16 @@ class SnowmanGame implements ManagedObject, Serializable {
         long time = System.currentTimeMillis();
         for(ManagedReference<SnowmanPlayer> ref : playerRefs){
             SnowmanPlayer player = ref.get();
-            multiSend(ServerProtocol.getInstance().createAddMOBPkt(
+            multiSend(ServerMessages.createAddMOBPkt(
                     player.getID(), player.getX(time), player.getY(time), 
                     EMOBType.SNOWMAN));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flags){
             SnowmanFlag flag = flagRef.get();
-            multiSend(ServerProtocol.getInstance().createAddMOBPkt(
+            multiSend(ServerMessages.createAddMOBPkt(
                     flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
         }
-        multiSend(ServerProtocol.getInstance().createReadyPkt());
+        multiSend(ServerMessages.createReadyPkt());
         
     }
     
@@ -199,7 +199,7 @@ class SnowmanGame implements ManagedObject, Serializable {
         float dy = y-attacked.getY(timestamp);
         
         if ((dx*dx)+(dy*dy) <= attacker.getThrowDistanceSqd()){
-            send(null,ServerProtocol.getInstance().createAttackedPkt(
+            send(null,ServerMessages.createAttackedPkt(
                     attacker.getID(), attackedID));
             attacked.doHit();
         }
@@ -207,7 +207,7 @@ class SnowmanGame implements ManagedObject, Serializable {
     }
 
     private void startGame() {
-        send(null,ServerProtocol.getInstance().createStartGamePkt());
+        send(null,ServerMessages.createStartGamePkt());
     }
 
 }

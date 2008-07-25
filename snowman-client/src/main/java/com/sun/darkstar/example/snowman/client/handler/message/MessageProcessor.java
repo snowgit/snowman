@@ -21,7 +21,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 05-29-2008 16:59 EST
+ * @version Modified date: 07-25-2008 12:21 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -65,14 +65,12 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void addMOB(int objectID, float x, float y, EMOBType objType) {
-		if(objectID == this.myID)TaskManager.getInstance().createTask(ETask.AddMOB, myID, EMOBType.SNOWMAN, true);
-		else TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y);
+		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y, (objectID == this.myID));
 	}
 
 	@Override
 	public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.SetDestination, objectID, startx, starty, endx, endy);
 	}
 
 	@Override
@@ -83,7 +81,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		TaskManager.getInstance().createTask(ETask.StopCharacter, objectID, x, y);
 	}
 
 	@Override
@@ -100,7 +98,6 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void setHP(int objectID, int hp) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.UpdateHP, objectID, hp);
 	}
 }

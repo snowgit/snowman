@@ -1,4 +1,4 @@
-package com.sun.darkstar.example.snowman.game.physics.enumn;
+package com.sun.darkstar.example.snowman.common.physics.enumn;
 
 /**
  * <code>EForce</code> defines the enumerations of all types of forces that

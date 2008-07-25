@@ -4,7 +4,7 @@ import java.net.PasswordAuthentication;
 import java.nio.ByteBuffer;
 
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.sgs.client.ClientChannel;
@@ -64,7 +64,7 @@ public class MessageListener implements SimpleClientListener, ClientChannelListe
 
 	@Override
 	public void receivedMessage(ByteBuffer message) {
-		ClientProtocol.getInstance().parsePacket(message, this.handler.getProcessor());
+		SingletonRegistry.getMessageHandler().parseClientPacket(message, this.handler.getProcessor());
 	}
 
 	@Override
@@ -87,6 +87,6 @@ public class MessageListener implements SimpleClientListener, ClientChannelListe
 
 	@Override
 	public void receivedMessage(ClientChannel channel, ByteBuffer message) {
-		ClientProtocol.getInstance().parsePacket(message, this.handler.getProcessor());
+		SingletonRegistry.getMessageHandler().parseClientPacket(message, this.handler.getProcessor());
 	}
 }

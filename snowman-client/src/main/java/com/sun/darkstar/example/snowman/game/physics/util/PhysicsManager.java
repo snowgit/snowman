@@ -6,6 +6,7 @@ import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
@@ -103,6 +104,7 @@ public class PhysicsManager extends Manager {
 		try {
 			View view = (View)ViewManager.getInstance().getView(entity);
 			view.getLocalTranslation().addLocal(delta);
+			if(entity instanceof SnowmanEntity) ((SnowmanEntity)entity).updateTimeStamp();
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}

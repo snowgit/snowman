@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME2.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman Serevr Required"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman Server Required"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -11,7 +11,7 @@ import com.jme.math.Vector3f;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-04-2008 14:54 EST
- * @version Modified date: 07-23-2008 12:25 EST
+ * @version Modified date: 07-25-2008 12:12 EST
  */
 public interface IDynamicEntity extends IEntity {
 	
@@ -25,6 +25,12 @@ public interface IDynamicEntity extends IEntity {
 	 * Clear the force acting on this entity.
 	 */
 	public void resetForce();
+	
+	/**
+	 * Set the mass of this dynamic entity.
+	 * @param mass The new float mass value to be set.
+	 */
+	public void setMass(float mass);
 	
 	/**
 	 * Retrieve the mass value of this dynamic entity.

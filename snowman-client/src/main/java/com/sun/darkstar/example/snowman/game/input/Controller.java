@@ -18,7 +18,7 @@ import com.sun.darkstar.example.snowman.interfaces.IController;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 15:35 EST
- * @version Modified date: 07-21-2008 12:05 EST
+ * @version Modified date: 07-24-2008 11:27 EST
  */
 public abstract class Controller implements IController {
 	/**
@@ -37,6 +37,7 @@ public abstract class Controller implements IController {
 	/**
 	 * Constructor of <code>Controller</code>.
 	 * @param entity The <code>IEntity</code> this controller controls.
+	 * @param type The <code>EInputType</code> enumeration.
 	 */
 	public Controller(IEntity entity, EInputType type) {
 		if(entity == null) throw new IllegalArgumentException("Null entity.");

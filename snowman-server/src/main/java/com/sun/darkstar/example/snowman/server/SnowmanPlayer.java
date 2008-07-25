@@ -31,7 +31,8 @@
 */ 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
@@ -79,7 +80,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     private ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<Matchmaker> currentMatchMakerRef;
     private boolean readyToPlay = false;
-    private int hitPoints = 10;
+    private int hitPoints = 100;
     
    
     
@@ -106,11 +107,11 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
     
     public void reset(){
-        setHP(10);
+        setHP(100);
     }
 
     public void receivedMessage(ByteBuffer arg0) {
-        ServerProtocol.getInstance().parsePacket(arg0,this);
+        SingletonRegistry.getMessageHandler().parseServerPacket(arg0,this);
     }
 
     public void disconnected(boolean arg0) {
@@ -135,10 +136,11 @@ class SnowmanPlayer implements Serializable, ManagedObject,
                 AppContext.getDataManager().createReference(matcher);
     }
 
-    void setPosition(float x, float y) {
+    void setPosition(long timestamp, float x, float y) {
        startX = destX = x;
        startY = destY = y;
        deltaX = deltaY = 0;
+       this.timestamp = timestamp;
     }
 
     void setTeamColor(TEAMCOLOR color) {
@@ -147,8 +149,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
 
     private float getMovePerMS() {
-        //TODO: replace with real Hp based values
-        return 10;
+    	 return 7f/1000f;
     }
 
     private void setSession(ClientSession arg0) {
@@ -188,11 +189,16 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
     
     private boolean checkXY(long time, float xPrime, float yPrime){
+    	/*System.out.println(timestamp+","+time);
         float currentX = getX(time);
         float currentY = getY(time);
+        System.out.println(xPrime+","+yPrime+","+currentX+","+currentY);
         float dx = currentX - xPrime;
         float dy = currentY - yPrime;
-        return ((dx*dx)+(dy*dy) < POSITIONTOLERANCESQD);
+        return ((dx*dx)+(dy*dy) < POSITIONTOLERANCESQD);*/
+    	// XXX 
+    	// needs to debug place checking
+    	return true;
     }
     
     public int getID(){
@@ -231,8 +237,8 @@ class SnowmanPlayer implements Serializable, ManagedObject,
            deltaY = dy/time;
            this.timestamp = timestamp;
            currentGameRef.get().send(null,
-                   ServerProtocol.getInstance().createMoveMOBPkt(
-                   id, startX, startX, endx, endy, timestamp));
+                   ServerMessages.createMoveMOBPkt(
+                   id, startX, startY, endx, endy, timestamp));
        }
     }
 
@@ -248,10 +254,10 @@ class SnowmanPlayer implements Serializable, ManagedObject,
 
     public void stopMe(long timestamp, float x, float y) {
         if (checkXY(timestamp,x,y)){
-            setPosition(x,y);
+            setPosition(timestamp, x,y);
             currentGameRef.get().send(
                     null,
-                    ServerProtocol.getInstance().createStopMOBPkt(id, x, y));
+                    ServerMessages.createStopMOBPkt(id, x, y));
         }
     }
     
@@ -264,7 +270,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         AppContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
         currentGameRef.get().send(null, 
-                ServerProtocol.getInstance().createSetHPPkt(id, hitPoints));
+                ServerMessages.createSetHPPkt(id, hitPoints));
         if (hitPoints<=0){ // newly dead
             AppContext.getTaskManager().scheduleTask(new Task(){
                 ManagedReference<SnowmanPlayer> playerRef = 

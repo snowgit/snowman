@@ -519,8 +519,7 @@ public class WorldEditor extends JFrame {
 										World node = (World)world.constructFinal();
 										if(!dlg.exportTextures()) {
 											this.stripTexure(node);
-											Texture.DEFAULT_STORE_TEXTURE = false;
-										} else Texture.DEFAULT_STORE_TEXTURE = true;
+										}
 										try {
 											BinaryExporter.getInstance().save(node, dlg.getFile());
 										} catch (IOException e) {
