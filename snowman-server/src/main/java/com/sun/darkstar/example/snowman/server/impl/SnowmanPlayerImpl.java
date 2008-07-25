@@ -29,16 +29,20 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */ 
-package com.sun.darkstar.example.snowman.server;
+package com.sun.darkstar.example.snowman.server.impl;
 
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
-import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
-import com.sun.sgs.app.AppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
@@ -56,14 +60,16 @@ import java.util.logging.Logger;
  * For here, it will call other managed ibjects to respond to thsoe
  * events.
  * @author Jeffrey Kesselman
+ * @author Owen Kellett
  */
-class SnowmanPlayer implements Serializable, ManagedObject, 
-        ClientSessionListener, IServerProcessor {
-    private static Logger logger = Logger.getLogger(SnowmanPlayer.class.getName());
+class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
+        ManagedObject, IServerProcessor {
+
+    private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     public static final long serialVersionUID = 1L;
-    private static final String PREFIX = "__PLAYER_";
     private static long DEATHDELAYMS = 10 * 1000;
     private static float POSITIONTOLERANCESQD = .5f * .5f;
+    
     private ManagedReference<ClientSession> sessionRef;
     private String name;
     private int wins;
@@ -76,32 +82,15 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     float destY;
     float deltaX;
     float deltaY;
-    TEAMCOLOR teamColor;
+    TeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
-    private ManagedReference<Matchmaker> currentMatchMakerRef;
     private boolean readyToPlay = false;
     private int hitPoints = 100;
+    private SnowmanAppContext appContext;
     
-   
-    
-
-    static SnowmanPlayer find(ClientSession arg0) {
-        String pname = PREFIX + arg0.getName();
-        SnowmanPlayer player;
-        try {
-            player = (SnowmanPlayer) AppContext.getDataManager().getBinding(pname);
-            player.setSession(arg0);
-        } catch (NameNotBoundException e) {
-            player = new SnowmanPlayer(arg0);
-            AppContext.getDataManager().setBinding(pname, player);
-
-        }
-        return player;
-    }
-   
-   
-
-    private SnowmanPlayer(ClientSession session) {
+    public SnowmanPlayerImpl(SnowmanAppContext appContext,
+                             ClientSession session) {
+        this.appContext = appContext;
         name = session.getName();
         setSession(session);
     }
@@ -110,41 +99,20 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         setHP(100);
     }
 
-    public void receivedMessage(ByteBuffer arg0) {
-        SingletonRegistry.getMessageHandler().parseServerPacket(arg0,this);
-    }
 
-    public void disconnected(boolean arg0) {
-        if (currentMatchMakerRef!=null){
-            currentMatchMakerRef.get().removeWaitingPlayer(this);
-            currentMatchMakerRef = null;
-        }
-        if (currentGameRef != null) {
-            currentGameRef.get().removePlayer(this);
-            currentGameRef = null;
-        }
-        readyToPlay = false;
-        logger.info("Player "+name+" logged out");
-    }
-
-    void setID(int id) {
+    public void setID(int id) {
         this.id = id;
     }
 
-    void setMatchMaker(Matchmaker matcher) {
-        currentMatchMakerRef = 
-                AppContext.getDataManager().createReference(matcher);
-    }
-
-    void setPosition(long timestamp, float x, float y) {
+    public void setTimestampLocation(long timestamp, float x, float y) {
        startX = destX = x;
        startY = destY = y;
        deltaX = deltaY = 0;
        this.timestamp = timestamp;
     }
 
-    void setTeamColor(TEAMCOLOR color) {
-        AppContext.getDataManager().markForUpdate(this);
+    public void setTeamColor(TeamColor color) {
+        appContext.getDataManager().markForUpdate(this);
         teamColor = color;
     }
 
@@ -152,16 +120,15 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     	 return 7f/1000f;
     }
 
-    private void setSession(ClientSession arg0) {
-        sessionRef = AppContext.getDataManager().createReference(arg0);
+    public void setSession(ClientSession arg0) {
+        sessionRef = appContext.getDataManager().createReference(arg0);
     }
     
-    public void setArea(SnowmanGame game){
+    public void setGame(SnowmanGame game){
         if (game == null){
             currentGameRef = null;
         } else {
-            currentGameRef = AppContext.getDataManager().createReference(game);
-            currentMatchMakerRef = null;
+            currentGameRef = appContext.getDataManager().createReference(game);
         }
     }
     
@@ -205,7 +172,10 @@ class SnowmanPlayer implements Serializable, ManagedObject,
         return id;
     }
     
-    public boolean isReadyToPlay(){
+    public void setReadyToPlay(boolean readyToPlay){
+        this.readyToPlay = readyToPlay;
+    }
+    public boolean getReadyToPlay(){
         return readyToPlay;
     }
     
@@ -222,7 +192,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
 
     public void ready() {
         readyToPlay=true;
-        currentGameRef.get().checkReadyToPlay();
+        currentGameRef.get().startGameIfReady();
     }
 
     public void moveMe(long timestamp, float x, float y, float endx, float endy) {
@@ -247,14 +217,14 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             currentGameRef.get().attack(this,x,y,targetID,timestamp);
         }
     }
-    
+
     public void getFlag(long timestamp, int flagID) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void stopMe(long timestamp, float x, float y) {
         if (checkXY(timestamp,x,y)){
-            setPosition(timestamp, x,y);
+            this.setTimestampLocation(timestamp, x,y);
             currentGameRef.get().send(
                     null,
                     ServerMessages.createStopMOBPkt(id, x, y));
@@ -267,15 +237,15 @@ class SnowmanPlayer implements Serializable, ManagedObject,
     }
     
     public void setHP(int hp){
-        AppContext.getDataManager().markForUpdate(this);
+        appContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
         currentGameRef.get().send(null, 
                 ServerMessages.createSetHPPkt(id, hitPoints));
         if (hitPoints<=0){ // newly dead
-            AppContext.getTaskManager().scheduleTask(new Task(){
+            appContext.getTaskManager().scheduleTask(new Task(){
                 ManagedReference<SnowmanPlayer> playerRef = 
-                        AppContext.getDataManager().createReference(
-                            SnowmanPlayer.this);
+                        appContext.getDataManager().createReference(
+                            (SnowmanPlayer)SnowmanPlayerImpl.this);
                 public void run() throws Exception {
                     playerRef.get().reset();
                 }
@@ -288,5 +258,32 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             setHP(hitPoints-1);
         }
         
-    }    
+    }
+
+   
+    
+    public SnowmanGame getGame() {
+        return currentGameRef == null ? null : currentGameRef.get();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public IServerProcessor getProcessor() {
+        return this;
+    }
+
+    public TeamColor getTeamColor() {
+        return teamColor;
+    }
+
+    public void setLocation(float x, float y) {
+        startX = destX = x;
+        startY = destY = y;
+    }
+   
+    
 }
+
+

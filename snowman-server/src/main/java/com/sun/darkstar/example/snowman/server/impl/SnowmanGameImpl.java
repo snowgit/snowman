@@ -30,11 +30,16 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-package com.sun.darkstar.example.snowman.server;
+package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
-import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
@@ -49,8 +54,9 @@ import java.util.List;
 /**
  * This object represents an actual running game session of Project Snowman,
  * @author Jeffrey Kesselman
+ * @author Owen Kellett
  */
-class SnowmanGame implements ManagedObject, Serializable {
+public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable {
     static final long serialVersionUID = 1L;
     /**
      * A prefix that is appended to the darkstar bound name for
@@ -96,30 +102,24 @@ class SnowmanGame implements ManagedObject, Serializable {
             new ArrayList<ManagedReference<SnowmanFlag>>();
     
     
-    /**
-     * A static factory method used to create the new game session
-     * @param name A unique game name
-     * @return the new game session
-     */    
-    static SnowmanGame create(String name) {
-        return new SnowmanGame(name);
-    }
-    
-    /**
-     * 
-     */
     private List<ManagedReference<SnowmanPlayer>>  playerRefs = 
             new ArrayList<ManagedReference<SnowmanPlayer>>();
     
-    private SnowmanGame(String gameName){
-        
+    private SnowmanAppContext appContext;
+    private EntityFactory entityFactory;
+    
+    public SnowmanGameImpl(String gameName,
+                           SnowmanAppContext appContext, 
+                           EntityFactory entityFactory) {
+        this.appContext = appContext;
+        this.entityFactory = entityFactory;
         channelRef = AppContext.getDataManager().createReference(
                 AppContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
         
-        for(TEAMCOLOR color : TEAMCOLOR.values()){
+        for(TeamColor color : TeamColor.values()){
             int idx = color.ordinal();
-            SnowmanFlag flag = new SnowmanFlag(color,
+            SnowmanFlag flag = entityFactory.createSnowmanFlag(color,
                     flagGoals[idx*3],flagGoals[idx*3+1],flagGoals[idx*3+2]); 
             flag.setLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
             ManagedReference<SnowmanFlag> ref =
@@ -135,15 +135,15 @@ class SnowmanGame implements ManagedObject, Serializable {
         
     }
 
-    public void addPlayer(SnowmanPlayer player, TEAMCOLOR color) {
+    public void addPlayer(SnowmanPlayer player, TeamColor color) {
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         playerRefs.add(playerRef);
         int id = playerRefs.indexOf(playerRef)+PLAYERIDSTART;
         player.setID(id);
-        player.setPosition(System.currentTimeMillis(),playerStarts[id*2],playerStarts[(id*2)+1]);
+        player.setTimestampLocation(System.currentTimeMillis(),playerStarts[id*2],playerStarts[(id*2)+1]);
         player.setTeamColor(color);
-        player.setArea(this);
+        player.setGame(this);
         channelRef.get().join(player.getSession());
     }
     
@@ -177,10 +177,10 @@ class SnowmanGame implements ManagedObject, Serializable {
     	 }
     }
     
-    public void checkReadyToPlay(){
+    public void startGameIfReady(){
         for(ManagedReference<SnowmanPlayer> playerRef : playerRefs){
             if (playerRef != null){
-                if (!playerRef.get().isReadyToPlay()){
+                if (!playerRef.get().getReadyToPlay()){
                     return;
                 }
             }
