@@ -92,8 +92,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attacked(int sourceID, int targetID) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.CreateSnowball, sourceID, targetID);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ public class CharacterController extends Controller {
 
 	@Override
 	protected void updateLogic(float interpolation) {
+		if(((CharacterEntity)this.entity).getDestination() == null) return;
 		TaskManager.getInstance().createTask(ETask.UpdateMovement, this.entity, this.tolerance);
 	}
 }

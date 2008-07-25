@@ -44,7 +44,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:36 EST
- * @version Modified date: 07-23-2008 17:59 EST
+ * @version Modified date: 07-25-2008 14:50 EST
  */
 public class UpdateStateTask extends RealTimeTask {
 	/**
@@ -93,9 +93,11 @@ public class UpdateStateTask extends RealTimeTask {
 		}
 		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
 		if(result != null) {
-			if(((CharacterView)result).getEntity() == this.snowman) return;
+			CharacterView view = (CharacterView)result;
+			if(view.getEntity() == this.snowman) return;
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
+				this.snowman.setTarget((SnowmanEntity)view.getEntity());
 				System.out.println("Targeting");
 				// TODO Change cursor to targeting.
 			}

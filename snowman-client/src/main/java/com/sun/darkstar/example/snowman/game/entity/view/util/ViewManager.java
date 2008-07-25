@@ -14,7 +14,9 @@ import com.sun.darkstar.example.snowman.common.interfaces.IView;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
@@ -131,6 +133,10 @@ public class ViewManager extends Manager {
 			view = new CharacterView((CharacterEntity)entity);
 			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
+		case Snowball:
+			view = new SnowballView((SnowballEntity)entity);
+			view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			break;
 		default:
 			switch(entity.getType()) {
 			case Static:
@@ -138,7 +144,6 @@ public class ViewManager extends Manager {
 				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 				((StaticView)view).lock();
 				break;
-			case Dynamic: break; // TODO
 			case Editable:
 				view = new EditableView((IEditableEntity)entity);
 				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));

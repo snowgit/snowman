@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.scene.SharedMesh;
+import com.jme.scene.TriMesh;
 import com.jme.util.ImageLoader;
 import com.jme.util.TextureManager;
 import com.jme.util.export.Savable;
@@ -60,9 +60,9 @@ public class DataManager extends Manager {
 	 */
 	private final HashMap<EAnimation, JointAnimation> animationPool;
 	/**
-	 * The <code>SharedMesh</code> asset pool.
+	 * The <code>TriMesh</code> asset pool.
 	 */
-	private final HashMap<EEntity, SharedMesh> meshPool;
+	private final HashMap<EEntity, TriMesh> meshPool;
 	/**
 	 * The character <code>ModelNode</code> asset pool.
 	 */
@@ -82,7 +82,7 @@ public class DataManager extends Manager {
 	private DataManager() {
 		super(EManager.DataManager);
 		this.animationPool = new HashMap<EAnimation, JointAnimation>();
-		this.meshPool = new HashMap<EEntity, SharedMesh>();
+		this.meshPool = new HashMap<EEntity, TriMesh>();
 		this.characterPool = new HashMap<EEntity, ModelNode>();
 		this.texturePool = new HashMap<ETexture, Texture>();
 		this.loader = this.getClass().getClassLoader();
@@ -139,10 +139,10 @@ public class DataManager extends Manager {
 	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @return The cached <code>SharedMesh</code> with given enumeration.
 	 */
-	public SharedMesh getStaticMesh(EEntity enumn) {
-		SharedMesh mesh = this.meshPool.get(enumn);
+	public TriMesh getStaticMesh(EEntity enumn) {
+		TriMesh mesh = this.meshPool.get(enumn);
 		if(mesh == null) {
-			mesh = (SharedMesh)this.getResource(EDataType.StaticMesh.toPath(enumn.toString()));
+			mesh = (TriMesh)this.getResource(EDataType.StaticMesh.toPath(enumn.toString()));
 			this.meshPool.put(enumn, mesh);
 		}
 		return mesh;

@@ -14,7 +14,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:05 EST
- * @version Modified date: 07-22-2008 17:30 EST
+ * @version Modified date: 07-25-2008 15:54 EST
  */
 public class SnowmanController extends CharacterController implements MouseInputListener {
 
@@ -32,7 +32,8 @@ public class SnowmanController extends CharacterController implements MouseInput
 			switch(((SnowmanEntity)this.entity).getState()) {
 			case Idle: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
 			case Moving: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
-			case Targeting: break;
+			case Targeting: TaskManager.getInstance().createTask(ETask.CreateSnowball, this.entity.getID(),
+					((SnowmanEntity)this.entity).getTaregt().getID()); break;
 			case Grabbing: break;
 			}
 		}

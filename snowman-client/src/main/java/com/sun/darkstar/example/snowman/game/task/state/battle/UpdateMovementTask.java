@@ -57,7 +57,6 @@ public class UpdateMovementTask extends RealTimeTask {
 
 	@Override
 	public void execute() {
-		if(this.character.getDestination() == null) return;
 		try {
 			View view = (View)ViewManager.getInstance().getView(this.character);
 			if(this.validatePosition(view)) {

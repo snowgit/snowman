@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:09 EST
- * @version Modified date: 07-24-2008 11:36 EST
+ * @version Modified date: 07-25-2008 14:49 EST
  */
 public class SnowmanEntity extends CharacterEntity {
 	/**
@@ -20,6 +20,10 @@ public class SnowmanEntity extends CharacterEntity {
 	 * The last movement update time.
 	 */
 	private long timestamp;
+	/**
+	 * The current target.
+	 */
+	private SnowmanEntity target;
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
@@ -31,6 +35,13 @@ public class SnowmanEntity extends CharacterEntity {
 	}
 	
 	/**
+	 * Update the maintained time stamp to store the time stamp of movement.
+	 */
+	public void updateTimeStamp() {
+		this.timestamp = System.currentTimeMillis();
+	}
+
+	/**
 	 * Set the current state of the snowman.
 	 * @param state The <code>EState</code> enumeration.
 	 */
@@ -38,8 +49,12 @@ public class SnowmanEntity extends CharacterEntity {
 		this.state = state;
 	}
 	
-	public void updateTimeStamp() {
-		this.timestamp = System.currentTimeMillis();
+	/**
+	 * Set the snowman that is being targeted.
+	 * @param target The targeted <code>SnowmanEntity</code>.
+	 */
+	public void setTarget(SnowmanEntity target) {
+		this.target = target;
 	}
 	
 	/**
@@ -50,6 +65,18 @@ public class SnowmanEntity extends CharacterEntity {
 		return this.state;
 	}
 	
+	/**
+	 * Retrieve the snowman that is being targeted.
+	 * @return The targeted <code>SnowmanEntity</code>.
+	 */
+	public SnowmanEntity getTaregt() {
+		return this.target;
+	}
+	
+	/**
+	 * Retrieve the time stamp when the last movement was performed.
+	 * @return The long time stamp.
+	 */
 	public long getTimeStamp() {
 		return this.timestamp;
 	}

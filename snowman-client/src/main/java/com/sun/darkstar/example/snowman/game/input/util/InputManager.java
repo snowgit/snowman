@@ -44,7 +44,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * @author Yi Wang (Neakor)
  * @author Tim Poliquin (Weenahmen)
  * @version Creation date: 07-15-2008 23:18 EST
- * @version Modified date: 07-21-2008 12:12 EST
+ * @version Modified date: 07-25-2008 17:14 EST
  */
 public final class InputManager extends Manager {
 	/**
@@ -142,6 +142,16 @@ public final class InputManager extends Manager {
 		for(IController controller : this.controllers.values()) {
 			controller.setActive(active);
 		}
+	}
+	
+	/**
+	 * Remove the given entity controller.
+	 * @param entity The <code>IDynamicEntity</code> controlled by the controller.
+	 */
+	public void removeController(IDynamicEntity entity) {
+		Object result = this.controllers.remove(entity);
+		if(result == null) this.logger.info("Controller does not exist.");
+		else this.logger.info("Removed controller of entity: " + entity.toString());
 	}
 	
 	/**
