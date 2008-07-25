@@ -2,6 +2,7 @@ package com.sun.darkstar.example.snowman.game.entity.scene;
 
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 
 /**
@@ -29,7 +30,7 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public CharacterEntity(EEntity enumn, int id) {
 		super(enumn, id);
-		this.hp = 100;
+		this.hp = SingletonRegistry.getHPConverter().getMaxHP();
 	}
 	
 	/**

@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 07-18-2008 11:35 EST
+ * @version Modified date: 07-25-2008 12:14 EST
  */
 public enum ETask {
 	/**
@@ -54,7 +54,11 @@ public enum ETask {
 	/**
 	 * The task used to stop a distributed character.
 	 */
-	StopCharacter(ETaskType.RealTime);
+	StopCharacter(ETaskType.RealTime),
+	/**
+	 * The task used to update the HP value of a character.
+	 */
+	UpdateHP(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

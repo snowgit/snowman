@@ -22,7 +22,7 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	/**
 	 * The mass value of this <code>DynamicEntity</code>.
 	 */
-	private final float mass;
+	protected float mass;
 	/**
 	 * The force <code>Vector3f</code> currently in effect.
 	 */
@@ -47,6 +47,11 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	@Override
 	public void resetForce() {
 		this.force.zero();
+	}
+
+	@Override
+	public void setMass(float mass) {
+		this.mass = mass;
 	}
 
 	@Override

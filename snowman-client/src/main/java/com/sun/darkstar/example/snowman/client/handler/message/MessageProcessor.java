@@ -21,7 +21,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 05-29-2008 16:59 EST
+ * @version Modified date: 07-25-2008 12:21 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -98,7 +98,6 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void setHP(int objectID, int hp) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.UpdateHP, objectID, hp);
 	}
 }
