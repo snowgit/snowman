@@ -113,8 +113,7 @@ public class MessageHandlerImpl implements MessageHandler
                              packet.getFloat(),
                              packet.getFloat(),
                              packet.getFloat(), 
-                             packet.getFloat(),
-                             packet.getLong());
+                             packet.getFloat());
                 break;
             case STOPMOB:
                 unit.stopMOB(packet.getInt(),

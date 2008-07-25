@@ -127,7 +127,7 @@ public class TestServerMessages extends AbstractTestMessages
     
     @Test
     public void testCreateMoveMOBPkt() {
-        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f, 1234l);
+        ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f);
         packet.flip();
         checkOpcode(packet, EOPCODE.MOVEMOB);
         
@@ -136,14 +136,12 @@ public class TestServerMessages extends AbstractTestMessages
         float starty = packet.getFloat();
         float endx = packet.getFloat();
         float endy = packet.getFloat();
-        long timestart = packet.getLong();
 
         Assert.assertEquals(id, 10);
         Assert.assertEquals(startx, 1.0f);
         Assert.assertEquals(starty, 2.0f);
         Assert.assertEquals(endx, 3.0f);
         Assert.assertEquals(endy, 4.0f);
-        Assert.assertEquals(timestart, 1234l);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

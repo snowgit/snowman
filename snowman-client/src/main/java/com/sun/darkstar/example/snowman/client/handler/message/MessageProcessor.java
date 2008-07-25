@@ -69,7 +69,7 @@ public class MessageProcessor implements IClientProcessor {
 	}
 
 	@Override
-	public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
+	public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
 		TaskManager.getInstance().createTask(ETask.SetDestination, objectID, startx, starty, endx, endy);
 	}
 

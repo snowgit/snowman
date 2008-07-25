@@ -238,7 +238,7 @@ class SnowmanPlayer implements Serializable, ManagedObject,
            this.timestamp = timestamp;
            currentGameRef.get().send(null,
                    ServerMessages.createMoveMOBPkt(
-                   id, startX, startY, endx, endy, timestamp));
+                   id, startX, startY, endx, endy));
        }
     }
 
@@ -247,8 +247,8 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             currentGameRef.get().attack(this,x,y,targetID,timestamp);
         }
     }
-
-    public void getFlag(int flagID) {
+    
+    public void getFlag(long timestamp, int flagID) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -288,9 +288,5 @@ class SnowmanPlayer implements Serializable, ManagedObject,
             setHP(hitPoints-1);
         }
         
-    }
-
-   
-   
-    
+    }    
 }

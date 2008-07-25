@@ -84,9 +84,8 @@ public interface IClientProcessor extends IProtocolProcessor {
      * @param starty The y coordinate of the starting position.
      * @param endx The x coordinate of the ending position.
      * @param endy The y coordinate of the ending position.
-     * @param timestart The timestamp that the client starting moving
      */
-    public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart);// RealTime.
+    public void moveMOB(int objectID, float startx, float starty, float endx, float endy);// RealTime.
 
     /**
      * Remove the MOB with given ID number.

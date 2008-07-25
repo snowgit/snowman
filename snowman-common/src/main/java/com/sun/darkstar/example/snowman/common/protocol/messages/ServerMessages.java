@@ -134,10 +134,9 @@ public class ServerMessages extends Messages
      * @param starty The y coordinate of the starting position.
      * @param endx The x coordinate of the ending position.
      * @param endy The y coordinate of the ending position.
-     * @param timestart The timestamp that the client started moving
      * @return The <code>ByteBuffer</code> "move MOB" packet.
      */
-    public static ByteBuffer createMoveMOBPkt(int targetID, float startx, float starty, float endx, float endy, long timestart) {
+    public static ByteBuffer createMoveMOBPkt(int targetID, float startx, float starty, float endx, float endy) {
         byte[] bytes = new byte[1 + 8 + 28];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEMOB.ordinal());
@@ -146,7 +145,6 @@ public class ServerMessages extends Messages
         buffer.putFloat(starty);
         buffer.putFloat(endx);
         buffer.putFloat(endy);
-        buffer.putLong(timestart);
         return buffer;
     }
     

@@ -182,7 +182,7 @@ class SimulatedPlayer implements SimpleClientListener {
         }
 
         @Override
-        public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
+        public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
             logger.log(Level.FINEST, "Message to {0}: Move MOB {1}",
                        new Object[] {name, objectID});
         }
