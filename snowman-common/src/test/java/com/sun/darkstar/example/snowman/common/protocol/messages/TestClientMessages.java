@@ -44,6 +44,25 @@ import org.junit.Assert;
  */
 public class TestClientMessages extends AbstractTestMessages
 {
+    /**
+     * Verify the header of the packet which includes a timestamp.
+     * First check that the given opcode matches the first byte of
+     * the packet.  Then check that the next 8 bytes are a long which
+     * is equivalent to a timestamp approximately equal to now.
+     * (Checks that it is within 20 ms)
+     * @param packet packet to check
+     * @param opcode opcode to verify against
+     */
+    protected void checkOpcodeAndTimestamp(ByteBuffer packet, EOPCODE opcode) {
+        checkOpcode(packet, opcode);
+        
+        long timestamp = packet.getLong();
+        long now = System.currentTimeMillis();
+        
+        Assert.assertTrue((now - timestamp) < 20 &&
+                          (now - timestamp) >= 0);
+    }
+    
     @Test
     public void testCreateMoveMePkt() {
         ByteBuffer movePacket = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);

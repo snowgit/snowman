@@ -47,14 +47,13 @@ public abstract class Messages
 {
     /**
      * Create a READY message packet.  There is no payload associated with
-     * a READY message except for the standard timestamp.
+     * a READY message.
      * @return A <code>ByteBuffer</code> "ready" packet
      */
     public static ByteBuffer createReadyPkt() {
         byte[] bytes = new byte[1 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte)EOPCODE.READY.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         return buffer;
     }
 }

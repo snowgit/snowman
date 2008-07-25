@@ -60,7 +60,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 8 + mapname.length()];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.NEWGAME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(myID);
         buffer.putInt(mapname.length());
         buffer.put(mapname.getBytes());
@@ -75,7 +74,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STARTGAME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         return buffer;
     }
 
@@ -89,7 +87,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ENDGAME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(state.ordinal());
         return buffer;
     }
@@ -108,7 +105,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 16];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ADDMOB.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(targetID);
         buffer.putFloat(x);
         buffer.putFloat(y);
@@ -126,7 +122,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.REMOVEMOB.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(targetID);
         return buffer;
     }
@@ -146,7 +141,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 28];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEMOB.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(targetID);
         buffer.putFloat(startx);
         buffer.putFloat(starty);
@@ -168,7 +162,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STOPMOB.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(targetID);
         buffer.putFloat(x);
         buffer.putFloat(y);
@@ -186,7 +179,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACHOBJ.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(sourceID);
         buffer.putInt(targetID);
         return buffer;
@@ -203,7 +195,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACKED.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(sourceID);
         buffer.putInt(targetID);
         return buffer;
@@ -220,7 +211,6 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.SETHP.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(objectID);
         buffer.putInt(hp);
         return buffer;

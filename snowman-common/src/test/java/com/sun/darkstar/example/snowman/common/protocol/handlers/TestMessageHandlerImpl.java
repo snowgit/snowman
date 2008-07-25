@@ -405,8 +405,10 @@ public class TestMessageHandlerImpl
         // generate packet
         ByteBuffer packet = ClientMessages.createGetFlagPkt(10);
         packet.flip();
+        // record current time
+        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.getFlag(10);
+        mockProcessor.getFlag(EasyMock.leq(now), EasyMock.eq(10));
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseServerPacket(packet, mockProcessor);
