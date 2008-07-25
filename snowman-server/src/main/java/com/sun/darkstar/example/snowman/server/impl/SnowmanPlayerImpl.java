@@ -263,7 +263,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
    
     
     public SnowmanGame getGame() {
-        return currentGameRef.get();
+        return currentGameRef == null ? null : currentGameRef.get();
     }
 
     public String getName() {
