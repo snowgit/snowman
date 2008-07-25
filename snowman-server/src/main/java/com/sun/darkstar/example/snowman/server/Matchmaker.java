@@ -31,7 +31,7 @@
  */
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.common.protocol.ServerProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.server.SnowmanFlag.TEAMCOLOR;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ManagedObject;
@@ -145,7 +145,7 @@ public class Matchmaker implements Serializable, ManagedObject {
         TEAMCOLOR color = TEAMCOLOR.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);
-        	waiting[i].get().send(ServerProtocol.getInstance().createNewGamePkt(waiting[i].get().getID(), 
+        	waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
             color = TEAMCOLOR.values()[
                     (color.ordinal()+1)%TEAMCOLOR.values().length];

@@ -6,7 +6,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.world.World;
@@ -130,7 +130,7 @@ public class SetDestinationTask extends RealTimeTask {
 		try {
 			Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
 			Vector3f local = view.getLocalTranslation();
-			this.game.getClient().send(ClientProtocol.getInstance().createMoveMePkt(local.x, local.z, click.x, click.z));
+			this.game.getClient().send(ClientMessages.createMoveMePkt(local.x, local.z, click.x, click.z));
 			Vector3f destination = collisionManager.getDestination(local.x, local.z, click.x, click.z, world);
 			this.character.setDestination(destination);
 		} catch (ObjectNotFoundException e) {

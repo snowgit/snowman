@@ -2,7 +2,7 @@ package com.sun.darkstar.example.snowman.game.task.state.battle;
 
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
@@ -63,8 +63,8 @@ public class UpdateMovementTask extends RealTimeTask {
 			if(this.validatePosition(view)) {
 				this.character.setDestination(null);
 				if(this.character instanceof SnowmanEntity) {
-					this.game.getClient().send(ClientProtocol.getInstance().createStopMePkg(
-							view.getLocalTranslation().x, view.getLocalTranslation().z, ((SnowmanEntity)this.character).getTimeStamp()));
+					this.game.getClient().send(ClientMessages.createStopMePkg(
+							view.getLocalTranslation().x, view.getLocalTranslation().z));
 				}
 				return;
 			} else {

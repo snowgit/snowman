@@ -33,10 +33,11 @@
 package com.sun.darkstar.example.snowman.clientsimulator;
 
 import com.jme.math.Vector3f;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
 import com.sun.sgs.client.simple.SimpleClient;
@@ -138,7 +139,7 @@ class SimulatedPlayer implements SimpleClientListener {
         public void ready() {
             logger.log(Level.FINEST, "Ready message for {0}", name);
             try{
-                ByteBuffer buff = ClientProtocol.getInstance().createReadyPkt();
+                ByteBuffer buff = ClientMessages.createReadyPkt();
                 buff.flip();
                 simpleClient.send(buff);
             } catch (IOException ioe) {
@@ -244,7 +245,7 @@ class SimulatedPlayer implements SimpleClientListener {
         ray = ray.add(new Vector3f(x, y, 0.0f));
         ray = lookForBlocking(ray);
         try {
-            ByteBuffer buff = ClientProtocol.getInstance().createMoveMePkt(0.0f, 0.0f, ray.x, ray.y);
+            ByteBuffer buff = ClientMessages.createMoveMePkt(0.0f, 0.0f, ray.x, ray.y);
             buff.flip();
             simpleClient.send(buff);
         } catch (IOException ex) {
@@ -313,7 +314,7 @@ class SimulatedPlayer implements SimpleClientListener {
 
             @Override
             public void receivedMessage(ClientChannel channel, ByteBuffer buff) {
-                ClientProtocol.getInstance().parsePacket(buff, pktHandler);
+                SingletonRegistry.getMessageHandler().parseClientPacket(buff, pktHandler);
             }
 
             @Override
@@ -326,7 +327,7 @@ class SimulatedPlayer implements SimpleClientListener {
     
     @Override
     public void receivedMessage(ByteBuffer buff) {
-        ClientProtocol.getInstance().parsePacket(buff, pktHandler);
+        SingletonRegistry.getMessageHandler().parseClientPacket(buff, pktHandler);
     }
 
     @Override
