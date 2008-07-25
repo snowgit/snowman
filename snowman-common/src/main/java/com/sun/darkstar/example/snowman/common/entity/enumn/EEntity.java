@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-04-2008 14:52 EST
- * @version Modified date: 07-24-2008 11:32 EST
+ * @version Modified date: 07-25-2008 16:39 EST
  */
 public enum EEntity {
 	/**
@@ -27,7 +27,11 @@ public enum EEntity {
 	/**
 	 * The flag entity.
 	 */
-	Flag(EEntityType.Dynamic, Float.POSITIVE_INFINITY);
+	Flag(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+	/**
+	 * The snow ball entity.
+	 */
+	Snowball(EEntityType.Dynamic, 0);
 	
 	/**	
 	 * The <code>EEntityType</code> value.

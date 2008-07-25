@@ -1,5 +1,8 @@
 package com.sun.darkstar.example.snowman.common.entity.view;
 
+import com.jme.scene.SharedMesh;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IFinal;
@@ -13,7 +16,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IStaticEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 15:40 EST
- * @version Modified date: 07-01-2008 17:08 EST
+ * @version Modified date: 07-25-2008 16:55 EST
  */
 public class EditableView extends View implements IEditableView {
 	/**
@@ -36,6 +39,12 @@ public class EditableView extends View implements IEditableView {
 		super(entity);
 		this.buildAxisView();
 		this.buildWireView();
+	}
+	
+	@Override
+	public void attachMesh(Spatial mesh) {
+		SharedMesh shared = new SharedMesh((TriMesh)mesh);
+		this.attachChild(shared);
 	}
 	
 	/**
