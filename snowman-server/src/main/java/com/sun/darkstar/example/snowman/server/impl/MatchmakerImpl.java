@@ -58,6 +58,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
     /**
      * The list of waiting players
      */
+    @SuppressWarnings("unchecked")
     ManagedReference<SnowmanPlayer>[] waiting =
             new ManagedReference[NUMPLAYERSPERGAME];
     
