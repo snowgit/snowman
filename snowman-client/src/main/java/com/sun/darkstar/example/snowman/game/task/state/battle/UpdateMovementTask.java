@@ -61,10 +61,10 @@ public class UpdateMovementTask extends RealTimeTask {
 			View view = (View)ViewManager.getInstance().getView(this.character);
 			if(this.validatePosition(view)) {
 				this.character.setDestination(null);
-				if(this.character instanceof SnowmanEntity) {
-					this.game.getClient().send(ClientMessages.createStopMePkg(
-							view.getLocalTranslation().x, view.getLocalTranslation().z));
-				}
+//				if(this.character instanceof SnowmanEntity) {
+//					this.game.getClient().send(ClientMessages.createStopMePkg(
+//							view.getLocalTranslation().x, view.getLocalTranslation().z));
+//				}
 				return;
 			} else {
 				Vector3f direction = this.character.getDestination().subtract(view.getLocalTranslation()).normalizeLocal();
