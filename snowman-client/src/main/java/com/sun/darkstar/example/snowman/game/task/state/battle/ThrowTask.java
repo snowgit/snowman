@@ -6,8 +6,8 @@ import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
 /**
- * <code>ThrowTask</code> extends <code>RealTimeTask</code> to update the
- * throw motion of the snow ball.
+ * <code>ThrowTask</code> extends <code>RealTimeTask</code> to initiate the
+ * throw motion of a snowball.
  * <p>
  * <code>ThrowTask</code> execution logic:
  * 1.

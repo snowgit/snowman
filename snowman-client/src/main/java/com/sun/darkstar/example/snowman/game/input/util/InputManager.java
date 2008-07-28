@@ -7,10 +7,12 @@ import com.jme.input.KeyInputListener;
 import com.jme.input.MouseInput;
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.game.entity.controller.CharacterController;
+import com.sun.darkstar.example.snowman.game.entity.controller.SnowballController;
+import com.sun.darkstar.example.snowman.game.entity.controller.SnowmanController;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.input.entity.CharacterController;
-import com.sun.darkstar.example.snowman.game.input.entity.SnowmanController;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.game.input.gui.KeyInputConverter;
@@ -44,7 +46,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * @author Yi Wang (Neakor)
  * @author Tim Poliquin (Weenahmen)
  * @version Creation date: 07-15-2008 23:18 EST
- * @version Modified date: 07-25-2008 17:14 EST
+ * @version Modified date: 07-28-2008 16:49 EST
  */
 public final class InputManager extends Manager {
 	/**
@@ -202,6 +204,7 @@ public final class InputManager extends Manager {
 		switch(entity.getEnumn()) {
 		case SnowmanDistributed: controller = new CharacterController((CharacterEntity)entity, EInputType.None); break;
 		case SnowmanLocal: controller = new SnowmanController((SnowmanEntity)entity); break;
+		case Snowball: controller = new SnowballController((SnowballEntity)entity); break;
 		default: throw new IllegalArgumentException("Invalid controller enumeration.");
 		}
 		this.controllers.put(entity, controller);

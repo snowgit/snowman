@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:09 EST
- * @version Modified date: 07-25-2008 14:49 EST
+ * @version Modified date: 07-28-2008 17:38 EST
  */
 public class SnowmanEntity extends CharacterEntity {
 	/**
@@ -23,7 +23,7 @@ public class SnowmanEntity extends CharacterEntity {
 	/**
 	 * The current target.
 	 */
-	private SnowmanEntity target;
+	private CharacterEntity target;
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
@@ -51,9 +51,9 @@ public class SnowmanEntity extends CharacterEntity {
 	
 	/**
 	 * Set the snowman that is being targeted.
-	 * @param target The targeted <code>SnowmanEntity</code>.
+	 * @param target The targeted <code>CharacterEntity</code>.
 	 */
-	public void setTarget(SnowmanEntity target) {
+	public void setTarget(CharacterEntity target) {
 		this.target = target;
 	}
 	
@@ -67,9 +67,9 @@ public class SnowmanEntity extends CharacterEntity {
 	
 	/**
 	 * Retrieve the snowman that is being targeted.
-	 * @return The targeted <code>SnowmanEntity</code>.
+	 * @return The targeted <code>CharacterEntity</code>.
 	 */
-	public SnowmanEntity getTaregt() {
+	public CharacterEntity getTaregt() {
 		return this.target;
 	}
 	

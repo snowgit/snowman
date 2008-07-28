@@ -16,7 +16,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-13-2008 14:41 EST
- * @version Modified date: 07-23-2008 12:25 EST
+ * @version Modified date: 07-28-2008 17:00 EST
  */
 public class DynamicEntity extends Entity implements IDynamicEntity {
 	/**
@@ -24,9 +24,13 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	 */
 	protected float mass;
 	/**
+	 * The current <code>Vector3f</code> velocity.
+	 */
+	protected final Vector3f velocity;
+	/**
 	 * The force <code>Vector3f</code> currently in effect.
 	 */
-	private final Vector3f force;
+	protected final Vector3f force;
 	
 	/**
 	 * Constructor of <code>DynamicEntity</code>
@@ -36,6 +40,7 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	public DynamicEntity(EEntity enumn, int id) {
 		super(enumn, id);
 		this.mass = enumn.getMass();
+		this.velocity = new Vector3f();
 		this.force = new Vector3f();
 	}
 
@@ -55,8 +60,18 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	}
 
 	@Override
+	public void setVelocity(Vector3f velocity) {
+		this.velocity.set(velocity);
+	}
+
+	@Override
 	public float getMass() {
 		return this.mass;
+	}
+
+	@Override
+	public Vector3f getVelocity() {
+		return this.velocity;
 	}
 
 	@Override

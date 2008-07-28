@@ -81,7 +81,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		TaskManager.getInstance().createTask(ETask.StopCharacter, objectID, x, y);
+		throw new UnsupportedOperationException("StopMOB should not be used!");
 	}
 
 	@Override

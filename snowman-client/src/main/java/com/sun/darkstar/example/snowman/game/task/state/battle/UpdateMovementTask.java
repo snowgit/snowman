@@ -3,11 +3,9 @@ package com.sun.darkstar.example.snowman.game.task.state.battle;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
-import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
@@ -38,59 +36,33 @@ public class UpdateMovementTask extends RealTimeTask {
 	 * The <code>CharacterEntity</code> instance.
 	 */
 	private final CharacterEntity character;
-	/**
-	 * The float distance tolerance value.
-	 */
-	private final float tolerance;
 
 	/**
 	 * Constructor of <code>CheckStopTask</code>.
 	 * @param game The <code>Game</code> instance.
 	 * @param character The <code>CharacterEntity</code> instance.
-	 * @param tolerance The float distance tolerance value.
 	 */
-	public UpdateMovementTask(Game game, CharacterEntity character, float tolerance) {
+	public UpdateMovementTask(Game game, CharacterEntity character) {
 		super(ETask.UpdateMovement, game);
 		this.character = character;
-		this.tolerance = tolerance;
 	}
 
 	@Override
 	public void execute() {
+		if(this.character.getDestination() == null) return;
 		try {
 			View view = (View)ViewManager.getInstance().getView(this.character);
-			if(this.validatePosition(view)) {
-				this.character.setDestination(null);
-//				if(this.character instanceof SnowmanEntity) {
-//					this.game.getClient().send(ClientMessages.createStopMePkg(
-//							view.getLocalTranslation().x, view.getLocalTranslation().z));
-//				}
-				return;
-			} else {
-				Vector3f direction = this.character.getDestination().subtract(view.getLocalTranslation()).normalizeLocal();
-				direction.y = 0;
-				view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
-				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
-				this.character.addForce(force);
-				PhysicsManager.getInstance().markForUpdate(this.character);
-			}
+			Vector3f direction = this.character.getDestination().subtract(view.getLocalTranslation()).normalizeLocal();
+			direction.y = 0;
+			view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
+			Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
+			this.character.addForce(force);
+			PhysicsManager.getInstance().markForUpdate(this.character);
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-
-	/**
-	 * Validate if the current position is within the tolerance range of the destination.
-	 * @return True if the character is considered reached the destination. False otherwise.
-	 */
-	private boolean validatePosition(View view) {
-		float dx = view.getLocalTranslation().x - this.character.getDestination().x;
-		float dz = view.getLocalTranslation().z - this.character.getDestination().z;
-		if((dx * dx) + (dz * dz) <= this.tolerance) return true;
-		return false;
-	}
-	
 	@Override
 	public boolean equals(Object object) {
 		if(super.equals(object)) {

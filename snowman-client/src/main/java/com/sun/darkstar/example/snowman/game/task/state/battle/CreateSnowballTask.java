@@ -11,9 +11,11 @@ import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.Task;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.interfaces.IController;
 
 /**
  * <code>ThrowTask</code> extends <code>Task</code> to define the task that
@@ -76,8 +78,8 @@ public class CreateSnowballTask extends Task {
 			snowballView.setLocalTranslation(attackerPosition);
 			snowballView.getLocalTranslation().y += this.offset;
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
-			
-			// TODO Logic procedure 6, 7.
+			IController controller = InputManager.getInstance().getController(snowball);
+			controller.setActive(true);
 			this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, targetPosition.x, targetPosition.z));
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();

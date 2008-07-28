@@ -1,4 +1,4 @@
-package com.sun.darkstar.example.snowman.game.input.entity;
+package com.sun.darkstar.example.snowman.game.entity.controller;
 
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;

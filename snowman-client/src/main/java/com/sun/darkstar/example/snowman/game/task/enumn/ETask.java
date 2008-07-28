@@ -52,10 +52,6 @@ public enum ETask {
 	 */
 	UpdateMovement(ETaskType.RealTime),
 	/**
-	 * The task used to stop a distributed character.
-	 */
-	StopCharacter(ETaskType.RealTime),
-	/**
 	 * The task used to update the HP value of a character.
 	 */
 	UpdateHP(ETaskType.RealTime),

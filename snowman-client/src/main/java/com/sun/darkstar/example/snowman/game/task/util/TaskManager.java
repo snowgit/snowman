@@ -47,7 +47,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 07-25-2008 17:22 EST
+ * @version Modified date: 07-28-2008 17:32 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -163,8 +163,7 @@ public class TaskManager extends Manager {
 			if(args.length == 3) task = new SetDestinationTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
 			else task = new SetDestinationTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
 			break;
-		case UpdateMovement: task = new UpdateMovementTask(this.game, (CharacterEntity)args[0], (Float)args[1]); break;
-		case StopCharacter: task = new StopCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2]); break;
+		case UpdateMovement: task = new UpdateMovementTask(this.game, (CharacterEntity)args[0]); break;
 		case UpdateHP: task = new UpdateHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
 		case CreateSnowball: task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1]); break;
 		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
