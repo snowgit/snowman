@@ -6,13 +6,17 @@ package com.sun.darkstar.example.snowman.common.physics.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-13-2008 14:50 EST
- * @version Modified date: 07-22-2008 17:21 EST
+ * @version Modified date: 07-28-2008 17:05 EST
  */
 public enum EForce {
 	/**
+	 * The gravity force.
+	 */
+	Gravity(30),
+	/**
 	 * The movement force.
 	 */
-	Movement(70);
+	Movement(100);
 	
 	/**
 	 * The float magnitude value of the force.

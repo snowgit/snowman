@@ -11,7 +11,7 @@ import com.jme.math.Vector3f;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-04-2008 14:54 EST
- * @version Modified date: 07-25-2008 12:12 EST
+ * @version Modified date: 07-28-2008 16:59 EST
  */
 public interface IDynamicEntity extends IEntity {
 	
@@ -33,11 +33,23 @@ public interface IDynamicEntity extends IEntity {
 	public void setMass(float mass);
 	
 	/**
+	 * Set the velocity of this dynamic entity.
+	 * @param velocity The <code>Vector3f</code> velocity to be set.
+	 */
+	public void setVelocity(Vector3f velocity);
+
+	/**
 	 * Retrieve the mass value of this dynamic entity.
 	 * @return The mass value of this <code>IDynamicEntity</code>.
 	 */
 	public float getMass();
 	
+	/**
+	 * Retrieve the current velocity of this dynamic entity.
+	 * @return The <code>Vector3f</code> velocity.
+	 */
+	public Vector3f getVelocity();
+
 	/**
 	 * Retrieve the net force of this dynamic entity.
 	 * @return The net force in <code>Vector3f</code> form.
