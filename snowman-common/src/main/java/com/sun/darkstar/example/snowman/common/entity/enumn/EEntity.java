@@ -31,7 +31,7 @@ public enum EEntity {
 	/**
 	 * The snow ball entity.
 	 */
-	Snowball(EEntityType.Dynamic, 0);
+	Snowball(EEntityType.Dynamic, 0.005f);
 	
 	/**	
 	 * The <code>EEntityType</code> value.
