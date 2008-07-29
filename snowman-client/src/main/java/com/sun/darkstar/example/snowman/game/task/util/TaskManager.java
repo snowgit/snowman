@@ -86,7 +86,7 @@ public class TaskManager extends Manager {
 	 * The flag indicates if the <code>TaskManager</code> is enqueuing tasks.
 	 */
 	private boolean enqueuing;
-	
+
 	/**
 	 * Constructor of <code>TaskManager</code>.
 	 * @param game The <code>Game</code> instance.
@@ -98,7 +98,7 @@ public class TaskManager extends Manager {
 		this.taskQueue = new ConcurrentLinkedQueue<ITask>();
 		this.submitted = new ArrayList<ITask>();
 	}
-	
+
 	/**
 	 * Create the task manager for the first time.
 	 * @param game The <code>Game</code> instance.
@@ -112,7 +112,7 @@ public class TaskManager extends Manager {
 		}
 		return TaskManager.instance;
 	}
-	
+
 	/**
 	 * Retrieve the <code>TaskManager</code> singleton instance.
 	 * @return The <code>TaskManager</code> instance.
@@ -120,19 +120,11 @@ public class TaskManager extends Manager {
 	public static TaskManager getInstance() {
 		return TaskManager.instance;
 	}
-	
+
 	/**
 	 * Update the <code>TaskManager</code> to execute the buffered task.
 	 */
 	public void update() {
-		// Execute as many tasks as possible.
-		while(!this.taskQueue.isEmpty() && this.totaltime < this.maxtime) {
-			this.starttime = System.nanoTime();
-			this.taskQueue.poll().execute();
-			this.endtime = System.nanoTime();
-			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
-		}
-		this.totaltime = 0;
 		// Lock enqueuing.
 		this.enqueuing = true;
 		for(ITask task : this.submitted) {
@@ -141,8 +133,17 @@ public class TaskManager extends Manager {
 		this.submitted.clear();
 		// Unlock enqueuing.
 		this.enqueuing = false;
+		// Execute as many tasks as possible.
+		while(!this.taskQueue.isEmpty() && this.totaltime < this.maxtime) {
+			this.starttime = System.nanoTime();
+			ITask task = this.taskQueue.poll();
+			task.execute();
+			this.endtime = System.nanoTime();
+			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
+		}
+		this.totaltime = 0;
 	}
-	
+
 	/**
 	 * Create a task with given type and submit it to the task execution queue.
 	 * @param enumn The <code>ETask</code> enumeration.
@@ -165,12 +166,12 @@ public class TaskManager extends Manager {
 			break;
 		case UpdateMovement: task = new UpdateMovementTask(this.game, (CharacterEntity)args[0]); break;
 		case UpdateHP: task = new UpdateHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
-		case CreateSnowball: task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1]); break;
+		case CreateSnowball: task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]); break;
 		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
 		}
 		return this.submit(task);
 	}
-	
+
 	/**
 	 * Submit the given task to the <code>TaskManager</code> for later execution.
 	 * However, there is no guarantee that the given task will be enqueued.
@@ -183,7 +184,7 @@ public class TaskManager extends Manager {
 		if(this.enqueuing) try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 		return this.submitted.add(task);
 	}
-	
+
 	/**
 	 * Enqueue the given task to the <code>TaskManager</code> for later execution.
 	 * If there is an earlier <code>RealTimeTask</code> that is considered 'equal'
@@ -208,7 +209,7 @@ public class TaskManager extends Manager {
 							this.taskQueue.remove(inQueue);
 							this.logger.info("Replaced older real time task " + inQueue.getEnumn());
 							break;
-						// Discard the given one.
+							// Discard the given one.
 						} else {
 							this.logger.info("Discarded given real time task " + given.getEnumn());
 						}
@@ -218,7 +219,7 @@ public class TaskManager extends Manager {
 		}
 		this.taskQueue.add(task);
 	}
-	
+
 	/**
 	 * Clean up the <code>TaskManager</code> by removing all tasks in the queue.
 	 */

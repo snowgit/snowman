@@ -99,10 +99,13 @@ public class PhysicsManager extends Manager {
 	 * @param entity The <code>IDynamicEntity</code> to be applied to.
 	 */
 	private void applyNaturalForce(IDynamicEntity entity) {
-		// Apply gravity when the entity is moving vertically.
+		// Apply gravity and air friction when the entity is moving vertically.
 		if(entity.getVelocity().y != 0) {
 			this.tempVector.y = -1;
 			this.tempVector.multLocal(EForce.Gravity.getMagnitude());
+			entity.addForce(this.tempVector);
+			this.tempVector.set(entity.getVelocity()).negateLocal();
+			this.tempVector.multLocal(EForce.AirFriction.getMagnitude());
 			entity.addForce(this.tempVector);
 		}
 	}

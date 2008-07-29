@@ -33,7 +33,8 @@ public class SnowmanController extends CharacterController implements MouseInput
 			case Idle: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
 			case Moving: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
 			case Targeting: TaskManager.getInstance().createTask(ETask.CreateSnowball, this.entity.getID(),
-					((SnowmanEntity)this.entity).getTaregt().getID()); break;
+					((SnowmanEntity)this.entity).getTaregt().getID(), true);
+			break;
 			case Grabbing: break;
 			}
 		}

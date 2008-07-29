@@ -3,6 +3,8 @@ package com.sun.darkstar.example.snowman.game.entity.view.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.jme.bounding.BoundingBox;
+import com.jme.scene.shape.Sphere;
 import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
@@ -135,7 +137,11 @@ public class ViewManager extends Manager {
 			break;
 		case Snowball:
 			view = new SnowballView((SnowballEntity)entity);
-			view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			//view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
+			ball.setModelBound(new BoundingBox());
+			ball.updateModelBound();
+			view.attachMesh(ball);
 			break;
 		default:
 			switch(entity.getType()) {

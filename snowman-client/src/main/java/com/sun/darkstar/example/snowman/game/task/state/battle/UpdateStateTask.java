@@ -99,7 +99,7 @@ public class UpdateStateTask extends RealTimeTask {
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
-				System.out.println("Targeting");
+				//System.out.println("Targeting");
 				// TODO Change cursor to targeting.
 			}
 			return;

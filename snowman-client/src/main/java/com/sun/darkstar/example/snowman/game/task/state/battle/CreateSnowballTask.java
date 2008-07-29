@@ -46,6 +46,10 @@ public class CreateSnowballTask extends Task {
 	 */
 	private final int targetID;
 	/**
+	 * The flag indicates if this snow ball is created by local controller.
+	 */
+	private final boolean local;
+	/**
 	 * The height offset for snow ball.
 	 */
 	private final float offset;
@@ -55,12 +59,14 @@ public class CreateSnowballTask extends Task {
 	 * @param game The <code>Game</code> instance.
 	 * @param attackerID The ID number of the attacker.
 	 * @param targetID The ID number of the target.
+	 * @param local True if the snow ball is created by local controller.
 	 */
-	public CreateSnowballTask(Game game, int attackerID, int targetID) {
+	public CreateSnowballTask(Game game, int attackerID, int targetID, boolean local) {
 		super(ETask.CreateSnowball, game);
 		this.attackerID = attackerID;
 		this.targetID = targetID;
-		this.offset = 2;
+		this.offset = 0.5f;
+		this.local = local;
 	}
 
 	@Override
@@ -70,8 +76,8 @@ public class CreateSnowballTask extends Task {
 			View attacker = (View)ViewManager.getInstance().getView(entity);
 			entity = EntityManager.getInstance().getEntity(this.targetID);
 			View target = (View)ViewManager.getInstance().getView(entity);
-			Vector3f attackerPosition = attacker.getLocalTranslation();
-			Vector3f targetPosition = target.getLocalTranslation();
+			Vector3f attackerPosition = attacker.getLocalTranslation().clone();
+			Vector3f targetPosition = target.getLocalTranslation().clone();
 			SnowballEntity snowball = (SnowballEntity)EntityManager.getInstance().createEntity(EEntity.Snowball);
 			snowball.setDestination(targetPosition);
 			SnowballView snowballView = (SnowballView)ViewManager.getInstance().createView(snowball);
@@ -80,7 +86,8 @@ public class CreateSnowballTask extends Task {
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
 			IController controller = InputManager.getInstance().getController(snowball);
 			controller.setActive(true);
-			this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, targetPosition.x, targetPosition.z));
+			if(this.local) this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, targetPosition.x, targetPosition.z));
+			snowballView.updateRenderState();
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
