@@ -65,7 +65,7 @@ public class CreateSnowballTask extends Task {
 		super(ETask.CreateSnowball, game);
 		this.attackerID = attackerID;
 		this.targetID = targetID;
-		this.offset = 0.5f;
+		this.offset = 0.6f;
 		this.local = local;
 	}
 

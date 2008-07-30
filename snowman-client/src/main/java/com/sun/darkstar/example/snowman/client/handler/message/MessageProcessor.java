@@ -70,7 +70,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
-		TaskManager.getInstance().createTask(ETask.SetDestination, objectID, startx, starty, endx, endy);
+		TaskManager.getInstance().createTask(ETask.MoveCharacter, objectID, startx, starty, endx, endy);
 	}
 
 	@Override
@@ -98,6 +98,6 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void setHP(int objectID, int hp) {
-		TaskManager.getInstance().createTask(ETask.UpdateHP, objectID, hp);
+		TaskManager.getInstance().createTask(ETask.SetHP, objectID, hp);
 	}
 }

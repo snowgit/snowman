@@ -28,7 +28,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 15:22 EST
- * @version Modified date: 07-28-2008 17:17 EST
+ * @version Modified date: 07-30-2008 13:46 EST
  */
 public class PhysicsManager extends Manager {
 	/**
@@ -104,9 +104,6 @@ public class PhysicsManager extends Manager {
 			this.tempVector.y = -1;
 			this.tempVector.multLocal(EForce.Gravity.getMagnitude());
 			entity.addForce(this.tempVector);
-			this.tempVector.set(entity.getVelocity()).negateLocal();
-			this.tempVector.multLocal(EForce.AirFriction.getMagnitude());
-			entity.addForce(this.tempVector);
 		}
 	}
 	
@@ -116,7 +113,7 @@ public class PhysicsManager extends Manager {
 	 */
 	private void updateVelocity(IDynamicEntity entity) {
 		Vector3f velocity = entity.getNetForce().divideLocal(entity.getMass()).multLocal(this.rate);
-		entity.setVelocity(velocity);
+		entity.addVelocity(velocity);
 	}
 	
 	/**
@@ -144,6 +141,14 @@ public class PhysicsManager extends Manager {
 		if(this.entities.contains(entity)) return false;
 		this.entities.add(entity);
 		return true;
+	}
+	
+	/**
+	 * Retrieve the physics update rate.
+	 * @return The physics update rate in seconds.
+	 */
+	public float getRate() {
+		return this.rate;
 	}
 
 	/**

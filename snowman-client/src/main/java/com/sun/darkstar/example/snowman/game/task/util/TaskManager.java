@@ -161,12 +161,11 @@ public class TaskManager extends Manager {
 		case Ready: task = new ReadyTask(this.game); break;
 		case StartGame: task = new StartGameTask(this.game); break;
 		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
-		case SetDestination:
-			if(args.length == 3) task = new SetDestinationTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
-			else task = new SetDestinationTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
+		case MoveCharacter:
+			if(args.length == 3) task = new MoveCharacterTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
+			else task = new MoveCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
 			break;
-		case UpdateMovement: task = new UpdateMovementTask(this.game, (CharacterEntity)args[0]); break;
-		case UpdateHP: task = new UpdateHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
+		case SetHP: task = new SetHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
 		case CreateSnowball: task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]); break;
 		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
 		}

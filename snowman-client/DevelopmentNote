@@ -1,6 +1,5 @@
 TODO:
-SnowballController is removing itself when the snow ball reaches its destination. But at the same time
-the InputManager is iterating through all the controllers. This causes a ConcurrentModificationException.
+
 
 Only generating Task process is multi-threaded. Everything else is controlled by the game loop in a mono-threaded fashion.
 

@@ -14,6 +14,10 @@ import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
  */
 public class SnowballEntity extends DynamicEntity {
 	/**
+	 * The maximum height of the snow ball.
+	 */
+	private final float maxHeight;
+	/**
 	 * The <code>Vector3f</code> destination of this snow ball.
 	 */
 	private Vector3f destination;
@@ -24,6 +28,7 @@ public class SnowballEntity extends DynamicEntity {
 	 */
 	public SnowballEntity(int id) {
 		super(EEntity.Snowball, id);
+		this.maxHeight = 1.2f;
 	}
 	
 	/**
@@ -32,6 +37,14 @@ public class SnowballEntity extends DynamicEntity {
 	 */
 	public void setDestination(Vector3f destination) {
 		this.destination = destination;
+	}
+	
+	/**
+	 * Retrieve the maximum height the snow ball will reach.
+	 * @return The float maximum height value.
+	 */
+	public float getMaxHeight() {
+		return this.maxHeight;
 	}
 	
 	/**

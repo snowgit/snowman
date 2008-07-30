@@ -6,8 +6,7 @@ import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.Controller;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
-import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
-import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
+import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 
 /**
  * <code>CharacterController</code> extends <code>Controller</code> to define
@@ -37,8 +36,9 @@ public class CharacterController extends Controller {
 	protected void updateLogic(float interpolation) {
 		if(this.validatePosition()) {
 			((CharacterEntity)this.entity).setDestination(null);
+			this.entity.resetVelocity();
 		} else {
-			TaskManager.getInstance().createTask(ETask.UpdateMovement, this.entity);
+			PhysicsManager.getInstance().markForUpdate(this.entity);
 		}
 	}
 	

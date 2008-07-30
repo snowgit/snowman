@@ -60,8 +60,13 @@ public class DynamicEntity extends Entity implements IDynamicEntity {
 	}
 
 	@Override
-	public void setVelocity(Vector3f velocity) {
-		this.velocity.set(velocity);
+	public void addVelocity(Vector3f velocity) {
+		this.velocity.addLocal(velocity);
+	}
+
+	@Override
+	public void resetVelocity() {
+		this.velocity.zero();
 	}
 
 	@Override

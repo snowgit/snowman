@@ -1,6 +1,5 @@
 package com.sun.darkstar.example.snowman.game.entity.controller;
 
-import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
@@ -28,6 +27,10 @@ public class SnowballController extends Controller {
 	 * The movement tolerance value.
 	 */
 	protected final float tolerance;
+	/**
+	 * The flag indicates if the snow ball has been thrown.
+	 */
+	private boolean thrown;
 	
 	/**
 	 * Constructor of <code>SnowballController</code>.
@@ -40,8 +43,9 @@ public class SnowballController extends Controller {
 
 	@Override
 	protected void updateLogic(float interpolation) {
-		if(((SnowballEntity)this.entity).getVelocity().equals(Vector3f.ZERO)) {
+		if(!this.thrown) {
 			TaskManager.getInstance().createTask(ETask.Throw, this.entity);
+			this.thrown = true;
 		} else if(!this.validatePosition()) {
 			PhysicsManager.getInstance().markForUpdate(this.entity);
 		} else {
@@ -63,7 +67,7 @@ public class SnowballController extends Controller {
 			View view = (View)ViewManager.getInstance().getView(snowball);
 			float dx = view.getLocalTranslation().x - snowball.getDestination().x;
 			float dz = view.getLocalTranslation().z - snowball.getDestination().z;
-			if((dx * dx) + (dz * dz) <= this.tolerance) return true;
+			return ((dx * dx) + (dz * dz) <= this.tolerance);
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
