@@ -33,10 +33,15 @@ public interface IDynamicEntity extends IEntity {
 	public void setMass(float mass);
 	
 	/**
-	 * Set the velocity of this dynamic entity.
-	 * @param velocity The <code>Vector3f</code> velocity to be set.
+	 * Add the velocity of this dynamic entity.
+	 * @param velocity The <code>Vector3f</code> velocity to be added.
 	 */
-	public void setVelocity(Vector3f velocity);
+	public void addVelocity(Vector3f velocity);
+	
+	/**
+	 * Reset the velocity of this dynamic entity to 0.
+	 */
+	public void resetVelocity();
 
 	/**
 	 * Retrieve the mass value of this dynamic entity.

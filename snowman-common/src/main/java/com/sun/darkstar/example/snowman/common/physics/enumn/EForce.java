@@ -12,19 +12,11 @@ public enum EForce {
 	/**
 	 * The gravity force.
 	 */
-	Gravity(30),
-	/**
-	 * The air friction force.
-	 */
-	AirFriction(0.1f),
+	Gravity(0.1f),
 	/**
 	 * The movement force.
 	 */
-	Movement(100),
-	/**
-	 * The throwing force.
-	 */
-	Throw(100);
+	Movement(500);
 	
 	/**
 	 * The float magnitude value of the force.
