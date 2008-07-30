@@ -1,6 +1,6 @@
 package com.sun.darkstar.example.snowman.game.task.util;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
@@ -61,15 +61,19 @@ public class TaskManager extends Manager {
 	/**
 	 * The maximum allowed execution time per cycle in milliseconds.
 	 */
-	private final float maxtime;
+	private final float executeTime;
+	/**
+	 * The maximum allowed enqueuing time per cycle in milliseconds.
+	 */
+	private final float enqueueTime;
 	/**
 	 * The buffered <code>ITask</code> queue.
 	 */
 	private final ConcurrentLinkedQueue<ITask> taskQueue;
 	/**
-	 * The temporary <code>ArrayList</code> buffer of submitted <code>ITask</code>.
+	 * The temporary <code>LinkedList</code> buffer of submitted <code>ITask</code>.
 	 */
-	private final ArrayList<ITask> submitted;
+	private final LinkedList<ITask> submitted;
 	/**
 	 * The time before the last execution started in nanoseconds.
 	 */
@@ -82,10 +86,6 @@ public class TaskManager extends Manager {
 	 * The time elapsed since the start of the current update cycle in milliseconds.
 	 */
 	private float totaltime;
-	/**
-	 * The flag indicates if the <code>TaskManager</code> is enqueuing tasks.
-	 */
-	private boolean enqueuing;
 
 	/**
 	 * Constructor of <code>TaskManager</code>.
@@ -94,9 +94,10 @@ public class TaskManager extends Manager {
 	private TaskManager(Game game){
 		super(EManager.TaskManager);
 		this.game = game;
-		this.maxtime = 10;
+		this.executeTime = 10;
+		this.enqueueTime = 5;
 		this.taskQueue = new ConcurrentLinkedQueue<ITask>();
-		this.submitted = new ArrayList<ITask>();
+		this.submitted = new LinkedList<ITask>();
 	}
 
 	/**
@@ -125,19 +126,19 @@ public class TaskManager extends Manager {
 	 * Update the <code>TaskManager</code> to execute the buffered task.
 	 */
 	public void update() {
-		// Lock enqueuing.
-		this.enqueuing = true;
-		for(ITask task : this.submitted) {
-			this.enqueue(task);
-		}
-		this.submitted.clear();
-		// Unlock enqueuing.
-		this.enqueuing = false;
-		// Execute as many tasks as possible.
-		while(!this.taskQueue.isEmpty() && this.totaltime < this.maxtime) {
+		// Enqueue tasks.
+		while(!this.submitted.isEmpty() && this.totaltime < this.enqueueTime) {
 			this.starttime = System.nanoTime();
-			ITask task = this.taskQueue.poll();
-			task.execute();
+			this.enqueue(this.submitted.pop());
+			this.endtime = System.nanoTime();
+			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
+		}
+		// Reset total time.
+		this.totaltime = 0;
+		// Execute as many tasks as possible.
+		while(!this.taskQueue.isEmpty() && this.totaltime < this.executeTime) {
+			this.starttime = System.nanoTime();
+			this.taskQueue.poll().execute();
 			this.endtime = System.nanoTime();
 			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
 		}
@@ -181,7 +182,6 @@ public class TaskManager extends Manager {
 	 */
 	public boolean submit(ITask task) {
 		if(task == null) return false;
-		if(this.enqueuing) try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 		return this.submitted.add(task);
 	}
 
