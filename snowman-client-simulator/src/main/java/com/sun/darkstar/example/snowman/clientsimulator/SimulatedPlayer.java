@@ -367,6 +367,13 @@ class SimulatedPlayer implements SimpleClientListener {
         // is being set in the createMoveMePkt method. But it should be small.
         lastTimestamp = System.currentTimeMillis();
         
+        // TEMP - clip to debug map
+        final float maxMapCoord = 48.0f;
+        if (destX > maxMapCoord) destX = maxMapCoord;
+        else if (destX < -maxMapCoord) destX = -maxMapCoord;
+        if (destY > maxMapCoord) destY = maxMapCoord;
+        else if (destY < -maxMapCoord) destY = -maxMapCoord;
+
         // No collision detection here. We count on the returning moveMOB
         // to reset out end point if necessary.
         try {

@@ -144,8 +144,8 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             long dt = time - timestamp;
             expectedX += (deltaX * dt);
             expectedY += (deltaY * dt);
-            System.out.println("new expectedXY= " + expectedX + "," + expectedY +
-                             "\ndestXY=         " + destX + "," + destY);
+//            System.out.println("new expectedXY= " + expectedX + "," + expectedY +
+//                             "\ndestXY=         " + destX + "," + destY);
             // clip the new position to the destination
             float dx = expectedX - startX;
             float dy = expectedY - startY;
@@ -158,9 +158,9 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 expectedY = destY;
             }
         }
-        System.out.println("move  dx,dy= " + deltaX + ","+deltaY +
-                         "\nexpected xy= " + expectedX + "," + expectedY +
-                         "\nentered  xy= " + xPrime + "," + yPrime);
+//        System.out.println("move  dx,dy= " + deltaX + ","+deltaY +
+//                         "\nexpected xy= " + expectedX + "," + expectedY +
+//                         "\nentered  xy= " + xPrime + "," + yPrime);
         float dx = expectedX - xPrime;
         float dy = expectedY - yPrime;
         float skew = (float)Math.sqrt((dx*dx)+(dy*dy));
