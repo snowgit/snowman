@@ -118,6 +118,7 @@ public class MoveCharacterTask extends RealTimeTask {
 		try {
 			this.character.resetVelocity();
 			Vector3f destination = this.getDestination();
+			if(destination == null) return;
 			this.character.setDestination(destination);
 			Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
 			if(!this.local) {

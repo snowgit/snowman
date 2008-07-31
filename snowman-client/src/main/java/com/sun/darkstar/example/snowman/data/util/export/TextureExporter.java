@@ -10,6 +10,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.sun.darkstar.example.snowman.data.enumn.EDataType;
 
 /**
  * <code>TextureExporter</code> exports image files into <code>Texture</code>
@@ -17,7 +18,7 @@ import com.jme.util.TextureManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-13-2008 10:47 EST
- * @version Modified date: 07-09-2008 17:50 EST
+ * @version Modified date: 07-31-2008 12:03 EST
  */
 public class TextureExporter extends Exporter {
 	/**
@@ -25,17 +26,13 @@ public class TextureExporter extends Exporter {
 	 */
 	private final String inputFile = "nicegrass.jpg";
 	/**
-	 * The output binary file with extension.
-	 */
-	private final String outputFile = "nicegrass.tex";
-	/**
 	 * The <code>AlphaState</code> for transparency.
 	 */
 	private BlendState alpha;
 	/**
 	 * The <code>Texture</code> instance.
 	 */
-	private Image texture;
+	private Image image;
 
 	/**
 	 * Main method.
@@ -49,7 +46,6 @@ public class TextureExporter extends Exporter {
 	 */
 	public TextureExporter() {
 		super("com/sun/darkstar/example/snowman/data/texture/");
-		TextureManager.COMPRESS_BY_DEFAULT = false;
 	}
 
 	@Override
@@ -85,13 +81,13 @@ public class TextureExporter extends Exporter {
 		ts.setTexture(t);
 		q.setRenderState(ts);
 		this.rootNode.attachChild(q);
-		this.texture = t.getImage();
+		this.image = t.getImage();
 	}
 
 	@Override
 	protected void simpleUpdate() {
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("out", false)) {
-			this.export(this.outputFile, this.texture);
+			this.export(this.inputFile.substring(0, this.inputFile.lastIndexOf(".")) + EDataType.Texture.getExtension(), this.image);
 		}
 	}
 }
