@@ -132,7 +132,6 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
     public void send(ClientSession sess, ByteBuffer buff){
         buff.flip();
         channelRef.get().send(sess, buff);
-        
     }
 
     public void addPlayer(SnowmanPlayer player, TeamColor color) {
@@ -141,7 +140,7 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
         playerRefs.add(playerRef);
         int index = playerRefs.indexOf(playerRef);
         player.setID(index + PLAYERIDSTART);
-        player.setTimestampLocation(System.currentTimeMillis(),
+        player.setTimestampLocation(0,
                                     playerStarts[index*2],
                                     playerStarts[(index*2)+1]);
         player.setTeamColor(color);
@@ -150,10 +149,11 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
     }
     
     public void removePlayer(SnowmanPlayer player){
-         ManagedReference<SnowmanPlayer> playerRef = 
+        ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
-         int idx = playerRefs.indexOf(playerRef);
+        int idx = playerRefs.indexOf(playerRef);
         playerRefs.set(idx, null);
+        send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
     }
     
     public void sendMapInfo(){

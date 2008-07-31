@@ -31,26 +31,21 @@
 */ 
 package com.sun.darkstar.example.snowman.server.impl;
 
+import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
-import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
+import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
-import com.sun.sgs.app.NameNotBoundException;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,21 +63,23 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     public static final long serialVersionUID = 1L;
     private static long DEATHDELAYMS = 10 * 1000;
-    private static float POSITIONTOLERANCESQD = .5f * .5f;
+    private static float POSITIONTOLERANCESQD = 10;//.5f * .5f;
     
     private ManagedReference<ClientSession> sessionRef;
     private String name;
     private int wins;
     private int losses;
     private int id;
-    float startX;
-    float startY;
-    long timestamp;
-    float destX;
-    float destY;
-    float deltaX;
-    float deltaY;
-    TeamColor teamColor;
+    private float startX;
+    private float startY;
+    
+    // zero timestamp indicates no move yet received
+    private long timestamp;
+    private float destX;
+    private float destY;
+    private float deltaX;
+    private float deltaY;
+    private TeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
     private boolean readyToPlay = false;
     private int hitPoints = 100;
@@ -116,10 +113,6 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         teamColor = color;
     }
 
-    private float getMovePerMS() {
-    	 return 7f/1000f;
-    }
-
     public void setSession(ClientSession arg0) {
         sessionRef = appContext.getDataManager().createReference(arg0);
     }
@@ -137,35 +130,42 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public float getX(long time){
-        if ((deltaX==0)&&(deltaY==0)){ // stopped
-            return startX;
-        } else {
-            // interpolate
-            long dur = time - timestamp;
-            return startX + (deltaX*dur);
-        }
+        return startX;
     }
     
     public float getY(long time){
-        if ((deltaX==0)&&(deltaY==0)){ // stopped
-            return startY;
-        } else {
-            long dur = time - timestamp;
-            return startY + (deltaY*dur);
-        }
+        return startY;
     }
     
-    private boolean checkXY(long time, float xPrime, float yPrime){
-    	/*System.out.println(timestamp+","+time);
-        float currentX = getX(time);
-        float currentY = getY(time);
-        System.out.println(xPrime+","+yPrime+","+currentX+","+currentY);
-        float dx = currentX - xPrime;
-        float dy = currentY - yPrime;
-        return ((dx*dx)+(dy*dy) < POSITIONTOLERANCESQD);*/
-    	// XXX 
-    	// needs to debug place checking
-    	return true;
+    private boolean checkXY(long time, float xPrime, float yPrime) {
+        float expectedX = startX;
+        float expectedY = startY;
+        if ((deltaX != 0) || (deltaY != 0)){ // moving
+            long dt = time - timestamp;
+            expectedX += (deltaX * dt);
+            expectedY += (deltaY * dt);
+            System.out.println("new expectedXY= " + expectedX + "," + expectedY +
+                             "\ndestXY=         " + destX + "," + destY);
+            // clip the new position to the destination
+            float dx = expectedX - startX;
+            float dy = expectedY - startY;
+            float newLength = (float)Math.sqrt((dx*dx) + (dy*dy));
+            dx = destX - startX;
+            dy = destY - startY;
+            float maxLength = (float)Math.sqrt((dx*dx) + (dy*dy));
+            if (newLength > maxLength) {
+                expectedX = destX;
+                expectedY = destY;
+            }
+        }
+        System.out.println("move  dx,dy= " + deltaX + ","+deltaY +
+                         "\nexpected xy= " + expectedX + "," + expectedY +
+                         "\nentered  xy= " + xPrime + "," + yPrime);
+        float dx = expectedX - xPrime;
+        float dy = expectedY - yPrime;
+        float skew = (float)Math.sqrt((dx*dx)+(dy*dy));
+//        System.out.println("checkXY dt= " + (time - timestamp) + " skew= " + skew);
+        return skew < POSITIONTOLERANCESQD;
     }
     
     public int getID(){
@@ -175,6 +175,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     public void setReadyToPlay(boolean readyToPlay){
         this.readyToPlay = readyToPlay;
     }
+    
     public boolean getReadyToPlay(){
         return readyToPlay;
     }
@@ -195,21 +196,39 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         currentGameRef.get().startGameIfReady();
     }
 
-    public void moveMe(long timestamp, float x, float y, float endx, float endy) {
-       if (checkXY(timestamp,x,y)){
-           startX = x;
-           startY = y;
-           float dx = endx-x;
-           float dy = endy - y;
-           float dist = (float)Math.sqrt((dx*dx)+(dy*dy));
-           float time = dist/getMovePerMS();
-           deltaX = dx/time;
-           deltaY = dy/time;
-           this.timestamp = timestamp;
-           currentGameRef.get().send(null,
+    public void moveMe(long timestamp, float startx, float starty, float endx, float endy) {
+        if (checkXY(timestamp, startx, starty)){
+            startX = startx;
+            startY = starty;
+            destX = endx;
+            destY = endy;
+            
+            // calc the deltas for this move based on direction and rate of movement
+            float dx = destX - startX;
+            float dy = destY - startY;
+            if (dx != 0.0f || dy != 0.0) {
+                float length = (float)Math.sqrt((dx * dx) + (dy * dy));
+                float rate = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.01f;
+
+                // normalize the x,y and multiply by the move per ms
+                deltaX = (dx / length) * rate;
+                deltaY = (dy / length) * rate;
+            } else {
+                deltaX = 0.0f;
+                deltaY = 0.0f;
+            }
+            // Need collision detection here
+            currentGameRef.get().send(null,
                    ServerMessages.createMoveMOBPkt(
-                   id, startX, startY, endx, endy));
-       }
+                   id, startX, startY, destX, destY));
+        } else {
+            logger.log(Level.WARNING, "move from {0} failed check", name);
+            currentGameRef.get().send(null,
+                    ServerMessages.createStopMOBPkt(id, startX, startY));
+            deltaX = 0.0f;
+            deltaY = 0.0f;
+        }
+        this.timestamp = timestamp;
     }
 
     public void attack(long timestamp, int targetID, float x, float y) {
@@ -279,8 +298,6 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         startX = destX = x;
         startY = destY = y;
     }
-   
-    
 }
 
 

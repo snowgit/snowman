@@ -32,11 +32,12 @@
 
 package com.sun.darkstar.example.snowman.clientsimulator;
 
-import com.jme.math.Vector3f;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
+import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
+import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
@@ -62,20 +63,42 @@ class SimulatedPlayer implements SimpleClientListener {
             Logger.getLogger(SimulatedPlayer.class.getName());
     
     static private final Random random = new Random();
-    static private final int MOVEDISTANCE = 10;
     
     static enum PLAYERSTATE {
-        LoggingIn, Paused, Playing, Quit
+        LoggingIn,  // Initial state, waiting for login
+        Paused,     // Logged in, waiting for game to stat
+        Playing,    // Playing, alive (moving)
+        Dead,       // Playing, dead (no moves)
+        Quit        // Exiting
     }
     
     private final String name;
     private final String password;
     private final SimpleClient simpleClient;
     private final IClientProcessor pktHandler;
+    
+    // this players ID, provided by the server
+    private int id;
+
+    // Must be synchronized
     private PLAYERSTATE state;
-    private float x;
-    private float y;
-    private int id; // ID provided by server
+    
+    // Must be synchronized
+    // start and end position of current move. start==end when stopped.
+    private float startX = 0.0f;
+    private float startY = 0.0f;
+    private float destX = 0.0f;
+    private float destY = 0.0f;
+    
+    // Must be synchronized
+    private int hitPoints;
+    
+    // causes the player to delay by skipping a move call. incremented when
+    // ever attacked or stopped
+    private int delay = 0;
+
+    // (approximate) timestamp of the last move sent
+    private long lastTimestamp;
     
     /**
      * Construct a simulated player. The {@code props} argument supports the
@@ -129,6 +152,7 @@ class SimulatedPlayer implements SimpleClientListener {
         password = props.getProperty("password", "");
         pktHandler = new ClientProcessor();
         state = PLAYERSTATE.LoggingIn;
+        hitPoints = HPConverter.getInstance().getMaxHP();
         simpleClient = new SimpleClient(this);
         simpleClient.login(props);
     }
@@ -137,39 +161,46 @@ class SimulatedPlayer implements SimpleClientListener {
 
         @Override
         public void ready() {
-            logger.log(Level.FINEST, "Ready message for {0}", name);
-            try{
-                ByteBuffer buff = ClientMessages.createReadyPkt();
-                buff.flip();
-                simpleClient.send(buff);
-            } catch (IOException ioe) {
-                logger.log(Level.SEVERE, "" + name, ioe);
-            }
+            if (state == PLAYERSTATE.Paused) {
+                logger.log(Level.FINE, "Ready message for {0}", name);
+                try{
+                    send(ClientMessages.createReadyPkt());
+                } catch (IOException ioe) {
+                    logger.log(Level.SEVERE, "" + name, ioe);
+                }
+            } else
+                logger.log(Level.WARNING, "Received ready, but {0} is not paused",
+                           name);
         }
 
         public void enterLounge(int myID) {
-            logger.log(Level.FINEST, "Enter lounge message for {0}", name);
+            logger.log(Level.FINE, "Enter lounge message for {0}", name);
         }
 
         @Override
         public void newGame(int myID, String mapname) {
-            logger.log(Level.FINEST, "New game for {0}, id is {1}",
-                       new Object[] {name, myID});
-            id = myID;
+            if (state == PLAYERSTATE.Paused) {
+                logger.log(Level.FINE, "New game for {0}, id is {1}",
+                           new Object[] {name, myID});
+                id = myID;
+            } else
+                logger.log(Level.WARNING, "Received newGame, but {0} is not paused",
+                           name);
         }
 
         @Override
         public void startGame() {
-            if (setState(PLAYERSTATE.Playing))
-                logger.log(Level.FINEST, "Start game for {0}", name);
-            else
+            if (setState(PLAYERSTATE.Playing)) {
+                logger.log(Level.FINE, "Start game for {0}", name);
+                lastTimestamp = System.currentTimeMillis();
+            } else
                 logger.log(Level.WARNING, "Received start, but {0} has quit",
                            name);
         }
 
         @Override
         public void endGame(EEndState endState) {
-            logger.log(Level.FINEST,
+            logger.log(Level.FINE,
                        "Game ended for {0} with outcome of {1}",
                        new Object[] {name, endState});
             quit();
@@ -177,85 +208,173 @@ class SimulatedPlayer implements SimpleClientListener {
 
         @Override
         public void addMOB(int objectID, float x, float y, EMOBType objType) {
-            logger.log(Level.FINEST, "Message to {0}: Add MOB {1}",
+            if (objectID == id) {
+                logger.log(Level.FINE, "Updating {0} start and end XY to {1},{2}",
+                           new Object[] {name, x, y});
+                stop(x, y);
+            } else
+                logger.log(Level.FINER, "Message to {0}: Add MOB {1}",
                        new Object[] {name, objectID});
         }
 
         @Override
-        public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
-            logger.log(Level.FINEST, "Message to {0}: Move MOB {1}",
-                       new Object[] {name, objectID});
+        public void moveMOB(int objectID,
+                            float startx, float starty,
+                            float endx, float endy)
+        {
+            if (objectID == id) {
+                logger.log(Level.FINEST, "Updating {0} endXY to {1},{2}",
+                           new Object[] {name, endx, endy});
+                setDestination(endx, endy);
+            } else
+                logger.log(Level.FINEST, "Message to {0}: Move MOB {1}",
+                           new Object[] {name, objectID});
         }
 
         @Override
         public void removeMOB(int objectID) {
-            logger.log(Level.FINEST, "Message to {0}: Remove MOB {1}",
-                       new Object[] {name, objectID});
+            if (objectID == id) {
+                logger.log(Level.FINE, "Message to {0} remove itself", name);
+                quit();
+            } else
+                logger.log(Level.FINER, "Message to {0}: Remove MOB {1}",
+                           new Object[] {name, objectID});
         }
 
         @Override
         public void stopMOB(int objectID, float x, float y) {
-            logger.log(Level.FINEST, "Message to {0}:, Stop MOB {1}",
-                       new Object[] {name, objectID});
+            if (objectID == id) {
+                logger.log(Level.FINER, "{0} stopped at {1},{2}",
+                           new Object[] {name, x, y});
+                // stop likely caused by getting out of sync with server
+                // basicly cause a stop to start moving anew.
+                stop(x, y);
+            } else
+                logger.log(Level.FINEST, "Message to {0}:, Stop MOB {1}",
+                           new Object[] {name, objectID});
         }
 
         @Override
         public void attachObject(int sourceID, int targetID) {
-            logger.log(Level.FINEST, "Message to {0}: Attach object {1} to {2}",
+            logger.log(Level.FINER, "Message to {0}: Attach object {1} to {2}",
                        new Object[] {name, sourceID, targetID});
         }
 
         @Override
         public void attacked(int sourceID, int targetID) {
-            logger.log(Level.FINEST, "Message to {0}: {1} attacked {2}",
+            logger.log(Level.FINER, "Message to {0}: {1} attacked {2}",
                        new Object[] {name, sourceID, targetID});
+            if (targetID == id)
+                stop();
         }
 
         public void info(int objectID, String string) {
-            logger.log(Level.FINEST, "Message to {0}: Info on object {1} is {2}",
+            logger.log(Level.FINER, "Message to {0}: Info on object {1} is {2}",
                        new Object[] {name, objectID, string});    
         }
 
         @Override
         public void setHP(int objectID, int hp) {
-            logger.log(Level.FINEST, "Message to {0}: Set HP on object {1} to {2}",
+            if (objectID == id) {
+                setHitPoints(hp);
+                logger.log(Level.FINER, "Message to {0}: Set HP to {1}",
+                       new Object[] {name, hp});
+            } else
+                logger.log(Level.FINEST, "Message to {0}: Set HP on object {1} to {2}",
                        new Object[] {name, objectID, hp});
         }
     }
     
+    private synchronized void setHitPoints(int hp) {
+        setState(hp <= 0 ? PLAYERSTATE.Dead : PLAYERSTATE.Playing);
+        hitPoints = hp;
+        stop();
+    }
+    
+    // stop at a specified location
+    private synchronized void stop(float x, float y) {
+        this.startX = x;
+        this.startY = y;
+        setDestination(x, y);
+        delay++;
+    }
+    
+    // stop at the current position (based on current time & last start)
+    private synchronized void stop() {
+        setCurrentStart();
+        setDestination(startX, startY);
+        delay++;
+    }
+    
+    // set the current end position
+    private synchronized void setDestination(float endx, float endy) {
+        this.destX = endx;
+        this.destY = endy;
+    }
+        
+    // must be synchronized
+    private void setCurrentStart() {
+
+        // if moving, calculate the new start based on the last move
+        float dx = destX - startX;
+        float dy = destY - startY;
+        
+        if (dx != 0.0f || dy != 0.0f) {
+            // moves per ms
+            float rate = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.01f;
+            float maxDist = (float)Math.sqrt((dx * dx) + (dy * dy));
+            long dt = System.currentTimeMillis() - lastTimestamp;
+            
+            // normalize the x,y and multiply by the move per ms * ms
+            float newStartX = startX + (dx / maxDist) * rate * dt;
+            float newStartY = startY + (dy / maxDist) * rate * dt;
+            
+            // clip to destination
+            dx = newStartX - startX;
+            dy = newStartY - startY;
+            float newDist = (float)Math.sqrt((dx * dx) + (dy * dy));
+            
+            if (newDist > maxDist) {
+                startX = destX;
+                startY = destY;
+            } else {
+                startX = newStartX;
+                startY = newStartY;
+            }
+        }
+    }
+    
     /**
-     * Make a move. A move is made only if in the {@code Playing} state.
+     * Make a move. A move is made only if in the {@code Playing} state and
+     * we are not being delayed.
      * @return the current state
      */
     synchronized PLAYERSTATE move() {
-        logger.log(Level.FINEST, "Calling move, {0} is {1}",
-                   new Object[] {name, state});
         if (state != PLAYERSTATE.Playing)
             return state;
-
-        // player AI logic goes here
-        // NOTE: this is no longer correct, we need to pass
-        // the starting position of the player in the packet
-        // as well
-        Vector3f ray = new Vector3f(random.nextFloat()-0.5f,
-                                    random.nextFloat()-0.5f,
-                                    0.0f);
-        ray = ray.normalize();    
-        ray = ray.mult(MOVEDISTANCE);
-        ray = ray.add(new Vector3f(x, y, 0.0f));
-        ray = lookForBlocking(ray);
+        
+        if (delay > 0) {
+            delay--;
+            return state;
+        }
+        logger.log(Level.FINEST, "{0} moving", name);
+        
+        setCurrentStart();
+        destX = startX + 10 * (random.nextFloat() - 0.5f);
+        destY = startY + 10 * (random.nextFloat() - 0.5f);
+        
+        // There is a slight skew potential here, since the real timestamp
+        // is being set in the createMoveMePkt method. But it should be small.
+        lastTimestamp = System.currentTimeMillis();
+        
+        // No collision detection here. We count on the returning moveMOB
+        // to reset out end point if necessary.
         try {
-            ByteBuffer buff = ClientMessages.createMoveMePkt(0.0f, 0.0f, ray.x, ray.y);
-            buff.flip();
-            simpleClient.send(buff);
+            send(ClientMessages.createMoveMePkt(startX, startY, destX, destY));
         } catch (IOException ex) {
             logger.log(Level.SEVERE, null, ex);
         }
         return state;
-    }
-
-    private Vector3f lookForBlocking(Vector3f ray) {
-        return ray;
     }
 
     /**
@@ -267,6 +386,8 @@ class SimulatedPlayer implements SimpleClientListener {
      */
     private synchronized boolean setState(PLAYERSTATE newState) {
         if (state != PLAYERSTATE.Quit) {
+            logger.log(Level.FINER, "Player: {0} state changed to",
+                       new Object[] {name, newState});
             state = newState;
             return true;
         } else
@@ -284,6 +405,11 @@ class SimulatedPlayer implements SimpleClientListener {
             simpleClient.logout(false);
         }
         state = PLAYERSTATE.Quit;
+    }
+    
+    private void send(ByteBuffer buff) throws IOException {
+        buff.flip();
+        simpleClient.send(buff);
     }
     
     /* -- SimpleClientListener -- */
