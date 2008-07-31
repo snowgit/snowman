@@ -23,11 +23,11 @@ public class TextureExporter extends Exporter {
 	/**
 	 * The source image file name with extension.
 	 */
-	private final String inputFile = "Snowman.tga";
+	private final String inputFile = "nicegrass.jpg";
 	/**
 	 * The output binary file with extension.
 	 */
-	private final String outputFile = "Snowman.tex";
+	private final String outputFile = "nicegrass.tex";
 	/**
 	 * The <code>AlphaState</code> for transparency.
 	 */

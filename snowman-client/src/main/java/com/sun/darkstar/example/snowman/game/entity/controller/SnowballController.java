@@ -50,7 +50,6 @@ public class SnowballController extends Controller {
 			PhysicsManager.getInstance().markForUpdate(this.entity);
 		} else {
 			EntityManager.getInstance().removeEntity(this.entity.getID());
-			System.out.println("ID: " + this.entity.getID() + "Name: " + this.entity.getEnumn().toString());
 			ViewManager.getInstance().removeView(this.entity);
 			InputManager.getInstance().removeController((IDynamicEntity)this.entity);
 		}
