@@ -35,6 +35,7 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -160,12 +161,13 @@ public class ClientSimulator extends JFrame {
                     }
 
                     // do a move
-                    for (SimulatedPlayer player : players) {
-                        if (player.move() == SimulatedPlayer.PLAYERSTATE.Quit)
-                            players.remove(player);
+                    Iterator<SimulatedPlayer> iter = players.iterator();
+                    while (iter.hasNext()) {
+                        if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit)
+                            iter.remove();
                     }
                     try {
-                        sleep(100);
+                        sleep(200);
                     } catch (InterruptedException ignore) {}
                 }
             }
