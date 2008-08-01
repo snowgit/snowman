@@ -118,19 +118,20 @@ public class MoveCharacterTask extends RealTimeTask {
 		try {
 			this.character.resetVelocity();
 			Vector3f destination = this.getDestination();
-			if(destination == null) return;
-			this.character.setDestination(destination);
-			Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
-			if(!this.local) {
-				view.getLocalTranslation().x = this.startX;
-				view.getLocalTranslation().z = this.startZ;
+			if (destination != null) {
+				this.character.setDestination(destination);
+				Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
+				if(!this.local) {
+					view.getLocalTranslation().x = this.startX;
+					view.getLocalTranslation().z = this.startZ;
+				}
+				Vector3f direction = destination.subtract(view.getLocalTranslation()).normalizeLocal();
+				direction.y = 0;
+				view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
+				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
+				this.character.addForce(force);
+				PhysicsManager.getInstance().markForUpdate(this.character);
 			}
-			Vector3f direction = destination.subtract(view.getLocalTranslation()).normalizeLocal();
-			direction.y = 0;
-			view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
-			Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
-			this.character.addForce(force);
-			PhysicsManager.getInstance().markForUpdate(this.character);
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}

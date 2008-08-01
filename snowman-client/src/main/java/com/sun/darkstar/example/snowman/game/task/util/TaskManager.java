@@ -3,12 +3,16 @@ package com.sun.darkstar.example.snowman.game.task.util;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.jme.util.Debug;
+import com.jme.util.stat.StatCollector;
+import com.jme.util.stat.StatType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.stats.SnowmanStatType;
 import com.sun.darkstar.example.snowman.game.task.enumn.*;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask.ETaskType;
 import com.sun.darkstar.example.snowman.game.task.state.*;
@@ -162,11 +166,26 @@ public class TaskManager extends Manager {
 		case StartGame: task = new StartGameTask(this.game); break;
 		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
 		case MoveCharacter:
-			if(args.length == 3) task = new MoveCharacterTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
-			else task = new MoveCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
+			if(args.length == 3) {
+				if (Debug.stats) {
+					StatCollector.addStat(SnowmanStatType.STAT_LOCALMOVE_COUNT, 1);
+				}
+				task = new MoveCharacterTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
+			}
+			else {
+				if (Debug.stats) {
+					StatCollector.addStat(SnowmanStatType.STAT_ENTITYMOVE_COUNT, 1);
+				}
+				task = new MoveCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
+			}
 			break;
 		case SetHP: task = new SetHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
-		case CreateSnowball: task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]); break;
+		case CreateSnowball: 
+			task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]);
+			if (Debug.stats) {
+				StatCollector.addStat(SnowmanStatType.STAT_SNOWBALL_COUNT, 1);
+			}
+			break;
 		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
 		}
 		return this.submit(task);

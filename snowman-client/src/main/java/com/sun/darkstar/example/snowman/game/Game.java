@@ -13,6 +13,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.BasicPassManager;
 import com.jme.system.DisplaySystem;
+import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.client.Client;
@@ -24,6 +25,7 @@ import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
+import com.sun.darkstar.example.snowman.game.stats.StatsManager;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
 
@@ -125,7 +127,7 @@ public class Game extends BaseGame implements IComponent{
 	protected void initSystem() {
 		this.display = DisplaySystem.getDisplaySystem(this.settings.getRenderer());
 		this.display.setTitle("Snowman");
-		this.timer = Timer.getTimer();
+		this.timer = new NanoTimer();
 //		try {
 //			Texture icon = AssetLoader.getInstance().loadTexture(TextureData.Icon_Big);
 //			Texture iconSmall = AssetLoader.getInstance().loadTexture(TextureData.Icon_Small);
@@ -195,6 +197,8 @@ public class Game extends BaseGame implements IComponent{
 	private void initializeHotkey() {
 		KeyBindingManager.getKeyBindingManager().set("exit", KeyInput.KEY_ESCAPE);
 		KeyBindingManager.getKeyBindingManager().set("screenshot", KeyInput.KEY_F1);
+		KeyBindingManager.getKeyBindingManager().set("flip_stats-", KeyInput.KEY_F5);
+		KeyBindingManager.getKeyBindingManager().set("flip_stats+", KeyInput.KEY_F6);
 	}
 	
 	@Override
@@ -206,14 +210,21 @@ public class Game extends BaseGame implements IComponent{
 		BattleState battle = new BattleState(this);
 		battle.setActive(false);
 		this.stateManager.attachChild(battle);
+
+        // reinit stats as needed
+        StatsManager.getInstance().recreateStatsDisplay();
 	}
 	
 	@Override
-	protected void update(float interpolation) {
+	protected void update(float unused) {
 		// Update the timer to get the frame rate.
 		this.timer.update();
 		this.interpolation = this.timer.getTimePerFrame();
-		// Update input manager.
+
+        /** update stats, if enabled. */
+        StatsManager.getInstance().updateStats(interpolation);
+
+        // Update input manager.
 		this.inputManager.update(this.interpolation);
 		// Execute tasks.
 		this.taskManager.update();
@@ -225,7 +236,11 @@ public class Game extends BaseGame implements IComponent{
 		this.passManager.updatePasses(this.interpolation);
 		// Update basic hot keys.
 		if(KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
-			this.finish();		
+			this.finish();
+		} else if (KeyBindingManager.getKeyBindingManager().isValidCommand("flip_stats-", false)) {
+	        StatsManager.getInstance().flipBack();
+		} else if (KeyBindingManager.getKeyBindingManager().isValidCommand("flip_stats+", false)) {
+	        StatsManager.getInstance().flipForward();
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
 //			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
 //			this.count++;
@@ -234,10 +249,13 @@ public class Game extends BaseGame implements IComponent{
 	}
 
 	@Override
-	protected void render(float interpolation) {
+	protected void render(float unused) {
 		this.display.getRenderer().clearBuffers();
 		// Render all render passes.
 		this.passManager.renderPasses(this.display.getRenderer());
+        
+        // Init stats as needed
+        StatsManager.getInstance().renderStats();
 	}
 
 	@Override
