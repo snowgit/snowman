@@ -10,13 +10,13 @@ import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-25-2008 16:40 EST
- * @version Modified date: 07-25-2008 16:44 EST
+ * @version Modified date: 07-28-2008 16:50 EST
  */
 public class SnowballEntity extends DynamicEntity {
 	/**
-	 * The integer damage value of this snow ball.
+	 * The maximum height of the snow ball.
 	 */
-	private final int damage;
+	private final float maxHeight;
 	/**
 	 * The <code>Vector3f</code> destination of this snow ball.
 	 */
@@ -28,7 +28,7 @@ public class SnowballEntity extends DynamicEntity {
 	 */
 	public SnowballEntity(int id) {
 		super(EEntity.Snowball, id);
-		this.damage = 20;
+		this.maxHeight = 1.2f;
 	}
 	
 	/**
@@ -40,11 +40,11 @@ public class SnowballEntity extends DynamicEntity {
 	}
 	
 	/**
-	 * Retrieve the damage of this snow ball.
-	 * @return The integer damage value.
+	 * Retrieve the maximum height the snow ball will reach.
+	 * @return The float maximum height value.
 	 */
-	public int getDamage() {
-		return this.damage;
+	public float getMaxHeight() {
+		return this.maxHeight;
 	}
 	
 	/**

@@ -44,21 +44,13 @@ public enum ETask {
 	 */
 	UpdateState(ETaskType.RealTime),
 	/**
-	 * The task used to calculate and set the destination of the snowman.
+	 * The task used to initiate the movement of a snowman.
 	 */
-	SetDestination(ETaskType.RealTime),
-	/**
-	 * The task used to check if the snowman has reached the destination.
-	 */
-	UpdateMovement(ETaskType.RealTime),
-	/**
-	 * The task used to stop a distributed character.
-	 */
-	StopCharacter(ETaskType.RealTime),
+	MoveCharacter(ETaskType.RealTime),
 	/**
 	 * The task used to update the HP value of a character.
 	 */
-	UpdateHP(ETaskType.RealTime),
+	SetHP(ETaskType.RealTime),
 	/**
 	 * The task used to create snow balls.
 	 */

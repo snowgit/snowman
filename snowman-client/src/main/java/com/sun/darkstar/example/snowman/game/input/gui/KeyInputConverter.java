@@ -52,6 +52,7 @@ public class KeyInputConverter extends InputConverter implements KeyInputListene
 	 */
 	private Key convertKeyEvent() {
 		Key GUIKey;
+		// FIXME: Should be able to break hard ref to lwjgl here.
 		switch(Keyboard.getEventKey()) {
 		case Keyboard.KEY_BACK: GUIKey = Key.BACKSPACE;	break;
 		case Keyboard.KEY_RETURN: GUIKey = Key.ENTER; break;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
@@ -27,7 +28,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 15:22 EST
- * @version Modified date: 07-23-2008 12:20 EST
+ * @version Modified date: 07-30-2008 13:46 EST
  */
 public class PhysicsManager extends Manager {
 	/**
@@ -35,29 +36,30 @@ public class PhysicsManager extends Manager {
 	 */
 	private static PhysicsManager instance;
 	/**
-	 * The <code>ArrayList</code> of <code>IDynamicEntity</code> to be updated in the next iteration.
-	 */
-	private final ArrayList<IDynamicEntity> entities;
-	/**
-	 * The temporary velocity <code>Vector3f</code>.
-	 */
-	private final Vector3f velocity;
-	/**
 	 * The fixed physics update rate in seconds.
 	 */
 	private final float rate;
 	/**
+	 * The <code>ArrayList</code> of <code>IDynamicEntity</code> to be updated in the next iteration.
+	 */
+	private final ArrayList<IDynamicEntity> entities;
+	/**
+	 * The temporary <code>Vector3f</code>.
+	 */
+	private final Vector3f tempVector;
+	/**
 	 * The time elapsed since last physics iteration.
 	 */
 	private float time;
+	
 	/**
 	 * Constructor of <code>PhysicsManager</code>.
 	 */
 	private PhysicsManager() {
 		super(EManager.PhysicsManager);
-		this.entities = new ArrayList<IDynamicEntity>();
-		this.velocity = new Vector3f();
 		this.rate = 0.01f;
+		this.entities = new ArrayList<IDynamicEntity>();
+		this.tempVector = new Vector3f();
 	}
 	
 	/**
@@ -82,32 +84,52 @@ public class PhysicsManager extends Manager {
 		this.time += interpolation;
 		while(this.time >= this.rate) {
 			for(IDynamicEntity entity : this.entities) {
-				this.moveEntity(entity);
+				this.applyNaturalForce(entity);
+				this.updateVelocity(entity);
+				this.updateTranslation(entity);
 			}
 			this.time -= this.rate;
-		}
-		// Clear forces.
-		for(IDynamicEntity entity : this.entities) {
-			entity.resetForce();
 		}
 		// Clear update list.
 		this.entities.clear();
 	}
 	
 	/**
-	 * Move the entity based on its force and mass.
-	 * @param entity The <code>IDynamicEntity</code> to be moved.
+	 * Apply the natural forces on the given dynamic entity.
+	 * @param entity The <code>IDynamicEntity</code> to be applied to.
 	 */
-	private void moveEntity(IDynamicEntity entity) {
-		this.velocity.set(entity.getNetForce()).divideLocal(entity.getMass());
-		Vector3f delta = this.velocity.multLocal(this.rate);
+	private void applyNaturalForce(IDynamicEntity entity) {
+		// Apply gravity and air friction when the entity is moving vertically.
+		if(entity.getVelocity().y != 0) {
+			this.tempVector.y = -1;
+			this.tempVector.multLocal(EForce.Gravity.getMagnitude());
+			entity.addForce(this.tempVector);
+		}
+	}
+	
+	/**
+	 * Update the velocity of the given dynamic entity based on its current force.
+	 * @param entity The <code>IDynamicEntity</code> to be updated.
+	 */
+	private void updateVelocity(IDynamicEntity entity) {
+		Vector3f velocity = entity.getNetForce().divideLocal(entity.getMass()).multLocal(this.rate);
+		entity.addVelocity(velocity);
+	}
+	
+	/**
+	 * Update the translation of the given dynamic entity based on its current velocity.
+	 * @param entity The <code>IDynamicEntity</code> to be updated.
+	 */
+	private void updateTranslation(IDynamicEntity entity) {
+		this.tempVector.set(entity.getVelocity()).multLocal(this.rate);
 		try {
 			View view = (View)ViewManager.getInstance().getView(entity);
-			view.getLocalTranslation().addLocal(delta);
+			view.getLocalTranslation().addLocal(this.tempVector);
 			if(entity instanceof SnowmanEntity) ((SnowmanEntity)entity).updateTimeStamp();
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
+		entity.resetForce();
 	}
 	
 	/**
@@ -119,6 +141,14 @@ public class PhysicsManager extends Manager {
 		if(this.entities.contains(entity)) return false;
 		this.entities.add(entity);
 		return true;
+	}
+	
+	/**
+	 * Retrieve the physics update rate.
+	 * @return The physics update rate in seconds.
+	 */
+	public float getRate() {
+		return this.rate;
 	}
 
 	/**

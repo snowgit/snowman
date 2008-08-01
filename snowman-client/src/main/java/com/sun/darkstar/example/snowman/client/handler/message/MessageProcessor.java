@@ -70,7 +70,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
-		TaskManager.getInstance().createTask(ETask.SetDestination, objectID, startx, starty, endx, endy);
+		TaskManager.getInstance().createTask(ETask.MoveCharacter, objectID, startx, starty, endx, endy);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		TaskManager.getInstance().createTask(ETask.StopCharacter, objectID, x, y);
+		throw new UnsupportedOperationException("StopMOB should not be used!");
 	}
 
 	@Override
@@ -92,11 +92,12 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attacked(int sourceID, int targetID) {
-		TaskManager.getInstance().createTask(ETask.CreateSnowball, sourceID, targetID);
+		if(sourceID == this.myID) return;
+		TaskManager.getInstance().createTask(ETask.CreateSnowball, sourceID, targetID, false);
 	}
 
 	@Override
 	public void setHP(int objectID, int hp) {
-		TaskManager.getInstance().createTask(ETask.UpdateHP, objectID, hp);
+		TaskManager.getInstance().createTask(ETask.SetHP, objectID, hp);
 	}
 }

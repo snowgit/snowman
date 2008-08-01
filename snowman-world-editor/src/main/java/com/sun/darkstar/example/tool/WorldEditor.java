@@ -82,6 +82,7 @@ import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
@@ -650,6 +651,7 @@ public class WorldEditor extends JFrame {
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
 		display.setMinSamples(2);
+		display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
 		final Canvas comp = (Canvas)display.createCanvas(1024, 768);
 		canvas = comp;
 

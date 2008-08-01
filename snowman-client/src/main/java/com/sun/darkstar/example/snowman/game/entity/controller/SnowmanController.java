@@ -1,4 +1,4 @@
-package com.sun.darkstar.example.snowman.game.input.entity;
+package com.sun.darkstar.example.snowman.game.entity.controller;
 
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
@@ -30,10 +30,11 @@ public class SnowmanController extends CharacterController implements MouseInput
 	public void onButton(int button, boolean pressed, int x, int y) {
 		if(button == 0 && pressed) {
 			switch(((SnowmanEntity)this.entity).getState()) {
-			case Idle: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
-			case Moving: TaskManager.getInstance().createTask(ETask.SetDestination, this.entity, x, y); break;
+			case Idle: TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y); break;
+			case Moving: TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y); break;
 			case Targeting: TaskManager.getInstance().createTask(ETask.CreateSnowball, this.entity.getID(),
-					((SnowmanEntity)this.entity).getTaregt().getID()); break;
+					((SnowmanEntity)this.entity).getTaregt().getID(), true);
+			break;
 			case Grabbing: break;
 			}
 		}

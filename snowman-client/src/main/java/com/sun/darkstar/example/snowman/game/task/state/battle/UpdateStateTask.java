@@ -12,6 +12,7 @@ import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
@@ -97,8 +98,8 @@ public class UpdateStateTask extends RealTimeTask {
 			if(view.getEntity() == this.snowman) return;
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
-				this.snowman.setTarget((SnowmanEntity)view.getEntity());
-				System.out.println("Targeting");
+				this.snowman.setTarget((CharacterEntity)view.getEntity());
+				//System.out.println("Targeting");
 				// TODO Change cursor to targeting.
 			}
 			return;
