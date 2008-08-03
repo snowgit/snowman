@@ -33,40 +33,43 @@
 package com.sun.darkstar.example.snowman.server.service;
 
 /**
- * The <code>GameWorldManager</code> interface exposes application level access
+ * The <code>GameWorldManagerImpl</code> implements the {@link GameWorldManager}
+ * and provides application level access
  * to the {@link GameWorldService} running inside of the 
  * Project Darkstar stack.  
  * 
  * @author Owen Kellett
  */
-public interface GameWorldManager {
+public class GameWorldManagerImpl implements GameWorldManager {
     
-    /**
-     * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * trimPath method.
-     * </p>
-     * 
-     * @see GameWorldService#trimPath trimPath
-     */
+    private final GameWorldService backingService;
+    
+    public GameWorldManagerImpl(GameWorldService backingService) {
+        this.backingService = backingService;
+    }
+
+    /** {@inheritDoc} */
     public void trimPath(int playerId,
                          float startx,
                          float starty, 
                          float endx, 
                          float endy, 
                          long timestart,
-                         GameWorldServiceCallback callback);
+                         GameWorldServiceCallback callback) {
+        backingService.trimPath(playerId,
+                                startx, 
+                                starty, 
+                                endx, 
+                                endy, 
+                                timestart,
+                                callback);
+    }
     
-    /**
-     * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * validThrow method.
-     * </p>
-     * 
-     * @see GameWorldService#validThrow validThrow
-     */
+    /** {@inheritDoc} */
     public boolean validThrow(float startx,
                               float starty, 
                               float endx,
-                              float endy);
+                              float endy) {
+        return backingService.validThrow(startx, starty, endx, endy);
+    }
 }

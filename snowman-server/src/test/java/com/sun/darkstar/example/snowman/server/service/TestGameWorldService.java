@@ -47,6 +47,7 @@ import com.sun.sgs.auth.Identity;
 import com.sun.sgs.app.TransactionException;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
+import com.jme.system.DisplaySystem;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
@@ -128,9 +129,9 @@ public class TestGameWorldService
         EasyMock.replay(mockTaskScheduler);
         
         //create the GameWorldService with the mock environment
-        GameWorldService service = new GameWorldService(new Properties(),
-                                                        mockRegistry,
-                                                        mockTxnProxy);
+        GameWorldServiceImpl service = new GameWorldServiceImpl(new Properties(),
+                                                                mockRegistry,
+                                                                mockTxnProxy);
         
         //record that we expect to join the current transaction
         mockTransaction.join(service);
@@ -176,9 +177,9 @@ public class TestGameWorldService
         EasyMock.replay(mockTaskScheduler);
         
         //create the GameWorldService with the mock environment
-        GameWorldService service = new GameWorldService(new Properties(),
-                                                        mockRegistry,
-                                                        mockTxnProxy);
+        GameWorldServiceImpl service = new GameWorldServiceImpl(new Properties(),
+                                                                mockRegistry,
+                                                                mockTxnProxy);
         
         //record that we expect to join the current transaction
         mockTransaction.join(service);
@@ -220,9 +221,9 @@ public class TestGameWorldService
         EasyMock.replay(mockTaskScheduler);
         
         //create the GameWorldService with the mock environment
-        GameWorldService service = new GameWorldService(new Properties(),
-                                                        mockRegistry,
-                                                        mockTxnProxy);
+        GameWorldServiceImpl service = new GameWorldServiceImpl(new Properties(),
+                                                                mockRegistry,
+                                                                mockTxnProxy);
         
         
         //dummy callback
@@ -247,6 +248,11 @@ public class TestGameWorldService
     public void cleanupSingletons() {
         SingletonRegistry.setDataImporter(null);
         SingletonRegistry.setCollisionManager(null);
+    }
+    
+    @After
+    public void cleanupJME() {
+        DisplaySystem.resetSystemProvider();
     }
 
 }
