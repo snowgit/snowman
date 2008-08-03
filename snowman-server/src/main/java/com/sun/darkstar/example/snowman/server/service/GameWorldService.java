@@ -45,7 +45,8 @@ import com.sun.sgs.app.TaskRejectedException;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.jme.scene.Spatial;
-import com.jme.system.dummy.DummyDisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
+import com.jme.system.DisplaySystem;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.HashSet;
@@ -88,7 +89,8 @@ public class GameWorldService implements Service, NonDurableTransactionParticipa
         this.txnProxy = txnProxy;
         
         //create dummy display system so that the JME importer doesn't complain
-        new DummyDisplaySystem();
+        DummySystemProvider provider = new DummySystemProvider();
+	DisplaySystem.setSystemProvider(provider);
         this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
     }
 
