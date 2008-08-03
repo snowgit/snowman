@@ -3,19 +3,23 @@ package com.sun.darkstar.example.snowman.game.entity.view.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.jme.bounding.BoundingBox;
+import com.jme.scene.shape.Sphere;
+import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
+import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IStaticEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IView;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
-import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.entity.view.EditableView;
-import com.sun.darkstar.example.snowman.game.entity.view.StaticView;
-import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowmanView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
-import com.sun.darkstar.example.snowman.interfaces.IStaticEntity;
-import com.sun.darkstar.example.snowman.interfaces.IView;
-import com.sun.darkstar.example.snowman.interfaces.editable.IEditableEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 
@@ -47,7 +51,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-16-2008 17:02 EST
- * @version Modified date: 07-01-2008 15:35 EST
+ * @version Modified date: 07-24-2008 11:45 EST
  */
 public class ViewManager extends Manager {
 	/**
@@ -123,9 +127,21 @@ public class ViewManager extends Manager {
 		IView view = null;
 		switch(entity.getEnumn()) {
 		case Terrain: view = new TerrainView((IEditableEntity)entity); break;
-		case Snowman:
-			view = new SnowmanView((SnowmanEntity)entity);
+		case SnowmanLocal:
+			view = new CharacterView((CharacterEntity)entity);
 			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			break;
+		case SnowmanDistributed:
+			view = new CharacterView((CharacterEntity)entity);
+			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			break;
+		case Snowball:
+			view = new SnowballView((SnowballEntity)entity);
+			//view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
+			ball.setModelBound(new BoundingBox());
+			ball.updateModelBound();
+			view.attachMesh(ball);
 			break;
 		default:
 			switch(entity.getType()) {
@@ -134,7 +150,6 @@ public class ViewManager extends Manager {
 				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 				((StaticView)view).lock();
 				break;
-			case Dynamic: break; // TODO
 			case Editable:
 				view = new EditableView((IEditableEntity)entity);
 				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));

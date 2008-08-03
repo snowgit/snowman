@@ -1,9 +1,7 @@
 package com.sun.darkstar.example.snowman.game.entity.scene;
 
-import com.jme.math.Vector3f;
-import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 
 /**
  * <code>SnowmanEntity</code> extends <code>DynamicEntity</code> to define
@@ -11,48 +9,38 @@ import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:09 EST
- * @version Modified date: 07-21-2008 17:44 EST
+ * @version Modified date: 07-28-2008 17:38 EST
  */
-public class SnowmanEntity extends DynamicEntity {
-	/**
-	 * The current HP of the snowman.
-	 */
-	private int hp;
+public class SnowmanEntity extends CharacterEntity {
 	/**
 	 * The current <code>EState</code>.
 	 */
 	private EState state;
 	/**
-	 * The current <code>Vector3f</code> destination.
+	 * The last movement update time.
 	 */
-	private Vector3f destination;
+	private long timestamp;
+	/**
+	 * The current target.
+	 */
+	private CharacterEntity target;
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
 	 * @param id The ID number of this snowman.
 	 */
 	public SnowmanEntity(int id) {
-		super(EEntity.Snowman, id);
-		this.hp = 100;
+		super(EEntity.SnowmanLocal, id);
 		this.state = EState.Idle;
 	}
 	
 	/**
-	 * Set the HP of this snowman.
-	 * @param hp The new HP value to set.
+	 * Update the maintained time stamp to store the time stamp of movement.
 	 */
-	public void setHP(int hp) {
-		this.hp = hp;
+	public void updateTimeStamp() {
+		this.timestamp = System.currentTimeMillis();
 	}
-	
-	/**
-	 * Set the destination of this snowman.
-	 * @param destination The <code>Vector3f</code> destination to be set.
-	 */
-	public void setDestination(Vector3f destination) {
-		this.destination = destination;
-	}
-	
+
 	/**
 	 * Set the current state of the snowman.
 	 * @param state The <code>EState</code> enumeration.
@@ -62,11 +50,11 @@ public class SnowmanEntity extends DynamicEntity {
 	}
 	
 	/**
-	 * Retrieve the current HP value.
-	 * @return The integer HP value.
+	 * Set the snowman that is being targeted.
+	 * @param target The targeted <code>CharacterEntity</code>.
 	 */
-	public int getHP() {
-		return this.hp;
+	public void setTarget(CharacterEntity target) {
+		this.target = target;
 	}
 	
 	/**
@@ -78,10 +66,18 @@ public class SnowmanEntity extends DynamicEntity {
 	}
 	
 	/**
-	 * Retrieve the destination of this snowman.
-	 * @return The <code>Vector3f</code> destination.
+	 * Retrieve the snowman that is being targeted.
+	 * @return The targeted <code>CharacterEntity</code>.
 	 */
-	public Vector3f getDestination() {
-		return this.destination;
+	public CharacterEntity getTaregt() {
+		return this.target;
+	}
+	
+	/**
+	 * Retrieve the time stamp when the last movement was performed.
+	 * @return The long time stamp.
+	 */
+	public long getTimeStamp() {
+		return this.timestamp;
 	}
 }

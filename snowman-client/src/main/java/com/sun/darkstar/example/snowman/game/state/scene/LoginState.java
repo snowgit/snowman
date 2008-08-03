@@ -2,12 +2,12 @@ package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.input.MouseInput;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
-import com.sun.darkstar.example.snowman.game.world.World;
 
 /**
  * <code>LoginState</code> extends <code>GameState</code> to define the login

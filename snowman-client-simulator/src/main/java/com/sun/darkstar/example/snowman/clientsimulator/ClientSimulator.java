@@ -29,24 +29,15 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.sun.darkstar.example.snowman.clientsimulator;
 
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
-import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
-import com.sun.sgs.client.ClientChannel;
-import com.sun.sgs.client.ClientChannelListener;
-import com.sun.sgs.client.simple.SimpleClient;
-import com.sun.sgs.client.simple.SimpleClientListener;
 import java.awt.Container;
 import java.awt.FlowLayout;
-import java.util.List;
-import java.io.IOException;
-import java.net.PasswordAuthentication;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -54,37 +45,71 @@ import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import com.jme.math.Vector3f;
-import com.sun.darkstar.example.snowman.common.protocol.ClientProtocol;
-import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 
 /**
+ * Program which will start and stop multiple simulated snowman game players.
+ * It supports the following properties: <p>
  *
+ * <dl style="margin-left: 1em">
+ *
+ * <dt> <i>Property:</i> <code><b>
+ *	host
+ *	</b></code><br>
+ *	<i>Default:</i> {@code localhost}
+ *
+ * <dd style="padding-top: .5em">
+ *      Specifies the host name of the snowman game server.<p>
+ *
+ * <dt> <i>Property:</i> <code><b>
+ *	port
+ *	</b></code><br>
+ *	<i>Default:</i> {@code 1139}
+ *
+ * <dd style="padding-top: .5em"> 
+ *	Specifies the port of the snowman game server.<p>
+ *
+ * <dt> <i>Property:</i> <code><b>
+ *	maxClients
+ *	</b></code><br>
+ *	<i>Default:</i> {@code 100}
+ *
+ * <dd style="padding-top: .5em"> 
+ *	Specifies maximun number of clients that can be started.<p>
+ *
+ * </dl> <p>
+ * 
  * @author Jeffrey Kesselman
+ * @author Keith Thompson
  */
 public class ClientSimulator extends JFrame {
-    static final int MOVEDISTANCE = 10;
-    static final Random random = new Random();
-    static final boolean NORACE = false;
-    static final Logger logger = Logger.getLogger(
+    static final long serialVersionUID = 1L;
+
+    static private final Logger logger = Logger.getLogger(
             ClientSimulator.class.getName());
 
-    static enum PLAYERSTATE {
+    private final String serverHost;
+    private final String serverPort;
+    
+    private final JSlider usersSlider;
+    private final JLabel userCount;
 
-        LoggingIn, Paused, Playing, Quit
-    }
-    JSlider usersSlider;
-    JLabel userCount;
-    List<FakePlayer> players = new ArrayList<FakePlayer>();
-    volatile int userID = 0;
-
+    /**
+     * Create and display the client simulator slider.
+     */
     public ClientSimulator() {
         super("Client Simulator Controls");
+        
+        serverHost = System.getProperty("host", "localhost");
+        serverPort = System.getProperty("port", "1139");
+        
+        logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
+                   new Object[] {serverHost, serverPort});
+                
         Container c = getContentPane();
         //c.setLayout(new GridLayout(1,3));
         c.setLayout(new FlowLayout());
         c.add(new JLabel("Number of Clients:"));
-        usersSlider = new JSlider(0, 500);
+        usersSlider = new JSlider(0, Integer.getInteger(System.getProperty("maxClients"), 100));
         usersSlider.setValue(0);
         c.add(usersSlider);
         userCount = new JLabel("0");
@@ -92,6 +117,7 @@ public class ClientSimulator extends JFrame {
 
         usersSlider.addChangeListener(new ChangeListener() {
 
+            @Override
             public void stateChanged(ChangeEvent e) {
                 int val = usersSlider.getValue();
                 String numstr = Integer.toString(val);
@@ -108,190 +134,51 @@ public class ClientSimulator extends JFrame {
 
             @Override
             public void run() {
-                // adjust number of players
+                final List<SimulatedPlayer> players =
+                        new ArrayList<SimulatedPlayer>();
+                int userId = 0;
+                
                 while (true) {
 
-                    while (usersSlider.getValue() != players.size()) {
-                        if (usersSlider.getValue() > players.size()) {
-                            Properties properties = new Properties();
-                            properties.setProperty("host",
-                                    System.getProperty("host", "localhost"));
-                            properties.setProperty("port",
-                                    System.getProperty("port", "1139"));
-                            properties.setProperty("name", "Robot" + (userID++));
-                            try {
-                                players.add(new FakePlayer(properties));
-                                if (NORACE) {
-                                    try {
-                                        sleep(10);
-                                    } catch (InterruptedException ex) {
-                                        Logger.getLogger(ClientSimulator.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                            } catch (IOException ex) {
-                                Logger.getLogger(ClientSimulator.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        } else if (usersSlider.getValue() < players.size()) {
-                            FakePlayer player = players.remove(players.size() - 1);
-                            player.quit();
+                    if (usersSlider.getValue() > players.size()) {
+                        Properties properties = new Properties();
+                        properties.setProperty("host",
+                                System.getProperty("host", serverHost));
+                        properties.setProperty("port",
+                                System.getProperty("port", serverPort));
+                        properties.setProperty("name", "Robot" + userId++);
+                        try {
+                            players.add(new SimulatedPlayer(properties));
+                        } catch (Exception ex) {
+                            logger.log(Level.SEVERE,
+                                       "Exception creating simulated player",
+                                       ex);
                         }
+                    } else if (usersSlider.getValue() < players.size()) {
+                        // 0 cannot be out of bounds if size > slider
+                        // minimum i.e. size > zero.
+                        players.remove(0).quit();
                     }
 
                     // do a move
-                    for (FakePlayer player : players) {
-                        player.doit();
+                    Iterator<SimulatedPlayer> iter = players.iterator();
+                    while (iter.hasNext()) {
+                        if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit)
+                            iter.remove();
                     }
                     try {
-                        sleep(100);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
+                        sleep(200);
+                    } catch (InterruptedException ignore) {}
                 }
-
             }
         }).start();
     }
 
-    class FakePlayer implements SimpleClientListener {
-        
-        String name;
-        String password = "";
-        SimpleClient simpleClient;
-        PLAYERSTATE state;
-        IClientProcessor pktHandler;
-        float x;
-        float y;
-      
-
-        public FakePlayer(Properties props) throws IOException {
-            name = props.getProperty("name");
-            password = props.getProperty("password", "");
-            simpleClient = new SimpleClient(this);
-            state = PLAYERSTATE.LoggingIn;
-            simpleClient.login(props);
-            pktHandler = new IClientProcessor() {
-                
-                public void ready() {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void enterLounge(int myID) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void newGame(int myID, String mapname) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void startGame() {
-                    state = PLAYERSTATE.Playing;
-                }
-
-                public void endGame(EEndState endState) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void addMOB(int objectID, float x, float y, EMOBType objType) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void moveMOB(int objectID, float startx, float starty, float endx, float endy, long timestart) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void removeMOB(int objectID) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-                
-                public void stopMOB(int objectID, float x, float y) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void attachObject(int sourceID, int targetID) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void attacked(int sourceID, int targetID) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void info(int objectID, String string) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void setHP(int objectID, int hp) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                public void chatText(String text) {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            };
-        }
-
-        public PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication(name, password.toCharArray());
-        }
-
-        public void loggedIn() {
-            state = PLAYERSTATE.Paused;
-             logger.info("Connected player: "+name);
-        }
-
-        public void loginFailed(String arg0) {
-        }
-
-        public ClientChannelListener joinedChannel(ClientChannel arg0) {
-            return null;
-        }
-
-        public void receivedMessage(ByteBuffer arg0) {
-        }
-
-        public void reconnecting() {
-        }
-
-        public void reconnected() {
-        }
-
-        public void disconnected(boolean arg0, String arg1) {
-            logger.info("Disconnected player: "+name);
-        }
-
-        public void doit() {
-            if (state != PLAYERSTATE.Playing) {
-                return;
-            }
-            // player AI logic goes here
-            // NOTE: this is no longer correct, we need to pass
-            // the starting position of the player in the packet
-            // as well
-            Vector3f ray = new Vector3f(random.nextFloat()-0.5f,
-                    random.nextFloat()-0.5f,0.0f);
-            ray = ray.normalize();    
-            ray = ray.mult(MOVEDISTANCE);
-            ray = ray.add(new Vector3f(x,y,0.0f));
-            ray = lookForBlocking(ray);
-            try {
-                simpleClient.send(ClientProtocol.getInstance().createMoveMePkt(0.0f, 0.0f, ray.x, ray.y));
-            } catch (IOException ex) {
-                Logger.getLogger(ClientSimulator.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        private Vector3f lookForBlocking(Vector3f ray) {
-            return ray;
-        }
-
-        private void quit() {
-            if ((state == PLAYERSTATE.Playing)||
-                (state == PLAYERSTATE.Paused)){
-                simpleClient.logout(false);
-                state = PLAYERSTATE.Quit;
-            }
-        }
-    }
-
+    /**
+     * Main.
+     * @param args no arguments supported. See class description for
+     * the list of properties supported.
+     */
     public static void main(String[] args) {
         new ClientSimulator();
     }

@@ -32,6 +32,14 @@
 
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
+import com.sun.darkstar.example.snowman.server.impl.MatchmakerImpl;
+import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
+import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
@@ -53,17 +61,27 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     public static long serialVersionUID = 1L;
     ManagedReference<Matchmaker> matchMakerRef;
+    private int gameCount=0;
     
+    private EntityFactory entityFactory;
+    private GameFactory gameFactory;
+    private SnowmanAppContext appContext;
     
     public void initialize(Properties arg0) {
-        Matchmaker matchMaker = new Matchmaker();
+        this.appContext = SnowmanAppContextFactory.getAppContext();
+        this.entityFactory = new EntityFactoryImpl();
+        this.gameFactory = new GameFactoryImpl();
+        Matchmaker matchMaker = new MatchmakerImpl("Game"+(gameCount++),
+                                                   appContext,
+                                                   gameFactory,
+                                                   entityFactory);
         matchMakerRef = AppContext.getDataManager().createReference(matchMaker);
     }
 
     public ClientSessionListener loggedIn(ClientSession arg0) {
         logger.info("Player "+arg0.getName()+" logged in");
-        SnowmanPlayer player =  SnowmanPlayer.find(arg0);
-        matchMakerRef.get().addWaitingPlayer(player);
+        SnowmanPlayerListener player =  SnowmanPlayerListener.find(arg0, appContext, entityFactory, matchMakerRef.get());
+        matchMakerRef.get().addWaitingPlayer(player.getSnowmanPlayer());
         return player;
     }
 

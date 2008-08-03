@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 07-18-2008 11:35 EST
+ * @version Modified date: 07-25-2008 15:35 EST
  */
 public enum ETask {
 	/**
@@ -22,7 +22,7 @@ public enum ETask {
 	/**
 	 * The task used to change game state.
 	 */
-	ChangeState(ETaskType.RealTime),
+	GameState(ETaskType.RealTime),
 	/**
 	 * The task used to create a new game.
 	 */
@@ -32,17 +32,33 @@ public enum ETask {
 	 */
 	AddMOB(ETaskType.RealTime),
 	/**
+	 * The task used to initialize chase camera.
+	 */
+	Ready(ETaskType.RealTime),
+	/**
+	 * The task used to start the battle.
+	 */
+	StartGame(ETaskType.RealTime),
+	/**
 	 * The task used to update all value associated with mouse position.
 	 */
 	UpdateState(ETaskType.RealTime),
 	/**
-	 * The task used to calculate and set the destination of the snowman.
+	 * The task used to initiate the movement of a snowman.
 	 */
-	SetDestination(ETaskType.RealTime),
+	MoveCharacter(ETaskType.RealTime),
 	/**
-	 * The task used to check if the snowman has reached the destination.
+	 * The task used to update the HP value of a character.
 	 */
-	UpdateMovement(ETaskType.RealTime);
+	SetHP(ETaskType.RealTime),
+	/**
+	 * The task used to create snow balls.
+	 */
+	CreateSnowball(ETaskType.Certified),
+	/**
+	 * The task used to update the motion of snow balls.
+	 */
+	Throw(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

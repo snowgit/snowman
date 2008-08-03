@@ -1,7 +1,5 @@
 TODO:
-Add and implement HPConverter.
-Add and implement DistributedController.
-Finish implementing BattleState.
+
 
 Only generating Task process is multi-threaded. Everything else is controlled by the game loop in a mono-threaded fashion.
 

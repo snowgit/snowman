@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 
 /**

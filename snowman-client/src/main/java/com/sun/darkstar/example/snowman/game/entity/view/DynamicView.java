@@ -1,6 +1,7 @@
 package com.sun.darkstar.example.snowman.game.entity.view;
 
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.entity.view.View;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 
 /**

@@ -2,9 +2,9 @@ package com.sun.darkstar.example.snowman.game.state;
 
 import com.jme.renderer.pass.RenderPass;
 import com.jmex.game.state.BasicGameState;
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
-import com.sun.darkstar.example.snowman.game.world.World;
 import com.sun.darkstar.example.snowman.interfaces.IGameState;
 
 /**

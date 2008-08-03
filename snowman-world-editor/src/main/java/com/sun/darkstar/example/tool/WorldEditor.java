@@ -82,11 +82,10 @@ import com.jme.util.stat.graph.LineGrapher;
 import com.jme.util.stat.graph.TabledLabelGrapher;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
+import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
-import com.sun.darkstar.example.snowman.game.world.EditableWorld;
-import com.sun.darkstar.example.snowman.game.world.World;
 import com.worldwizards.saddl.SADDL;
 import com.worldwizards.saddl.Tuple;
 import java.awt.BorderLayout;
@@ -149,16 +148,18 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.sun.darkstar.example.snowman.game.entity.EditableEntity;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.game.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
-import com.sun.darkstar.example.snowman.game.entity.view.EditableView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainCluster;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.TerrainView;
-import com.sun.darkstar.example.snowman.game.entity.view.terrain.enumn.ESculpt;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.common.entity.EditableEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
+import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+import com.sun.darkstar.example.snowman.common.world.EditableWorld;
+import com.sun.darkstar.example.snowman.common.world.World;
 
 /**
  * This is the main class for the World Editor gui It uses Swing and JME
@@ -519,8 +520,7 @@ public class WorldEditor extends JFrame {
 										World node = (World)world.constructFinal();
 										if(!dlg.exportTextures()) {
 											this.stripTexure(node);
-											Texture.DEFAULT_STORE_TEXTURE = false;
-										} else Texture.DEFAULT_STORE_TEXTURE = true;
+										}
 										try {
 											BinaryExporter.getInstance().save(node, dlg.getFile());
 										} catch (IOException e) {
@@ -651,6 +651,7 @@ public class WorldEditor extends JFrame {
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
 		display.setMinSamples(2);
+		display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
 		final Canvas comp = (Canvas)display.createCanvas(1024, 768);
 		canvas = comp;
 

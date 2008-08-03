@@ -5,16 +5,19 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
-import com.sun.darkstar.example.snowman.game.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
-import com.sun.darkstar.example.snowman.game.entity.view.StaticView;
-import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowmanView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -42,7 +45,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:36 EST
- * @version Modified date: 07-21-2008 15:54 EST
+ * @version Modified date: 07-25-2008 14:50 EST
  */
 public class UpdateStateTask extends RealTimeTask {
 	/**
@@ -82,24 +85,26 @@ public class UpdateStateTask extends RealTimeTask {
 		Ray ray = new Ray();
 		ray.setOrigin(camLocation);
 		ray.setDirection(worldCoords.subtractLocal(camLocation).normalizeLocal());
-		Spatial result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), StaticView.class, false);
+		World world = this.game.getGameState(EGameState.BattleState).getWorld();
+		Spatial result = collisionManager.getIntersectObject(ray, world, StaticView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.Idle);
-			System.out.println("Idle");
 			// TODO Change cursor to walking.
 			return;
 		}
-		result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), SnowmanView.class, false);
+		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
 		if(result != null) {
-			if(((SnowmanView)result).getEntity() == this.snowman) return;
+			CharacterView view = (CharacterView)result;
+			if(view.getEntity() == this.snowman) return;
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
-				System.out.println("Targeting");
+				this.snowman.setTarget((CharacterEntity)view.getEntity());
+				//System.out.println("Targeting");
 				// TODO Change cursor to targeting.
 			}
 			return;
 		}
-		result = collisionManager.getIntersectObject(ray, this.game.getActiveState().getWorld(), DynamicView.class, false);
+		result = collisionManager.getIntersectObject(ray, world, DynamicView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.Grabbing);
 			System.out.println("Grabbing");
@@ -148,7 +153,8 @@ public class UpdateStateTask extends RealTimeTask {
 			Spatial snowman = (Spatial) ViewManager.getInstance().getView(this.snowman);
 			Vector3f start = snowman.getLocalTranslation();
 			Vector3f end = target.getLocalTranslation();
-			return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, this.game.getActiveState().getWorld());
+			World world = this.game.getGameState(EGameState.BattleState).getWorld();
+			return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world);
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}

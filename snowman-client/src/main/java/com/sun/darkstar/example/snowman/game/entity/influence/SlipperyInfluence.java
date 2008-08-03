@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.game.entity.influence;
 
-import com.sun.darkstar.example.snowman.game.entity.influence.enumn.EInfluence;
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.entity.influence.enumn.EInfluence;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 
 /**
  * <code>SlipperyInfluence</code> slows down the target in movement speed.

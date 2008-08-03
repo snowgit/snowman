@@ -1,5 +1,7 @@
 package com.sun.darkstar.example.snowman.interfaces;
 
+import com.sun.darkstar.example.snowman.common.interfaces.IView;
+
 /**
  * <code>IDynamicView</code> defines the interface for views that represent
  * <code>IDynamicEntity</code> in the game world.

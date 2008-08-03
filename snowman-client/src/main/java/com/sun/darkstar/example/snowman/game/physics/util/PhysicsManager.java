@@ -2,7 +2,13 @@ package com.sun.darkstar.example.snowman.game.physics.util;
 
 import java.util.ArrayList;
 
-import com.sun.darkstar.example.snowman.interfaces.IDynamicEntity;
+import com.jme.math.Vector3f;
+import com.sun.darkstar.example.snowman.common.entity.view.View;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
+import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
+import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
 
@@ -22,7 +28,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 15:22 EST
- * @version Modified date: 06-29-2008 17:57 EST
+ * @version Modified date: 07-30-2008 13:46 EST
  */
 public class PhysicsManager extends Manager {
 	/**
@@ -30,13 +36,17 @@ public class PhysicsManager extends Manager {
 	 */
 	private static PhysicsManager instance;
 	/**
+	 * The fixed physics update rate in seconds.
+	 */
+	private final float rate;
+	/**
 	 * The <code>ArrayList</code> of <code>IDynamicEntity</code> to be updated in the next iteration.
 	 */
 	private final ArrayList<IDynamicEntity> entities;
 	/**
-	 * The fixed physics update rate in seconds.
+	 * The temporary <code>Vector3f</code>.
 	 */
-	private final float rate;
+	private final Vector3f tempVector;
 	/**
 	 * The time elapsed since last physics iteration.
 	 */
@@ -47,8 +57,9 @@ public class PhysicsManager extends Manager {
 	 */
 	private PhysicsManager() {
 		super(EManager.PhysicsManager);
-		this.entities = new ArrayList<IDynamicEntity>();
 		this.rate = 0.01f;
+		this.entities = new ArrayList<IDynamicEntity>();
+		this.tempVector = new Vector3f();
 	}
 	
 	/**
@@ -72,12 +83,53 @@ public class PhysicsManager extends Manager {
 		// Perform as many iterations as needed.
 		this.time += interpolation;
 		while(this.time >= this.rate) {
-			// TODO Perform physics calculation here.
-			
+			for(IDynamicEntity entity : this.entities) {
+				this.applyNaturalForce(entity);
+				this.updateVelocity(entity);
+				this.updateTranslation(entity);
+			}
 			this.time -= this.rate;
 		}
 		// Clear update list.
 		this.entities.clear();
+	}
+	
+	/**
+	 * Apply the natural forces on the given dynamic entity.
+	 * @param entity The <code>IDynamicEntity</code> to be applied to.
+	 */
+	private void applyNaturalForce(IDynamicEntity entity) {
+		// Apply gravity and air friction when the entity is moving vertically.
+		if(entity.getVelocity().y != 0) {
+			this.tempVector.y = -1;
+			this.tempVector.multLocal(EForce.Gravity.getMagnitude());
+			entity.addForce(this.tempVector);
+		}
+	}
+	
+	/**
+	 * Update the velocity of the given dynamic entity based on its current force.
+	 * @param entity The <code>IDynamicEntity</code> to be updated.
+	 */
+	private void updateVelocity(IDynamicEntity entity) {
+		Vector3f velocity = entity.getNetForce().divideLocal(entity.getMass()).multLocal(this.rate);
+		entity.addVelocity(velocity);
+	}
+	
+	/**
+	 * Update the translation of the given dynamic entity based on its current velocity.
+	 * @param entity The <code>IDynamicEntity</code> to be updated.
+	 */
+	private void updateTranslation(IDynamicEntity entity) {
+		this.tempVector.set(entity.getVelocity()).multLocal(this.rate);
+		try {
+			View view = (View)ViewManager.getInstance().getView(entity);
+			view.getLocalTranslation().addLocal(this.tempVector);
+			if(entity instanceof SnowmanEntity) ((SnowmanEntity)entity).updateTimeStamp();
+		} catch (ObjectNotFoundException e) {
+			e.printStackTrace();
+		}
+		entity.resetForce();
 	}
 	
 	/**
@@ -89,6 +141,14 @@ public class PhysicsManager extends Manager {
 		if(this.entities.contains(entity)) return false;
 		this.entities.add(entity);
 		return true;
+	}
+	
+	/**
+	 * Retrieve the physics update rate.
+	 * @return The physics update rate in seconds.
+	 */
+	public float getRate() {
+		return this.rate;
 	}
 
 	/**

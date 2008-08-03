@@ -1,9 +1,9 @@
 package com.sun.darkstar.example.snowman.game.input;
 
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.interfaces.IController;
-import com.sun.darkstar.example.snowman.interfaces.IEntity;
-
 
 /**
  * <code>Controller</code> implements <code>IController</code> to define the
@@ -18,13 +18,13 @@ import com.sun.darkstar.example.snowman.interfaces.IEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 15:35 EST
- * @version Modified date: 07-21-2008 12:05 EST
+ * @version Modified date: 07-25-2008 17:15 EST
  */
 public abstract class Controller implements IController {
 	/**
-	 * The <code>IEntity</code> this controller controls.
+	 * The <code>IDynamicEntity</code> this controller controls.
 	 */
-	protected final IEntity entity;
+	protected final IDynamicEntity entity;
 	/**
 	 * The <code>EInputType</code> enumeration.
 	 */
@@ -36,9 +36,10 @@ public abstract class Controller implements IController {
 	
 	/**
 	 * Constructor of <code>Controller</code>.
-	 * @param entity The <code>IEntity</code> this controller controls.
+	 * @param entity The <code>IDynamicEntity</code> this controller controls.
+	 * @param type The <code>EInputType</code> enumeration.
 	 */
-	public Controller(IEntity entity, EInputType type) {
+	public Controller(IDynamicEntity entity, EInputType type) {
 		if(entity == null) throw new IllegalArgumentException("Null entity.");
 		this.entity = entity;
 		this.type = type;
