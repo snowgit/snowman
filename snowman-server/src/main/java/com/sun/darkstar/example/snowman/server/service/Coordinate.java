@@ -32,17 +32,57 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
-import com.sun.sgs.service.Service;
-
-
 /**
- * The <code>GameWorldService</code> provides utility methods to calculate
- * collision detection and spatial information against the static
- * game world geometry.
+ * Represents a 2D coordinate with floating point values
  * 
  * @author Owen Kellett
  */
-public interface GameWorldService extends Service, GameWorldManager {
+public class Coordinate 
+{
+    private float x;
+    private float y;
+    
+    public Coordinate() {
+        this.x = 0f;
+        this.y = 0f;
+    }
+    
+    public Coordinate(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public float getX() {
+        return x;
+    }
+    
+    public float getY() {
+        return y;
+    }
+    
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public String toString() {
+        return "["+String.valueOf(x)+","+String.valueOf(y)+"]";
+    }
+    
+    public boolean equals(Object other) {
+        if(other instanceof Coordinate) {
+            Coordinate o = (Coordinate) other;
+            return this.getX() == o.getX() && this.getY() == o.getY();
+        }
+        return super.equals(other);
+    }
+    
+    public int hashCode() { 
+        int hash = 7;
+        hash = hash * 31 + Float.floatToIntBits(this.getX());
+        hash = hash * 31 + Float.floatToIntBits(this.getY());
+        return hash;
+  }
 
 
 }
