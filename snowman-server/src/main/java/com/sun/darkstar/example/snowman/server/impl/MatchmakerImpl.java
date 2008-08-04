@@ -51,10 +51,12 @@ import java.util.logging.Logger;
  * @author Jeffrey Kesselman
  */
 public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
+    public static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(Matchmaker.class.getName());
-    private static final int NUMPLAYERSPERGAME = 2;
-    public static final long serialVersionUID = 1L;
+    
+    public static final int NUMPLAYERSPERGAME = 2;
+    
     /**
      * The list of waiting players
      */
