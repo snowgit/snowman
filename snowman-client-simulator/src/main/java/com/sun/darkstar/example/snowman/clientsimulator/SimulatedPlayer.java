@@ -74,6 +74,7 @@ class SimulatedPlayer implements SimpleClientListener {
     
     private final String name;
     private final String password;
+    private final int moveDelay;
     private final SimpleClient simpleClient;
     private final IClientProcessor pktHandler;
     
@@ -92,10 +93,6 @@ class SimulatedPlayer implements SimpleClientListener {
     
     // Must be synchronized
     private int hitPoints;
-    
-    // causes the player to delay by skipping a move call. incremented when
-    // ever attacked or stopped
-    private int delay = 0;
 
     // (approximate) timestamp of the last move sent
     private long lastTimestamp;
@@ -137,13 +134,16 @@ class SimulatedPlayer implements SimpleClientListener {
      *
      *  <dd style="padding-top: .5em"> 
      *	The user password used to authenticate with the server<p>
+     * 
      * </dl> <p>
      * 
      * @param props properties to configure this player
+     * @param moveDelay the minimun delay, in milliseconds, between move messages
      * @throws java.lang.Exception if a required property is missing or an
      * an error occurs communiticating with the server.
      */
-    public SimulatedPlayer(Properties props) throws Exception {
+    public SimulatedPlayer(Properties props, int moveDelay) throws Exception {
+        this.moveDelay = moveDelay;
         name = props.getProperty("name");
         if (name == null)
             throw new Exception("name property required");
@@ -227,8 +227,8 @@ class SimulatedPlayer implements SimpleClientListener {
                            new Object[] {name, endx, endy});
                 setDestination(endx, endy);
             } else
-                logger.log(Level.FINEST, "Message to {0}: Move MOB {1}",
-                           new Object[] {name, objectID});
+                logger.log(Level.FINEST, "Message to {0}: Move MOB {1} from {2},{3} to {4},{5}",
+                           new Object[] {name, objectID, startx, starty, endx, endy});
         }
 
         @Override
@@ -250,8 +250,8 @@ class SimulatedPlayer implements SimpleClientListener {
                 // basicly cause a stop to start moving anew.
                 stop(x, y);
             } else
-                logger.log(Level.FINEST, "Message to {0}:, Stop MOB {1}",
-                           new Object[] {name, objectID});
+                logger.log(Level.FINEST, "Message to {0}:, Stop MOB {1} at {2},{3}",
+                           new Object[] {name, objectID, x, y});
         }
 
         @Override
@@ -296,14 +296,12 @@ class SimulatedPlayer implements SimpleClientListener {
         this.startX = x;
         this.startY = y;
         setDestination(x, y);
-        delay++;
     }
     
     // stop at the current position (based on current time & last start)
     private synchronized void stop() {
         setCurrentStart();
         setDestination(startX, startY);
-        delay++;
     }
     
     // set the current end position
@@ -345,18 +343,14 @@ class SimulatedPlayer implements SimpleClientListener {
     }
     
     /**
-     * Make a move. A move is made only if in the {@code Playing} state and
-     * we are not being delayed.
+     * Make a move. A move is made only if in the {@code Playing} state
      * @return the current state
      */
     synchronized PLAYERSTATE move() {
-        if (state != PLAYERSTATE.Playing)
+        if (state != PLAYERSTATE.Playing ||
+            (System.currentTimeMillis() - lastTimestamp) < moveDelay)
             return state;
         
-        if (delay > 0) {
-            delay--;
-            return state;
-        }
         logger.log(Level.FINEST, "{0} moving", name);
         
         setCurrentStart();
@@ -368,11 +362,11 @@ class SimulatedPlayer implements SimpleClientListener {
         lastTimestamp = System.currentTimeMillis();
         
         // TEMP - clip to debug map
-        final float maxMapCoord = 48.0f;
+        final float maxMapCoord = 96.0f;
         if (destX > maxMapCoord) destX = maxMapCoord;
-        else if (destX < -maxMapCoord) destX = -maxMapCoord;
+        else if (destX < 0) destX = 0;
         if (destY > maxMapCoord) destY = maxMapCoord;
-        else if (destY < -maxMapCoord) destY = -maxMapCoord;
+        else if (destY < 0) destY = 0;
 
         // No collision detection here. We count on the returning moveMOB
         // to reset out end point if necessary.
@@ -393,7 +387,7 @@ class SimulatedPlayer implements SimpleClientListener {
      */
     private synchronized boolean setState(PLAYERSTATE newState) {
         if (state != PLAYERSTATE.Quit) {
-            logger.log(Level.FINER, "Player: {0} state changed to",
+            logger.log(Level.FINER, "Player: {0} state changed to {1}",
                        new Object[] {name, newState});
             state = newState;
             return true;

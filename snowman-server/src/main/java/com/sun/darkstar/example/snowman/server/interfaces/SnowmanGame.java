@@ -59,6 +59,8 @@ public interface SnowmanGame
     
     public void removePlayer(SnowmanPlayer player);
     
+    SnowmanFlag getFlag(int id);
+    
     /**
      * Send the AddMOB packets to all of the players in the game
      * to initiate the game state

@@ -39,6 +39,7 @@ import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcess
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
@@ -58,12 +59,14 @@ import java.util.logging.Logger;
  * @author Owen Kellett
  */
 class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
-        ManagedObject, IServerProcessor {
+                                   ManagedObject, IServerProcessor
+{
+    public static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
-    public static final long serialVersionUID = 1L;
+    
     private static long DEATHDELAYMS = 10 * 1000;
-    private static float POSITIONTOLERANCESQD = 10;//.5f * .5f;
+    private static float POSITIONTOLERANCESQD = 1.0f;//.5f * .5f;
     
     private ManagedReference<ClientSession> sessionRef;
     private String name;
@@ -72,13 +75,12 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private int id;
     private float startX;
     private float startY;
-    
-    // zero timestamp indicates no move yet received
-    private long timestamp;
     private float destX;
     private float destY;
     private float deltaX;
     private float deltaY;
+    // zero timestamp indicates no move yet received
+    private long timestamp;
     private TeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
     private boolean readyToPlay = false;
@@ -137,7 +139,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return startY;
     }
     
-    private boolean checkXY(long time, float xPrime, float yPrime) {
+    public boolean checkXY(long time, float xPrime, float yPrime, float tolerance) {
         float expectedX = startX;
         float expectedY = startY;
         if ((deltaX != 0) || (deltaY != 0)){ // moving
@@ -149,11 +151,11 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             // clip the new position to the destination
             float dx = expectedX - startX;
             float dy = expectedY - startY;
-            float newLength = (float)Math.sqrt((dx*dx) + (dy*dy));
+            float newLengthSq = (dx*dx) + (dy*dy);
             dx = destX - startX;
             dy = destY - startY;
-            float maxLength = (float)Math.sqrt((dx*dx) + (dy*dy));
-            if (newLength > maxLength) {
+            float maxLengthSq = (dx*dx) + (dy*dy);
+            if (newLengthSq > maxLengthSq) {
                 expectedX = destX;
                 expectedY = destY;
             }
@@ -163,9 +165,9 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 //                         "\nentered  xy= " + xPrime + "," + yPrime);
         float dx = expectedX - xPrime;
         float dy = expectedY - yPrime;
-        float skew = (float)Math.sqrt((dx*dx)+(dy*dy));
+        float skew = (float)Math.sqrt((dx*dx)+(dy*dy)); // TODO skip sqrt
 //        System.out.println("checkXY dt= " + (time - timestamp) + " skew= " + skew);
-        return skew < POSITIONTOLERANCESQD;
+        return skew < tolerance;
     }
     
     public int getID(){
@@ -197,7 +199,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
 
     public void moveMe(long timestamp, float startx, float starty, float endx, float endy) {
-        if (checkXY(timestamp, startx, starty)){
+        if (checkXY(timestamp, startx, starty, POSITIONTOLERANCESQD)){
             startX = startx;
             startY = starty;
             destX = endx;
@@ -232,17 +234,26 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
 
     public void attack(long timestamp, int targetID, float x, float y) {
-        if (checkXY(timestamp,x,y)){
+        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)){
             currentGameRef.get().attack(this,x,y,targetID,timestamp);
         }
     }
 
     public void getFlag(long timestamp, int flagID) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        SnowmanGame game = currentGameRef.get();
+        SnowmanFlag flag = game.getFlag(flagID);
+        if (flag.getTeamColor() == teamColor ||
+            flag.isHeld())
+            return;
+        
+        if (checkXY(timestamp, flag.getX(timestamp), flag.getY(timestamp), flag.getGoalRadius())) {
+            flag.setHeldBy(this);
+            game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
+        }
     }
 
     public void stopMe(long timestamp, float x, float y) {
-        if (checkXY(timestamp,x,y)){
+        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)){
             this.setTimestampLocation(timestamp, x,y);
             currentGameRef.get().send(
                     null,
@@ -258,18 +269,25 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     public void setHP(int hp){
         appContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
-        currentGameRef.get().send(null, 
-                ServerMessages.createSetHPPkt(id, hitPoints));
-        if (hitPoints<=0){ // newly dead
-            appContext.getTaskManager().scheduleTask(new Task(){
-                ManagedReference<SnowmanPlayer> playerRef = 
-                        appContext.getDataManager().createReference(
-                            (SnowmanPlayer)SnowmanPlayerImpl.this);
-                public void run() throws Exception {
-                    playerRef.get().reset();
-                }
-            }, DEATHDELAYMS);
+        currentGameRef.get().send(null,
+                                  ServerMessages.createSetHPPkt(id, hitPoints));
+        if (hitPoints <= 0){ // newly dead
+            appContext.getTaskManager().scheduleTask(
+                    new RespawnTask(appContext.getDataManager().createReference((SnowmanPlayer)this)),
+                                    DEATHDELAYMS);
         }
+    }
+    
+    static private class RespawnTask implements Task, Serializable {
+        final ManagedReference<SnowmanPlayer> playerRef;
+        
+        RespawnTask(ManagedReference<SnowmanPlayer> playerRef) {
+            this.playerRef = playerRef;
+        }
+        
+        public void run() throws Exception {
+            playerRef.get().reset();
+        }           
     }
     
     public void doHit(){
@@ -299,5 +317,3 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         startY = destY = y;
     }
 }
-
-

@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
@@ -45,6 +46,7 @@ import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedObject;
+import com.sun.sgs.app.ManagedObjectRemoval;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -56,24 +58,21 @@ import java.util.List;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  */
-public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable {
+public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
+                                        ManagedObjectRemoval, Serializable
+{
     static final long serialVersionUID = 1L;
     /**
      * A prefix that is appended to the darkstar bound name for
      * all game channels.
      */
     static final String CHANPREFIX = "_GAMECHAN_";
-    /**
-     * This is a base number for the flag IDs to keep them
-     * unqiue from other object IDs.
-     */
-    static final private int FLAGBASEID = 100;
+
     /**
      * Where players start at th begging of the game
      * 
      * player starts == x1,y1,x2,y2....
      */
-    
     static final float[] playerStarts = {0,0,10,0,0,10,10,10};
 
     /** 
@@ -88,7 +87,6 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
      * 
      * flag goals == x1,y1,r1,x2,y2,r2 ...
      */
- 
     static final float[] flagGoals={1,1,1,9,9,1};
     
     static final int PLAYERIDSTART = 1;
@@ -97,41 +95,49 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
      * A reference to a channel that is used to send game packets to
      * all the players in this game session
      */
-    ManagedReference<Channel> channelRef;
-    List<ManagedReference<SnowmanFlag>> flags = 
-            new ArrayList<ManagedReference<SnowmanFlag>>();
+    private final ManagedReference<Channel> channelRef;
     
+    @SuppressWarnings("unchecked")
+    private final ManagedReference<SnowmanFlag> flagRefs[] = 
+            new ManagedReference[TeamColor.values().length];
+        
+    private final List<ManagedReference<SnowmanPlayer>>  playerRefs = 
+            new ArrayList<ManagedReference<SnowmanPlayer>>(MatchmakerImpl.NUMPLAYERSPERGAME);
     
-    private List<ManagedReference<SnowmanPlayer>>  playerRefs = 
-            new ArrayList<ManagedReference<SnowmanPlayer>>();
-    
-    private SnowmanAppContext appContext;
-    private EntityFactory entityFactory;
+    private final SnowmanAppContext appContext;
+    private final EntityFactory entityFactory;
     
     public SnowmanGameImpl(String gameName,
                            SnowmanAppContext appContext, 
-                           EntityFactory entityFactory) {
+                           EntityFactory entityFactory)
+    {
+        assert MatchmakerImpl.NUMPLAYERSPERGAME * 2 <= playerStarts.length;
+        assert TeamColor.values().length * 2 <= flagStarts.length;
+        assert TeamColor.values().length * 3 <= flagGoals.length;
+
         this.appContext = appContext;
         this.entityFactory = entityFactory;
         channelRef = AppContext.getDataManager().createReference(
                 AppContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
-        
+                
         for(TeamColor color : TeamColor.values()){
             int idx = color.ordinal();
-            SnowmanFlag flag = entityFactory.createSnowmanFlag(color,
-                    flagGoals[idx*3],flagGoals[idx*3+1],flagGoals[idx*3+2]); 
+            SnowmanFlag flag =
+                        entityFactory.createSnowmanFlag(color,
+                                                        flagGoals[idx*3],
+                                                        flagGoals[idx*3+1],
+                                                        flagGoals[idx*3+2]); 
             flag.setLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
             ManagedReference<SnowmanFlag> ref =
-                    AppContext.getDataManager().createReference(flag);
-            flags.add(ref);
-            flag.setID(FLAGBASEID+flags.indexOf(ref));
+                        AppContext.getDataManager().createReference(flag);
+            flagRefs[idx] = ref;
         }
     }
     
-    public void send(ClientSession sess, ByteBuffer buff){
+    public void send(ClientSession session, ByteBuffer buff){
         buff.flip();
-        channelRef.get().send(sess, buff);
+        channelRef.get().send(session, buff);
     }
 
     public void addPlayer(SnowmanPlayer player, TeamColor color) {
@@ -148,11 +154,12 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
         channelRef.get().join(player.getSession());
     }
     
+    // A player disconnected
     public void removePlayer(SnowmanPlayer player){
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         int idx = playerRefs.indexOf(playerRef);
-        playerRefs.set(idx, null);
+        playerRefs.set(idx, null);//TODO - bad...
         send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
     }
     
@@ -164,13 +171,12 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
                     player.getID(), player.getX(time), player.getY(time), 
                     EMOBType.SNOWMAN));
         }
-        for(ManagedReference<SnowmanFlag> flagRef : flags){
+        for(ManagedReference<SnowmanFlag> flagRef : flagRefs){
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
                     flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
         }
         multiSend(ServerMessages.createReadyPkt());
-        
     }
     
     private void multiSend(ByteBuffer buff){
@@ -187,29 +193,43 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject, Serializable
                 }
             }
         }
-        startGame();
+        send(null,ServerMessages.createStartGamePkt());
     }
     
     private SnowmanPlayer getPlayer(int id){
     	return playerRefs.get(id-PLAYERIDSTART).get();
     }
     
-    public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
-            long timestamp){
+    public void attack(SnowmanPlayer attacker,
+                       float x, float y,
+                       int attackedID,
+                       long timestamp)
+    {
         SnowmanPlayer attacked = getPlayer(attackedID);
-        float dx = x-attacked.getX(timestamp);
-        float dy = y-attacked.getY(timestamp);
-        
-        if ((dx*dx)+(dy*dy) <= attacker.getThrowDistanceSqd()){
-            send(null,ServerMessages.createAttackedPkt(
-                    attacker.getID(), attackedID));
+
+        if (attacked.checkXY(timestamp, x, y, attacker.getThrowDistanceSqd())) {
+            send(null, ServerMessages.createAttackedPkt(attacker.getID(),
+                                                        attackedID));
             attacked.doHit();
         }
-                
     }
 
-    private void startGame() {
-        send(null,ServerMessages.createStartGamePkt());
+    private void endGame() {
+        send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));
+        AppContext.getDataManager().removeObject(this);
+    }
+    
+    public void removingObject() {
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs) {
+            AppContext.getDataManager().removeObject(ref.get());
+        }
+            
+        for (ManagedReference<SnowmanFlag> ref : flagRefs) {
+            AppContext.getDataManager().removeObject(ref.get());
+        }
     }
 
+    public SnowmanFlag getFlag(int id) {
+        return flagRefs[id].get();
+    }
 }
