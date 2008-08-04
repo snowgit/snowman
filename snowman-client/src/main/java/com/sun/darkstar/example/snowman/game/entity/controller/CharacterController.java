@@ -55,7 +55,7 @@ public class CharacterController extends Controller {
 	 */
 	public CharacterController(CharacterEntity entity, EInputType type) {
 		super(entity, type);
-		this.tolerance = 0.2f;
+		this.tolerance = 0.05f;
 		try {
 			CharacterView view = (CharacterView) ViewManager.getInstance().getView(this.entity);
 			this.jointController = new JointController(view.getMesh().getJoints());
