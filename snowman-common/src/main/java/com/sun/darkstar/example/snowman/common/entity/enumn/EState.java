@@ -6,7 +6,7 @@ package com.sun.darkstar.example.snowman.common.entity.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:07 EST
- * @version Modified date: 07-21-2008 11:52 EST
+ * @version Modified date: 08-04-2008 12:15 EST
  */
 public enum EState {
 	/**
@@ -21,6 +21,18 @@ public enum EState {
 	 * The targeting other snowman state.
 	 */
 	Targeting,
+	/**
+	 * The trying to grab flag state.
+	 */
+	TryingToGrab,
+	/**
+	 * The attacking state.
+	 */
+	Attacking,
+	/**
+	 * The being hit state.
+	 */
+	Hit,
 	/**
 	 * The grabbing flag state.
 	 */
