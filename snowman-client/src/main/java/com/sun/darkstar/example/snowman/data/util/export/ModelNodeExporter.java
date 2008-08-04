@@ -20,7 +20,7 @@ public class ModelNodeExporter extends Exporter {
 	/**
 	 * The source model file name without extension.
 	 */
-	private final String fileName = "NewNose";
+	private final String fileName = "SnowMan";
 	/**
 	 * The <code>ModelNode</code> to be exported.
 	 */

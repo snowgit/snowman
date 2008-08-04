@@ -32,59 +32,50 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
-import com.sun.sgs.app.Channel;
-
 /**
- * The <code>GameWorldManager</code> provides application level access
+ * The <code>GameWorldManager</code> interface exposes application level access
  * to the {@link GameWorldService} running inside of the 
  * Project Darkstar stack.  
  * 
  * @author Owen Kellett
  */
-public class GameWorldManager {
-    
-    private final GameWorldService backingService;
-    
-    public GameWorldManager(GameWorldService backingService) {
-        this.backingService = backingService;
-    }
-
-    /**
-     * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * trimPath method.
-     * </p>
-     * 
-     * @see GameWorldService#trimPath trimPath
-     */
-    public void trimPath(int playerId,
-                         float startx,
-                         float starty, 
-                         float endx, 
-                         float endy, 
-                         long timestart,
-                         GameWorldServiceCallback callback) {
-        backingService.trimPath(playerId,
-                                startx, 
-                                starty, 
-                                endx, 
-                                endy, 
-                                timestart,
-                                callback);
-    }
+public interface GameWorldManager {
     
     /**
      * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * validThrow method.
+     * Calculate the actual path of a snowman attempting to walk
+     * from the given start point to the given end point.  This method
+     * will check if any barriers are in the snowman's path by checking
+     * for an intersection with the <code>Spatial</code> game world by
+     * using the <code>CollisionManager</code>. 
+     * If there is a collision, then a new destination location will be
+     * calculated and returned by the <code>CollisionManager</code>.
      * </p>
      * 
-     * @see GameWorldService#validThrow validThrow
+     * @param playerId id of the player being moved
+     * @param start coordinate of the start position
+     * @param end coordinate of the destination position
+     * @param timestart timestamp that the player began moving
+     * @return actual destination location when collisions are accounted for
      */
-    public boolean validThrow(float startx,
-                              float starty, 
-                              float endx,
-                              float endy) {
-        return backingService.validThrow(startx, starty, endx, endy);
-    }
+    public Coordinate trimPath(int playerId,
+                               Coordinate start,
+                               Coordinate end,
+                               long timestart);
+    
+    /**
+     * <p>
+     * Validate that a snowball can be thrown from the start position 
+     * to the end position.  This will verify that there are no collisions
+     * with the <code>Spatial</code> game world between the two coordinates
+     * at the static THROWHEIGHT.
+     * </p>
+     * 
+     * @param start coordinate of the start position
+     * @param end coordinate of the target position
+     * @return true if there are no collisions with static entities between the two points
+     */
+    public boolean validThrow(Coordinate start,
+                              Coordinate end);
+    
 }

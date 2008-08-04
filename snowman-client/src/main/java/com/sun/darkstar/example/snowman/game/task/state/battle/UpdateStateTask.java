@@ -106,7 +106,7 @@ public class UpdateStateTask extends RealTimeTask {
 		}
 		result = collisionManager.getIntersectObject(ray, world, DynamicView.class, false);
 		if(result != null) {
-			this.snowman.setState(EState.Grabbing);
+			this.snowman.setState(EState.TryingToGrab);
 			System.out.println("Grabbing");
 			// TODO Change cursor to grabbing.
 			return;
