@@ -33,45 +33,56 @@
 package com.sun.darkstar.example.snowman.server.service;
 
 /**
- * Callback interface to notify users of the <code>GameWorldService</code>
- * of results.
+ * Represents a 2D coordinate with floating point values
  * 
  * @author Owen Kellett
  */
-public interface GameWorldServiceCallback {
-
-    /**
-     * Called when the <code>GameWorldService</code> completes trimming
-     * the path for the given player id from the start position at the
-     * given start time.  The endx and endy parameters are equivalent to the
-     * new destination location of the move path.
-     * 
-     * @param playerId id of the player being moved
-     * @param startx x coordinate of the start position
-     * @param starty y coordinate of the start position
-     * @param endx x coordinate of the trimmed destination position
-     * @param endy y coordinate of the trimmed destination position
-     * @param timestart timestamp that the player began moving
-     */
-    public void trimPathComplete(int playerId,
-                                 float startx,
-                                 float starty,
-                                 float endx,
-                                 float endy,
-                                 long timestart);
+public class Coordinate 
+{
+    private float x;
+    private float y;
     
-    /**
-     * Called when the <code>GameWorldService</code> is unable to complete
-     * a trim path calculation request due to resource limitations or some
-     * other problem.
-     * 
-     * @param playerId id of the player being moved
-     * @param startx x coordinate of the start position
-     * @param starty y coordinate of the start position
-     * @param timestart timestamp that the player began moving
-     */
-    public void trimPathFailure(int playerId,
-                                float startx, 
-                                float stary,
-                                long timestart);
+    public Coordinate() {
+        this.x = 0f;
+        this.y = 0f;
+    }
+    
+    public Coordinate(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public float getX() {
+        return x;
+    }
+    
+    public float getY() {
+        return y;
+    }
+    
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public String toString() {
+        return "["+String.valueOf(x)+","+String.valueOf(y)+"]";
+    }
+    
+    public boolean equals(Object other) {
+        if(other instanceof Coordinate) {
+            Coordinate o = (Coordinate) other;
+            return this.getX() == o.getX() && this.getY() == o.getY();
+        }
+        return super.equals(other);
+    }
+    
+    public int hashCode() { 
+        int hash = 7;
+        hash = hash * 31 + Float.floatToIntBits(this.getX());
+        hash = hash * 31 + Float.floatToIntBits(this.getY());
+        return hash;
+  }
+
+
 }

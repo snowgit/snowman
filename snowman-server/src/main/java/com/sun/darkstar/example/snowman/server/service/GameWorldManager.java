@@ -43,30 +43,39 @@ public interface GameWorldManager {
     
     /**
      * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * trimPath method.
+     * Calculate the actual path of a snowman attempting to walk
+     * from the given start point to the given end point.  This method
+     * will check if any barriers are in the snowman's path by checking
+     * for an intersection with the <code>Spatial</code> game world by
+     * using the <code>CollisionManager</code>. 
+     * If there is a collision, then a new destination location will be
+     * calculated and returned by the <code>CollisionManager</code>.
      * </p>
      * 
-     * @see GameWorldService#trimPath trimPath
+     * @param playerId id of the player being moved
+     * @param start coordinate of the start position
+     * @param end coordinate of the destination position
+     * @param timestart timestamp that the player began moving
+     * @return actual destination location when collisions are accounted for
      */
-    public void trimPath(int playerId,
-                         float startx,
-                         float starty, 
-                         float endx, 
-                         float endy, 
-                         long timestart,
-                         GameWorldServiceCallback callback);
+    public Coordinate trimPath(int playerId,
+                               Coordinate start,
+                               Coordinate end,
+                               long timestart);
     
     /**
      * <p>
-     * Call through to the backing {@link GameWorldService} 
-     * validThrow method.
+     * Validate that a snowball can be thrown from the start position 
+     * to the end position.  This will verify that there are no collisions
+     * with the <code>Spatial</code> game world between the two coordinates
+     * at the static THROWHEIGHT.
      * </p>
      * 
-     * @see GameWorldService#validThrow validThrow
+     * @param start coordinate of the start position
+     * @param end coordinate of the target position
+     * @return true if there are no collisions with static entities between the two points
      */
-    public boolean validThrow(float startx,
-                              float starty, 
-                              float endx,
-                              float endy);
+    public boolean validThrow(Coordinate start,
+                              Coordinate end);
+    
 }

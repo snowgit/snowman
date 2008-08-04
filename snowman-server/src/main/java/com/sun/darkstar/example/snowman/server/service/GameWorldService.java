@@ -42,60 +42,7 @@ import com.sun.sgs.service.Service;
  * 
  * @author Owen Kellett
  */
-public interface GameWorldService extends Service {
-    
-    /**
-     * <p>
-     * Calculate the actual path of a snowman attempting to walk
-     * from the given start point to the given end point.  This method
-     * will check if any barriers are in the snowman's path by checking
-     * for an intersection with the <code>Spatial</code> game world by
-     * using the <code>CollisionManager</code>. 
-     * If there is a collision, then a new destination location will be
-     * calculated and returned by the <code>CollisionManager</code>.
-     * </p>
-     * 
-     * <p>
-     * This method will schedule a new
-     * <code>Task</code> to calculate the new destination position.
-     * The <code>Task</code> will not be
-     * executed until the calling transaction (if there is one) commits.
-     * The given callback interface will then be notified of the results.
-     * </p>
-     * 
-     * @param playerId id of the player being moved
-     * @param startx x coordinate of the start position
-     * @param starty y coordinate of the start position
-     * @param endx x coordinate of the destination position
-     * @param endy y coordinate of the destination position
-     * @param timestart timestamp that the player began moving
-     * @param callback callback interface to notify of results
-     */
-    public void trimPath(int playerId,
-                         float startx,
-                         float starty, 
-                         float endx, 
-                         float endy, 
-                         long timestart,
-                         GameWorldServiceCallback callback);
-    
-    /**
-     * <p>
-     * Validate that a snowball can be thrown from the start position 
-     * to the end position.  This will verify that there are no collisions
-     * with the <code>Spatial</code> game world between the two coordinates
-     * at the static THROWHEIGHT.
-     * </p>
-     * 
-     * @param startx coordinate of the start position
-     * @param starty y coordinate of the start position
-     * @param endx x coordinate of the target position
-     * @param endy y coordinate of the target position
-     * @return true if there are no collisions with static entities between the two points
-     */
-    public boolean validThrow(float startx,
-                              float starty, 
-                              float endx,
-                              float endy);
+public interface GameWorldService extends Service, GameWorldManager {
+
 
 }

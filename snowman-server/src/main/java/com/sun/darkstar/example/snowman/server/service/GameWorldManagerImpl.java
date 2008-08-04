@@ -47,29 +47,19 @@ public class GameWorldManagerImpl implements GameWorldManager {
     public GameWorldManagerImpl(GameWorldService backingService) {
         this.backingService = backingService;
     }
-
-    /** {@inheritDoc} */
-    public void trimPath(int playerId,
-                         float startx,
-                         float starty, 
-                         float endx, 
-                         float endy, 
-                         long timestart,
-                         GameWorldServiceCallback callback) {
-        backingService.trimPath(playerId,
-                                startx, 
-                                starty, 
-                                endx, 
-                                endy, 
-                                timestart,
-                                callback);
-    }
     
     /** {@inheritDoc} */
-    public boolean validThrow(float startx,
-                              float starty, 
-                              float endx,
-                              float endy) {
-        return backingService.validThrow(startx, starty, endx, endy);
+    public Coordinate trimPath(int playerId,
+                               Coordinate start, 
+                               Coordinate end,
+                               long timestart) {
+        return backingService.trimPath(playerId, start, end, timestart);
     }
+
+    /** {@inheritDoc} */
+    public boolean validThrow(Coordinate start,
+                              Coordinate end) {
+        return backingService.validThrow(start, end);
+    }
+
 }
