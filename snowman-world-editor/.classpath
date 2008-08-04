@@ -6,5 +6,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Client"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry kind="lib" path="lib/SADDL.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-terrain.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-awt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
