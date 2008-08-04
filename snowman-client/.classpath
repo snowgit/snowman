@@ -23,5 +23,14 @@
 	<classpathentry kind="lib" path="/Snowman Common/lib/jme-terrain.jar"/>
 	<classpathentry kind="lib" path="/Snowman Common/lib/jme-xml.jar"/>
 	<classpathentry kind="lib" path="/Snowman Common/lib/jme.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jorbis/jorbis-0.0.17.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/jinput.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl_util_applet.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Snowman Common/lib/lwjgl/native/win32"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
