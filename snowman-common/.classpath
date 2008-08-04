@@ -2,27 +2,18 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jorbis/jorbis-0.0.17.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl/jinput.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl/lwjgl_util_applet.jar"/>
-	<classpathentry kind="lib" path="lib/lwjgl/lwjgl_util.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/lwjgl/lwjgl.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Snowman Common/lib/lwjgl/native/win32"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/jme-audio.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-awt.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-collada.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-editors.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-effects.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-font.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-gamestates.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-model.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-scene.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-swt.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-terrain.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme-xml.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jme.jar"/>
+	<classpathentry kind="lib" path="lib/jme-audio.jar"/>
+	<classpathentry kind="lib" path="lib/jme-awt.jar"/>
+	<classpathentry kind="lib" path="lib/jme-collada.jar"/>
+	<classpathentry kind="lib" path="lib/jme-editors.jar"/>
+	<classpathentry kind="lib" path="lib/jme-effects.jar"/>
+	<classpathentry kind="lib" path="lib/jme-font.jar"/>
+	<classpathentry kind="lib" path="lib/jme-gamestates.jar"/>
+	<classpathentry kind="lib" path="lib/jme-model.jar"/>
+	<classpathentry kind="lib" path="lib/jme-scene.jar"/>
+	<classpathentry kind="lib" path="lib/jme-swt.jar"/>
+	<classpathentry kind="lib" path="lib/jme-terrain.jar"/>
+	<classpathentry kind="lib" path="lib/jme-xml.jar"/>
+	<classpathentry kind="lib" path="lib/jme.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
