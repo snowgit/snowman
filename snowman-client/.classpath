@@ -16,7 +16,11 @@
 	<classpathentry kind="lib" path="/lib/jme.jar"/>
 	<classpathentry kind="lib" path="/lib/lwjgl/jinput.jar"/>
 	<classpathentry kind="lib" path="/lib/lwjgl/lwjgl_util.jar"/>
-	<classpathentry kind="lib" path="/lib/lwjgl/lwjgl.jar"/>
+	<classpathentry kind="lib" path="/lib/lwjgl/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lib/lwjgl/native/win32"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/lib/bdb-4.5.20/db.jar"/>
 	<classpathentry kind="lib" path="/lib/jorbis/jorbis-0.0.17.jar"/>
 	<classpathentry kind="lib" path="/lib/sgs-client-0.9.6.1.jar"/>
