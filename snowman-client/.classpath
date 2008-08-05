@@ -2,10 +2,35 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Environment jME2.0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jME2.0"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/MD5Importer jME2.0"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Snowman Client Required"/>
+	<classpathentry kind="lib" path="lib/FengGUI1.0.jar"/>
+	<classpathentry kind="lib" path="lib/mina-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/sgs-client.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.4.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-jdk14-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/Environment_jME2.0_v1.1.0.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/MD5Importer_jME2.0_v1.2.3.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-audio.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-awt.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-collada.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-editors.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-effects.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-font.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-gamestates.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-model.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-scene.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-swt.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-terrain.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme-xml.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jme.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/jorbis/jorbis-0.0.17.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/jinput.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl_util_applet.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="/Snowman Common/lib/lwjgl/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Snowman Common/lib/lwjgl/native/win32"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
