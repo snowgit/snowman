@@ -54,7 +54,7 @@ import java.util.Properties;
  * 
  * @author Owen Kellett
  */
-public class TestGameWorldServiceImpl
+public class GameWorldServiceImplTest
 {
     /** mock darkstar kernel interfaces */
     private ComponentRegistry mockRegistry;

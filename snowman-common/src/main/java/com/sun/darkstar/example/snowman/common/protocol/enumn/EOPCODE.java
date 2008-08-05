@@ -45,11 +45,11 @@ public enum EOPCODE {
     /**
      * Client to server opcodes.
      */
-    MOVEME, ATTACK, GETFLAG, STOPME,
+    MOVEME, ATTACK, GETFLAG, SCORE,
     /**
      * Server to client opcodes.
      */
-    NEWGAME, STARTGAME, ENDGAME, ADDMOB, REMOVEMOB, MOVEMOB, STOPMOB, ATTACHOBJ, ATTACKED, SETHP,
+    NEWGAME, STARTGAME, ENDGAME, ADDMOB, REMOVEMOB, MOVEMOB, STOPMOB, ATTACHOBJ, ATTACKED, RESPAWN,
     /**
      * Common opcodes.
      */

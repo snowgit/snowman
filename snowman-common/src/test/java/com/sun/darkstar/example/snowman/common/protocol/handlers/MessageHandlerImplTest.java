@@ -50,7 +50,7 @@ import org.easymock.EasyMock;
  * 
  * @author Owen Kellett
  */
-public class TestMessageHandlerImpl 
+public class MessageHandlerImplTest
 {
     @Test
     public void parseServerReadyPkt() {
@@ -314,15 +314,15 @@ public class TestMessageHandlerImpl
      * packets are sent to the ClientProtocol
      */
     @Test
-    public void parseSetHP() {
+    public void parseRespawn() {
         MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createSetHPPkt(10, 100);
+        ByteBuffer packet = ServerMessages.createRespawnPkt(10, 1.0f, 2.0f);
         packet.flip();
         // record expected processor calls
-        mockProcessor.setHP(10, 100);
+        mockProcessor.respawn(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);
@@ -346,11 +346,8 @@ public class TestMessageHandlerImpl
         // generate packet
         ByteBuffer packet = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
         packet.flip();
-        // record current time
-        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.moveMe(EasyMock.leq(now),
-                             EasyMock.eq(1.0f),
+        mockProcessor.moveMe(EasyMock.eq(1.0f),
                              EasyMock.eq(2.0f),
                              EasyMock.eq(3.0f),
                              EasyMock.eq(4.0f));
@@ -376,11 +373,8 @@ public class TestMessageHandlerImpl
         // generate packet
         ByteBuffer packet = ClientMessages.createAttackPkt(10, 1.0f, 2.0f);
         packet.flip();
-        // record current time
-        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.attack(EasyMock.leq(now),
-                             EasyMock.eq(10),
+        mockProcessor.attack(EasyMock.eq(10),
                              EasyMock.eq(1.0f),
                              EasyMock.eq(2.0f));
         EasyMock.replay(mockProcessor);        
@@ -403,12 +397,10 @@ public class TestMessageHandlerImpl
         IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ClientMessages.createGetFlagPkt(10);
+        ByteBuffer packet = ClientMessages.createGetFlagPkt(10, 1.0f, 2.0f);
         packet.flip();
-        // record current time
-        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.getFlag(EasyMock.leq(now), EasyMock.eq(10));
+        mockProcessor.getFlag(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseServerPacket(packet, mockProcessor);
@@ -419,24 +411,21 @@ public class TestMessageHandlerImpl
         Assert.assertFalse(packet.hasRemaining());
     }
     
-    /**
+     /**
      * Test that the proper processor methods are called when
      * packets are sent to the ClientProtocol
      */
     @Test
-    public void parseStop() {
+    public void parseScore() {
         MessageHandlerImpl parser = new MessageHandlerImpl();
         IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ClientMessages.createStopMePkg(1.0f, 2.0f);
+        ByteBuffer packet = ClientMessages.createScorePkt(1.0f, 2.0f);
         packet.flip();
-        // record current time
-        long now = System.currentTimeMillis();
         // record expected processor calls
-        mockProcessor.stopMe(EasyMock.leq(now),
-                             EasyMock.eq(1.0f),
-                             EasyMock.eq(2.0f));
+        mockProcessor.score(EasyMock.eq(1.0f),
+                            EasyMock.eq(2.0f));
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseServerPacket(packet, mockProcessor);
@@ -446,4 +435,6 @@ public class TestMessageHandlerImpl
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
     }
+
+    
 }

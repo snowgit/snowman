@@ -98,7 +98,7 @@ public class MessageProcessor implements IClientProcessor {
 	}
 
 	@Override
-	public void setHP(int objectID, int hp) {
-		TaskManager.getInstance().createTask(ETask.SetHP, objectID, hp);
+	public void respawn(int objectID, float x, float y) {
+		//TaskManager.getInstance().createTask(ETask.SetHP, objectID, hp);
 	}
 }

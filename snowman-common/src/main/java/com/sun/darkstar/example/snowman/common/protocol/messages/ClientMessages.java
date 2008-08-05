@@ -58,7 +58,6 @@ public class ClientMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 16];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putFloat(x);
         buffer.putFloat(y);
         buffer.putFloat(endx);
@@ -78,7 +77,6 @@ public class ClientMessages extends Messages
         byte[] bytes = new byte[1 + 8 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACK.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(targetID);
         buffer.putFloat(x);
         buffer.putFloat(y);
@@ -90,29 +88,32 @@ public class ClientMessages extends Messages
      * Create a "get flag" packet which notifies the server that this client is
      * trying to pick up the flag with given ID.
      * @param flagID The ID number of the flag the client is picking up.
+     * @param x The x coordinate of the client's position
+     * @param y The y coordinate of the client's position
      * @return The <code>ByteBuffer</code> "get flag" packet.
      */
-    public static ByteBuffer createGetFlagPkt(int flagID) {
+    public static ByteBuffer createGetFlagPkt(int flagID, float x, float y) {
         byte[] bytes = new byte[1 + 8 + 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.GETFLAG.ordinal());
-        buffer.putLong(System.currentTimeMillis());
         buffer.putInt(flagID);
+        buffer.putFloat(x);
+        buffer.putFloat(y);
         return buffer;
     }
     
     /**
-     * Create a "stop me" packet which notifies the server that this client
-     * has reached its destination and has stopped at the given position.
-     * @param x The x coordinate of the stop position
-     * @param y The y coordinate of the stop position
-     * @return The <code>ByteBuffer</code> "stop me" packet
+     * Create a "score" packet which notifies the server that this client
+     * has reached the goal position with the flag and wishes to place the flag
+     * down to win the game.
+     * @param x The x coordinate of the client's position
+     * @param y The y coordinate of the client's position
+     * @return The <code>ByteBuffer</code> "place flag" packet
      */
-    public static ByteBuffer createStopMePkg(float x, float y) {
+    public static ByteBuffer createScorePkt(float x, float y) {
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.put((byte) EOPCODE.STOPME.ordinal());
-        buffer.putLong(System.currentTimeMillis());
+        buffer.put((byte) EOPCODE.SCORE.ordinal());
         buffer.putFloat(x);
         buffer.putFloat(y);
         return buffer;
