@@ -49,41 +49,25 @@ package com.sun.darkstar.example.snowman.common.protocol.processor;
 public interface IServerProcessor extends IProtocolProcessor {
 
     /**
-     * Flag the sending client to be ready for battle.
-     */
-    public void ready();
-
-    /**
      * Move the sending client to the given position.
-     * @param timestamp timestamp that the client begins the move
      * @param x The x coordinate of the start point.
      * @param y The y coordinate of the start point.
      * @param endx The x coordinate of the end point.
      * @param endy The y coordinate of the end point.
      */
-    public void moveMe(long timestamp, float x, float y, float endx, float endy);
+    public void moveMe(float x, float y, float endx, float endy);
 
     /**
      * Attack the target with given ID number with the sending client.
-     * @param timestamp timestamp that the client initiated the attack
      * @param targetID The ID number of the target.
      * @param x The x coordinate of the attacker.
      * @param y The y coordinate of the attacker.
      */
-    public void attack(long timestamp, int targetID, float x, float y);
+    public void attack(int targetID, float x, float y);
 
     /**
      * Attach the flag with given ID number to the sending client.
-     * @param timestamp timestamp that the client initiated the get flag
      * @param flagID The ID number of the flag.
      */
-    public void getFlag(long timestamp, int flagID);
-    
-    /**
-     * Stop the sending client at the given position
-     * @param timestamp timestamp that the client stopped.
-     * @param x The x coordinate of the stop position
-     * @param y The y coordinate of the stop position
-     */
-    public void stopMe(long timestamp, float x, float y);
+    public void getFlag(int flagID);
 }

@@ -198,16 +198,18 @@ public class ServerMessagesTest extends AbstractTestMessages
     }
     
     @Test
-    public void testCreateSetHPPkt() {
-        ByteBuffer packet = ServerMessages.createSetHPPkt(10, 20);
+    public void testCreateRespawnPkt() {
+        ByteBuffer packet = ServerMessages.createRespawnPkt(10, 1.0f, 2.0f);
         packet.flip();
-        checkOpcode(packet, EOPCODE.SETHP);
+        checkOpcode(packet, EOPCODE.RESPAWN);
         
-        int source = packet.getInt();
-        int target = packet.getInt();
+        int id = packet.getInt();
+        float x = packet.getFloat();
+        float y = packet.getFloat();
 
-        Assert.assertEquals(source, 10);
-        Assert.assertEquals(target, 20);
+        Assert.assertEquals(id, 10);
+        Assert.assertEquals(x, 1.0f);
+        Assert.assertEquals(y, 2.0f);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

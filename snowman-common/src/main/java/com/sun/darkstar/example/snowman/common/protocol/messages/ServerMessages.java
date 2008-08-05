@@ -199,18 +199,20 @@ public class ServerMessages extends Messages
     }
 
     /**
-     * Create an "set HP" packet which notifies the client to set the HP
-     * value of the object with given ID.
-     * @param objectID The ID number of the object to be set.
-     * @param hp The HP value to be set.
-     * @return The <code>ByteBuffer</code> "set HP" packet.
+     * Create a "respawn" packet which notifies the client to respawn
+     * the object with given ID at the given location.
+     * @param objectID The ID number of the object to be respawn.
+     * @param x The x coordinate of the respawn position.
+     * @param y The y coordinate of the respawn position.
+     * @return The <code>ByteBuffer</code> "respawn" packet.
      */
-    public static ByteBuffer createSetHPPkt(int objectID, int hp) {
+    public static ByteBuffer createRespawnPkt(int objectID, float x, float y) {
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.put((byte) EOPCODE.SETHP.ordinal());
+        buffer.put((byte) EOPCODE.RESPAWN.ordinal());
         buffer.putInt(objectID);
-        buffer.putInt(hp);
+        buffer.putFloat(x);
+        buffer.putFloat(y);
         return buffer;
     }
 }

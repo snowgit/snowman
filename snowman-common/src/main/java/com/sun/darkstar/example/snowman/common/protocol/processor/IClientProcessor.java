@@ -118,9 +118,10 @@ public interface IClientProcessor extends IProtocolProcessor {
     public void attacked(int sourceID, int targetID);// RealTime.
 
     /**
-     * Set the HP of the object with given ID number to the given HP value.
+     * Respawn the object with given ID number to the given position
      * @param objectID The ID number of the object to be set.
-     * @param hp The new HP value.
+     * @param x The x coordinate of the respawn position
+     * @param y The y coordinate of the respawn position
      */
-    public void setHP(int objectID, int hp);// RealTime.
+    public void respawn(int objectID, float x, float y);// RealTime.
 }

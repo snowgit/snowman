@@ -128,9 +128,10 @@ public class MessageHandlerImpl implements MessageHandler
                 unit.attacked(packet.getInt(), 
                               packet.getInt());
                 break;
-            case SETHP:
-                unit.setHP(packet.getInt(), 
-                           packet.getInt());
+            case RESPAWN:
+                unit.respawn(packet.getInt(), 
+                             packet.getFloat(), 
+                             packet.getFloat());
                 break;
             default:
                 //divert to common parser
@@ -150,26 +151,18 @@ public class MessageHandlerImpl implements MessageHandler
     protected void parseServerPacket(EOPCODE code, ByteBuffer packet, IServerProcessor unit) {
         switch (code) {
             case MOVEME:
-                unit.moveMe(packet.getLong(), 
-                            packet.getFloat(), 
+                unit.moveMe(packet.getFloat(), 
                             packet.getFloat(),
                             packet.getFloat(),
                             packet.getFloat());
                 break;
             case ATTACK:
-                unit.attack(packet.getLong(), 
-                            packet.getInt(),
+                unit.attack(packet.getInt(),
                             packet.getFloat(), 
                             packet.getFloat());
                 break;
             case GETFLAG:
-                unit.getFlag(packet.getLong(),
-                             packet.getInt());
-                break;
-            case STOPME:
-                unit.stopMe(packet.getLong(),
-                            packet.getFloat(),
-                            packet.getFloat());
+                unit.getFlag(packet.getInt());
                 break;
             default:
                 //divert to common parser
