@@ -5,6 +5,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
@@ -33,6 +34,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 6. Rotate the character to face the destination.
  * 7. Add a movement force to the character based on the direction.
  * 8. Mark the character with <code>PhysicsManager</code> for update.
+ * 9. Set the character state to moving and mark for update.
  * <p>
  * Two <code>MoveCharacterTask</code> are considered 'equal' if and only
  * if both of them are setting on the same <code>CharacterEntity</code>.
@@ -131,6 +133,9 @@ public class MoveCharacterTask extends RealTimeTask {
 				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
 				this.character.addForce(force);
 				PhysicsManager.getInstance().markForUpdate(this.character);
+				// Step 9.
+				this.character.setState(EState.Moving);
+				ViewManager.getInstance().markForUpdate(this.character);
 			}
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();

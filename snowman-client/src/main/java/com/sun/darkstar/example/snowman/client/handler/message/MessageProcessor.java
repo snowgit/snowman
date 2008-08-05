@@ -81,7 +81,8 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		throw new UnsupportedOperationException("StopMOB should not be used!");
+		//throw new UnsupportedOperationException("StopMOB should not be used!");
+		System.out.println("Stop mob message");
 	}
 
 	@Override
