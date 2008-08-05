@@ -21,7 +21,7 @@ public class AnimationExporter extends Exporter {
 	/**
 	 * The source model file name without extension.
 	 */
-	private final String fileName = "SnowManStanding";
+	private final String fileName = "SnowManWalking";
 	/**
 	 * The <code>JointAnimation</code> to be exported.
 	 */
@@ -43,11 +43,10 @@ public class AnimationExporter extends Exporter {
 
 	@Override
 	protected void initialize() {
-		final String name = this.fileName.substring(0, this.fileName.lastIndexOf("."));
 		final URL mesh = this.getClass().getClassLoader().getResource(this.sourceDir + this.fileName + ".md5mesh");
 		final URL anim = this.getClass().getClassLoader().getResource(this.sourceDir + this.fileName + ".md5anim");
 		try {
-			MD5Importer.getInstance().load(mesh, name, anim, name, 1);
+			MD5Importer.getInstance().load(mesh, this.fileName, anim, this.fileName, 1);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

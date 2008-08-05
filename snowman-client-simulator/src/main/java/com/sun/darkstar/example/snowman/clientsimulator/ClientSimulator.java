@@ -76,6 +76,15 @@ import javax.swing.event.ChangeListener;
  * <dd style="padding-top: .5em"> 
  *	Specifies maximun number of clients that can be started.<p>
  *
+ *  <dt> <i>Property:</i> <code><b>
+ *	moveDelay
+ *	</b></code><br>
+ *	<i>Default:</i> 1000 (one second)<br>
+ *
+ * <dd style="padding-top: .5em"> 
+ * Specifies the minimun delay, in milliseconds, between when a player
+ * will send a move message.<p>
+ * 
  * </dl> <p>
  * 
  * @author Jeffrey Kesselman
@@ -87,32 +96,31 @@ public class ClientSimulator extends JFrame {
     static private final Logger logger = Logger.getLogger(
             ClientSimulator.class.getName());
 
-    private final String serverHost;
-    private final String serverPort;
-    
-    private final JSlider usersSlider;
-    private final JLabel userCount;
-
     /**
      * Create and display the client simulator slider.
      */
     public ClientSimulator() {
         super("Client Simulator Controls");
         
-        serverHost = System.getProperty("host", "localhost");
-        serverPort = System.getProperty("port", "1139");
+        final String serverHost = System.getProperty("host", "localhost");
+        final String serverPort = System.getProperty("port", "1139");
         
         logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
                    new Object[] {serverHost, serverPort});
                 
+        final int moveDelay = Integer.getInteger("moveDelay", 1000);
+        
+        logger.log(Level.CONFIG, "Move delay set to {0} milliseconds", moveDelay);
+
         Container c = getContentPane();
         //c.setLayout(new GridLayout(1,3));
         c.setLayout(new FlowLayout());
         c.add(new JLabel("Number of Clients:"));
-        usersSlider = new JSlider(0, Integer.getInteger(System.getProperty("maxClients"), 100));
+        final JSlider usersSlider =
+                new JSlider(0, Integer.getInteger("maxClients", 100));
         usersSlider.setValue(0);
         c.add(usersSlider);
-        userCount = new JLabel("0");
+        final JLabel userCount = new JLabel("0");
         c.add(userCount);
 
         usersSlider.addChangeListener(new ChangeListener() {
@@ -148,7 +156,7 @@ public class ClientSimulator extends JFrame {
                                 System.getProperty("port", serverPort));
                         properties.setProperty("name", "Robot" + userId++);
                         try {
-                            players.add(new SimulatedPlayer(properties));
+                            players.add(new SimulatedPlayer(properties, moveDelay));
                         } catch (Exception ex) {
                             logger.log(Level.SEVERE,
                                        "Exception creating simulated player",
@@ -167,7 +175,7 @@ public class ClientSimulator extends JFrame {
                             iter.remove();
                     }
                     try {
-                        sleep(200);
+                        sleep(players.size() != 0 ? 20 : 200);
                     } catch (InterruptedException ignore) {}
                 }
             }

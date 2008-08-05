@@ -49,15 +49,12 @@ import java.io.Serializable;
 public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable {
 
     static public final long serialVersionbUID = 1L;
-
+    
     /**
-     * This enum gives the possible colors for a flag/team in the snowman
-     * game
+     * This is a base number for the flag IDs to keep them
+     * unqiue from other object IDs.
      */
-    static public enum TEAMCOLOR {
-
-        RED, GREEN
-    }
+    private static final int FLAGBASEID = 100;
     
     /**
      * The X location of a flag that is on the map
@@ -80,7 +77,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     /**
      * The radius of the goal circle
      */
-    private float goalRadius;
+    private final float goalRadius;
     /**
      * This is either a reference to a SnowmanPlayer who is currently holding
      * th flsg or null if it is currently on the board
@@ -89,12 +86,12 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     /**
      * The team color of this particular flag
      */
-    private TeamColor flagColor;
+    private final TeamColor flagColor;
     /**
      * The id of the flag.  This is unique among flags in the game but not
      * necc unique among all objects in the game
      */
-    private int id;
+    private final int id;
 
     /**
      * The constructor for a flag
@@ -110,6 +107,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
         goalX = flagGoalX;
         goalY = flagGoalY;
         goalRadius = flagGoalRadius;
+        id = FLAGBASEID + teamColor.ordinal();
     }
 
     /**
@@ -199,7 +197,8 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * @param i the ID
      */
     public void setID(int i) {
-        id = i;
+        assert false;
+//        id = i;
     }
     
     /**
@@ -210,5 +209,13 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     
     public int getID(){
         return id;
+    }
+
+    public boolean isHeld() {
+        return heldByRef != null;
+    }
+
+    public float getGoalRadius() {
+        return goalRadius;
     }
 }

@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.jme.util.Debug;
 import com.jme.util.stat.StatCollector;
-import com.jme.util.stat.StatType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
@@ -153,9 +152,9 @@ public class TaskManager extends Manager {
 	 * Create a task with given type and submit it to the task execution queue.
 	 * @param enumn The <code>ETask</code> enumeration.
 	 * @param args The <code>Object</code> arguments for the task.
-	 * @return True if the task is successfully submitted. False if the given task is discarded.
+	 * @return The newly created <code>ITask</code>.
 	 */
-	public boolean createTask(ETask enumn, Object... args) {
+	public ITask createTask(ETask enumn, Object... args) {
 		ITask task = null;
 		switch(enumn) {
 		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
@@ -188,7 +187,8 @@ public class TaskManager extends Manager {
 			break;
 		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
 		}
-		return this.submit(task);
+		this.submit(task);
+		return task;
 	}
 
 	/**

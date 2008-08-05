@@ -2,6 +2,7 @@ package com.sun.darkstar.example.snowman.game.entity.scene;
 
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 
@@ -11,13 +12,17 @@ import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-24-2008 11:34 EST
- * @version Modified date: 07-24-2008 11:35 EST
+ * @version Modified date: 08-04-2008 12:14 EST
  */
 public class CharacterEntity extends DynamicEntity {
 	/**
 	 * The current HP of the snowman.
 	 */
 	protected int hp;
+	/**
+	 * The current <code>EState</code>.
+	 */
+	protected EState state;
 	/**
 	 * The current <code>Vector3f</code> destination.
 	 */
@@ -31,6 +36,7 @@ public class CharacterEntity extends DynamicEntity {
 	public CharacterEntity(EEntity enumn, int id) {
 		super(enumn, id);
 		this.hp = SingletonRegistry.getHPConverter().getMaxHP();
+		this.state = EState.Idle;
 	}
 	
 	/**
@@ -39,6 +45,14 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public void setHP(int hp) {
 		this.hp = hp;
+	}
+	
+	/**
+	 * Set the current state of the snowman.
+	 * @param state The <code>EState</code> enumeration.
+	 */
+	public void setState(EState state) {
+		this.state = state;
 	}
 	
 	/**
@@ -55,6 +69,14 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public int getHP() {
 		return this.hp;
+	}
+	
+	/**
+	 * Retrieve the current state of the snowman.
+	 * @return The <code>EState</code> enumeration.
+	 */
+	public EState getState() {
+		return this.state;
 	}
 	
 	/**

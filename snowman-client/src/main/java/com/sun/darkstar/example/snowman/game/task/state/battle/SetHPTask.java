@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
@@ -16,14 +17,15 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * <p>
  * <code>SetHPTask</code> execution logic:
  * 1. Retrieve the character entity and view based on ID number.
- * 2. Set the HP value of the character to the new value.
- * 3. Set the mass value of the character based on the new HP value.
- * 4. Set the scale of the view based on the new HP value.
- * 5. Update the geometric state of the view.
+ * 2. Set the character into being hit state.
+ * 3. Set the HP value of the character to the new value.
+ * 4. Set the mass value of the character based on the new HP value.
+ * 5. Set the scale of the view based on the new HP value.
+ * 6. Update the geometric state of the view.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-25-2008 12:15 EST
- * @version Modified date: 07-25-2008 12:20 EST
+ * @version Modified date: 08-04-2008 12:23 EST
  */
 public class SetHPTask extends RealTimeTask {
 	/**
@@ -50,11 +52,18 @@ public class SetHPTask extends RealTimeTask {
 	@Override
 	public void execute() {
 		try {
+			// Step 1.
 			CharacterEntity entity = (CharacterEntity)EntityManager.getInstance().getEntity(this.id);
+			// Step 2.
+			entity.setState(EState.Hit);
+			// Step 3.
 			View view = (View)ViewManager.getInstance().getView(entity);
 			entity.setHP(this.hp);
+			// Step 4.
 			entity.setMass(SingletonRegistry.getHPConverter().convertMass(this.hp));
+			// Step 5.
 			view.setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.hp));
+			// Step 6.
 			view.updateGeometricState(0, false);
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();

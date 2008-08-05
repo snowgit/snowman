@@ -13,10 +13,6 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
  */
 public class SnowmanEntity extends CharacterEntity {
 	/**
-	 * The current <code>EState</code>.
-	 */
-	private EState state;
-	/**
 	 * The last movement update time.
 	 */
 	private long timestamp;
@@ -40,14 +36,6 @@ public class SnowmanEntity extends CharacterEntity {
 	public void updateTimeStamp() {
 		this.timestamp = System.currentTimeMillis();
 	}
-
-	/**
-	 * Set the current state of the snowman.
-	 * @param state The <code>EState</code> enumeration.
-	 */
-	public void setState(EState state) {
-		this.state = state;
-	}
 	
 	/**
 	 * Set the snowman that is being targeted.
@@ -55,14 +43,6 @@ public class SnowmanEntity extends CharacterEntity {
 	 */
 	public void setTarget(CharacterEntity target) {
 		this.target = target;
-	}
-	
-	/**
-	 * Retrieve the current state of the snowman.
-	 * @return The <code>EState</code> enumeration.
-	 */
-	public EState getState() {
-		return this.state;
 	}
 	
 	/**
