@@ -114,8 +114,9 @@ public interface IClientProcessor extends IProtocolProcessor {
      * Attack the target with given target ID with the object with given source ID.
      * @param sourceID The ID number of the attacker.
      * @param targetID The ID number of the target.
+     * @param hp The hit points of the target (-1 if a miss)
      */
-    public void attacked(int sourceID, int targetID);// RealTime.
+    public void attacked(int sourceID, int targetID, int hp);// RealTime.
 
     /**
      * Set the HP of the object with given ID number to the given HP value.

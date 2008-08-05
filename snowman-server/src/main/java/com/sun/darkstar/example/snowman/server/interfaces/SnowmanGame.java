@@ -73,17 +73,19 @@ public interface SnowmanGame
      */
     public void startGameIfReady();
     
-     /**
-     * Respond to an attack message from a player by verifying the attack
-     * and broadcasting the result to all other players
-     * 
-     * @param attacker
-     * @param x
-     * @param y
-     * @param attackedID
-     * @param timestamp
-     */
-    public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
-            long timestamp);
+    public SnowmanPlayer getPlayer(int id);
+
+//     /**
+//     * Respond to an attack message from a player by verifying the attack
+//     * and broadcasting the result to all other players
+//     * 
+//     * @param attacker
+//     * @param x
+//     * @param y
+//     * @param attackedID
+//     * @param timestamp
+//     */
+//    public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
+//            long timestamp);
 
 }

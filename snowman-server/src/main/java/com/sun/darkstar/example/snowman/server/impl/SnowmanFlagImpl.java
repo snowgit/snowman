@@ -137,12 +137,10 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * necessary if held by a snowman.)
      * @return
      */
-    public float getX(long time) {
-        if (heldByRef == null) {
-            return x;
-        } else {
-            return heldByRef.get().getX(time);
-        }
+    public float getX() {
+        assert heldByRef == null;
+        return x;
+
     }
 
     /**
@@ -153,12 +151,9 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * necessary if held by a snowman.)
      * @return
      */
-    public float getY(long time) {
-        if (heldByRef == null ) {
-            return goalY;
-        } else {
-            return heldByRef.get().getY(time);
-        }
+    public float getY() {
+        assert heldByRef == null;
+        return y;
     }
     
     /**
@@ -169,6 +164,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     public void setHeldBy(SnowmanPlayer player){
         AppContext.getDataManager().markForUpdate(this);
         if (player == null){
+            // dropped
             if (heldByRef != null){
                 setLocation(heldByRef.get().getX(System.currentTimeMillis()),
                         heldByRef.get().getY(System.currentTimeMillis()));

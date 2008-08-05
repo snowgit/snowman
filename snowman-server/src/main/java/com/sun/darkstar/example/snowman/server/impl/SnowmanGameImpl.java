@@ -164,17 +164,16 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     }
     
     public void sendMapInfo(){
-        long time = System.currentTimeMillis();
         for(ManagedReference<SnowmanPlayer> ref : playerRefs){
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                    player.getID(), player.getX(time), player.getY(time), 
+                    player.getID(), player.getX(), player.getY(), 
                     EMOBType.SNOWMAN));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flagRefs){
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                    flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
+                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG));
         }
         multiSend(ServerMessages.createReadyPkt());
     }
@@ -196,23 +195,27 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
         send(null,ServerMessages.createStartGamePkt());
     }
     
-    private SnowmanPlayer getPlayer(int id){
+    public SnowmanPlayer getPlayer(int id){
     	return playerRefs.get(id-PLAYERIDSTART).get();
     }
     
-    public void attack(SnowmanPlayer attacker,
-                       float x, float y,
-                       int attackedID,
-                       long timestamp)
-    {
-        SnowmanPlayer attacked = getPlayer(attackedID);
-
-        if (attacked.checkXY(timestamp, x, y, attacker.getThrowDistanceSqd())) {
-            send(null, ServerMessages.createAttackedPkt(attacker.getID(),
-                                                        attackedID));
-            attacked.doHit();
-        }
-    }
+//    public void attack(SnowmanPlayer attacker,
+//                       float x, float y,
+//                       int targetID,
+//                       long timestamp)
+//    {
+//        SnowmanPlayer target = getPlayer(targetID);
+//
+//        // check to see if the attacker (at x, y) can reach the target
+//        if (target.checkXY(timestamp, x, y, attacker.getThrowDistanceSqd()))
+//            send(null, ServerMessages.createAttackedPkt(attacker.getID(),
+//                                                        targetID,
+//                                                        target.doHit()));
+//        else
+//            send(null, ServerMessages.createAttackedPkt(attacker.getID(),
+//                                                        targetID,
+//                                                        -1));
+//    }
 
     private void endGame() {
         send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));

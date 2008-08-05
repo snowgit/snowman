@@ -295,10 +295,10 @@ public class TestMessageHandlerImpl
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20);
+        ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20, 99);
         packet.flip();
         // record expected processor calls
-        mockProcessor.attacked(10, 20);
+        mockProcessor.attacked(10, 20, 99);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);

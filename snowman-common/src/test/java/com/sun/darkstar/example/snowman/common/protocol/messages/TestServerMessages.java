@@ -183,15 +183,17 @@ public class TestServerMessages extends AbstractTestMessages
     
     @Test
     public void testCreateAttackedPkt() {
-        ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20);
+        ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20, 99);
         packet.flip();
         checkOpcode(packet, EOPCODE.ATTACKED);
         
         int source = packet.getInt();
         int target = packet.getInt();
+        int hp = packet.getInt();
 
         Assert.assertEquals(source, 10);
         Assert.assertEquals(target, 20);
+        Assert.assertEquals(hp, 99);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

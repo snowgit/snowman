@@ -92,12 +92,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         this.appContext = appContext;
         name = session.getName();
         setSession(session);
-    }
-    
-    public void reset(){
-        setHP(100);
-    }
-
+    }    
 
     public void setID(int id) {
         this.id = id;
@@ -131,45 +126,75 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return 1000f*wins/losses;
     }
     
-    public float getX(long time){
+    public float getX() {
+        assert (deltaX == 0) && (deltaY != 0);
         return startX;
     }
     
-    public float getY(long time){
+    public float getY() {
+        assert (deltaX == 0) && (deltaY != 0);
         return startY;
     }
     
-    public boolean checkXY(long time, float xPrime, float yPrime, float tolerance) {
-        float expectedX = startX;
-        float expectedY = startY;
+    static private class Position {
+        float x;
+        float y;
+        Position(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
+    private Position getCurrentPos(long time) {
+        Position current = new Position(startX, startY);
         if ((deltaX != 0) || (deltaY != 0)){ // moving
             long dt = time - timestamp;
-            expectedX += (deltaX * dt);
-            expectedY += (deltaY * dt);
+            current.x += (deltaX * dt);
+            current.y += (deltaY * dt);
 //            System.out.println("new expectedXY= " + expectedX + "," + expectedY +
 //                             "\ndestXY=         " + destX + "," + destY);
             // clip the new position to the destination
-            float dx = expectedX - startX;
-            float dy = expectedY - startY;
-            float newLengthSq = (dx*dx) + (dy*dy);
+            float dx = current.x - startX;
+            float dy = current.y - startY;
+            float newLengthSqd = (dx*dx) + (dy*dy);
             dx = destX - startX;
             dy = destY - startY;
-            float maxLengthSq = (dx*dx) + (dy*dy);
-            if (newLengthSq > maxLengthSq) {
-                expectedX = destX;
-                expectedY = destY;
+            float maxLengthSqd = (dx*dx) + (dy*dy);
+            if (newLengthSqd > maxLengthSqd) {
+                current.x = destX;
+                current.y = destY;
             }
         }
-//        System.out.println("move  dx,dy= " + deltaX + ","+deltaY +
-//                         "\nexpected xy= " + expectedX + "," + expectedY +
-//                         "\nentered  xy= " + xPrime + "," + yPrime);
-        float dx = expectedX - xPrime;
-        float dy = expectedY - yPrime;
-        float skew = (float)Math.sqrt((dx*dx)+(dy*dy)); // TODO skip sqrt
-//        System.out.println("checkXY dt= " + (time - timestamp) + " skew= " + skew);
-        return skew < tolerance;
+        return current;
     }
     
+    // check whether x, y is within tolerance (squared) of the current
+    // position
+    public boolean checkXY(long time, float x, float y, float toleranceSqd) {
+        return checkTolerance(getCurrentPos(time), x, y, toleranceSqd);
+    }
+    
+    // update the start position to the current position, while checking
+    // whether x, y is withing tolerance (squared) of the new start
+    // position
+    private boolean setStartXY(long time, float x, float y, float toleranceSqd) {
+        Position current = getCurrentPos(time);
+        startX = current.x;
+        startY = current.y;
+        return checkTolerance(current, x, y, toleranceSqd);
+    }
+    
+    // Check whether x,y is within tolerance (squared) of pos
+    private boolean checkTolerance(Position pos, float x, float y,
+                                   float toleranceSqd)
+    {
+        float dx = pos.x - x;
+        float dy = pos.y - y;
+        float skewSqd = (dx*dx)+(dy*dy);
+//        System.out.println("checkXY dt= " + (time - timestamp) + " skewSqd= " + skew);
+        return skewSqd < toleranceSqd; 
+    }
+                               
     public int getID(){
         return id;
     }
@@ -198,10 +223,11 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         currentGameRef.get().startGameIfReady();
     }
 
-    public void moveMe(long timestamp, float startx, float starty, float endx, float endy) {
-        if (checkXY(timestamp, startx, starty, POSITIONTOLERANCESQD)){
-            startX = startx;
-            startY = starty;
+    public void moveMe(long timestamp,
+                       float startx, float starty,
+                       float endx, float endy)
+    {
+        if (setStartXY(timestamp, startx, starty, POSITIONTOLERANCESQD)){
             destX = endx;
             destY = endy;
             
@@ -223,59 +249,79 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             currentGameRef.get().send(null,
                    ServerMessages.createMoveMOBPkt(
                    id, startX, startY, destX, destY));
+            this.timestamp = timestamp;
         } else {
             logger.log(Level.WARNING, "move from {0} failed check", name);
-            currentGameRef.get().send(null,
-                    ServerMessages.createStopMOBPkt(id, startX, startY));
-            deltaX = 0.0f;
-            deltaY = 0.0f;
+            stopMe(timestamp, 0.0f, 0.0f);
         }
-        this.timestamp = timestamp;
     }
 
     public void attack(long timestamp, int targetID, float x, float y) {
-        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)){
-            currentGameRef.get().attack(this,x,y,targetID,timestamp);
+        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)) {            
+            SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
+
+            // check to see if the we can reach the target
+            if (target.checkXY(timestamp, x, y, getThrowDistanceSqd()))
+                currentGameRef.get().send(null,
+                        ServerMessages.createAttackedPkt(id, targetID, target.doHit()));
+                
+            else
+                currentGameRef.get().send(null,
+                        ServerMessages.createAttackedPkt(id, targetID, -1));
+        } else {
+            logger.log(Level.WARNING, "attack from {0} failed check", name);
+            stopMe(timestamp, 0.0f, 0.0f);
         }
     }
 
     public void getFlag(long timestamp, int flagID) {
         SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
+        
+        // Can not get flag if same team or flag is held by another player
         if (flag.getTeamColor() == teamColor ||
             flag.isHeld())
             return;
         
-        if (checkXY(timestamp, flag.getX(timestamp), flag.getY(timestamp), flag.getGoalRadius())) {
+        if (checkXY(timestamp, flag.getX(), flag.getY(), flag.getGoalRadius())) {
             flag.setHeldBy(this);
             game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
+        } else {
+            logger.log(Level.WARNING, "set flag from {0} failed check", name);
+            stopMe(timestamp, 0.0f, 0.0f);
         }
     }
 
     public void stopMe(long timestamp, float x, float y) {
-        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)){
-            this.setTimestampLocation(timestamp, x,y);
-            currentGameRef.get().send(
+        Position current = getCurrentPos(timestamp);
+        setTimestampLocation(timestamp, current.x, current.y);
+        currentGameRef.get().send(
                     null,
-                    ServerMessages.createStopMOBPkt(id, x, y));
-        }
+                    ServerMessages.createStopMOBPkt(id, startX, startY));
     }
     
-    public float getThrowDistanceSqd(){
+    public float getThrowDistanceSqd() {
         //TODO put in Yis function
         return 10.0f; // temporary
     }
     
+    // respawn
     public void setHP(int hp){
         appContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
         currentGameRef.get().send(null,
                                   ServerMessages.createSetHPPkt(id, hitPoints));
-        if (hitPoints <= 0){ // newly dead
-            appContext.getTaskManager().scheduleTask(
-                    new RespawnTask(appContext.getDataManager().createReference((SnowmanPlayer)this)),
-                                    DEATHDELAYMS);
+    }
+    
+    public int doHit(){
+        if (hitPoints>0) { // not already dead
+            hitPoints--;
+            if (hitPoints <= 0) // newly dead
+                appContext.getTaskManager().scheduleTask(
+                        new RespawnTask(appContext.getDataManager().createReference((SnowmanPlayer)this)),
+                                        DEATHDELAYMS);
         }
+        return hitPoints;
     }
     
     static private class RespawnTask implements Task, Serializable {
@@ -286,14 +332,8 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         
         public void run() throws Exception {
-            playerRef.get().reset();
+            playerRef.get().setHP(100);
         }           
-    }
-    
-    public void doHit(){
-        if (hitPoints>0){ // not already dead
-            setHP(hitPoints-1);
-        }
     }
     
     public SnowmanGame getGame() {

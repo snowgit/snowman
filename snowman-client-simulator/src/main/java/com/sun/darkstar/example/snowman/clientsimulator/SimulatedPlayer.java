@@ -223,9 +223,14 @@ class SimulatedPlayer implements SimpleClientListener {
                             float endx, float endy)
         {
             if (objectID == id) {
-                logger.log(Level.FINEST, "Updating {0} endXY to {1},{2}",
+                logger.log(Level.FINEST, "Updating {0} our position to {1},{2}",
                            new Object[] {name, endx, endy});
-                setDestination(endx, endy);
+                synchronized (this) {
+                    startX = startx;
+                    startY = starty;
+                    destX = endx;
+                    destY = endy;
+                }
             } else
                 logger.log(Level.FINEST, "Message to {0}: Move MOB {1} from {2},{3} to {4},{5}",
                            new Object[] {name, objectID, startx, starty, endx, endy});
@@ -261,11 +266,11 @@ class SimulatedPlayer implements SimpleClientListener {
         }
 
         @Override
-        public void attacked(int sourceID, int targetID) {
-            logger.log(Level.FINER, "Message to {0}: {1} attacked {2}",
-                       new Object[] {name, sourceID, targetID});
-            if (targetID == id)
-                stop();
+        public void attacked(int sourceID, int targetID, int hp) {
+            logger.log(Level.FINER, "Message to {0}: {1} attacked {2}, hp= {3}",
+                       new Object[] {name, sourceID, targetID, hp});
+            if ((targetID == id) && (hp >= 0))
+                setHitPoints(hp);
         }
 
         public void info(int objectID, String string) {

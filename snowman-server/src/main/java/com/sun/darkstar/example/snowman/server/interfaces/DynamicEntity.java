@@ -65,13 +65,13 @@ public interface DynamicEntity
      * @param time
      * @return
      */
-    public float getX(long time);
+    public float getX();
     
     /**
      * Get the Y coordinate of the entity in the world at the given time
      * @param time
      * @return
      */
-    public float getY(long time);
+    public float getY();
 
 }
