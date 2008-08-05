@@ -192,7 +192,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         float dx = pos.x - x;
         float dy = pos.y - y;
         float skewSqd = (dx*dx)+(dy*dy);
-        return skewSqd < toleranceSqd; 
+        return true;//skewSqd < toleranceSqd; 
     }
                                
     public int getID(){
