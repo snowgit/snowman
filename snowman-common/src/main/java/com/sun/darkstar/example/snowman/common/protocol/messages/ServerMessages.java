@@ -187,14 +187,16 @@ public class ServerMessages extends Messages
      * with given source ID has attacked the object with given target ID.
      * @param sourceID The ID number of the attacker.
      * @param targetID The ID number of the target.
+     * @param hp The hit point of the target (-1 if a miss)
      * @return The <code>ByteBuffer</code> "attacked" packet.
      */
-    public static ByteBuffer createAttackedPkt(int sourceID, int targetID) {
+    public static ByteBuffer createAttackedPkt(int sourceID, int targetID, int hp) {
         byte[] bytes = new byte[1 + 8 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACKED.ordinal());
         buffer.putInt(sourceID);
         buffer.putInt(targetID);
+        buffer.putInt(hp);
         return buffer;
     }
 

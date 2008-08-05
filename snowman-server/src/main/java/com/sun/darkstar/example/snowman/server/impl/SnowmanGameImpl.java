@@ -111,6 +111,7 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
                            SnowmanAppContext appContext, 
                            EntityFactory entityFactory)
     {
+        // TODO - make game flexable in number of players
         assert MatchmakerImpl.NUMPLAYERSPERGAME * 2 <= playerStarts.length;
         assert TeamColor.values().length * 2 <= flagStarts.length;
         assert TeamColor.values().length * 3 <= flagGoals.length;
@@ -164,17 +165,16 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     }
     
     public void sendMapInfo(){
-        long time = System.currentTimeMillis();
         for(ManagedReference<SnowmanPlayer> ref : playerRefs){
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                    player.getID(), player.getX(time), player.getY(time), 
+                    player.getID(), player.getX(), player.getY(), 
                     EMOBType.SNOWMAN));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flagRefs){
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                    flag.getID(), flag.getX(time), flag.getY(time), EMOBType.FLAG));
+                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG));
         }
         multiSend(ServerMessages.createReadyPkt());
     }
@@ -196,24 +196,10 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
         send(null,ServerMessages.createStartGamePkt());
     }
     
-    private SnowmanPlayer getPlayer(int id){
+    public SnowmanPlayer getPlayer(int id){
     	return playerRefs.get(id-PLAYERIDSTART).get();
     }
     
-    public void attack(SnowmanPlayer attacker,
-                       float x, float y,
-                       int attackedID,
-                       long timestamp)
-    {
-        SnowmanPlayer attacked = getPlayer(attackedID);
-
-        if (attacked.checkXY(timestamp, x, y, attacker.getThrowDistanceSqd())) {
-            send(null, ServerMessages.createAttackedPkt(attacker.getID(),
-                                                        attackedID));
-            attacked.doHit();
-        }
-    }
-
     private void endGame() {
         send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));
         AppContext.getDataManager().removeObject(this);

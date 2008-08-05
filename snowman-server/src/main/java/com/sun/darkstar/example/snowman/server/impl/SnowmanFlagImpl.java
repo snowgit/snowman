@@ -68,12 +68,12 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * The X location of the centroid of the goal circle this flag must be
      * carried into to win the game
      */
-    private float goalX;
+    private final float goalX;
      /**
      * The Y location of the centroid of the goal circle this flag must be
      * carried into to win the game
      */
-    private float goalY;
+    private final float goalY;
     /**
      * The radius of the goal circle
      */
@@ -130,59 +130,53 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     }
 
     /**
-     * Ths returns the current X coordof the flag.  If the flag is held by a
-     * snowman then its X coord is the snowman's X coord.  Otherwise its the
-     * last X coord set for this flag.
-     * @param time the time at which the position should be checked (
-     * necessary if held by a snowman.)
+     * Ths returns the current X coordof the flag. Can only be called when
+     * not being held.
      * @return
      */
-    public float getX(long time) {
-        if (heldByRef == null) {
-            return x;
-        } else {
-            return heldByRef.get().getX(time);
-        }
+    public float getX() {
+        assert heldByRef == null;
+        return x;
+
     }
 
     /**
-     * Ths returns the current Y coordof the flag.  If the flag is held by a
-     * snowman then its Y coord is the snowman's Y coord.  Otherwise its the
-     * last Y coord set for this flag.
-     * @param time the time at which the position should be checked (
-     * necessary if held by a snowman.)
+     * Ths returns the current Y coordof the flag. Can only be called when
+     * not being held.
      * @return
      */
-    public float getY(long time) {
-        if (heldByRef == null ) {
-            return goalY;
-        } else {
-            return heldByRef.get().getY(time);
-        }
+    public float getY() {
+        assert heldByRef == null;
+        return y;
     }
     
     /**
-     * This method sets the flag as held by a snowman.  Passing null sets it as 
-     * held by no snowman.
+     * This method sets the flag as held by a snowman. Can only be called when
+     * not already being held.
      * @param player the snowman who holds the flag, or null
      */
     public void setHeldBy(SnowmanPlayer player){
+        assert player == null;
+        
         AppContext.getDataManager().markForUpdate(this);
-        if (player == null){
-            if (heldByRef != null){
-                setLocation(heldByRef.get().getX(System.currentTimeMillis()),
-                        heldByRef.get().getY(System.currentTimeMillis()));
-            }
-            heldByRef = null;
-        } else {
-            heldByRef = AppContext.getDataManager().createReference(player);
-        }
+        heldByRef = AppContext.getDataManager().createReference(player);
+    }
+    
+    // Drop the flag. Must be currently held.
+    public void drop(float x, float y) {
+        assert heldByRef != null;
+        
+        setLocation(x, y);
+        heldByRef = null;
     }
     
     /**
      * Checks to see if the flag is within its goal circle
      * @return true if the flag is within the goal circle.  otherwise false
      */
+    // TODO - pass in x, y from player holding flag
+    // TODO - so when to we actually check? there is no explict stop from
+    // a player... do we need a drop / or score message?
     public boolean isAtGoal(){
         //we compare in distacne sqd space for efficiency
         // for more efficiency we could cache goalRadiusSqd
@@ -197,7 +191,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * @param i the ID
      */
     public void setID(int i) {
-        assert false;
+        assert false;   // TODO - fix bad logic in game impl
 //        id = i;
     }
     

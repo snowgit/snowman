@@ -126,6 +126,7 @@ public class MessageHandlerImpl implements MessageHandler
                 break;
             case ATTACKED:
                 unit.attacked(packet.getInt(), 
+                              packet.getInt(),
                               packet.getInt());
                 break;
             case SETHP:

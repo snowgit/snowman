@@ -43,9 +43,7 @@ import java.nio.ByteBuffer;
  * @author Owen Kellett
  */
 public interface SnowmanPlayer extends DynamicEntity
-{
-    public void reset();
-    
+{    
     public String getName();
 
     /**
@@ -75,9 +73,11 @@ public interface SnowmanPlayer extends DynamicEntity
     public void setReadyToPlay(boolean readyToPlay);
     public boolean getReadyToPlay();
     
-    public float getThrowDistanceSqd();
-
-    public void doHit();
+    float getThrowDistanceSqd();
+    
+    int doHit();
+    
+    void setHP(int hp);
     
     public void setSession(ClientSession session);
     public ClientSession getSession();
