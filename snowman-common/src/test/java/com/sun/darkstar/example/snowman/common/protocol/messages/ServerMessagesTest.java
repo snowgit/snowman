@@ -44,7 +44,7 @@ import org.junit.Assert;
  * 
  * @author Owen Kellett
  */
-public class TestServerMessages extends AbstractTestMessages
+public class ServerMessagesTest extends AbstractTestMessages
 {
     
     @Test

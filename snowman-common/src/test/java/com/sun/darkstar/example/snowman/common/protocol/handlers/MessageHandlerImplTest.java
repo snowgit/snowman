@@ -50,7 +50,7 @@ import org.easymock.EasyMock;
  * 
  * @author Owen Kellett
  */
-public class TestMessageHandlerImpl 
+public class MessageHandlerImplTest
 {
     @Test
     public void parseServerReadyPkt() {

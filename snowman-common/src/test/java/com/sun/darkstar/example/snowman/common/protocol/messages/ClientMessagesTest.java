@@ -42,7 +42,7 @@ import org.junit.Assert;
  * 
  * @author Owen Kellett
  */
-public class TestClientMessages extends AbstractTestMessages
+public class ClientMessagesTest extends AbstractTestMessages
 {
     /**
      * Verify the header of the packet which includes a timestamp.
