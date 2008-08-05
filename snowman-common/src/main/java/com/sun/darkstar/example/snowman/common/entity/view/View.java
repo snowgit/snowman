@@ -34,7 +34,7 @@ public abstract class View extends Node implements IView {
 	/**
 	 * The <code>IEntity</code> this <code>View</code> represents.
 	 */
-	private IEntity entity;
+	protected IEntity entity;
 	
 	/**
 	 * Constructor of <code>View</code>.
