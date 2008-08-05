@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Client"/>
-	<classpathentry kind="lib" path="lib/sgs-client.jar"/>
+	<classpathentry kind="lib" path="/lib/sgs-client-0.9.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
