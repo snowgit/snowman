@@ -42,32 +42,14 @@ import org.junit.Assert;
  * 
  * @author Owen Kellett
  */
-public class TestClientMessages extends AbstractTestMessages
+public class ClientMessagesTest extends AbstractTestMessages
 {
-    /**
-     * Verify the header of the packet which includes a timestamp.
-     * First check that the given opcode matches the first byte of
-     * the packet.  Then check that the next 8 bytes are a long which
-     * is equivalent to a timestamp approximately equal to now.
-     * (Checks that it is within 20 ms)
-     * @param packet packet to check
-     * @param opcode opcode to verify against
-     */
-    protected void checkOpcodeAndTimestamp(ByteBuffer packet, EOPCODE opcode) {
-        checkOpcode(packet, opcode);
-        
-        long timestamp = packet.getLong();
-        long now = System.currentTimeMillis();
-        
-        Assert.assertTrue((now - timestamp) < 20 &&
-                          (now - timestamp) >= 0);
-    }
     
     @Test
     public void testCreateMoveMePkt() {
         ByteBuffer movePacket = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
         movePacket.flip();
-        checkOpcodeAndTimestamp(movePacket, EOPCODE.MOVEME);
+        checkOpcode(movePacket, EOPCODE.MOVEME);
         
         float startx = movePacket.getFloat();
         float starty = movePacket.getFloat();
@@ -87,7 +69,7 @@ public class TestClientMessages extends AbstractTestMessages
     public void testCreateAttackPkt() {
         ByteBuffer attackPacket = ClientMessages.createAttackPkt(5, 1.0f, 2.0f);
         attackPacket.flip();
-        checkOpcodeAndTimestamp(attackPacket, EOPCODE.ATTACK);
+        checkOpcode(attackPacket, EOPCODE.ATTACK);
         
         int id = attackPacket.getInt();
         float x = attackPacket.getFloat();
@@ -103,31 +85,35 @@ public class TestClientMessages extends AbstractTestMessages
     
     @Test
     public void testCreateGetFlagPkg() {
-        ByteBuffer getFlagPacket = ClientMessages.createGetFlagPkt(10);
+        ByteBuffer getFlagPacket = ClientMessages.createGetFlagPkt(10, 1.0f, 2.0f);
         getFlagPacket.flip();
-        checkOpcodeAndTimestamp(getFlagPacket, EOPCODE.GETFLAG);
+        checkOpcode(getFlagPacket, EOPCODE.GETFLAG);
         
         int id = getFlagPacket.getInt();
+        float x = getFlagPacket.getFloat();
+        float y = getFlagPacket.getFloat();
         
         Assert.assertEquals(10, id);
+        Assert.assertEquals(1.0f, x);
+        Assert.assertEquals(2.0f, y);
 
         //ensure we are at the end of the buffer
         Assert.assertFalse(getFlagPacket.hasRemaining());
     }
     
     @Test
-    public void testCreateStopMePkt() {
-        ByteBuffer stopPacket = ClientMessages.createStopMePkg(1.0f, 2.0f);
-        stopPacket.flip();
-        checkOpcodeAndTimestamp(stopPacket, EOPCODE.STOPME);
+    public void testCreateScorePkt() {
+        ByteBuffer packet = ClientMessages.createScorePkt(1.0f, 2.0f);
+        packet.flip();
+        checkOpcode(packet, EOPCODE.SCORE);
         
-        float x = stopPacket.getFloat();
-        float y = stopPacket.getFloat();
+        float x = packet.getFloat();
+        float y = packet.getFloat();
         
         Assert.assertEquals(1.0f, x);
         Assert.assertEquals(2.0f, y);
         
         //ensure we are at the end of the buffer
-        Assert.assertFalse(stopPacket.hasRemaining());
+        Assert.assertFalse(packet.hasRemaining());
     }
 }

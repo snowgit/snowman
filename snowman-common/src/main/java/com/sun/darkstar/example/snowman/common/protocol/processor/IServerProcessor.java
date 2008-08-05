@@ -49,41 +49,101 @@ package com.sun.darkstar.example.snowman.common.protocol.processor;
 public interface IServerProcessor extends IProtocolProcessor {
 
     /**
-     * Flag the sending client to be ready for battle.
-     */
-    public void ready();
-
-    /**
+     * <p>
      * Move the sending client to the given position.
-     * @param timestamp timestamp that the client begins the move
+     * </p>
+     * <p>
+     * When the server receives a MOVEME message from the client,
+     * this method will be called and it should do the following:
+     * <ul>
+     * <li>Verify that the client has sent a valid starting location
+     * based on the previous known location, move direction and speed, 
+     * and server recorded timestamp.</li>
+     * <li>If the location is invalid, broadcast a STOPMOB message that
+     * gives the server's expected position of the client.</li>
+     * <li>If the location is valid, submit the start and end coordinates
+     * (given by the client) to the path trimmer of the 
+     * <code>GameWorldManager</code>.  Broadcast a MOVEMOB message with the 
+     * start position and resulting end position given by the path trimmer.</li>
+     * </ul>
+     * </p>
      * @param x The x coordinate of the start point.
      * @param y The y coordinate of the start point.
      * @param endx The x coordinate of the end point.
      * @param endy The y coordinate of the end point.
      */
-    public void moveMe(long timestamp, float x, float y, float endx, float endy);
+    public void moveMe(float x, float y, float endx, float endy);
 
     /**
+     * <p>
      * Attack the target with given ID number with the sending client.
-     * @param timestamp timestamp that the client initiated the attack
+     * </p>
+     * <p>
+     * When the server receives a ATTACK message from the client,
+     * this method will be called and it should do the following:
+     * <ul>
+     * <li>Verify that the client has sent a valid attack location
+     * based on the previous known location, move direction and speed, 
+     * and server recorded timestamp.</li>
+     * <li>If the location is invalid, do nothing.</li>
+     * <li>If the attacker location is valid, submit the start and end coordinates
+     * to the validator of the <code>GameWorldManager</code>.  If there
+     * is nothing blocking the snowball throw, and the client is within
+     * range of the attackee, broadcast an ATTACKED message with the
+     * hp set to the standard HP deduction value.</li
+     * <li>If the attacker location is valid but its determined that
+     * the snowball can't be thrown (because it is out of range or there
+     * is something in the way), broadcast an ATTACKED message with the
+     * HP set to 0.</li>
+     * </ul>
+     * </p>
      * @param targetID The ID number of the target.
      * @param x The x coordinate of the attacker.
      * @param y The y coordinate of the attacker.
      */
-    public void attack(long timestamp, int targetID, float x, float y);
+    public void attack(int targetID, float x, float y);
 
     /**
+     * <p>
      * Attach the flag with given ID number to the sending client.
-     * @param timestamp timestamp that the client initiated the get flag
+     * </p>
+     * <p>
+     * When the server recieves a GETFLAG message from the client,
+     * this method will be called and it should do the following:
+     * <ul>
+     * <li>Verify that the client is within range of the flag.</li>
+     * <li>Verify that the flag is the opponent's flag.</li>
+     * <li>Verify that nobody else has the flag.</li>
+     * <li>If the client is in range, stop the client at the given
+     * position, attach the flag
+     * to the client, and broadcast a ATTACHOBJ message.</li>
+     * <li>If the client is out of range, ignore the message.</li>
+     * </ul>
+     * </p>
      * @param flagID The ID number of the flag.
+     * @param x The x coordinate of the client position
+     * @param y The y coordinate of the client position
      */
-    public void getFlag(long timestamp, int flagID);
+    public void getFlag(int flagID, float x, float y);
     
     /**
-     * Stop the sending client at the given position
-     * @param timestamp timestamp that the client stopped.
-     * @param x The x coordinate of the stop position
-     * @param y The y coordinate of the stop position
+     * <p>
+     * The sending client should be holding the flag and wishes to place
+     * the flag down to win the game.
+     * </p>
+     * <p>
+     * When the server recieves a SCORE message from the client,
+     * this method will be called and it should do the following:
+     * <ul>
+     * <li>Verify that the client is holding the flag and is in range
+     * of the goal position.</li>
+     * <li>If the client is in range, broadcast a ENDGAME message with
+     * the results of the game.</li>
+     * <li>Otherwise, ignore the message.</li>
+     * </ul>
+     * </p>
+     * @param x The x coordinate of the client position
+     * @param y The y coordinate of the client position
      */
-    public void stopMe(long timestamp, float x, float y);
+    public void score(float x, float y);
 }

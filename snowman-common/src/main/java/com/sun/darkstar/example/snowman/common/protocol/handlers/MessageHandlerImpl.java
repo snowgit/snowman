@@ -129,9 +129,10 @@ public class MessageHandlerImpl implements MessageHandler
                               packet.getInt(),
                               packet.getInt());
                 break;
-            case SETHP:
-                unit.setHP(packet.getInt(), 
-                           packet.getInt());
+            case RESPAWN:
+                unit.respawn(packet.getInt(), 
+                             packet.getFloat(), 
+                             packet.getFloat());
                 break;
             default:
                 //divert to common parser
@@ -151,26 +152,24 @@ public class MessageHandlerImpl implements MessageHandler
     protected void parseServerPacket(EOPCODE code, ByteBuffer packet, IServerProcessor unit) {
         switch (code) {
             case MOVEME:
-                unit.moveMe(packet.getLong(), 
-                            packet.getFloat(), 
+                unit.moveMe(packet.getFloat(), 
                             packet.getFloat(),
                             packet.getFloat(),
                             packet.getFloat());
                 break;
             case ATTACK:
-                unit.attack(packet.getLong(), 
-                            packet.getInt(),
+                unit.attack(packet.getInt(),
                             packet.getFloat(), 
                             packet.getFloat());
                 break;
             case GETFLAG:
-                unit.getFlag(packet.getLong(),
-                             packet.getInt());
+                unit.getFlag(packet.getInt(),
+                             packet.getFloat(),
+                             packet.getFloat());
                 break;
-            case STOPME:
-                unit.stopMe(packet.getLong(),
-                            packet.getFloat(),
-                            packet.getFloat());
+            case SCORE:
+                unit.score(packet.getFloat(),
+                           packet.getFloat());
                 break;
             default:
                 //divert to common parser

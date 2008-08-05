@@ -45,7 +45,23 @@ package com.sun.darkstar.example.snowman.common.protocol.processor;
 public interface IProtocolProcessor {
     
     /**
+     * <p>
      * Respond to ready message
+     * </p>
+     * <p>
+     * When a client receives a READY messages, this indicates that all of
+     * the ADDMOB messages required to start the game have been sent.  Once
+     * these have all been processed, it should send a READY message back
+     * to the server indicating that the game can start.
+     * </p>
+     * <p>
+     * When the server receives a READY message, if the game has not yet started
+     * it should record that it has received a READY from the client.  Once
+     * a ready has been received from each client in the game, it should
+     * send a STARTGAME message to all of the clients indicating that the game
+     * is now live.  If the game has already been started, this message
+     * should be ignored.
+     * </p>
      */
     public void ready();
 }

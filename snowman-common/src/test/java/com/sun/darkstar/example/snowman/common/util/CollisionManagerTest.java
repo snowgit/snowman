@@ -51,7 +51,7 @@ import org.easymock.EasyMock;
  *
  * @author Owen Kellett
  */
-public class TestCollisionManager {
+public class CollisionManagerTest {
     
     /** Acceptable delta for float comparisons */
     private static float DELTA = 0.01f;

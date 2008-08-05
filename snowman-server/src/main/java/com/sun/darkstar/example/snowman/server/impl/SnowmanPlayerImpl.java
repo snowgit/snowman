@@ -58,8 +58,8 @@ import java.util.logging.Logger;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  */
-class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
-                                   ManagedObject, IServerProcessor
+public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
+                                          ManagedObject, IServerProcessor
 {
     public static final long serialVersionUID = 1L;
 
@@ -223,8 +223,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         currentGameRef.get().startGameIfReady();
     }
 
-    public void moveMe(long timestamp,
-                       float startx, float starty,
+    public void moveMe(float startx, float starty,
                        float endx, float endy)
     {
         if (setStartXY(timestamp, startx, starty, POSITIONTOLERANCESQD)){
@@ -252,11 +251,11 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             this.timestamp = timestamp;
         } else {
             logger.log(Level.WARNING, "move from {0} failed check", name);
-            stopMe(timestamp, 0.0f, 0.0f);
+            stopMe(0.0f, 0.0f);
         }
     }
 
-    public void attack(long timestamp, int targetID, float x, float y) {
+    public void attack(int targetID, float x, float y) {
         if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)) {            
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
 
@@ -272,7 +271,7 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             logger.log(Level.WARNING, "attack from {0} failed check", name);
     }
 
-    public void getFlag(long timestamp, int flagID) {
+    public void getFlag(int flagID, float x, float y) {
         SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
         
@@ -287,9 +286,12 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         } else
             logger.log(Level.WARNING, "set flag from {0} failed check", name);
     }
+    
+    public void score(float x, float y) {
+        
+    }
 
-    // Not used? At least from client...
-    public void stopMe(long timestamp, float x, float y) {
+    private void stopMe(float x, float y) {
         Position current = getCurrentPos(timestamp);
         setTimestampLocation(timestamp, current.x, current.y);
         currentGameRef.get().send(
@@ -306,8 +308,9 @@ class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     public void setHP(int hp){
         appContext.getDataManager().markForUpdate(this);
         hitPoints = hp;
+        //FIXME - update the respawn position
         currentGameRef.get().send(null,
-                                  ServerMessages.createSetHPPkt(id, hitPoints));
+                                  ServerMessages.createRespawnPkt(id, 0.0f, 0.0f));
     }
     
     public int doHit(){
