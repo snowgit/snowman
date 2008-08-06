@@ -114,4 +114,12 @@ public class CharacterEntity extends DynamicEntity {
 	public CharacterEntity getTarget() {
 		return this.target;
 	}
+	
+	/**
+	 * Check if this character is still alive.
+	 * @return True if this character is still alive. False otherwise.
+	 */
+	public boolean isAlive() {
+		return (this.hp > 0);
+	}
 }

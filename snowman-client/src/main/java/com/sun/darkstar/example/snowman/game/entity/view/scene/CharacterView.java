@@ -47,6 +47,10 @@ public class CharacterView extends DynamicView {
 	 * The hit animation.
 	 */
 	private JointAnimation animHit;
+	/**
+	 * The death animation.
+	 */
+	private JointAnimation animDeath;
 
 	/**
 	 * Constructor of <code>CharacterView</code>.
@@ -68,6 +72,12 @@ public class CharacterView extends DynamicView {
 		this.animMove = DataManager.getInstance().getAnimation(EAnimation.Move);
 		this.animAttack = DataManager.getInstance().getAnimation(EAnimation.Attack);
 		this.animHit = DataManager.getInstance().getAnimation(EAnimation.Hit);
+		this.animDeath = DataManager.getInstance().getAnimation(EAnimation.Death);
+		this.jointController.addAnimation(this.animIdle);
+		this.jointController.addAnimation(this.animMove);
+		this.jointController.addAnimation(this.animAttack);
+		this.jointController.addAnimation(this.animHit);
+		this.jointController.addAnimation(this.animDeath);
 		this.jointController.setFading(this.animIdle, 0, false);
 		this.jointController.setRepeatType(com.jme.scene.Controller.RT_WRAP);
 	}
@@ -76,7 +86,7 @@ public class CharacterView extends DynamicView {
 	public void update(float interpolation) {
 		this.setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()));
 		this.getEntity().setMass(SingletonRegistry.getHPConverter().convertMass(this.getEntity().getHP()));
-		switch(((CharacterEntity)this.entity).getState()) {
+		switch(this.getEntity().getState()) {
 		case Moving:
 			if(this.jointController.getActiveAnimation() == this.animMove) return;
 			this.jointController.setFading(this.animMove, 0, false);
@@ -95,6 +105,11 @@ public class CharacterView extends DynamicView {
 		case Hit:
 			if(this.jointController.getActiveAnimation() == this.animHit) return;
 			this.jointController.setFading(this.animHit, 0, false);
+			this.jointController.setRepeatType(com.jme.scene.Controller.RT_CLAMP);
+			break;
+		case Death:
+			if(this.jointController.getActiveAnimation() == this.animDeath) return;
+			this.jointController.setFading(this.animDeath, 0, false);
 			this.jointController.setRepeatType(com.jme.scene.Controller.RT_CLAMP);
 			break;
 		}

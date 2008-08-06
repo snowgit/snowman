@@ -71,8 +71,10 @@ public class CreateSnowballTask extends Task {
 			Vector3f attackerPosition = attacker.getLocalTranslation().clone();
 			Vector3f targetPosition = target.getLocalTranslation().clone();
 			// Step 3.
-			this.targetEntity.setState(EState.Hit);
-			ViewManager.getInstance().markForUpdate(this.targetEntity);
+			if(this.targetEntity.isAlive()) {
+				this.targetEntity.setState(EState.Hit);
+				ViewManager.getInstance().markForUpdate(this.targetEntity);
+			}
 			this.targetEntity.resetForce();
 			this.targetEntity.resetVelocity();
 			// Step 4.

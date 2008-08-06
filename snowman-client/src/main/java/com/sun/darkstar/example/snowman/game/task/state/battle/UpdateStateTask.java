@@ -95,7 +95,7 @@ public class UpdateStateTask extends RealTimeTask {
 		if(result != null) {
 			CharacterView view = (CharacterView)result;
 			if(view.getEntity() == this.snowman) return;
-			if(this.validateRange(result) && this.validateBlocking(result)) {
+			if(this.validateDeath((CharacterView)result) && this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
 				// TODO Change cursor to targeting.
@@ -108,6 +108,15 @@ public class UpdateStateTask extends RealTimeTask {
 			// TODO Change cursor to grabbing.
 			return;
 		}
+	}
+	
+	/**
+	 * Validate if the given target is still alive.
+	 * @param view The <code>CharacterView</code> instance.
+	 * @return True if the target is still alive. False otherwise.
+	 */
+	private boolean validateDeath(CharacterView view) {
+		return ((CharacterEntity)view.getEntity()).isAlive();
 	}
 
 	/**

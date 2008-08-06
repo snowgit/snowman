@@ -47,6 +47,7 @@ public class CharacterController extends Controller {
 
 	@Override
 	protected void updateLogic(float interpolation) {
+		if(!this.getEntity().isAlive()) return;
 		switch(this.getEntity().getState()) {
 		case Attacking:
 			if(this.lastState != EState.Attacking) {

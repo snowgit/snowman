@@ -7,8 +7,10 @@ import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -18,7 +20,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * <p>
  * <code>AttackTask</code> execution logic:
  * 1. Retrieve the attacker and target entity and view based on IDs.
- * 2. Set the delta change to the target.
+ * 2. Set the delta change to the target and check for death.
  * 3. Set attacker to attacking state.
  * 4. Rotate attacker towards the target.
  * 5. Set the target ID to the attacker <code>CharacterEntity</code>
@@ -95,6 +97,13 @@ public class AttackTask extends RealTimeTask {
 			View target = (View)ViewManager.getInstance().getView(targetEntity);
 			// Step 2.
 			targetEntity.addHP(this.delta);	
+			if(targetEntity.getHP() <= 0) {
+				targetEntity.setState(EState.Death);
+				ViewManager.getInstance().markForUpdate(targetEntity);
+				if(targetEntity instanceof SnowmanEntity) {
+					InputManager.getInstance().setInputActive(false);
+				}
+			}
 			if(!this.self) {
 				// Step 3.
 				attackerEntity.setState(EState.Attacking);
