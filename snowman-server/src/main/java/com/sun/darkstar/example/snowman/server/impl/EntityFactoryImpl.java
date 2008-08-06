@@ -35,8 +35,8 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 import java.io.Serializable;
 
@@ -54,7 +54,7 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
     {
         return new SnowmanPlayerImpl(context, session);
     }
-    public SnowmanFlag createSnowmanFlag(TeamColor teamColor, float flagGoalX, float flagGoalY,
+    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY,
             float flagGoalRadius)
     {
         return new SnowmanFlagImpl(teamColor, flagGoalX, flagGoalY, flagGoalRadius);

@@ -34,7 +34,7 @@ package com.sun.darkstar.example.snowman.common.protocol.handlers;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.messages.Messages;
@@ -175,10 +175,10 @@ public class MessageHandlerImplTest
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.RED);
         packet.flip();
         // record expected processor calls
-        mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
+        mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.RED);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);

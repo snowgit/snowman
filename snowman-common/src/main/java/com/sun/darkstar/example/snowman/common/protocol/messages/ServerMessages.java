@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
 
 /**
@@ -99,9 +100,10 @@ public class ServerMessages extends Messages
      * @param x The X coordinate of the object.
      * @param y The Y coordinate of the object.
      * @param mobType The <code>MOBType</code> of object.
+     * @param team The <code>TeamColor</code> of object.
      * @return The <code>ByteBuffer</code> "add MOB" packet.
      */
-    public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType) {
+    public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType, ETeamColor team) {
         byte[] bytes = new byte[1 + 8 + 16];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ADDMOB.ordinal());
@@ -109,6 +111,7 @@ public class ServerMessages extends Messages
         buffer.putFloat(x);
         buffer.putFloat(y);
         buffer.putInt(mobType.ordinal());
+        buffer.putInt(team.ordinal());
         return buffer;
     }
     

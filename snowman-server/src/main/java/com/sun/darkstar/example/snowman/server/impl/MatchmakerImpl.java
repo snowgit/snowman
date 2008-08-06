@@ -35,7 +35,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
@@ -159,13 +159,13 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
     private void launchGameSession(String name) {
         appContext.getDataManager().markForUpdate(this);
         SnowmanGame game = gameFactory.createSnowmanGame(name, appContext, entityFactory);
-        TeamColor color = TeamColor.values()[0];
+        ETeamColor color = ETeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);
         	waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
-            color = TeamColor.values()[
-                    (color.ordinal()+1)%TeamColor.values().length];
+            color = ETeamColor.values()[
+                    (color.ordinal()+1)%ETeamColor.values().length];
         }
         game.sendMapInfo();
       

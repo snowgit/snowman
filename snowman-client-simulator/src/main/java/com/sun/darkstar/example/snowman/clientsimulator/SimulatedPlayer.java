@@ -35,6 +35,7 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
@@ -207,7 +208,7 @@ class SimulatedPlayer implements SimpleClientListener {
         }
 
         @Override
-        public void addMOB(int objectID, float x, float y, EMOBType objType) {
+        public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
             if (objectID == id) {
                 logger.log(Level.FINE, "Updating {0} start and end XY to {1},{2}",
                            new Object[] {name, x, y});

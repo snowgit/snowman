@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.common.protocol.processor;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 
 /**
  * <code>IClientProcessor</code> defines the interface which handles processing
@@ -74,8 +75,9 @@ public interface IClientProcessor extends IProtocolProcessor {
      * @param x The x coordinate of the position.
      * @param y The y coordinate of the position.
      * @param objType The <code>MOBType</code> of the newly added MOB.
+     * @param team The <code>TeamColor</code> of the newly added MOB.
      */
-    public void addMOB(int objectID, float x, float y, EMOBType objType);// Certified.
+    public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team);// Certified.
 
     /**
      * Move the MOB with given ID from given starting position towards given ending position.

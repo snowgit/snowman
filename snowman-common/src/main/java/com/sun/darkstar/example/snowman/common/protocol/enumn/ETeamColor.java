@@ -30,12 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.sun.darkstar.example.snowman.server.interfaces;
+package com.sun.darkstar.example.snowman.common.protocol.enumn;
 
 /**
  * This enum gives the possible colors for a flag/team in the snowman
  * game
  */
-public enum TeamColor {
+public enum ETeamColor {
     RED, GREEN
 }

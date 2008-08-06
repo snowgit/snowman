@@ -36,8 +36,8 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.sgs.app.ClientSession;
@@ -81,7 +81,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private float deltaY;
     // zero timestamp indicates no move yet received
     private long timestamp;
-    private TeamColor teamColor;
+    private ETeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
     private boolean readyToPlay = false;
     private int hitPoints = 100;
@@ -105,7 +105,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
        this.timestamp = timestamp;
     }
 
-    public void setTeamColor(TeamColor color) {
+    public void setTeamColor(ETeamColor color) {
         appContext.getDataManager().markForUpdate(this);
         teamColor = color;
     }
@@ -350,7 +350,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return this;
     }
 
-    public TeamColor getTeamColor() {
+    public ETeamColor getTeamColor() {
         return teamColor;
     }
 

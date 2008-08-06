@@ -33,6 +33,7 @@
 package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 import java.nio.ByteBuffer;
 
@@ -58,8 +59,8 @@ public interface SnowmanPlayer extends DynamicEntity
      * Set the team of the player
      * @param color
      */
-    public void setTeamColor(TeamColor color);
-    public TeamColor getTeamColor();
+    public void setTeamColor(ETeamColor color);
+    public ETeamColor getTeamColor();
 
     /**
      * Set the game that the player is in

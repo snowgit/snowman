@@ -33,6 +33,7 @@
 package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 
 /**
@@ -44,7 +45,7 @@ public interface EntityFactory
 {
     public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
                                              ClientSession session);
-    public SnowmanFlag createSnowmanFlag(TeamColor teamColor, float flagGoalX, float flagGoalY,
+    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY,
             float flagGoalRadius);
 
 }

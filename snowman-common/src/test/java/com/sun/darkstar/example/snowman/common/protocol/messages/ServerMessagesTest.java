@@ -35,6 +35,7 @@ package com.sun.darkstar.example.snowman.common.protocol.messages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 import org.junit.Assert;
@@ -93,7 +94,7 @@ public class ServerMessagesTest extends AbstractTestMessages
     
     @Test
     public void testCreateAddMOBPkt() {
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.RED);
         packet.flip();
         checkOpcode(packet, EOPCODE.ADDMOB);
         
@@ -101,11 +102,13 @@ public class ServerMessagesTest extends AbstractTestMessages
         float x = packet.getFloat();
         float y = packet.getFloat();
         EMOBType type = EMOBType.values()[packet.getInt()];
+        ETeamColor team = ETeamColor.values()[packet.getInt()];
         
         Assert.assertEquals(id, 10);
         Assert.assertEquals(x, 1.0f);
         Assert.assertEquals(y, 2.0f);
         Assert.assertEquals(type, EMOBType.SNOWMAN);
+        Assert.assertEquals(team, ETeamColor.RED);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

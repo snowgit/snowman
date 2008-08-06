@@ -3,6 +3,7 @@ package com.sun.darkstar.example.snowman.client.handler.message;
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
@@ -64,7 +65,7 @@ public class MessageProcessor implements IClientProcessor {
 	}
 
 	@Override
-	public void addMOB(int objectID, float x, float y, EMOBType objType) {
+	public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
 		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y, (objectID == this.myID));
 	}
 
