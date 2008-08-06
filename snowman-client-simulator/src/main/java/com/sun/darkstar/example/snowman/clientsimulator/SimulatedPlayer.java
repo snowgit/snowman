@@ -279,14 +279,15 @@ class SimulatedPlayer implements SimpleClientListener {
         }
 
         @Override
-        public void setHP(int objectID, int hp) {
-            if (objectID == id) {
+        public void respawn(int objectID, float x, float y) {
+            //Respawn logic needs to be fixed with protocol change
+            /*if (objectID == id) {
                 setHitPoints(hp);
                 logger.log(Level.FINER, "Message to {0}: Set HP to {1}",
                        new Object[] {name, hp});
             } else
                 logger.log(Level.FINEST, "Message to {0}: Set HP on object {1} to {2}",
-                       new Object[] {name, objectID, hp});
+                       new Object[] {name, objectID, hp});*/
         }
     }
     
