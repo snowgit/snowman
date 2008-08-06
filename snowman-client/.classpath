@@ -27,6 +27,6 @@
 	<classpathentry kind="lib" path="/lib/sgs-shared-1.0.jar"/>
 	<classpathentry kind="lib" path="/lib/slf4j-api-1.4.0.jar"/>
 	<classpathentry kind="lib" path="/lib/jme-collada.jar"/>
-	<classpathentry kind="lib" path="/lib/MD5Importer_jME2.0_v1.2.3.jar"/>
+	<classpathentry kind="lib" path="/lib/MD5Importer_jME2.0_v1.2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
