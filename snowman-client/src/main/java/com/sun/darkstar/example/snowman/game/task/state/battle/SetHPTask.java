@@ -56,6 +56,7 @@ public class SetHPTask extends RealTimeTask {
 			CharacterEntity entity = (CharacterEntity)EntityManager.getInstance().getEntity(this.id);
 			// Step 2.
 			entity.setState(EState.Hit);
+			ViewManager.getInstance().markForUpdate(entity);
 			// Step 3.
 			View view = (View)ViewManager.getInstance().getView(entity);
 			entity.setHP(this.hp);

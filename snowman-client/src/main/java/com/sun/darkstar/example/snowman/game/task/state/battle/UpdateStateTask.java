@@ -89,7 +89,6 @@ public class UpdateStateTask extends RealTimeTask {
 		Spatial result = collisionManager.getIntersectObject(ray, world, StaticView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.Idle);
-			// TODO Change cursor to walking.
 			return;
 		}
 		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
@@ -99,7 +98,6 @@ public class UpdateStateTask extends RealTimeTask {
 			if(this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
-				//System.out.println("Targeting");
 				// TODO Change cursor to targeting.
 			}
 			return;
@@ -107,7 +105,6 @@ public class UpdateStateTask extends RealTimeTask {
 		result = collisionManager.getIntersectObject(ray, world, DynamicView.class, false);
 		if(result != null) {
 			this.snowman.setState(EState.TryingToGrab);
-			System.out.println("Grabbing");
 			// TODO Change cursor to grabbing.
 			return;
 		}

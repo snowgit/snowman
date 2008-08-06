@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 07-25-2008 15:35 EST
+ * @version Modified date: 08-05-2008 14:38 EST
  */
 public enum ETask {
 	/**
@@ -51,6 +51,10 @@ public enum ETask {
 	 * The task used to update the HP value of a character.
 	 */
 	SetHP(ETaskType.RealTime),
+	/**
+	 * The task used to start the attacking process.
+	 */
+	Attacking(ETaskType.RealTime),
 	/**
 	 * The task used to create snow balls.
 	 */

@@ -18,6 +18,7 @@ import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.client.Client;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
+import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
@@ -58,6 +59,10 @@ public class Game extends BaseGame implements IComponent{
 	 * The <code>Timer</code> instance.
 	 */
 	private Timer timer;
+	/**
+	 * The <code>ViewManager</code> instance.
+	 */
+	private ViewManager viewManager;
 	/**
 	 * The <code>TaskManager</code> instance.
 	 */
@@ -176,6 +181,7 @@ public class Game extends BaseGame implements IComponent{
 	 * Initialize all the system managers.
 	 */
 	private void initializeManagers() {
+		this.viewManager = ViewManager.getInstance();
 		this.taskManager = TaskManager.create(this);
 		this.physicsManager = PhysicsManager.getInstance();
 		this.stateManager = GameStateManager.create();
@@ -224,6 +230,8 @@ public class Game extends BaseGame implements IComponent{
         /** update stats, if enabled. */
         StatsManager.getInstance().updateStats(interpolation);
 
+        //Update view manager.
+        this.viewManager.update(this.interpolation);
         // Update input manager.
 		this.inputManager.update(this.interpolation);
 		// Execute tasks.

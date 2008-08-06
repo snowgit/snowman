@@ -1,7 +1,7 @@
 package com.sun.darkstar.example.snowman.game.entity.view.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Sphere;
@@ -65,7 +65,7 @@ public class ViewManager extends Manager {
 	/**
 	 * The dirty <code>IDynamicView</code> buffer.
 	 */
-	private final ArrayList<IDynamicView> dirty;
+	private final LinkedList<IDynamicView> dirty;
 
 	/**
 	 * Constructor of <code>ViewManager</code>.
@@ -73,7 +73,7 @@ public class ViewManager extends Manager {
 	private ViewManager() {
 		super(EManager.ViewManager);
 		this.views = new HashMap<IEntity, IView>();
-		this.dirty = new ArrayList<IDynamicView>();
+		this.dirty = new LinkedList<IDynamicView>();
 	}
 
 	/**
@@ -92,10 +92,9 @@ public class ViewManager extends Manager {
 	 * @param interpolation The frame rate interpolation value.
 	 */
 	public void update(float interpolation) {
-		for(IDynamicView view : this.dirty) {
-			view.update(interpolation);
+		while(!this.dirty.isEmpty()) {
+			this.dirty.pop().update(interpolation);
 		}
-		this.dirty.clear();
 	}
 
 	/**
@@ -155,7 +154,7 @@ public class ViewManager extends Manager {
 				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 				break;
 			}
-			break;
+		break;
 		}
 		this.views.put(entity, view);
 		this.logger.info("Created " + entity.getType().toString() + " based on " + entity.getEnumn().toString() + "Entity");
@@ -179,10 +178,9 @@ public class ViewManager extends Manager {
 	/**
 	 * Mark the dynamic view represents the given dynamic entity for update.
 	 * @param entity The <code>IDynamicEntity</code> has been modified.
-	 * @throws ObjectNotFoundException If the view represents the given entity does not exist.
 	 */
-	public void markForUpdate(IDynamicEntity entity) throws ObjectNotFoundException {
-		final IView view = this.getView(entity);
+	public void markForUpdate(IDynamicEntity entity) {
+		IView view = this.getView(entity);
 		if(view instanceof IDynamicView) {
 			this.dirty.add((IDynamicView)view);
 		} else {

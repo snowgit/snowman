@@ -179,8 +179,9 @@ public class TaskManager extends Manager {
 			}
 			break;
 		case SetHP: task = new SetHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
+		case Attacking: task = new AttackingTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]); break;
 		case CreateSnowball: 
-			task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]);
+			task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1]);
 			if (Debug.stats) {
 				StatCollector.addStat(SnowmanStatType.STAT_SNOWBALL_COUNT, 1);
 			}

@@ -9,7 +9,7 @@ package com.sun.darkstar.example.snowman.exception;
  * @version Creation date: 06-06-2008 11:47 EST
  * @version Modified date: 06-06-2008 17:34 EST
  */
-public class ObjectNotFoundException extends Exception {
+public class ObjectNotFoundException extends RuntimeException {
 	/**
 	 * Serial version.
 	 */
