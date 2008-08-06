@@ -36,5 +36,9 @@ public enum EState {
 	/**
 	 * The grabbing flag state.
 	 */
-	Grabbing
+	Grabbing,
+	/**
+	 * The dead state.
+	 */
+	Death
 }
