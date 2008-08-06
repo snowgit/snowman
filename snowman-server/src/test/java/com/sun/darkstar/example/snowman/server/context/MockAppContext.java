@@ -30,31 +30,60 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-package com.sun.darkstar.example.snowman.server.impl;
+package com.sun.darkstar.example.snowman.server.context;
 
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import java.io.Serializable;
+import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
+import com.sun.sgs.app.ChannelManager;
+import com.sun.sgs.app.DataManager;
+import com.sun.sgs.app.TaskManager;
+import org.easymock.EasyMock;
 
 /**
- * Factory to create games.
+ * This class mocks Darkstar's AppContext so that we can properly unit test
  * 
  * @author Owen Kellett
  */
-public class GameFactoryImpl implements GameFactory, Serializable
+public class MockAppContext implements SnowmanAppContext
 {
-    public static long serialVersionUID = 1L;
+    private ChannelManager channelManager;
+    private DataManager dataManager;
+    private TaskManager taskManager;
+    private GameWorldManager gameWorldManager;
     
-    public SnowmanGame createSnowmanGame(String gameName,
-                                         int numPlayers,
-                                         SnowmanAppContext appContext,
-                                         EntityFactory entityFactory)
+    private MockAppContext()
     {
-        return new SnowmanGameImpl(gameName, numPlayers, appContext, entityFactory);
+        channelManager = EasyMock.createMock(ChannelManager.class);
+        dataManager = new MockDataManager();
+        taskManager = EasyMock.createMock(TaskManager.class);
+        gameWorldManager = EasyMock.createMock(GameWorldManager.class);
+    }
+    
+    public ChannelManager getChannelManager() {
+        return channelManager;
     }
 
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public <T> T getManager(Class<T> type) {
+        if(type.isAssignableFrom(gameWorldManager.getClass()))
+            return type.cast(gameWorldManager);
+        
+        throw new RuntimeException("Unavailable manager for type: "+type);
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
+    
+    /**
+     * Create a MockAppContext and initialize it as the SnowmanAppContext
+     * returned by the SnowmanAppContextFactory
+     */
+    public static void create() {
+        MockAppContext context = new MockAppContext();
+        SnowmanAppContextFactory.setAppContext(context);
+    }
 }
-
-

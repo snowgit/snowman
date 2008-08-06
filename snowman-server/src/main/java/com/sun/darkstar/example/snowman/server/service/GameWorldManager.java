@@ -32,6 +32,8 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
+
 /**
  * The <code>GameWorldManager</code> interface exposes application level access
  * to the {@link GameWorldService} running inside of the 

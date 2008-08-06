@@ -28,33 +28,51 @@
 * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
-package com.sun.darkstar.example.snowman.server.impl;
+package com.sun.darkstar.example.snowman.server.context;
 
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import java.io.Serializable;
+import com.sun.sgs.app.ManagedReference;
+import java.math.BigInteger;
 
 /**
- * Factory to create games.
+ * Mock implementation of ManagedReference
  * 
  * @author Owen Kellett
  */
-public class GameFactoryImpl implements GameFactory, Serializable
+public class MockManagedReference<T> implements ManagedReference<T>
 {
-    public static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
+    private T object;
+    private BigInteger id;
     
-    public SnowmanGame createSnowmanGame(String gameName,
-                                         int numPlayers,
-                                         SnowmanAppContext appContext,
-                                         EntityFactory entityFactory)
-    {
-        return new SnowmanGameImpl(gameName, numPlayers, appContext, entityFactory);
+    public MockManagedReference(T object, BigInteger id) {
+        this.object = object;
+        this.id = id;
+    }
+    
+    public T get() {
+        return object;
     }
 
+    public T getForUpdate() {
+        return object;
+    }
+
+    public BigInteger getId() {
+        return id;
+    }
+    
+    public boolean equals(Object object) {
+        if(object instanceof ManagedReference) {
+            return ((ManagedReference)object).get().equals(this.get());
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return get().hashCode();
+    }
+    
 }
-
-

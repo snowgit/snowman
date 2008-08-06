@@ -40,15 +40,12 @@ import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
 import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
-import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -58,11 +55,10 @@ import java.util.logging.Logger;
  * @author Jeffrey Kesselman
  */
 public class SnowmanServer implements ManagedObject, Serializable, AppListener{
-    private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     public static long serialVersionUID = 1L;
-    ManagedReference<Matchmaker> matchMakerRef;
-    private int gameCount=0;
-    
+    private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
+
+    private ManagedReference<Matchmaker> matchMakerRef;
     private EntityFactory entityFactory;
     private GameFactory gameFactory;
     private SnowmanAppContext appContext;
@@ -71,11 +67,10 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
         this.appContext = SnowmanAppContextFactory.getAppContext();
         this.entityFactory = new EntityFactoryImpl();
         this.gameFactory = new GameFactoryImpl();
-        Matchmaker matchMaker = new MatchmakerImpl("Game"+(gameCount++),
-                                                   appContext,
+        Matchmaker matchMaker = new MatchmakerImpl(appContext,
                                                    gameFactory,
                                                    entityFactory);
-        matchMakerRef = AppContext.getDataManager().createReference(matchMaker);
+        matchMakerRef = appContext.getDataManager().createReference(matchMaker);
     }
 
     public ClientSessionListener loggedIn(ClientSession arg0) {

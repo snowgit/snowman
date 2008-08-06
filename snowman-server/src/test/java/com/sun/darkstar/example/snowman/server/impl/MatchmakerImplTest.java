@@ -30,32 +30,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.sun.darkstar.example.snowman.server.interfaces;
+package com.sun.darkstar.example.snowman.server.impl;
 
-import com.sun.sgs.app.ManagedObject;
+import org.junit.Test;
 
 /**
- * The <code>Matchmaker</code> interface exposes the behavior of a
- * Matchmaker which is responsible for queueing up players and starting
- * games
- * 
+ *
  * @author Owen Kellett
  */
-public interface Matchmaker extends ManagedObject
+public class MatchmakerImplTest 
 {
-    /**
-     * This method is called to add a player to the list of players waiting for
-     * this game session to begin
-     * @param player the player to add to the game
-     */
-    public void addWaitingPlayer(SnowmanPlayer player);
-
-
-    /**
-     * This method takes a player off the waiting players list.
-     * It is primarily used by the code that handles dropped users
-     * @param player the player to remove from the waiting list
-     */
-    public void removeWaitingPlayer(SnowmanPlayer player);
+    @Test
+    public void placeHolder() {
+        
+    }
 
 }

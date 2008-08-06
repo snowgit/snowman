@@ -41,7 +41,6 @@ import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
@@ -59,7 +58,7 @@ import java.util.logging.Logger;
  * @author Owen Kellett
  */
 public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
-                                          ManagedObject, IServerProcessor
+                                          IServerProcessor
 {
     public static final long serialVersionUID = 1L;
 

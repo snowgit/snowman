@@ -34,6 +34,8 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
+import com.sun.sgs.app.ManagedObject;
+import com.sun.sgs.app.ManagedObjectRemoval;
 import java.nio.ByteBuffer;
 
 /**
@@ -50,17 +52,6 @@ public interface SnowmanGame
      * @param buff the message itself
      */
     public void send (ClientSession sess, ByteBuffer buff);
-
-    /**
-     * Add a player to the game
-     * @param player
-     * @param color
-     */
-    public void addPlayer(SnowmanPlayer player, ETeamColor color);
-    
-    public void removePlayer(SnowmanPlayer player);
-    
-    SnowmanFlag getFlag(int id);
     
     /**
      * Send the AddMOB packets to all of the players in the game
@@ -68,25 +59,40 @@ public interface SnowmanGame
      */
     public void sendMapInfo();
 
+    
+    /**
+     * Add a player to the game
+     * @param player
+     * @param color
+     */
+    public void addPlayer(SnowmanPlayer player, ETeamColor color);
+    
+    /**
+     * Remove player from the game
+     * @param player
+     */
+    public void removePlayer(SnowmanPlayer player);
+    
     /**
      * Verify that all players are ready to player and start the game 
      * by broadcasting a STARTGAME message if so
      */
     public void startGameIfReady();
     
-    public SnowmanPlayer getPlayer(int id);
+    /**
+     * Return the flag from the game with the given id
+     * @param id
+     * @return
+     */
+    public SnowmanFlag getFlag(int id);
 
-//     /**
-//     * Respond to an attack message from a player by verifying the attack
-//     * and broadcasting the result to all other players
-//     * 
-//     * @param attacker
-//     * @param x
-//     * @param y
-//     * @param attackedID
-//     * @param timestamp
-//     */
-//    public void attack(SnowmanPlayer attacker, float x, float y, int attackedID,
-//            long timestamp);
+    /**
+     * Return the player from the game with the given id
+     * @param id
+     * @return
+     */
+    public SnowmanPlayer getPlayer(int id);
+    
+    public String getName();
 
 }

@@ -36,7 +36,6 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.AppContext;
-import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 
@@ -46,7 +45,7 @@ import java.io.Serializable;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  */
-public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable {
+public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
 
     static public final long serialVersionbUID = 1L;
     

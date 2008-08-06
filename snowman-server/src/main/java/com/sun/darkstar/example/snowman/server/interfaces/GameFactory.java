@@ -42,6 +42,7 @@ import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 public interface GameFactory 
 {
     public SnowmanGame createSnowmanGame(String gameName,
+                                         int numPlayers,
                                          SnowmanAppContext appContext,
                                          EntityFactory entityFactory);
 

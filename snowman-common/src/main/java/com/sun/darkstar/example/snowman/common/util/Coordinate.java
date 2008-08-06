@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.sun.darkstar.example.snowman.server.service;
+package com.sun.darkstar.example.snowman.common.util;
 
 /**
  * Represents a 2D coordinate with floating point values
