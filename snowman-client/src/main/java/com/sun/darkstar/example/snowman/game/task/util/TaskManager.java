@@ -50,7 +50,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 07-28-2008 17:32 EST
+ * @version Modified date: 08-06-2008 11:51 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -97,7 +97,7 @@ public class TaskManager extends Manager {
 	private TaskManager(Game game){
 		super(EManager.TaskManager);
 		this.game = game;
-		this.executeTime = 10;
+		this.executeTime = 20;
 		this.enqueueTime = 5;
 		this.taskQueue = new ConcurrentLinkedQueue<ITask>();
 		this.submitted = new LinkedList<ITask>();
@@ -170,23 +170,27 @@ public class TaskManager extends Manager {
 					StatCollector.addStat(SnowmanStatType.STAT_LOCALMOVE_COUNT, 1);
 				}
 				task = new MoveCharacterTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
-			}
-			else {
+			} else {
 				if (Debug.stats) {
 					StatCollector.addStat(SnowmanStatType.STAT_ENTITYMOVE_COUNT, 1);
 				}
 				task = new MoveCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
 			}
 			break;
-		case SetHP: task = new SetHPTask(this.game, (Integer)args[0], (Integer)args[1]); break;
-		case Attacking: task = new AttackingTask(this.game, (Integer)args[0], (Integer)args[1], (Boolean)args[2]); break;
+		case Attacking: 
+			if(args.length == 2) {
+				task = new AttackTask(this.game, (Integer)args[0], (Integer)args[1]);
+			} else if(args.length == 4) {
+				task = new AttackTask(this.game, (Integer)args[0], (Integer)args[1], (Integer)args[2], (Boolean)args[3]);
+			}
+			break;
 		case CreateSnowball: 
-			task = new CreateSnowballTask(this.game, (Integer)args[0], (Integer)args[1]);
+			task = new CreateSnowballTask(this.game, (CharacterEntity)args[0], (CharacterEntity)args[1]);
 			if (Debug.stats) {
 				StatCollector.addStat(SnowmanStatType.STAT_SNOWBALL_COUNT, 1);
 			}
 			break;
-		case Throw: task = new ThrowTask(this.game, (SnowballEntity)args[0]); break;
+		case MoveSnowball: task = new MoveSnowballTask(this.game, (SnowballEntity)args[0]); break;
 		}
 		this.submit(task);
 		return task;

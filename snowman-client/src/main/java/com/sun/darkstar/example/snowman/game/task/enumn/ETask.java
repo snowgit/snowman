@@ -48,10 +48,6 @@ public enum ETask {
 	 */
 	MoveCharacter(ETaskType.RealTime),
 	/**
-	 * The task used to update the HP value of a character.
-	 */
-	SetHP(ETaskType.RealTime),
-	/**
 	 * The task used to start the attacking process.
 	 */
 	Attacking(ETaskType.RealTime),
@@ -62,7 +58,7 @@ public enum ETask {
 	/**
 	 * The task used to update the motion of snow balls.
 	 */
-	Throw(ETaskType.RealTime);
+	MoveSnowball(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

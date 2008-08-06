@@ -12,7 +12,7 @@ import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-24-2008 11:34 EST
- * @version Modified date: 08-04-2008 12:14 EST
+ * @version Modified date: 08-06-2008 11:18 EST
  */
 public class CharacterEntity extends DynamicEntity {
 	/**
@@ -27,6 +27,10 @@ public class CharacterEntity extends DynamicEntity {
 	 * The current <code>Vector3f</code> destination.
 	 */
 	protected Vector3f destination;
+	/**
+	 * The target <code>CharacterEntity</code> instance.
+	 */
+	protected CharacterEntity target;
 
 	/**
 	 * Constructor of <code>CharacterEntity</code>.
@@ -48,6 +52,14 @@ public class CharacterEntity extends DynamicEntity {
 	}
 	
 	/**
+	 * Add the given delta value to the character HP.
+	 * @param delta The change in HP value.
+	 */
+	public void addHP(int delta) {
+		this.hp -= delta;
+	}
+	
+	/**
 	 * Set the current state of the snowman.
 	 * @param state The <code>EState</code> enumeration.
 	 */
@@ -63,6 +75,14 @@ public class CharacterEntity extends DynamicEntity {
 		this.destination = destination;
 	}
 	
+	/**
+	 * Set the current attacking target of this character.
+	 * @param target The target <code>CharacterEntity</code> instance.
+	 */
+	public void setTarget(CharacterEntity target) {
+		this.target = target;
+	}
+
 	/**
 	 * Retrieve the current HP value.
 	 * @return The integer HP value.
@@ -85,5 +105,13 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public Vector3f getDestination() {
 		return this.destination;
+	}
+	
+	/**
+	 * Retrieve the target <code>CharacterEntity</code> instance.
+	 * @return The target <code>CharacterEntity</code> instance.
+	 */
+	public CharacterEntity getTarget() {
+		return this.target;
 	}
 }

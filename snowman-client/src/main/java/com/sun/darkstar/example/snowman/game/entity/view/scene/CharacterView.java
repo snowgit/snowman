@@ -4,6 +4,7 @@ import com.jme.scene.Spatial;
 import com.model.md5.JointAnimation;
 import com.model.md5.ModelNode;
 import com.model.md5.controller.JointController;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.data.enumn.EAnimation;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
@@ -73,23 +74,35 @@ public class CharacterView extends DynamicView {
 
 	@Override
 	public void update(float interpolation) {
+		this.setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()));
+		this.getEntity().setMass(SingletonRegistry.getHPConverter().convertMass(this.getEntity().getHP()));
 		switch(((CharacterEntity)this.entity).getState()) {
 		case Moving:
+			if(this.jointController.getActiveAnimation() == this.animMove) return;
 			this.jointController.setFading(this.animMove, 0, false);
 			this.jointController.setRepeatType(com.jme.scene.Controller.RT_WRAP);
+			break;
 		case Idle:
+			if(this.jointController.getActiveAnimation() == this.animIdle) return;
 			this.jointController.setFading(this.animIdle, 0, false);
 			this.jointController.setRepeatType(com.jme.scene.Controller.RT_WRAP);
 			break;
 		case Attacking:
+			if(this.jointController.getActiveAnimation() == this.animAttack) return;
 			this.jointController.setFading(this.animAttack, 0, false);
 			this.jointController.setRepeatType(com.jme.scene.Controller.RT_CLAMP);
 			break;
 		case Hit:
+			if(this.jointController.getActiveAnimation() == this.animHit) return;
 			this.jointController.setFading(this.animHit, 0, false);
 			this.jointController.setRepeatType(com.jme.scene.Controller.RT_CLAMP);
 			break;
 		}
+	}
+	
+	@Override
+	public CharacterEntity getEntity() {
+		return (CharacterEntity)this.entity;
 	}
 
 	/**
@@ -98,6 +111,16 @@ public class CharacterView extends DynamicView {
 	 */
 	public ModelNode getMesh() {
 		return this.model;
+	}
+
+	/**
+	 * Check if the current active animation is half complete.
+	 * @return True if the current active animation is half complete. False otherwise.
+	 */
+	public boolean isCurrentHalf() {
+		float time = this.jointController.getActiveAnimation().getAnimationTime();
+		float value = (this.jointController.getActiveAnimation().getNextTime()/time);
+		return ((value >= 0.4f) && (value <= 0.6f));
 	}
 
 	/**

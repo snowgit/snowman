@@ -2,7 +2,6 @@ package com.sun.darkstar.example.snowman.game.entity.controller;
 
 import com.jme.input.MouseInputListener;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
-import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.input.enumn.EInputType;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
@@ -16,13 +15,10 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:05 EST
- * @version Modified date: 07-25-2008 15:54 EST
+ * @version Modified date: 08-06-2008 11:23 EST
  */
 public class SnowmanController extends CharacterController implements MouseInputListener {
-	/**
-	 * The last known state.
-	 */
-	private EState lastState;
+
 
 	/**
 	 * Constructor of <code>SnowmanController</code>.
@@ -31,22 +27,13 @@ public class SnowmanController extends CharacterController implements MouseInput
 	public SnowmanController(SnowmanEntity entity) {
 		super(entity, EInputType.Mouse);
 	}
-	
-	@Override
-	protected void updateLogic(float interpolation) {
-		super.updateLogic(interpolation);
-		if(this.lastState == EState.Attacking && ((SnowmanEntity)this.entity).getState() == EState.Idle) {
-			TaskManager.getInstance().createTask(ETask.CreateSnowball, this.entity.getID(), ((SnowmanEntity)this.entity).getTaregt().getID());
-		}
-		this.lastState = ((SnowmanEntity)this.entity).getState();
-	}
 
 	@Override
 	public void onButton(int button, boolean pressed, int x, int y) {
-		if(((CharacterEntity)this.entity).getState() == EState.Attacking) return;
+		if(this.getEntity().getState() == EState.Attacking) return;
 		if(button == 0 && pressed) {
 			TaskManager.getInstance().createTask(ETask.UpdateState, this.entity, x, y).execute();
-			switch(((SnowmanEntity)this.entity).getState()) {
+			switch(this.getEntity().getState()) {
 			case Idle:
 				TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
 				break;
@@ -54,7 +41,7 @@ public class SnowmanController extends CharacterController implements MouseInput
 				TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
 				break;
 			case Targeting:
-				TaskManager.getInstance().createTask(ETask.Attacking, this.entity.getID(), ((SnowmanEntity)this.entity).getTaregt().getID(), true);
+				TaskManager.getInstance().createTask(ETask.Attacking, this.entity.getID(), this.getEntity().getTarget().getID());
 				break;
 			case TryingToGrab:
 				break;
@@ -69,4 +56,9 @@ public class SnowmanController extends CharacterController implements MouseInput
 
 	@Override
 	public void onWheel(int wheelDelta, int x, int y) {}
+	
+	@Override
+	public SnowmanEntity getEntity() {
+		return (SnowmanEntity)this.entity;
+	}
 }

@@ -71,6 +71,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void moveMOB(int objectID, float startx, float starty, float endx, float endy) {
+		if(objectID == this.myID) return;
 		TaskManager.getInstance().createTask(ETask.MoveCharacter, objectID, startx, starty, endx, endy);
 	}
 
@@ -82,8 +83,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		//throw new UnsupportedOperationException("StopMOB should not be used!");
-		System.out.println("Stop mob message");
+		// TODO Teleport player to the given coordinates.
 	}
 
 	@Override
@@ -94,9 +94,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attacked(int sourceID, int targetID, int hp) {
-		if(sourceID == this.myID) return;
-                // TODO - need to add HP to CreateSnowball task
-		TaskManager.getInstance().createTask(ETask.CreateSnowball, sourceID, targetID, false);
+		TaskManager.getInstance().createTask(ETask.Attacking, sourceID, targetID, 10, (sourceID == this.myID));
 	}
 
 	@Override

@@ -13,10 +13,10 @@ import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
 /**
- * <code>ThrowTask</code> extends <code>RealTimeTask</code> to initiate the
- * throw motion of a snow ball.
+ * <code>MoveSnowballTask</code> extends <code>RealTimeTask</code> to initiate
+ * the throw motion of a snow ball.
  * <p>
- * <code>ThrowTask</code> execution logic:
+ * <code>MoveSnowballTask</code> execution logic:
  * 1. Calculate horizontal motion direction based on current position and destination.
  * 2. Calculate the magnitude of the vertical force based on the maximum height.
  * 3. Calculate the vertical travel time based on vertical velocity.
@@ -25,26 +25,26 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 6. Add the force to the snow ball with calculated direction.
  * 7. Mark the snow ball entity for physics update.
  * <p>
- * <code>ThrowTask</code> are considered 'equal' if and only if the entity
- * of two <code>ThrowTask</code> are 'equal'.
+ * <code>MoveSnowballTask</code> are considered 'equal' if and only if the entity
+ * of two <code>MoveSnowballTask</code> are 'equal'.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-25-2008 17:18 EST
  * @version Modified date: 07-20-2008 13:51 EST
  */
-public class ThrowTask extends RealTimeTask {
+public class MoveSnowballTask extends RealTimeTask {
 	/**
 	 * The <code>SnowballEntity</code> that is being thrown.
 	 */
 	private final SnowballEntity snowball;
 	
 	/**
-	 * Constructor of <code>ThrowTask</code>.
+	 * Constructor of <code>MoveSnowballTask</code>.
 	 * @param game The <code>Game</code> instance.
 	 * @param snowball The <code>SnowballEntity</code>.
 	 */
-	public ThrowTask(Game game, SnowballEntity snowball) {
-		super(ETask.Throw, game);
+	public MoveSnowballTask(Game game, SnowballEntity snowball) {
+		super(ETask.MoveSnowball, game);
 		this.snowball = snowball;
 
 	}
@@ -94,8 +94,8 @@ public class ThrowTask extends RealTimeTask {
 	@Override
 	public boolean equals(Object object) {
 		if(super.equals(object)) {
-			if(object instanceof ThrowTask) {
-				ThrowTask given = (ThrowTask)object;
+			if(object instanceof MoveSnowballTask) {
+				MoveSnowballTask given = (MoveSnowballTask)object;
 				return given.snowball.equals(this.snowball);
 			}
 		}

@@ -119,6 +119,7 @@ public class MoveCharacterTask extends RealTimeTask {
 	public void execute() {
 		try {
 			this.character.resetVelocity();
+			this.character.resetForce();
 			Vector3f destination = this.getDestination();
 			if (destination != null) {
 				this.character.setDestination(destination);
@@ -129,10 +130,12 @@ public class MoveCharacterTask extends RealTimeTask {
 				}
 				Vector3f direction = destination.subtract(view.getLocalTranslation()).normalizeLocal();
 				direction.y = 0;
-				view.getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
+				view.getLocalRotation().lookAt(direction.clone(), Vector3f.UNIT_Y);
+				//System.out.println("Direction: " + direction.toString());
 				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
 				this.character.addForce(force);
 				PhysicsManager.getInstance().markForUpdate(this.character);
+				//System.out.println("Added force: " + force.toString());
 				// Step 9.
 				this.character.setState(EState.Moving);
 				ViewManager.getInstance().markForUpdate(this.character);
@@ -156,7 +159,7 @@ public class MoveCharacterTask extends RealTimeTask {
 			if(click == null) return null;
 			try {
 				Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
-				Vector3f local = view.getLocalTranslation();
+				Vector3f local = view.getLocalTranslation().clone();
 				this.game.getClient().send(ClientMessages.createMoveMePkt(local.x, local.z, click.x, click.z));
 				return collisionManager.getDestination(local.x, local.z, click.x, click.z, world);
 			} catch (ObjectNotFoundException e) {

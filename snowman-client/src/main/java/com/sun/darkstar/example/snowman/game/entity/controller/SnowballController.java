@@ -44,7 +44,7 @@ public class SnowballController extends Controller {
 	@Override
 	protected void updateLogic(float interpolation) {
 		if(!this.thrown) {
-			TaskManager.getInstance().createTask(ETask.Throw, this.entity);
+			TaskManager.getInstance().createTask(ETask.MoveSnowball, this.entity);
 			this.thrown = true;
 		} else if(!this.validatePosition()) {
 			PhysicsManager.getInstance().markForUpdate(this.entity);

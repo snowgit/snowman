@@ -109,7 +109,7 @@ public class UpdateStateTask extends RealTimeTask {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Validate if the given target is within attack range.
 	 * @param target The <code>Spatial</code> target to check.
@@ -125,7 +125,7 @@ public class UpdateStateTask extends RealTimeTask {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Retrieve the planar distance squared between the given spatials.
 	 * @param spatial The starting <code>Spatial</code>.
@@ -139,7 +139,7 @@ public class UpdateStateTask extends RealTimeTask {
 		float dz = start.z - end.z;
 		return (dx * dx) + (dz * dz);
 	}
-	
+
 	/**
 	 * Validate if the given target is blocked by a static entity.
 	 * @param target The <code>Spatial</code> target to check.

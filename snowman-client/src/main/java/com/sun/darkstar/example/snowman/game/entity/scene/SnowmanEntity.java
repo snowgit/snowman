@@ -16,10 +16,6 @@ public class SnowmanEntity extends CharacterEntity {
 	 * The last movement update time.
 	 */
 	private long timestamp;
-	/**
-	 * The current target.
-	 */
-	private CharacterEntity target;
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
@@ -35,22 +31,6 @@ public class SnowmanEntity extends CharacterEntity {
 	 */
 	public void updateTimeStamp() {
 		this.timestamp = System.currentTimeMillis();
-	}
-	
-	/**
-	 * Set the snowman that is being targeted.
-	 * @param target The targeted <code>CharacterEntity</code>.
-	 */
-	public void setTarget(CharacterEntity target) {
-		this.target = target;
-	}
-	
-	/**
-	 * Retrieve the snowman that is being targeted.
-	 * @return The targeted <code>CharacterEntity</code>.
-	 */
-	public CharacterEntity getTaregt() {
-		return this.target;
 	}
 	
 	/**
