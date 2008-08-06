@@ -34,7 +34,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
@@ -86,7 +86,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
     /**
      * The team color of this particular flag
      */
-    private final TeamColor flagColor;
+    private final ETeamColor flagColor;
     /**
      * The id of the flag.  This is unique among flags in the game but not
      * necc unique among all objects in the game
@@ -101,7 +101,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * @param flagGoalY the Y coordinate of the centroid of the winning circle
      * @param flagGoalRadius the radius of the winning circle
      */
-    public SnowmanFlagImpl(TeamColor teamColor, float flagGoalX, float flagGoalY,
+    public SnowmanFlagImpl(ETeamColor teamColor, float flagGoalX, float flagGoalY,
             float flagGoalRadius) {
         flagColor = teamColor;
         goalX = flagGoalX;
@@ -114,7 +114,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, ManagedObject, Serializable
      * Returns the color of the team that owns this flag
      * @return the flag's color
      */
-    public TeamColor getTeamColor() {
+    public ETeamColor getTeamColor() {
         return flagColor;
     }
 

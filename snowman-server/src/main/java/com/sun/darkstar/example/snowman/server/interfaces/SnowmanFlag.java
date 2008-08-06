@@ -32,6 +32,8 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+
 /**
  * The <code>SnowmanFlag</code> interface defines the basic behavior
  * of a flag in the snowman game
@@ -44,7 +46,7 @@ public interface SnowmanFlag extends DynamicEntity
      * Returns the color of the team that owns this flag
      * @return the flag's color
      */
-    public TeamColor getTeamColor();
+    public ETeamColor getTeamColor();
 
     /**
      * This method sets the flag as held by a snowman.  Passing null sets it as 

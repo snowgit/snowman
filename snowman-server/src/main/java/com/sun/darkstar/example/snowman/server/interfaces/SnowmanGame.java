@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 import java.nio.ByteBuffer;
 
@@ -55,7 +56,7 @@ public interface SnowmanGame
      * @param player
      * @param color
      */
-    public void addPlayer(SnowmanPlayer player, TeamColor color);
+    public void addPlayer(SnowmanPlayer player, ETeamColor color);
     
     public void removePlayer(SnowmanPlayer player);
     

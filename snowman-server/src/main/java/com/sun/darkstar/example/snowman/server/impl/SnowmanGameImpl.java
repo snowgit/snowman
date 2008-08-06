@@ -35,10 +35,10 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.TeamColor;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.AppContext;
@@ -99,7 +99,7 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     
     @SuppressWarnings("unchecked")
     private final ManagedReference<SnowmanFlag> flagRefs[] = 
-            new ManagedReference[TeamColor.values().length];
+            new ManagedReference[ETeamColor.values().length];
         
     private final List<ManagedReference<SnowmanPlayer>>  playerRefs = 
             new ArrayList<ManagedReference<SnowmanPlayer>>(MatchmakerImpl.NUMPLAYERSPERGAME);
@@ -113,8 +113,8 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     {
         // TODO - make game flexable in number of players
         assert MatchmakerImpl.NUMPLAYERSPERGAME * 2 <= playerStarts.length;
-        assert TeamColor.values().length * 2 <= flagStarts.length;
-        assert TeamColor.values().length * 3 <= flagGoals.length;
+        assert ETeamColor.values().length * 2 <= flagStarts.length;
+        assert ETeamColor.values().length * 3 <= flagGoals.length;
 
         this.appContext = appContext;
         this.entityFactory = entityFactory;
@@ -122,7 +122,7 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
                 AppContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
                 
-        for(TeamColor color : TeamColor.values()){
+        for(ETeamColor color : ETeamColor.values()){
             int idx = color.ordinal();
             SnowmanFlag flag =
                         entityFactory.createSnowmanFlag(color,
@@ -141,7 +141,7 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
         channelRef.get().send(session, buff);
     }
 
-    public void addPlayer(SnowmanPlayer player, TeamColor color) {
+    public void addPlayer(SnowmanPlayer player, ETeamColor color) {
         ManagedReference<SnowmanPlayer> playerRef = 
                 AppContext.getDataManager().createReference(player);
         playerRefs.add(playerRef);
@@ -169,12 +169,12 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
                     player.getID(), player.getX(), player.getY(), 
-                    EMOBType.SNOWMAN));
+                    EMOBType.SNOWMAN, player.getTeamColor()));
         }
         for(ManagedReference<SnowmanFlag> flagRef : flagRefs){
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG));
+                    flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor()));
         }
         multiSend(ServerMessages.createReadyPkt());
     }

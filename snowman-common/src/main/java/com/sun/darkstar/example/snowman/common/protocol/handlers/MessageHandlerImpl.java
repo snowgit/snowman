@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IProtocolProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
@@ -103,7 +104,8 @@ public class MessageHandlerImpl implements MessageHandler
                 unit.addMOB(packet.getInt(), 
                             packet.getFloat(),
                             packet.getFloat(),
-                            EMOBType.values()[packet.getInt()]);
+                            EMOBType.values()[packet.getInt()],
+                            ETeamColor.values()[packet.getInt()]);
                 break;
             case REMOVEMOB:
                 unit.removeMOB(packet.getInt());
