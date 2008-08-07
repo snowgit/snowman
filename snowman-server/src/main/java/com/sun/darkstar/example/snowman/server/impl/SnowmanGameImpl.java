@@ -127,15 +127,24 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
      * If the division is not even, the last team will have the remainder
      */
     private void initMaxTeamPlayers() {
-       int playersPerTeam = this.numPlayers/ETeamColor.values().length;
-       int remainder = this.numPlayers%ETeamColor.values().length;
-       for(int i = 0; i < maxTeamPlayers.length-1; i++)
-           maxTeamPlayers[i] = playersPerTeam;
-       
-       if(remainder == 0)
-           maxTeamPlayers[maxTeamPlayers.length-1]=playersPerTeam;
-       else
-           maxTeamPlayers[maxTeamPlayers.length-1]=remainder;
+        //special case when there are fewer players than teams
+        if(this.numPlayers < ETeamColor.values().length) {
+            for(int j = 0; j < maxTeamPlayers.length; j++) {
+                if(j < numPlayers) maxTeamPlayers[j] = 1;
+                else maxTeamPlayers[j] = 0;
+            }
+            return;
+        }
+        
+        int playersPerTeam = this.numPlayers / ETeamColor.values().length;
+        int remainder = this.numPlayers % ETeamColor.values().length;
+        for (int i = 0; i < maxTeamPlayers.length - 1; i++)
+            maxTeamPlayers[i] = playersPerTeam;
+
+        if(remainder == 0)
+            maxTeamPlayers[maxTeamPlayers.length-1]=playersPerTeam;
+        else
+            maxTeamPlayers[maxTeamPlayers.length-1]=remainder;
     }
     
     /**
@@ -164,9 +173,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
         //ensure we are not going over the limit
-        if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()])
+        if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
             throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
                     this.getName()+" : too many players");
+        }
         
         //get a reference to the player and add to the list
         ManagedReference<SnowmanPlayer> playerRef = 

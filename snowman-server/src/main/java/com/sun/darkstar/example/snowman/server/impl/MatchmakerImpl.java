@@ -54,7 +54,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
 
     private static Logger logger = Logger.getLogger(MatchmakerImpl.class.getName());
     
-    public static final int NUMPLAYERSPERGAME = 2;
+    public static final int NUMPLAYERSPERGAME = 1;
     
     /**
      * The list of waiting players
