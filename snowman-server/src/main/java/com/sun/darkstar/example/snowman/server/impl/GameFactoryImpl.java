@@ -48,10 +48,11 @@ public class GameFactoryImpl implements GameFactory, Serializable
     public static long serialVersionUID = 1L;
     
     public SnowmanGame createSnowmanGame(String gameName,
+                                         int numPlayers,
                                          SnowmanAppContext appContext,
                                          EntityFactory entityFactory)
     {
-        return new SnowmanGameImpl(gameName, appContext, entityFactory);
+        return new SnowmanGameImpl(gameName, numPlayers, appContext, entityFactory);
     }
 
 }

@@ -36,60 +36,40 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.sgs.app.AppContext;
+import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
-import com.sun.sgs.app.ManagedObject;
-import com.sun.sgs.app.ManagedObjectRemoval;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This object represents an actual running game session of Project Snowman,
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  */
-public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
-                                        ManagedObjectRemoval, Serializable
+public class SnowmanGameImpl implements SnowmanGame, Serializable
 {
-    static final long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
     /**
      * A prefix that is appended to the darkstar bound name for
      * all game channels.
      */
-    static final String CHANPREFIX = "_GAMECHAN_";
-
-    /**
-     * Where players start at th begging of the game
-     * 
-     * player starts == x1,y1,x2,y2....
-     */
-    static final float[] playerStarts = {0,0,10,0,0,10,10,10};
-
-    /** 
-     * where flags start at the beginning of the game
-     * 
-     * flag starts == x1,y1,x2,y2.....
-     */
-    static final float[] flagStarts={1,1,9,9};
+    public static final String CHANPREFIX = "_GAMECHAN_";
     
-    /**
-     * The goals for the flags
-     * 
-     * flag goals == x1,y1,r1,x2,y2,r2 ...
-     */
-    static final float[] flagGoals={1,1,1,9,9,1};
-    
-    static final int PLAYERIDSTART = 1;
+    private static final float GOALRADIUS = 1.0f;
+    private static final int PLAYERIDSTART = 1;
     
     /**
      * A reference to a channel that is used to send game packets to
@@ -97,42 +77,92 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
      */
     private final ManagedReference<Channel> channelRef;
     
-    @SuppressWarnings("unchecked")
-    private final ManagedReference<SnowmanFlag> flagRefs[] = 
-            new ManagedReference[ETeamColor.values().length];
-        
-    private final List<ManagedReference<SnowmanPlayer>>  playerRefs = 
-            new ArrayList<ManagedReference<SnowmanPlayer>>(MatchmakerImpl.NUMPLAYERSPERGAME);
-    
+    private int numPlayers;
+    private int nextPlayerId = PLAYERIDSTART;
+    private String gameName;
+    /**
+     * List of flags in the game
+     */
+    private final List<ManagedReference<SnowmanFlag>> flagRefs;
+    /**
+     * Map of player IDs to players that are part of this game
+     */
+    private final Map<Integer, ManagedReference<SnowmanPlayer>>  playerRefs;
     private final SnowmanAppContext appContext;
     private final EntityFactory entityFactory;
     
+    /**
+     * Keeps track of how many players from each team have joined the game
+     */
+    private int[] teamPlayers = new int[ETeamColor.values().length];
+    /**
+     * Keeps track of the maximum number of players per team
+     */
+    private int[] maxTeamPlayers = new int[ETeamColor.values().length];
+    
     public SnowmanGameImpl(String gameName,
+                           int numPlayers,
                            SnowmanAppContext appContext, 
                            EntityFactory entityFactory)
     {
-        // TODO - make game flexable in number of players
-        assert MatchmakerImpl.NUMPLAYERSPERGAME * 2 <= playerStarts.length;
-        assert ETeamColor.values().length * 2 <= flagStarts.length;
-        assert ETeamColor.values().length * 3 <= flagGoals.length;
+        this.gameName = gameName;
+        this.numPlayers = numPlayers;
+        initMaxTeamPlayers();
+        
+        this.flagRefs = new ArrayList<ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
+        this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
 
         this.appContext = appContext;
         this.entityFactory = entityFactory;
-        channelRef = AppContext.getDataManager().createReference(
-                AppContext.getChannelManager().createChannel(
+        this.channelRef = appContext.getDataManager().createReference(
+                appContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
-                
+        
+        initFlags();
+    }
+    
+    /**
+     * Initialize the maximum number of players per team
+     * The total number of players is divided up evenly among the teams.
+     * If the division is not even, the last team will have the remainder
+     */
+    private void initMaxTeamPlayers() {
+        //special case when there are fewer players than teams
+        if(this.numPlayers < ETeamColor.values().length) {
+            for(int j = 0; j < maxTeamPlayers.length; j++) {
+                if(j < numPlayers) maxTeamPlayers[j] = 1;
+                else maxTeamPlayers[j] = 0;
+            }
+            return;
+        }
+        
+        int playersPerTeam = this.numPlayers / ETeamColor.values().length;
+        int remainder = this.numPlayers % ETeamColor.values().length;
+        for (int i = 0; i < maxTeamPlayers.length - 1; i++)
+            maxTeamPlayers[i] = playersPerTeam;
+
+        if(remainder == 0)
+            maxTeamPlayers[maxTeamPlayers.length-1]=playersPerTeam;
+        else
+            maxTeamPlayers[maxTeamPlayers.length-1]=remainder;
+    }
+    
+    /**
+     * Initialize the list of flags and their locations
+     */
+    private void initFlags() {
         for(ETeamColor color : ETeamColor.values()){
-            int idx = color.ordinal();
+            Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
+            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
             SnowmanFlag flag =
                         entityFactory.createSnowmanFlag(color,
-                                                        flagGoals[idx*3],
-                                                        flagGoals[idx*3+1],
-                                                        flagGoals[idx*3+2]); 
-            flag.setLocation(flagStarts[idx*2], flagStarts[idx*2+1]);
+                                                        flagGoal.getX(),
+                                                        flagGoal.getY(),
+                                                        GOALRADIUS); 
+            flag.setLocation(flagStart.getX(), flagStart.getY());
             ManagedReference<SnowmanFlag> ref =
-                        AppContext.getDataManager().createReference(flag);
-            flagRefs[idx] = ref;
+                        appContext.getDataManager().createReference(flag);
+            flagRefs.add(ref);
         }
     }
     
@@ -142,30 +172,45 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     }
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
+        //ensure we are not going over the limit
+        if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
+            throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
+                    this.getName()+" : too many players");
+        }
+        
+        //get a reference to the player and add to the list
         ManagedReference<SnowmanPlayer> playerRef = 
-                AppContext.getDataManager().createReference(player);
-        playerRefs.add(playerRef);
-        int index = playerRefs.indexOf(playerRef);
-        player.setID(index + PLAYERIDSTART);
-        player.setTimestampLocation(0,
-                                    playerStarts[index*2],
-                                    playerStarts[(index*2)+1]);
+                appContext.getDataManager().createReference(player);
+        Integer playerId = new Integer(nextPlayerId++);
+        playerRefs.put(playerId, playerRef);
+        
+        //increment the total team players in this game
+        teamPlayers[color.ordinal()]++;
+        
+        //update player information
+        player.setID(playerId.intValue());
+        Coordinate position = SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
+                                                              color,
+                                                              teamPlayers[color.ordinal()],
+                                                              maxTeamPlayers[color.ordinal()]);
+        player.setLocation(position.getX(), position.getY());
         player.setTeamColor(color);
         player.setGame(this);
+        
+        //add the players session to the channel
         channelRef.get().join(player.getSession());
     }
     
     // A player disconnected
     public void removePlayer(SnowmanPlayer player){
-        ManagedReference<SnowmanPlayer> playerRef = 
-                AppContext.getDataManager().createReference(player);
-        int idx = playerRefs.indexOf(playerRef);
-        playerRefs.set(idx, null);//TODO - bad...
-        send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+        Integer playerId = new Integer(player.getID());
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
+        if(playerRef != null)
+            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
     }
     
     public void sendMapInfo(){
-        for(ManagedReference<SnowmanPlayer> ref : playerRefs){
+        for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
                     player.getID(), player.getX(), player.getY(), 
@@ -180,13 +225,13 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     }
     
     private void multiSend(ByteBuffer buff){
-    	 for(ManagedReference<SnowmanPlayer> ref : playerRefs){
+    	 for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
     		 ref.get().send(buff);
     	 }
     }
     
     public void startGameIfReady(){
-        for(ManagedReference<SnowmanPlayer> playerRef : playerRefs){
+        for(ManagedReference<SnowmanPlayer> playerRef : playerRefs.values()){
             if (playerRef != null){
                 if (!playerRef.get().getReadyToPlay()){
                     return;
@@ -197,25 +242,32 @@ public class SnowmanGameImpl implements SnowmanGame, ManagedObject,
     }
     
     public SnowmanPlayer getPlayer(int id){
-    	return playerRefs.get(id-PLAYERIDSTART).get();
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
+        if(playerRef != null)
+            return playerRef.get();
+        return null;
     }
     
     private void endGame() {
         send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));
-        AppContext.getDataManager().removeObject(this);
+        appContext.getDataManager().removeObject(this);
     }
     
     public void removingObject() {
-        for (ManagedReference<SnowmanPlayer> ref : playerRefs) {
-            AppContext.getDataManager().removeObject(ref.get());
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
+            appContext.getDataManager().removeObject(ref.get());
         }
             
         for (ManagedReference<SnowmanFlag> ref : flagRefs) {
-            AppContext.getDataManager().removeObject(ref.get());
+            appContext.getDataManager().removeObject(ref.get());
         }
     }
 
     public SnowmanFlag getFlag(int id) {
-        return flagRefs[id].get();
+        return flagRefs.get(id).get();
+    }
+    
+    public String getName() {
+        return gameName;
     }
 }

@@ -32,13 +32,15 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
+import com.sun.sgs.app.ManagedObject;
+
 /**
  * A <code>DynamicEntity</code> represents a movable entity in the snowman
  * world.  This could be a player, a flag, a campfire, etc.
  * 
  * @author Owen Kellett
  */
-public interface DynamicEntity 
+public interface DynamicEntity extends ManagedObject
 {
     /**
      * This method sets the id

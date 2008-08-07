@@ -39,7 +39,6 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -50,10 +49,10 @@ import java.util.logging.Logger;
  * launches a game session and assigns them to it
  * @author Jeffrey Kesselman
  */
-public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
+public class MatchmakerImpl implements Matchmaker, Serializable {
     public static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(Matchmaker.class.getName());
+    private static Logger logger = Logger.getLogger(MatchmakerImpl.class.getName());
     
     public static final int NUMPLAYERSPERGAME = 2;
     
@@ -61,27 +60,26 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
      * The list of waiting players
      */
     @SuppressWarnings("unchecked")
-    ManagedReference<SnowmanPlayer>[] waiting =
+    private ManagedReference<SnowmanPlayer>[] waiting =
             new ManagedReference[NUMPLAYERSPERGAME];
     
     /**
      * The name of the game to launch
      */
-    public String name;
+    private String namePrefix = "Game";
+    private int gameCount = 0;
     
-    private SnowmanAppContext appContext;
-    private GameFactory gameFactory;
-    private EntityFactory entityFactory;
+    private final SnowmanAppContext appContext;
+    private final GameFactory gameFactory;
+    private final EntityFactory entityFactory;
     
     /**
      * The constuctor
      * @param name The name of the game to launch.  Must be unique
      */
-    public MatchmakerImpl(String name,
-                          SnowmanAppContext appContext,
+    public MatchmakerImpl(SnowmanAppContext appContext,
                           GameFactory gameFactory,
                           EntityFactory entityFactory) {
-        this.name = name;
         this.appContext = appContext;
         this.gameFactory = gameFactory;
         this.entityFactory = entityFactory;
@@ -89,7 +87,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
     }
 
     /**
-     * This method resets the witing queue to all null
+     * This method resets the waiting queue to all null
      * It must be done at initialization to make the places in the list
      * to set the actual players.
      */
@@ -127,15 +125,13 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
         }
         waiting[idx] = appContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
-            launchGameSession(name);
+            launchGameSession(namePrefix+(gameCount++));
         }
     }
 
     /**
      * This method takes a player off the waiting players list.
      * It is primarily used by the code that handles dropped users
-     * @param player the player to remove from the waiting list
-     * 
      * @param player the player to remove from the game
      */
     public void removeWaitingPlayer(SnowmanPlayer player) {
@@ -158,7 +154,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable, ManagedObject {
      */
     private void launchGameSession(String name) {
         appContext.getDataManager().markForUpdate(this);
-        SnowmanGame game = gameFactory.createSnowmanGame(name, appContext, entityFactory);
+        SnowmanGame game = gameFactory.createSnowmanGame(name, NUMPLAYERSPERGAME, appContext, entityFactory);
         ETeamColor color = ETeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);

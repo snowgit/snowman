@@ -94,7 +94,7 @@ public class ServerMessagesTest extends AbstractTestMessages
     
     @Test
     public void testCreateAddMOBPkt() {
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.RED);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red);
         packet.flip();
         checkOpcode(packet, EOPCODE.ADDMOB);
         
@@ -108,7 +108,7 @@ public class ServerMessagesTest extends AbstractTestMessages
         Assert.assertEquals(x, 1.0f);
         Assert.assertEquals(y, 2.0f);
         Assert.assertEquals(type, EMOBType.SNOWMAN);
-        Assert.assertEquals(team, ETeamColor.RED);
+        Assert.assertEquals(team, ETeamColor.Red);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

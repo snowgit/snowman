@@ -38,10 +38,9 @@ import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
@@ -59,32 +58,39 @@ import java.util.logging.Logger;
  * @author Owen Kellett
  */
 public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable, 
-                                          ManagedObject, IServerProcessor
+                                          IServerProcessor
 {
     public static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
-    private static long DEATHDELAYMS = 10 * 1000;
-    private static float POSITIONTOLERANCESQD = 1.0f;//.5f * .5f;
+    static long DEATHDELAYMS = 10 * 1000;
+    static float POSITIONTOLERANCESQD = 1.0f;
+    static int RESPAWNHP = 100;
+    static int ATTACKHP = 10;
     
     private ManagedReference<ClientSession> sessionRef;
+    
+    /**
+     * Player information and overall statistics
+     */
     private final String name;
     private int wins;
     private int losses;
+    
+    /**
+     * Current game information
+     */
     private int id;
     private float startX;
     private float startY;
     private float destX;
     private float destY;
-    private float deltaX;
-    private float deltaY;
-    // zero timestamp indicates no move yet received
     private long timestamp;
     private ETeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
-    private boolean readyToPlay = false;
-    private int hitPoints = 100;
+    private PlayerState state = PlayerState.NONE;
+    private int hitPoints = RESPAWNHP;
     private SnowmanAppContext appContext;
     
     public SnowmanPlayerImpl(SnowmanAppContext appContext,
@@ -92,17 +98,27 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         this.appContext = appContext;
         name = session.getName();
         setSession(session);
-    }    
+    } 
+    
+    static enum PlayerState {
+        //indicates the player is not in a game
+        NONE, 
+        //player is not moving
+        STOPPED, 
+        //player is moving
+        MOVING, 
+        //player is dead
+        DEAD
+    }
 
     public void setID(int id) {
         this.id = id;
     }
 
-    public void setTimestampLocation(long timestamp, float x, float y) {
+    public void setLocation(float x, float y) {
        startX = destX = x;
        startY = destY = y;
-       deltaX = deltaY = 0;
-       this.timestamp = timestamp;
+       this.state = PlayerState.STOPPED;
     }
 
     public void setTeamColor(ETeamColor color) {
@@ -127,84 +143,98 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public float getX() {
-        assert (deltaX == 0) && (deltaY != 0);
         return startX;
     }
     
     public float getY() {
-        assert (deltaX == 0) && (deltaY != 0);
         return startY;
     }
     
-    // transient class to pass around xy pairs
-    // TODO include flag on whether we are moving?
-    static private class Position {
-        float x;
-        float y;
-        Position(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    
-    private Position getCurrentPos(long time) {
-        Position current = new Position(startX, startY);
-        if ((deltaX != 0) || (deltaY != 0)){ // moving
+    /**
+     * This method calculates the projected current position.
+     * If the player is not moving, it simply gives the current position as
+     * represented by startX and startY.
+     * If the player is moving, it calculates the position based on the last
+     * known timestamp, the currently given timestamp, the speed (which is
+     * calculated according to the current hit points), and the current
+     * destination.
+     * 
+     * @param time
+     * @return
+     */
+    private Coordinate getExpectedPositionAtTime(long time) {
+        float currentX = startX;
+        float currentY = startY;
+        if (state == PlayerState.MOVING) {
+            //total time that player has been moving
             long dt = time - timestamp;
-            current.x += (deltaX * dt);
-            current.y += (deltaY * dt);
-
-            // clip the new position to the destination
-            float dx = current.x - startX;
-            float dy = current.y - startY;
-            float newLengthSqd = (dx*dx) + (dy*dy);
-            dx = destX - startX;
-            dy = destY - startY;
-            float maxLengthSqd = (dx*dx) + (dy*dy);
-            if (newLengthSqd > maxLengthSqd) {
-                current.x = destX;
-                current.y = destY;
+            
+            //calculate speed from HPconverter
+            float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.00001f;
+            float distanceTraveled = ratePerMs*dt;
+            
+            //calculate the actual distance traveled based on the speed
+            float dx = destX - startX;
+            float dy = destY - startY;
+            float targetDistance = (float)Math.sqrt((dx * dx) + (dy * dy));
+            
+            //if we've travelled beyond target, target is the position
+            if(targetDistance <= distanceTraveled) {
+                currentX = destX;
+                currentY = destY;
+            }
+            //otherwise, we need to calculate the new position based on
+            //a system of equations (looking for realDX and realDY as variables):
+            //  dx/dy = realDX/realDY
+            //  realDX^2 + realDY^2 = distanceTraveled^2
+            else {
+                float realDX = (float) Math.sqrt(
+                        (distanceTraveled * distanceTraveled) / 
+                        ((dx*dx)/(dy*dy) + 1));
+                float realDY = (float) Math.sqrt(
+                        (distanceTraveled * distanceTraveled) / 
+                        ((dy*dy)/(dx*dx) + 1));
+                
+                //ensure that the signs match for the deltas
+                if(((realDX > 0) && (dx < 0)) ||
+                        ((realDX < 0) && (dx > 0)))
+                    realDX *= -1;
+                if(((realDY > 0) && (dy < 0)) ||
+                        ((realDY < 0) && (dy > 0)))
+                    realDY *= -1;
+                
+                currentX = startX + realDX;
+                currentY = startY + realDY;
             }
         }
-        return current;
+        return new Coordinate(currentX, currentY);
     }
     
-    // check whether x, y is within tolerance (squared) of the current
-    // position
-    public boolean checkXY(long time, float x, float y, float toleranceSqd) {
-        return checkTolerance(getCurrentPos(time), x, y, toleranceSqd);
+    /**
+     * Check that the given coordinates are within the 
+     * given tolerance of eachother
+     */
+    private boolean checkTolerance(float expectedX, float expectedY,
+                                   float givenX, float givenY) {
+        float dx = expectedX - givenX;
+        float dy = expectedY - givenY;
+        float distanceSqd = (dx*dx)+(dy*dy);
+        return distanceSqd < POSITIONTOLERANCESQD;
     }
     
-    // update the start position to the current position, while checking
-    // whether x, y is withing tolerance (squared) of the new start
-    // position
-    private boolean setStartXY(long time, float x, float y, float toleranceSqd) {
-        Position current = getCurrentPos(time);
-        startX = current.x;
-        startY = current.y;
-        return checkTolerance(current, x, y, toleranceSqd);
-    }
-    
-    // Check whether x,y is within tolerance (squared) of pos
-    private boolean checkTolerance(Position pos, float x, float y,
-                                   float toleranceSqd)
-    {
-        float dx = pos.x - x;
-        float dy = pos.y - y;
-        float skewSqd = (dx*dx)+(dy*dy);
-        return true;//skewSqd < toleranceSqd; 
-    }
-                               
     public int getID(){
         return id;
     }
     
     public void setReadyToPlay(boolean readyToPlay){
-        this.readyToPlay = readyToPlay;
+        if(readyToPlay)
+            this.state = PlayerState.STOPPED;
+        else
+            this.state = PlayerState.NONE;
     }
     
     public boolean getReadyToPlay(){
-        return readyToPlay;
+        return this.state != PlayerState.NONE;
     }
     
     public void send(ByteBuffer buff){
@@ -219,60 +249,67 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      // IServerProcessor Messages
 
     public void ready() {
-        readyToPlay=true;
+        this.setReadyToPlay(true);
         currentGameRef.get().startGameIfReady();
     }
 
     public void moveMe(float startx, float starty,
                        float endx, float endy)
     {
-        if (setStartXY(timestamp, startx, starty, POSITIONTOLERANCESQD)){
-            destX = endx;
-            destY = endy;
+        //verify that the start location is valid
+        Long now = System.currentTimeMillis();
+        moveMe(now, startx, starty, endx, endy);
+    }
+    protected void moveMe(long now,
+                          float startx, float starty,
+                          float endx, float endy) {
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+        
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           startx, starty)) {
+            //TODO - collision detection
             
-            // calc the deltas for this move based on direction and rate of movement
-            float dx = destX - startX;
-            float dy = destY - startY;
-            if (dx != 0.0f || dy != 0.0) {
-                float length = (float)Math.sqrt((dx * dx) + (dy * dy));
-                float rate = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.01f;
-
-                // normalize the x,y and multiply by the move per ms
-                deltaX = (dx / length) * rate;
-                deltaY = (dy / length) * rate;
-            } else {
-                deltaX = 0.0f;
-                deltaY = 0.0f;
-            }
-            // Need collision detection here
+            this.timestamp = now;
+            this.startX = startx;
+            this.startY = starty;
+            this.destX = endx;
+            this.destY = endy;
+            this.state = PlayerState.MOVING;
+            
             currentGameRef.get().send(null,
                    ServerMessages.createMoveMOBPkt(
                    id, startX, startY, destX, destY));
-            this.timestamp = timestamp;
-        } else {
-            logger.log(Level.WARNING, "move from {0} failed check", name);
-            stopMe(0.0f, 0.0f);
+        }
+        else {
+            logger.log(Level.WARNING, "move from {0} failed start position check", name);
+            
+            this.timestamp = now;
+            this.setLocation(expectedPosition.getX(), expectedPosition.getY());
+            currentGameRef.get().send(
+                    null,
+                    ServerMessages.createStopMOBPkt(id, startX, startY));
         }
     }
-
+    
     public void attack(int targetID, float x, float y) {
-        if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)) {            
+        /*if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)) {            
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
 
             // check to see if the we can reach the target
             if (target.checkXY(timestamp, x, y, getThrowDistanceSqd()))
                 currentGameRef.get().send(null,
-                        ServerMessages.createAttackedPkt(id, targetID, target.doHit()));
+                        ServerMessages.createAttackedPkt(id, targetID, target.hit(ATTACKHP)));
                 
             else
                 currentGameRef.get().send(null,
                         ServerMessages.createAttackedPkt(id, targetID, -1));
         } else
-            logger.log(Level.WARNING, "attack from {0} failed check", name);
+            logger.log(Level.WARNING, "attack from {0} failed check", name);*/
     }
 
     public void getFlag(int flagID, float x, float y) {
-        SnowmanGame game = currentGameRef.get();
+        /*SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
         
         // Can not get flag if same team or flag is held by another player
@@ -284,38 +321,25 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             flag.setHeldBy(this);   // TODO - save ref to flag
             game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
         } else
-            logger.log(Level.WARNING, "set flag from {0} failed check", name);
+            logger.log(Level.WARNING, "set flag from {0} failed check", name);*/
     }
     
     public void score(float x, float y) {
         
     }
-
-    private void stopMe(float x, float y) {
-        Position current = getCurrentPos(timestamp);
-        setTimestampLocation(timestamp, current.x, current.y);
-        currentGameRef.get().send(
-                    null,
-                    ServerMessages.createStopMOBPkt(id, startX, startY));
-    }
-    
-    public float getThrowDistanceSqd() {
-        //TODO put in Yis function
-        return 10.0f; // temporary
-    }
     
     // respawn
-    public void setHP(int hp){
+    public void respawn() {
         appContext.getDataManager().markForUpdate(this);
-        hitPoints = hp;
-        //FIXME - update the respawn position
+        hitPoints = RESPAWNHP;
+        Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
         currentGameRef.get().send(null,
-                                  ServerMessages.createRespawnPkt(id, 0.0f, 0.0f));
+                                  ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
     }
     
-    public int doHit(){
-        if (hitPoints>0) { // not already dead
-            hitPoints--;
+    public int hit(int hp) {
+        if (hitPoints > 0) { // not already dead
+            hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
                 // TODO - drop flag
                 appContext.getTaskManager().scheduleTask(
@@ -323,7 +347,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                                         DEATHDELAYMS);
             }
         }
-        return hitPoints;
+        return hp;
     }
     
     static private class RespawnTask implements Task, Serializable {
@@ -334,7 +358,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         
         public void run() throws Exception {
-            playerRef.get().setHP(100);
+            playerRef.get().respawn();
         }           
     }
     
@@ -352,10 +376,5 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 
     public ETeamColor getTeamColor() {
         return teamColor;
-    }
-
-    public void setLocation(float x, float y) {
-        startX = destX = x;
-        startY = destY = y;
     }
 }

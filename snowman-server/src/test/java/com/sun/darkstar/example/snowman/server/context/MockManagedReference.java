@@ -28,71 +28,51 @@
 * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/ 
+*/
 
-package com.sun.darkstar.example.snowman.server.interfaces;
+package com.sun.darkstar.example.snowman.server.context;
 
-import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
-import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObject;
-import com.sun.sgs.app.ManagedObjectRemoval;
-import java.nio.ByteBuffer;
+import com.sun.sgs.app.ManagedReference;
+import java.math.BigInteger;
 
 /**
- * The <code>SnowmanGame</code> interface describes the basic behavior
- * for a game
+ * Mock implementation of ManagedReference
  * 
  * @author Owen Kellett
  */
-public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
+public class MockManagedReference<T> implements ManagedReference<T>
 {
-    /**
-     * Send a message to all players in the game on the game's Channel
-     * @param sess sender of the message
-     * @param buff the message itself
-     */
-    public void send (ClientSession sess, ByteBuffer buff);
-    
-    /**
-     * Send the AddMOB packets to all of the players in the game
-     * to initiate the game state
-     */
-    public void sendMapInfo();
+    private static final long serialVersionUID = 1L;
 
+    private T object;
+    private BigInteger id;
     
-    /**
-     * Add a player to the game
-     * @param player
-     * @param color
-     */
-    public void addPlayer(SnowmanPlayer player, ETeamColor color);
+    public MockManagedReference(T object, BigInteger id) {
+        this.object = object;
+        this.id = id;
+    }
     
-    /**
-     * Remove player from the game
-     * @param player
-     */
-    public void removePlayer(SnowmanPlayer player);
-    
-    /**
-     * Verify that all players are ready to player and start the game 
-     * by broadcasting a STARTGAME message if so
-     */
-    public void startGameIfReady();
-    
-    /**
-     * Return the flag from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanFlag getFlag(int id);
+    public T get() {
+        return object;
+    }
 
-    /**
-     * Return the player from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanPlayer getPlayer(int id);
-    
-    public String getName();
+    public T getForUpdate() {
+        return object;
+    }
 
+    public BigInteger getId() {
+        return id;
+    }
+    
+    public boolean equals(Object object) {
+        if(object instanceof ManagedReference) {
+            return ((ManagedReference)object).get().equals(this.get());
+        }
+        return false;
+    }
+    
+    public int hashCode() {
+        return get().hashCode();
+    }
+    
 }

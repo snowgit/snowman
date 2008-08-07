@@ -30,69 +30,60 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-package com.sun.darkstar.example.snowman.server.interfaces;
+package com.sun.darkstar.example.snowman.server.context;
 
-import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
-import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObject;
-import com.sun.sgs.app.ManagedObjectRemoval;
-import java.nio.ByteBuffer;
+import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
+import com.sun.sgs.app.ChannelManager;
+import com.sun.sgs.app.DataManager;
+import com.sun.sgs.app.TaskManager;
+import org.easymock.EasyMock;
 
 /**
- * The <code>SnowmanGame</code> interface describes the basic behavior
- * for a game
+ * This class mocks Darkstar's AppContext so that we can properly unit test
  * 
  * @author Owen Kellett
  */
-public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
+public class MockAppContext implements SnowmanAppContext
 {
-    /**
-     * Send a message to all players in the game on the game's Channel
-     * @param sess sender of the message
-     * @param buff the message itself
-     */
-    public void send (ClientSession sess, ByteBuffer buff);
+    private ChannelManager channelManager;
+    private DataManager dataManager;
+    private TaskManager taskManager;
+    private GameWorldManager gameWorldManager;
     
-    /**
-     * Send the AddMOB packets to all of the players in the game
-     * to initiate the game state
-     */
-    public void sendMapInfo();
+    private MockAppContext()
+    {
+        channelManager = EasyMock.createMock(ChannelManager.class);
+        dataManager = new MockDataManager();
+        taskManager = EasyMock.createMock(TaskManager.class);
+        gameWorldManager = EasyMock.createMock(GameWorldManager.class);
+    }
+    
+    public ChannelManager getChannelManager() {
+        return channelManager;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public <T> T getManager(Class<T> type) {
+        if(type.isAssignableFrom(gameWorldManager.getClass()))
+            return type.cast(gameWorldManager);
+        
+        throw new RuntimeException("Unavailable manager for type: "+type);
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
 
     
     /**
-     * Add a player to the game
-     * @param player
-     * @param color
+     * Create a MockAppContext and initialize it as the SnowmanAppContext
+     * returned by the SnowmanAppContextFactory
      */
-    public void addPlayer(SnowmanPlayer player, ETeamColor color);
-    
-    /**
-     * Remove player from the game
-     * @param player
-     */
-    public void removePlayer(SnowmanPlayer player);
-    
-    /**
-     * Verify that all players are ready to player and start the game 
-     * by broadcasting a STARTGAME message if so
-     */
-    public void startGameIfReady();
-    
-    /**
-     * Return the flag from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanFlag getFlag(int id);
-
-    /**
-     * Return the player from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanPlayer getPlayer(int id);
-    
-    public String getName();
-
+    public static void create() {
+        MockAppContext context = new MockAppContext();
+        SnowmanAppContextFactory.setAppContext(context);
+    }
 }

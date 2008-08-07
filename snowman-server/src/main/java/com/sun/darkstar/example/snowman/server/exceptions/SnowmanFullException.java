@@ -30,69 +30,20 @@
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */ 
 
-package com.sun.darkstar.example.snowman.server.interfaces;
-
-import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
-import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObject;
-import com.sun.sgs.app.ManagedObjectRemoval;
-import java.nio.ByteBuffer;
+package com.sun.darkstar.example.snowman.server.exceptions;
 
 /**
- * The <code>SnowmanGame</code> interface describes the basic behavior
- * for a game
- * 
+ * Exception thrown when attempting to add a snowman player to a room
+ * that is full
  * @author Owen Kellett
  */
-public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
-{
-    /**
-     * Send a message to all players in the game on the game's Channel
-     * @param sess sender of the message
-     * @param buff the message itself
-     */
-    public void send (ClientSession sess, ByteBuffer buff);
+public class SnowmanFullException extends RuntimeException {
     
-    /**
-     * Send the AddMOB packets to all of the players in the game
-     * to initiate the game state
-     */
-    public void sendMapInfo();
-
+    public SnowmanFullException(String message) {
+        super(message);
+    }
     
-    /**
-     * Add a player to the game
-     * @param player
-     * @param color
-     */
-    public void addPlayer(SnowmanPlayer player, ETeamColor color);
-    
-    /**
-     * Remove player from the game
-     * @param player
-     */
-    public void removePlayer(SnowmanPlayer player);
-    
-    /**
-     * Verify that all players are ready to player and start the game 
-     * by broadcasting a STARTGAME message if so
-     */
-    public void startGameIfReady();
-    
-    /**
-     * Return the flag from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanFlag getFlag(int id);
-
-    /**
-     * Return the player from the game with the given id
-     * @param id
-     * @return
-     */
-    public SnowmanPlayer getPlayer(int id);
-    
-    public String getName();
-
+    public SnowmanFullException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
