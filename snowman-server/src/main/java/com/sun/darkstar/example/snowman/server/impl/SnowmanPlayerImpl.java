@@ -32,7 +32,6 @@
 package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
-import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
@@ -41,7 +40,6 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
