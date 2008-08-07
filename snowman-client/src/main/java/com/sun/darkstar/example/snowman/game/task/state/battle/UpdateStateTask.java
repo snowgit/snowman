@@ -5,6 +5,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
@@ -94,7 +95,7 @@ public class UpdateStateTask extends RealTimeTask {
 		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
 		if(result != null) {
 			CharacterView view = (CharacterView)result;
-			if(view.getEntity() == this.snowman) return;
+			if(view.getEntity() == this.snowman || !this.validateTeam(view.getEntity())) return;
 			if(this.validateDeath((CharacterView)result) && this.validateRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
@@ -108,6 +109,19 @@ public class UpdateStateTask extends RealTimeTask {
 			// TODO Change cursor to grabbing.
 			return;
 		}
+	}
+	
+	/**
+	 * Validate if the given character can be targeted.
+	 * @param character The <code>ChracterEntity</code> to be validated.
+	 * @return True of the character can be targeted. False otherwise.
+	 */
+	private boolean validateTeam(CharacterEntity character) {
+		switch(character.getEnumn()) {
+		case SnowmanDistributedBlue: return (this.snowman.getEnumn() != EEntity.SnowmanLocalBlue);
+		case SnowmanDistributedRed: return (this.snowman.getEnumn() != EEntity.SnowmanLocalRed);
+		}
+		return false;
 	}
 	
 	/**
