@@ -126,11 +126,19 @@ public class ViewManager extends Manager {
 		IView view = null;
 		switch(entity.getEnumn()) {
 		case Terrain: view = new TerrainView((IEditableEntity)entity); break;
-		case SnowmanLocal:
+		case SnowmanLocalRed:
 			view = new CharacterView((CharacterEntity)entity);
 			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
-		case SnowmanDistributed:
+		case SnowmanDistributedRed:
+			view = new CharacterView((CharacterEntity)entity);
+			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			break;
+		case SnowmanLocalBlue:
+			view = new CharacterView((CharacterEntity)entity);
+			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			break;
+		case SnowmanDistributedBlue:
 			view = new CharacterView((CharacterEntity)entity);
 			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;

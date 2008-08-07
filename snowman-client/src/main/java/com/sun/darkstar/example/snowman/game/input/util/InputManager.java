@@ -215,8 +215,10 @@ public final class InputManager extends Manager {
 	private IController createController(IDynamicEntity entity) {
 		IController controller = null;
 		switch(entity.getEnumn()) {
-		case SnowmanDistributed: controller = new CharacterController((CharacterEntity)entity, EInputType.None); break;
-		case SnowmanLocal: controller = new SnowmanController((SnowmanEntity)entity); break;
+		case SnowmanDistributedRed: controller = new CharacterController((CharacterEntity)entity, EInputType.None); break;
+		case SnowmanLocalRed: controller = new SnowmanController((SnowmanEntity)entity); break;
+		case SnowmanDistributedBlue: controller = new CharacterController((CharacterEntity)entity, EInputType.None); break;
+		case SnowmanLocalBlue: controller = new SnowmanController((SnowmanEntity)entity); break;
 		case Snowball: controller = new SnowballController((SnowballEntity)entity); break;
 		default: throw new IllegalArgumentException("Invalid controller enumeration.");
 		}

@@ -6,6 +6,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IView;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.exception.DuplicatedIDException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
@@ -50,6 +51,10 @@ public class AddMOBTask extends RealTimeTask {
 	 */
 	private final EMOBType enumn;
 	/**
+	 * The <code>ETeamColor</code> enumeration.
+	 */
+	private final ETeamColor color;
+	/**
 	 * The flag indicates if this mob is controlled locally.
 	 */
 	private final boolean local;
@@ -67,14 +72,16 @@ public class AddMOBTask extends RealTimeTask {
 	 * @param game The <code>Game</code> instance.
 	 * @param id The ID number of the entity to be added.
 	 * @param enumn The <code>EMOBType</code> enumeration.
+	 * @param color The <code>ETeamColor</code> enumeration.
 	 * @param x The x coordinate of the initial position.
 	 * @param z The z coordinate of the initial position.
 	 * @param local The flag indicates if this mob is controlled locally.
 	 */
-	public AddMOBTask(Game game, int id, EMOBType enumn, float x, float z, boolean local) {
+	public AddMOBTask(Game game, int id, EMOBType enumn, ETeamColor color, float x, float z, boolean local) {
 		super(ETask.AddMOB, game);
 		this.id = id;
 		this.enumn = enumn;
+		this.color = color;
 		this.x = x;
 		this.z = z;
 		this.local = local;
@@ -85,10 +92,24 @@ public class AddMOBTask extends RealTimeTask {
 		EEntity enumn = null;
 		switch(this.enumn) {
 		case SNOWMAN: 
-			if(this.local) enumn = EEntity.SnowmanLocal;
-			else enumn = EEntity.SnowmanDistributed;
+			if(this.local) {
+				switch(this.color) {
+				case Red: enumn = EEntity.SnowmanLocalRed; break;
+				case Blue: enumn = EEntity.SnowmanLocalBlue; break;
+				}
+			} else {
+				switch(this.color) {
+				case Red: enumn = EEntity.SnowmanDistributedRed; break;
+				case Blue: enumn = EEntity.SnowmanDistributedBlue; break;
+				}
+			}
 			break;
-		case FLAG: enumn = EEntity.Flag; break;
+		case FLAG:
+			switch(this.color) {
+			case Red: enumn = EEntity.FlagRed; break;
+			case Blue: enumn = EEntity.FlagBlue; break;
+			}
+			break;
 		default: throw new IllegalArgumentException("Invalid entity type: " + this.enumn.toString());
 		}
 		try {

@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-14-2008 16:09 EST
- * @version Modified date: 07-28-2008 17:38 EST
+ * @version Modified date: 08-07-2008 14:15 EST
  */
 public class SnowmanEntity extends CharacterEntity {
 	/**
@@ -19,10 +19,11 @@ public class SnowmanEntity extends CharacterEntity {
 
 	/**
 	 * Constructor of <code>SnowmanEntity</code>.
+	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @param id The ID number of this snowman.
 	 */
-	public SnowmanEntity(int id) {
-		super(EEntity.SnowmanLocal, id);
+	public SnowmanEntity(EEntity enumn, int id) {
+		super(enumn, id);
 		this.state = EState.Idle;
 	}
 	

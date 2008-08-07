@@ -107,8 +107,10 @@ public class EntityManager extends Manager {
 		IEntity entity = null;
 		switch(enumn) {
 		case Terrain: entity = new TerrainEntity(id); break;
-		case SnowmanLocal: entity = new SnowmanEntity(id); break;
-		case SnowmanDistributed: entity = new CharacterEntity(enumn, id); break;
+		case SnowmanLocalRed: entity = new SnowmanEntity(enumn, id); break;
+		case SnowmanDistributedRed: entity = new CharacterEntity(enumn, id); break;
+		case SnowmanLocalBlue: entity = new SnowmanEntity(enumn, id); break;
+		case SnowmanDistributedBlue: entity = new CharacterEntity(enumn, id); break;
 		case Snowball: entity = new SnowballEntity(id); break;
 		default:
 			switch(enumn.getType()) {

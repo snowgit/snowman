@@ -82,7 +82,7 @@ public class CreateSnowballTask extends Task {
 			Vector3f right = new Vector3f();
 			attacker.getLocalRotation().getRotationColumn(0, right);
 			right.normalizeLocal();
-			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.8f);
+			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.65f);
 			snowballView.getLocalTranslation().y += ((BoundingBox)attacker.getWorldBound()).yExtent*0.8f;
 			snowballView.getLocalTranslation().addLocal(right);
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);

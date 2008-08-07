@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.jme.util.Debug;
 import com.jme.util.stat.StatCollector;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
@@ -50,7 +51,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 08-06-2008 11:51 EST
+ * @version Modified date: 08-07-2008 14:00 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -160,7 +161,7 @@ public class TaskManager extends Manager {
 		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
 		case ResetLogin: task = new ResetLoginTask(this.game); break;
 		case GameState: task = new GameStateTask(this.game, (EGameState)args[0]); break;
-		case AddMOB: task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (Float)args[2], (Float)args[3], (Boolean)args[4]); break;
+		case AddMOB: task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (ETeamColor) args[2], (Float)args[3], (Float)args[4], (Boolean)args[5]); break;
 		case Ready: task = new ReadyTask(this.game); break;
 		case StartGame: task = new StartGameTask(this.game); break;
 		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;

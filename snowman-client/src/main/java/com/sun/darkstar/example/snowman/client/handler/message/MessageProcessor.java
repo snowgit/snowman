@@ -66,7 +66,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
-		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, x, y, (objectID == this.myID));
+		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, team, x, y, (objectID == this.myID));
 	}
 
 	@Override

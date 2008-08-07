@@ -24,7 +24,7 @@ public class TextureExporter extends Exporter {
 	/**
 	 * The source image file name with extension.
 	 */
-	private final String inputFile = "SnowMan.tga";
+	private final String inputFile = "SnowManBlue.tga";
 	/**
 	 * The <code>AlphaState</code> for transparency.
 	 */
