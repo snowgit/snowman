@@ -3,7 +3,11 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Snowman Common"/>
-	<classpathentry kind="lib" path="/lib/bdb-4.5.20/db.jar"/>
+	<classpathentry kind="lib" path="/lib/bdb-4.5.20/db.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lib/bdb-4.5.20/win32-x86"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/lib/jme.jar"/>
 	<classpathentry kind="lib" path="/lib/mina-core-1.1.0.jar"/>
 	<classpathentry kind="lib" path="/lib/sgs-server-0.9.6.1.jar"/>
