@@ -37,5 +37,6 @@ package com.sun.darkstar.example.snowman.common.protocol.enumn;
  * game
  */
 public enum ETeamColor {
-    RED, GREEN
+    Red,
+    Blue
 }
