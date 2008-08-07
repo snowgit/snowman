@@ -84,7 +84,7 @@ public class SnowmanMapInfo
             case RED:
                 y = yAxis/8.0f;
                 break;
-            case GREEN:
+            case BLUE:
                 y = yAxis/8.0f*7.0f;
                 break;
         }
@@ -119,7 +119,7 @@ public class SnowmanMapInfo
         switch(team) {
             case RED:
                 return new Coordinate(xAxis / 2.0f, yAxis / 10.0f);
-            case GREEN:
+            case BLUE:
                 return new Coordinate(xAxis / 2.0f, yAxis / 10.0f * 9.0f);
         }
         return null;
@@ -129,8 +129,8 @@ public class SnowmanMapInfo
                                          ETeamColor team) {
         switch(team) {
             case RED:
-                return getFlagStart(map, ETeamColor.GREEN);
-            case GREEN:
+                return getFlagStart(map, ETeamColor.BLUE);
+            case BLUE:
                 return getFlagStart(map, ETeamColor.RED);
         }
         return null;

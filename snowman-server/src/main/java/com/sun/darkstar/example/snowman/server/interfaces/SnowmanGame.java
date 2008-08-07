@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Owen Kellett
  */
-public interface SnowmanGame 
+public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
 {
     /**
      * Send a message to all players in the game on the game's Channel

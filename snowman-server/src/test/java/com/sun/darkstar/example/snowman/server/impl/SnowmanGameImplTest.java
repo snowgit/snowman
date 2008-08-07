@@ -153,7 +153,7 @@ public class SnowmanGameImplTest
         //create the second player
         ClientSession session2 = EasyMock.createNiceMock(ClientSession.class);
         SnowmanPlayer dummyPlayer2 = EasyMock.createMock(SnowmanPlayer.class);
-        ETeamColor color2 = ETeamColor.GREEN;
+        ETeamColor color2 = ETeamColor.BLUE;
         
         //create the game
         SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
@@ -256,9 +256,9 @@ public class SnowmanGameImplTest
         
         //add the players
         game.addPlayer(dummyPlayer, ETeamColor.RED);
-        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer2, ETeamColor.BLUE);
         game.addPlayer(dummyPlayer3, ETeamColor.RED);
-        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer4, ETeamColor.BLUE);
         
         //record expected message on the channel
         EasyMock.resetToDefault(gameChannel);
@@ -317,9 +317,9 @@ public class SnowmanGameImplTest
         
         //add the players
         game.addPlayer(dummyPlayer, ETeamColor.RED);
-        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer2, ETeamColor.BLUE);
         game.addPlayer(dummyPlayer3, ETeamColor.RED);
-        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer4, ETeamColor.BLUE);
         
         //record no expected messages on the channel
         EasyMock.resetToDefault(gameChannel);
@@ -370,9 +370,9 @@ public class SnowmanGameImplTest
         
         //add the players
         game.addPlayer(dummyPlayer, ETeamColor.RED);
-        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer2, ETeamColor.BLUE);
         game.addPlayer(dummyPlayer3, ETeamColor.RED);
-        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer4, ETeamColor.BLUE);
         
         //record no expected messages on the channel
         EasyMock.resetToDefault(gameChannel);
