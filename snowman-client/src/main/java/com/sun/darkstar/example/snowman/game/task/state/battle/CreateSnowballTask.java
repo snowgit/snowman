@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
@@ -43,10 +44,6 @@ public class CreateSnowballTask extends Task {
 	 * The ID number of the target.
 	 */
 	private final CharacterEntity targetEntity;
-	/**
-	 * The offset for snow ball.
-	 */
-	private final Vector3f offset;
 
 	/**
 	 * Constructor of <code>CreateSnowballTask</code>.
@@ -58,7 +55,6 @@ public class CreateSnowballTask extends Task {
 		super(ETask.CreateSnowball, game);
 		this.attackerEntity = attacker;
 		this.targetEntity = target;
-		this.offset = new Vector3f(0, 0.8f, 0);
 	}
 
 	@Override
@@ -83,7 +79,12 @@ public class CreateSnowballTask extends Task {
 			SnowballView snowballView = (SnowballView)ViewManager.getInstance().createView(snowball);
 			// Step 5.
 			snowballView.setLocalTranslation(attackerPosition);
-			snowballView.getLocalTranslation().addLocal(this.offset);
+			Vector3f right = new Vector3f();
+			attacker.getLocalRotation().getRotationColumn(0, right);
+			right.normalizeLocal();
+			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.8f);
+			snowballView.getLocalTranslation().y += ((BoundingBox)attacker.getWorldBound()).yExtent*0.8f;
+			snowballView.getLocalTranslation().addLocal(right);
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
 			// Step 6.
 			IController controller = InputManager.getInstance().getController(snowball);
