@@ -51,7 +51,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-02-2008 14:40 EST
- * @version Modified date: 08-07-2008 15:10 EST
+ * @version Modified date: 08-07-2008 15:55 EST
  */
 public class TaskManager extends Manager {
 	/**
@@ -193,6 +193,7 @@ public class TaskManager extends Manager {
 			break;
 		case MoveSnowball: task = new MoveSnowballTask(this.game, (SnowballEntity)args[0]); break;
 		case Correction: task = new CorrectionTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2]); break;
+		case Respawn: task = new RespawnTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Boolean)args[3]); break;
 		}
 		this.submit(task);
 		return task;

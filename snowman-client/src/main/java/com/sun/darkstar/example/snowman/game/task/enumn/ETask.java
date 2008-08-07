@@ -62,7 +62,11 @@ public enum ETask {
 	/**
 	 * The task used to correct character position.
 	 */
-	Correction(ETaskType.RealTime);
+	Correction(ETaskType.RealTime),
+	/**
+	 * The task used to respawn a character.
+	 */
+	Respawn(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.
