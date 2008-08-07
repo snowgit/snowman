@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 08-05-2008 14:38 EST
+ * @version Modified date: 08-07-2008 15:03 EST
  */
 public enum ETask {
 	/**
@@ -58,7 +58,11 @@ public enum ETask {
 	/**
 	 * The task used to update the motion of snow balls.
 	 */
-	MoveSnowball(ETaskType.RealTime);
+	MoveSnowball(ETaskType.RealTime),
+	/**
+	 * The task used to correct character position.
+	 */
+	Correction(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

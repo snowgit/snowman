@@ -22,7 +22,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 07-25-2008 12:21 EST
+ * @version Modified date: 08-07-2008 15:10 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -83,7 +83,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void stopMOB(int objectID, float x, float y) {
-		// TODO Teleport player to the given coordinates.
+		TaskManager.getInstance().createTask(ETask.Correction, objectID, x, y);
 	}
 
 	@Override
