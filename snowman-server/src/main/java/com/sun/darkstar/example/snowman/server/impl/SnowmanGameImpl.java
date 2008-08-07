@@ -42,7 +42,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.sgs.app.AppContext;
+import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
@@ -68,8 +68,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
      */
     public static final String CHANPREFIX = "_GAMECHAN_";
     
-    static final float GOALRADIUS = 1.0f;
-    static final int PLAYERIDSTART = 1;
+    private static final float GOALRADIUS = 1.0f;
+    private static final int PLAYERIDSTART = 1;
     
     /**
      * A reference to a channel that is used to send game packets to
@@ -118,19 +118,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                 appContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));
         
-        for(ETeamColor color : ETeamColor.values()){
-            Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
-            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
-            SnowmanFlag flag =
-                        entityFactory.createSnowmanFlag(color,
-                                                        flagGoal.getX(),
-                                                        flagGoal.getY(),
-                                                        GOALRADIUS); 
-            flag.setLocation(flagStart.getX(), flagStart.getY());
-            ManagedReference<SnowmanFlag> ref =
-                        appContext.getDataManager().createReference(flag);
-            flagRefs.add(ref);
-        }
+        initFlags();
     }
     
     /**
@@ -150,12 +138,36 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
            maxTeamPlayers[maxTeamPlayers.length-1]=remainder;
     }
     
+    /**
+     * Initialize the list of flags and their locations
+     */
+    private void initFlags() {
+        for(ETeamColor color : ETeamColor.values()){
+            Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
+            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
+            SnowmanFlag flag =
+                        entityFactory.createSnowmanFlag(color,
+                                                        flagGoal.getX(),
+                                                        flagGoal.getY(),
+                                                        GOALRADIUS); 
+            flag.setLocation(flagStart.getX(), flagStart.getY());
+            ManagedReference<SnowmanFlag> ref =
+                        appContext.getDataManager().createReference(flag);
+            flagRefs.add(ref);
+        }
+    }
+    
     public void send(ClientSession session, ByteBuffer buff){
         buff.flip();
         channelRef.get().send(session, buff);
     }
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
+        //ensure we are not going over the limit
+        if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()])
+            throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
+                    this.getName()+" : too many players");
+        
         //get a reference to the player and add to the list
         ManagedReference<SnowmanPlayer> playerRef = 
                 appContext.getDataManager().createReference(player);
@@ -171,9 +183,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                                                               color,
                                                               teamPlayers[color.ordinal()],
                                                               maxTeamPlayers[color.ordinal()]);
-        player.setTimestampLocation(0,
-                                    position.getX(),
-                                    position.getY());
+        player.setLocation(position.getX(), position.getY());
         player.setTeamColor(color);
         player.setGame(this);
         
@@ -183,11 +193,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     // A player disconnected
     public void removePlayer(SnowmanPlayer player){
-        ManagedReference<SnowmanPlayer> playerRef = 
-                AppContext.getDataManager().createReference(player);
         Integer playerId = new Integer(player.getID());
-        playerRefs.remove(playerId);
-        send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
+        if(playerRef != null)
+            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
     }
     
     public void sendMapInfo(){
@@ -223,12 +232,15 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     public SnowmanPlayer getPlayer(int id){
-    	return playerRefs.get(id-PLAYERIDSTART).get();
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
+        if(playerRef != null)
+            return playerRef.get();
+        return null;
     }
     
     private void endGame() {
         send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));
-        AppContext.getDataManager().removeObject(this);
+        appContext.getDataManager().removeObject(this);
     }
     
     public void removingObject() {

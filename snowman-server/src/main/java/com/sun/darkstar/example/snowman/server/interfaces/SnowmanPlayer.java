@@ -52,12 +52,11 @@ public interface SnowmanPlayer extends DynamicEntity
     public String getName();
 
     /**
-     * Set the location of the player at the given time
-     * @param timestamp
+     * Set the location of the player
      * @param x
      * @param y
      */
-    public void setTimestampLocation(long timestamp, float x, float y);
+    public void setLocation(float x, float y);
 
     /**
      * Set the team of the player
@@ -78,16 +77,21 @@ public interface SnowmanPlayer extends DynamicEntity
     public void setReadyToPlay(boolean readyToPlay);
     public boolean getReadyToPlay();
     
-    public float getThrowDistanceSqd();
+    /**
+     * Revive player, set hitpoints back to maximum value,
+     * and relocate it to a respawn position
+     */
+    public void respawn();
     
-    public int doHit();
-    
-    public void setHP(int hp);
+    /**
+     * Hit this snowman with the given hit point value
+     * @param hp
+     * @return the number of hit points deducted from the player's value
+     */
+    public int hit(int hp);
     
     public void setSession(ClientSession session);
     public ClientSession getSession();
-    
-    public boolean checkXY(long time, float xPrime, float yPrime, float tolerance);
     
     /**
      * Send a message to the player

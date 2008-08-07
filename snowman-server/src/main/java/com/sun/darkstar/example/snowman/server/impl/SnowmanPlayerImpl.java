@@ -32,6 +32,7 @@
 package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
@@ -66,11 +67,21 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     private static long DEATHDELAYMS = 10 * 1000;
     private static float POSITIONTOLERANCESQD = 1.0f;//.5f * .5f;
+    private static int RESPAWNHP = 100;
+    private static int ATTACKHP = 10;
     
     private ManagedReference<ClientSession> sessionRef;
+    
+    /**
+     * Player information and overall statistics
+     */
     private final String name;
     private int wins;
     private int losses;
+    
+    /**
+     * Current game information
+     */
     private int id;
     private float startX;
     private float startY;
@@ -78,12 +89,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private float destY;
     private float deltaX;
     private float deltaY;
-    // zero timestamp indicates no move yet received
     private long timestamp;
     private ETeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
-    private boolean readyToPlay = false;
-    private int hitPoints = 100;
+    private PlayerState state = PlayerState.NONE;
+    private int hitPoints = RESPAWNHP;
     private SnowmanAppContext appContext;
     
     public SnowmanPlayerImpl(SnowmanAppContext appContext,
@@ -91,17 +101,27 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         this.appContext = appContext;
         name = session.getName();
         setSession(session);
-    }    
+    } 
+    
+    private static enum PlayerState {
+        //indicates the player is not in a game
+        NONE, 
+        //player is not moving
+        STOPPED, 
+        //player is moving
+        MOVING, 
+        //player is dead
+        DEAD
+    }
 
     public void setID(int id) {
         this.id = id;
     }
 
-    public void setTimestampLocation(long timestamp, float x, float y) {
+    public void setLocation(float x, float y) {
        startX = destX = x;
        startY = destY = y;
        deltaX = deltaY = 0;
-       this.timestamp = timestamp;
     }
 
     public void setTeamColor(ETeamColor color) {
@@ -199,11 +219,14 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public void setReadyToPlay(boolean readyToPlay){
-        this.readyToPlay = readyToPlay;
+        if(readyToPlay)
+            this.state = PlayerState.STOPPED;
+        else
+            this.state = PlayerState.NONE;
     }
     
     public boolean getReadyToPlay(){
-        return readyToPlay;
+        return this.state != PlayerState.NONE;
     }
     
     public void send(ByteBuffer buff){
@@ -218,7 +241,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      // IServerProcessor Messages
 
     public void ready() {
-        readyToPlay=true;
+        this.setReadyToPlay(true);
         currentGameRef.get().startGameIfReady();
     }
 
@@ -259,13 +282,13 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
 
             // check to see if the we can reach the target
-            if (target.checkXY(timestamp, x, y, getThrowDistanceSqd()))
+            /*if (target.checkXY(timestamp, x, y, getThrowDistanceSqd()))
                 currentGameRef.get().send(null,
-                        ServerMessages.createAttackedPkt(id, targetID, target.doHit()));
+                        ServerMessages.createAttackedPkt(id, targetID, target.hit(ATTACKHP)));
                 
             else
                 currentGameRef.get().send(null,
-                        ServerMessages.createAttackedPkt(id, targetID, -1));
+                        ServerMessages.createAttackedPkt(id, targetID, -1));*/
         } else
             logger.log(Level.WARNING, "attack from {0} failed check", name);
     }
@@ -291,8 +314,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
 
     private void stopMe(float x, float y) {
-        Position current = getCurrentPos(timestamp);
-        setTimestampLocation(timestamp, current.x, current.y);
+        setLocation(x, y);
         currentGameRef.get().send(
                     null,
                     ServerMessages.createStopMOBPkt(id, startX, startY));
@@ -304,17 +326,17 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     // respawn
-    public void setHP(int hp){
+    public void respawn() {
         appContext.getDataManager().markForUpdate(this);
-        hitPoints = hp;
-        //FIXME - update the respawn position
+        hitPoints = RESPAWNHP;
+        Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
         currentGameRef.get().send(null,
-                                  ServerMessages.createRespawnPkt(id, 0.0f, 0.0f));
+                                  ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
     }
     
-    public int doHit(){
-        if (hitPoints>0) { // not already dead
-            hitPoints--;
+    public int hit(int hp) {
+        if (hitPoints > 0) { // not already dead
+            hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
                 // TODO - drop flag
                 appContext.getTaskManager().scheduleTask(
@@ -322,7 +344,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                                         DEATHDELAYMS);
             }
         }
-        return hitPoints;
+        return hp;
     }
     
     static private class RespawnTask implements Task, Serializable {
@@ -333,7 +355,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         
         public void run() throws Exception {
-            playerRef.get().setHP(100);
+            playerRef.get().respawn();
         }           
     }
     
@@ -351,10 +373,5 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 
     public ETeamColor getTeamColor() {
         return teamColor;
-    }
-
-    public void setLocation(float x, float y) {
-        startX = destX = x;
-        startY = destY = y;
     }
 }

@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import java.util.Random;
 
 /**
  * Static class that is used to retrieve information about snowman
@@ -45,6 +46,7 @@ public class SnowmanMapInfo
 {
     public static String DEFAULT = "default_map";
     private static float[] defaultXY = new float[]{50, 50};
+    private static Random generator = new Random();
     
     /**
      * Retrieve the x,y dimensions of the map with the given name.
@@ -91,6 +93,21 @@ public class SnowmanMapInfo
         float x = xAxis/(float)(teamPlayers+1.0f)*player;
         
         return new Coordinate(x,y);
+    }
+    
+    /**
+     * Return a random respawn position for the given team.
+     * 
+     * @param map name of the map
+     * @param team team to retrieve a spawn point for
+     * @return
+     */
+    public static Coordinate getRespawnPosition(String map,
+                                                ETeamColor team) {
+        return getSpawnPosition(map, 
+                                team, 
+                                generator.nextInt(10) + 1,
+                                10);
     }
     
     public static Coordinate getFlagStart(String map,

@@ -81,6 +81,7 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
         try {
             player = (SnowmanPlayerListener) appContext.getDataManager().getBinding(pname);
             player.getSnowmanPlayer().setSession(session);
+            player.getSnowmanPlayer().setReadyToPlay(false);
         } catch (NameNotBoundException e) {
             player = new SnowmanPlayerListener(appContext,
                                                entityFactory.createSnowmanPlayer(appContext, session),

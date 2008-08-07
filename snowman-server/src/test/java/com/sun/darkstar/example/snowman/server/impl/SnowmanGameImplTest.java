@@ -32,7 +32,26 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
+import com.sun.darkstar.example.snowman.server.context.MockAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.sgs.app.Channel;
+import com.sun.sgs.app.ChannelManager;
+import com.sun.sgs.app.Delivery;
+import com.sun.sgs.app.ClientSession;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Assert;
+import org.easymock.EasyMock;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -40,8 +59,331 @@ import org.junit.Test;
  */
 public class SnowmanGameImplTest 
 {
+    private Channel gameChannel;
+    private String gameName = "GAME";
+
+    @Before
+    public void initializeContext()
+    {
+        //create the context
+        MockAppContext.create();
+        //update the behavior of the ChannelManager
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        ChannelManager channelManager = appContext.getChannelManager();
+        gameChannel = EasyMock.createNiceMock(Channel.class);
+        EasyMock.expect(channelManager.createChannel(SnowmanGameImpl.CHANPREFIX+gameName, null, Delivery.RELIABLE)).andStubReturn(gameChannel);
+        EasyMock.replay(channelManager);
+        EasyMock.replay(gameChannel);
+    }
+    
+    @After
+    public void takeDownContext()
+    {
+        SnowmanAppContextFactory.setAppContext(null);
+    }
+    
+    /**
+     * Verify that when adding a player to an empty game, the correct
+     * information for that player is set
+     */
     @Test
-    public void placeHolder() {
+    public void addPlayerTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
         
+        //create the player
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        ClientSession session = EasyMock.createNiceMock(ClientSession.class);
+        SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
+        ETeamColor color = ETeamColor.RED;
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //record information that should be set on the player
+        dummyPlayer.setID(1);
+        dummyPlayer.setLocation(EasyMock.anyFloat(), EasyMock.anyFloat());
+        dummyPlayer.setTeamColor(color);
+        dummyPlayer.setGame(game);
+        EasyMock.expect(dummyPlayer.getSession()).andStubReturn(session);
+        EasyMock.replay(dummyPlayer);
+        
+        //record that the player should be added to the channel
+        EasyMock.resetToDefault(gameChannel);
+        EasyMock.expect(gameChannel.join(session)).andReturn(gameChannel);
+        EasyMock.replay(gameChannel);
+        
+        //add the player
+        game.addPlayer(dummyPlayer, color);
+        
+        //verify the calls
+        EasyMock.verify(dummyPlayer);
+        EasyMock.verify(gameChannel);
+    }
+    
+    
+    /**
+     * Verify that when adding a second player to a game, the correct
+     * information for that player is set and it does not conflict with
+     * the first player
+     */
+    @Test
+    public void addSecondPlayerTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
+        
+        //create the player
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        ClientSession session = EasyMock.createNiceMock(ClientSession.class);
+        SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
+        ETeamColor color = ETeamColor.RED;
+        
+        //create the second player
+        ClientSession session2 = EasyMock.createNiceMock(ClientSession.class);
+        SnowmanPlayer dummyPlayer2 = EasyMock.createMock(SnowmanPlayer.class);
+        ETeamColor color2 = ETeamColor.GREEN;
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //record information that should be set on the player1
+        dummyPlayer.setID(1);
+        dummyPlayer.setLocation(EasyMock.anyFloat(), EasyMock.anyFloat());
+        dummyPlayer.setTeamColor(color);
+        dummyPlayer.setGame(game);
+        EasyMock.expect(dummyPlayer.getSession()).andStubReturn(session);
+        EasyMock.replay(dummyPlayer);
+        
+        //record information that should be set on the player2
+        dummyPlayer2.setID(2);
+        dummyPlayer2.setLocation(EasyMock.anyFloat(), EasyMock.anyFloat());
+        dummyPlayer2.setTeamColor(color2);
+        dummyPlayer2.setGame(game);
+        EasyMock.expect(dummyPlayer2.getSession()).andStubReturn(session2);
+        EasyMock.replay(dummyPlayer2);
+        
+        //record that the players should be added to the channel
+        EasyMock.resetToDefault(gameChannel);
+        EasyMock.expect(gameChannel.join(session)).andReturn(gameChannel);
+        EasyMock.expect(gameChannel.join(session2)).andReturn(gameChannel);
+        EasyMock.replay(gameChannel);
+        
+        //add the player
+        game.addPlayer(dummyPlayer, color);
+        game.addPlayer(dummyPlayer2, color2);
+        
+        //verify the calls
+        EasyMock.verify(dummyPlayer);
+        EasyMock.verify(dummyPlayer2);
+        EasyMock.verify(gameChannel);
+    }
+    
+    /**
+     * Verify that when adding a second player to a full game,
+     * an exception is thrown
+     */
+    @Test(expected=SnowmanFullException.class)
+    public void addPlayerFullTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
+        
+        //create the players
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer2 = EasyMock.createMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer3 = EasyMock.createMock(SnowmanPlayer.class);
+        ETeamColor color = ETeamColor.RED;
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //add the players
+        game.addPlayer(dummyPlayer, color);
+        game.addPlayer(dummyPlayer2, color);
+        game.addPlayer(dummyPlayer3, color);
+    }
+    
+    /**
+     * Verify that when removing a player from the game, they are successfully
+     * removed and a message is sent to the game channel notifying the other players
+     */
+    @Test
+    public void removePlayerExistsTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
+        
+        //create the players
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        SnowmanPlayer dummyPlayer = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer2 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer3 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer4 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(1);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(2);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(3);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(4);
+        EasyMock.replay(dummyPlayer);
+        EasyMock.replay(dummyPlayer2);
+        EasyMock.replay(dummyPlayer3);
+        EasyMock.replay(dummyPlayer4);
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //add the players
+        game.addPlayer(dummyPlayer, ETeamColor.RED);
+        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer3, ETeamColor.RED);
+        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        
+        //record expected message on the channel
+        EasyMock.resetToDefault(gameChannel);
+        ByteBuffer message = ServerMessages.createRemoveMOBPkt(1);
+        message.flip();
+        EasyMock.expect(gameChannel.send(null, message)).andReturn(gameChannel);
+        EasyMock.replay(gameChannel);
+        
+        //check that we can retrieve player with id 1
+        SnowmanPlayer removal = game.getPlayer(1);
+        Assert.assertNotNull(removal);
+        
+        //remove the player
+        game.removePlayer(removal);
+        
+        //check that player with id 1 is gone
+        SnowmanPlayer gone = game.getPlayer(1);
+        Assert.assertNull(gone);
+        
+        //verify message sent on the channel
+        EasyMock.verify(gameChannel);
+    }
+    
+    /**
+     * Verify that when removing a player that is not in the game,
+     * no message is sent and no removal happens
+     */
+    @Test
+    public void removePlayerNotExistsTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
+        
+        //create the players
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        SnowmanPlayer dummyPlayer = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer2 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer3 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer4 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(1);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(2);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(3);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(4);
+        EasyMock.replay(dummyPlayer);
+        EasyMock.replay(dummyPlayer2);
+        EasyMock.replay(dummyPlayer3);
+        EasyMock.replay(dummyPlayer4);
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //add the players
+        game.addPlayer(dummyPlayer, ETeamColor.RED);
+        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer3, ETeamColor.RED);
+        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        
+        //record no expected messages on the channel
+        EasyMock.resetToDefault(gameChannel);
+        EasyMock.replay(gameChannel);
+        
+        //remove the non existant player
+        SnowmanPlayer notThere = EasyMock.createNiceMock(SnowmanPlayer.class);
+        EasyMock.expect(notThere.getID()).andStubReturn(5);
+        game.removePlayer(notThere);
+        
+        //verify no message sent on the channel
+        EasyMock.verify(gameChannel);
+    }
+    
+    
+    /**
+     * Verify that when sending map information, all players are sent
+     * the ADDMOB and then READY messages on their private listeners
+     */
+    @Test
+    public void sendMapInfoTest() {
+        //setup dummy entityfactory
+        EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
+        SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat(),
+                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.replay(dummyEntityFactory);
+        
+        //create the players
+        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
+        SnowmanPlayer dummyPlayer = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer2 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer3 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        SnowmanPlayer dummyPlayer4 = EasyMock.createNiceMock(SnowmanPlayer.class);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(1);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(2);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(3);
+        EasyMock.expect(dummyPlayer.getID()).andStubReturn(4);
+        EasyMock.replay(dummyPlayer);
+        EasyMock.replay(dummyPlayer2);
+        EasyMock.replay(dummyPlayer3);
+        EasyMock.replay(dummyPlayer4);
+        
+        //create the game
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        
+        //add the players
+        game.addPlayer(dummyPlayer, ETeamColor.RED);
+        game.addPlayer(dummyPlayer2, ETeamColor.GREEN);
+        game.addPlayer(dummyPlayer3, ETeamColor.RED);
+        game.addPlayer(dummyPlayer4, ETeamColor.GREEN);
+        
+        //record no expected messages on the channel
+        EasyMock.resetToDefault(gameChannel);
+        EasyMock.replay(gameChannel);
+        
+        //remove the non existant player
+        SnowmanPlayer notThere = EasyMock.createNiceMock(SnowmanPlayer.class);
+        EasyMock.expect(notThere.getID()).andStubReturn(5);
+        game.removePlayer(notThere);
+        
+        //verify no message sent on the channel
+        EasyMock.verify(gameChannel);
     }
 }
