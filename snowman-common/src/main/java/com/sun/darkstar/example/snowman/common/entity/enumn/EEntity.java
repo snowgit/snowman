@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-04-2008 14:52 EST
- * @version Modified date: 07-25-2008 16:39 EST
+ * @version Modified date: 08-07-2008 13:57 EST
  */
 public enum EEntity {
 	/**
@@ -17,17 +17,29 @@ public enum EEntity {
 	 */
 	Terrain(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
-	 * The locally controlled snowman entity.
+	 * The red locally controlled snowman entity.
 	 */
-	SnowmanLocal(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
+	SnowmanLocalRed(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
 	/**
-	 * The distributed snowman entity.
+	 * The blue locally controlled snowman entity.
 	 */
-	SnowmanDistributed(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
+	SnowmanLocalBlue(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
 	/**
-	 * The flag entity.
+	 * The red distributed snowman entity.
 	 */
-	Flag(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+	SnowmanDistributedRed(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
+	/**
+	 * The blue distributed snowman entity.
+	 */
+	SnowmanDistributedBlue(EEntityType.Dynamic, SingletonRegistry.getHPConverter().getDefaultMass()),
+	/**
+	 * The red flag entity.
+	 */
+	FlagRed(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+	/**
+	 * The blue flag entity.
+	 */
+	FlagBlue(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
 	/**
 	 * The snow ball entity.
 	 */
