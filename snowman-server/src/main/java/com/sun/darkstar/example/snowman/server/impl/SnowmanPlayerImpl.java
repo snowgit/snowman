@@ -66,7 +66,6 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 1.0f;
-    static float ATTACKTOLERANCESQD = 10.0f;
     static int RESPAWNHP = 100;
     static int ATTACKHP = 10;
     
@@ -319,9 +318,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             
             boolean success = true;
             //verify that target is in range
+            float range = HPConverter.getInstance().convertRange(hitPoints);
             if(!checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                                targetPosition.getX(), targetPosition.getY(), 
-                               ATTACKTOLERANCESQD))
+                               range*range))
                 success = false;
             
             //TODO - collision detection
@@ -331,6 +331,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             this.setLocation(x, y);
             
             if(success) {
+                //stop the target
+                target.setLocation(targetPosition.getX(), targetPosition.getY());
                 currentGameRef.get().send(null,
                                           ServerMessages.createAttackedPkt(
                                           id, targetID, target.hit(ATTACKHP)));
@@ -372,6 +374,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         appContext.getDataManager().markForUpdate(this);
         hitPoints = RESPAWNHP;
         Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
+        setLocation(position.getX(), position.getY());
         currentGameRef.get().send(null,
                                   ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
     }
