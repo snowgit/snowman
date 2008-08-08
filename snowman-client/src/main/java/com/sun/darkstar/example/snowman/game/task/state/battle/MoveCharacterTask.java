@@ -131,8 +131,9 @@ public class MoveCharacterTask extends RealTimeTask {
 				destination.y = 0;
 				Vector3f lcoal = view.getLocalTranslation().clone();
 				lcoal.y = 0;
-				Vector3f direction = destination.subtract(lcoal).normalizeLocal();
+				Vector3f direction = destination.subtract(lcoal);
 				direction.y = 0;
+				direction.normalizeLocal();
 				view.getLocalRotation().lookAt(direction.clone(), Vector3f.UNIT_Y);
 				//System.out.println("Direction: " + direction.toString());
 				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
