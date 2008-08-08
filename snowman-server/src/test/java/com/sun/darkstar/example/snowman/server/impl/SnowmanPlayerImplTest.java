@@ -292,6 +292,92 @@ public class SnowmanPlayerImplTest
         EasyMock.verify(currentGame);
     }
     
+    /**
+     * Test the processing of a MOVEME packet when the player is in
+     * the dead state
+     */
+    @Test
+    public void testMoveMePlayerDeadAndValidStart()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        float destX = 5.0f;
+        float destY = 10.0f;
+        long startTime = 1000;
+        int hp = 0;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.DEAD, startTime, destX, destY, hp);
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //setup no expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.replay(currentGame);
+        
+        //make the move
+        testPlayer.moveMe(newX, newY, destX, destY);
+        
+        //verify player information has not changed
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.DEAD);
+        verifyTimestamp(testPlayer, startTime);
+        verifyLocation(testPlayer, startX, startY);
+        verifyDestination(testPlayer, startX, startY);
+        
+        //verify no message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
+    /**
+     * Test the processing of a MOVEME packet when the player is not
+     * in a game
+     */
+    @Test
+    public void testMoveMePlayerNoneAndValidStart()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        float destX = 5.0f;
+        float destY = 10.0f;
+        long startTime = 1000;
+        int hp = 0;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.NONE, startTime, destX, destY, hp);
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //setup no expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.replay(currentGame);
+        
+        //make the move
+        testPlayer.moveMe(newX, newY, destX, destY);
+        
+        //verify player information has not changed
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.NONE);
+        verifyTimestamp(testPlayer, startTime);
+        verifyLocation(testPlayer, startX, startY);
+        verifyDestination(testPlayer, startX, startY);
+        
+        //verify no message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
     
     
     /**

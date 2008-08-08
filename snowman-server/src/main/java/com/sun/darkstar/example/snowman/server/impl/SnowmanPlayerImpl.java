@@ -263,6 +263,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     protected void moveMe(long now,
                           float startx, float starty,
                           float endx, float endy) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
