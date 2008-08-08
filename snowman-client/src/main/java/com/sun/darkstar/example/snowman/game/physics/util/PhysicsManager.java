@@ -51,6 +51,10 @@ public class PhysicsManager extends Manager {
 	 * The time elapsed since last physics iteration.
 	 */
 	private float time;
+	/**
+	 * The flag indicates if the marked entities have been updated.
+	 */
+	private boolean updated;
 	
 	/**
 	 * Constructor of <code>PhysicsManager</code>.
@@ -82,6 +86,7 @@ public class PhysicsManager extends Manager {
 		if(this.entities.size() <= 0) return;
 		// Perform as many iterations as needed.
 		this.time += interpolation;
+		if(this.time >= this.rate) this.updated = true;
 		while(this.time >= this.rate) {
 			for(IDynamicEntity entity : this.entities) {
 				this.applyNaturalForce(entity);
@@ -91,7 +96,10 @@ public class PhysicsManager extends Manager {
 			this.time -= this.rate;
 		}
 		// Clear update list.
-		this.entities.clear();
+		if(this.updated) {
+			this.entities.clear();
+			this.updated = false;
+		}
 	}
 	
 	/**
