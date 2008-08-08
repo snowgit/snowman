@@ -383,6 +383,57 @@ public class SnowmanPlayerImplTest
         EasyMock.verify(currentGame);
     }
     
+    /**
+     * Test non uniform start position and end position of moving player
+     * Ensure that a rectangular move works properly
+     */
+    @Test
+    public void testMoveMePlayerMovingAndValidStartAndNotSquareMovement()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 9.0f;
+        float destY = 12.0f;
+        long startTime = 1000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //determine the expected time it will take to move 10 units
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        long nowTime = (long)((10.0f + (ratePerMs * startTime))/ratePerMs);
+        float expX = startX + 6.0f;
+        float expY = startY + 8.0f;
+
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = expX+xOffset;
+        float newY = expY-yOffset;
+        
+        //setup expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
+        EasyMock.replay(currentGame);
+        
+        //make the move
+        testPlayer.moveMe(nowTime, newX, newY, destX, destY);
+        
+        //verify player information has transitioned properly
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING);
+        verifyTimestamp(testPlayer, nowTime);
+        verifyLocation(testPlayer, newX, newY);
+        verifyDestination(testPlayer, destX, destY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
     
     /**
      * Verify that attacking with the following conditions works properly:

@@ -191,10 +191,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             else {
                 float realDX = (float) Math.sqrt(
                         (distanceTraveled * distanceTraveled) / 
-                        ((dx*dx)/(dy*dy) + 1));
+                        ((dy*dy)/(dx*dx) + 1));
                 float realDY = (float) Math.sqrt(
                         (distanceTraveled * distanceTraveled) / 
-                        ((dy*dy)/(dx*dx) + 1));
+                        ((dx*dx)/(dy*dy) + 1));
                 
                 //ensure that the signs match for the deltas
                 if(((realDX > 0) && (dx < 0)) ||
@@ -293,7 +293,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             this.setLocation(expectedPosition.getX(), expectedPosition.getY());
             currentGameRef.get().send(
                     null,
-                    ServerMessages.createStopMOBPkt(id, startX, startY));
+                    ServerMessages.createStopMOBPkt(id, expectedPosition.getX(), expectedPosition.getY()));
         }
     }
     
