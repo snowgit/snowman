@@ -443,7 +443,7 @@ public class SnowmanPlayerImplTest
      *  - attackee is within range
      * @throws java.lang.Exception
      */
-    //@Test
+    @Test
     public void testAttackPlayerStopped() 
             throws Exception
     {
