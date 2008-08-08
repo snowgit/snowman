@@ -455,7 +455,7 @@ public class SnowmanPlayerImplTest
         this.setupStoppedPlayer(testPlayer, startX, startY);
         
         //choose an attackee position within the tolerance
-        float targetDistanceSqd = SnowmanPlayerImpl.ATTACKTOLERANCESQD/2.0f;
+        float targetDistanceSqd = HPConverter.getInstance().convertRange(SnowmanPlayerImpl.RESPAWNHP)/2.0f;
         float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
         float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
         float attackeeX = startX+xOffset;
