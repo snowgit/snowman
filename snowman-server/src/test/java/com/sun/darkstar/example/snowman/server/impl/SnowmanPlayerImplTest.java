@@ -61,6 +61,11 @@ public class SnowmanPlayerImplTest
     private SnowmanGame currentGame;
     private ClientSession session;
     private SnowmanAppContext appContext;
+    
+    private int attackeeId = 2;
+    private ETeamColor attackeeColor = ETeamColor.Blue;
+    private SnowmanPlayerImpl attackee;
+    private ClientSession attackeeSession;
 
     @Before
     public void initializeContextAndPlayer()
@@ -376,6 +381,108 @@ public class SnowmanPlayerImplTest
         
         //verify no message has been sent
         EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
+     * Verify that attacking with the following conditions works properly:
+     *  - attacker is stopped
+     *  - attackee is stopped
+     *  - client sends valid attack position to server
+     *  - attackee is within range
+     * @throws java.lang.Exception
+     */
+    //@Test
+    public void testAttackPlayerStopped() 
+            throws Exception
+    {
+        this.initializeAttackee(attackeeId);
+        
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        this.setupStoppedPlayer(testPlayer, startX, startY);
+        
+        //choose an attackee position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.ATTACKTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float attackeeX = startX+xOffset;
+        float attackeeY = startY-yOffset;
+        
+        //setup the attackee state
+        this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
+        
+        //choose an attack position within the tolerance
+        targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //setup expected broadcast messages to the game and behavior of game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
+        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
+        EasyMock.replay(currentGame);
+        
+        //do the attack
+        testPlayer.attack(attackeeId, newX, newY);
+        
+        //verify player state
+        this.verifyAttackStop(testPlayer, newX, newY);
+        this.verifyAttackHit(attackee, attackeeX, attackeeY, SnowmanPlayerImpl.RESPAWNHP - SnowmanPlayerImpl.ATTACKHP);
+        
+        //validate messages
+        EasyMock.verify(currentGame);
+    }
+    
+    /**
+     * Setup the dummy currentGame to return a SnowmanPlayer with the given
+     * id intended to be used as the attackee in the attack tests
+     */
+    private void initializeAttackee(int id) {
+        attackeeSession = EasyMock.createNiceMock(ClientSession.class);
+        EasyMock.replay(attackeeSession);
+        
+        attackee = new SnowmanPlayerImpl(appContext, session);
+        attackee.setGame(currentGame);
+        attackee.setID(attackeeId);
+        attackee.setTeamColor(attackeeColor);
+    }
+    
+    /**
+     * Setup the player to be in the stopped position at the given timestamp
+     */
+    private void setupStoppedPlayer(SnowmanPlayerImpl player, float x, float y)
+            throws Exception {
+       player.setReadyToPlay(true);
+       player.setLocation(x, y);
+    }
+    
+    /**
+     * Verify that player is stopped in position x, y which means it has initiated
+     * an attack from that position
+     */
+    private void verifyAttackStop(SnowmanPlayerImpl player, float x, float y)
+            throws Exception
+    {
+        verifyState(player, SnowmanPlayerImpl.PlayerState.STOPPED);
+        verifyLocation(player, x, y);
+        verifyDestination(player, x, y);
+    }
+    
+    /**
+     * Verify that player is stopped in position x, y and has the given
+     * hit point value
+     */
+    private void verifyAttackHit(SnowmanPlayerImpl player, float x, float y, int hp)
+            throws Exception
+    {
+        verifyState(player, SnowmanPlayerImpl.PlayerState.STOPPED);
+        verifyLocation(player, x, y);
+        verifyDestination(player, x, y);
+        Assert.assertEquals(player.getHitPoints(), hp);
     }
     
     

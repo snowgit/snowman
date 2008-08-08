@@ -66,6 +66,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 1.0f;
+    static float ATTACKTOLERANCESQD = 10.0f;
     static int RESPAWNHP = 100;
     static int ATTACKHP = 10;
     
@@ -352,6 +353,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             }
         }
         return hp;
+    }
+    
+    public int getHitPoints() {
+        return hitPoints;
     }
     
     static private class RespawnTask implements Task, Serializable {

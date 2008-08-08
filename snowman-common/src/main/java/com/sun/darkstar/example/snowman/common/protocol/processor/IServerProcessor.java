@@ -86,11 +86,12 @@ public interface IServerProcessor extends IProtocolProcessor {
      * based on the previous known location, move direction and speed, 
      * and server recorded timestamp.</li>
      * <li>If the location is invalid, do nothing.</li>
-     * <li>If the attacker location is valid, submit the start and end coordinates
+     * <li>If the attacker location is valid, an implicit stop occurs
+     * at this location.  Submit the start and end coordinates
      * to the validator of the <code>GameWorldManager</code>.  If there
      * is nothing blocking the snowball throw, and the client is within
      * range of the attackee, broadcast an ATTACKED message with the
-     * hp set to the standard HP deduction value.</li
+     * hp set to the standard HP deduction value. </li>
      * <li>If the attacker location is valid but its determined that
      * the snowball can't be thrown (because it is out of range or there
      * is something in the way), broadcast an ATTACKED message with the
