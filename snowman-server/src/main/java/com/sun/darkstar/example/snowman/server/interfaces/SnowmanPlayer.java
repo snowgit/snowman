@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.ClientSession;
 import java.nio.ByteBuffer;
 
@@ -57,6 +58,13 @@ public interface SnowmanPlayer extends DynamicEntity
      * @param y
      */
     public void setLocation(float x, float y);
+    
+    /**
+     * Get the expected position of the player at the given time
+     * @param time
+     * @return
+     */
+    public Coordinate getExpectedPositionAtTime(long time);
 
     /**
      * Set the team of the player

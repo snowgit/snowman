@@ -163,7 +163,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      * @param time
      * @return
      */
-    private Coordinate getExpectedPositionAtTime(long time) {
+    public Coordinate getExpectedPositionAtTime(long time) {
         float currentX = startX;
         float currentY = startY;
         if (state == PlayerState.MOVING) {
@@ -216,11 +216,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      * given tolerance of eachother
      */
     private boolean checkTolerance(float expectedX, float expectedY,
-                                   float givenX, float givenY) {
+                                   float givenX, float givenY,
+                                   float tolerance) {
         float dx = expectedX - givenX;
         float dy = expectedY - givenY;
         float distanceSqd = (dx*dx)+(dy*dy);
-        return distanceSqd < POSITIONTOLERANCESQD;
+        return distanceSqd < tolerance;
     }
     
     public int getID(){
@@ -272,7 +273,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
-                           startx, starty)) {
+                           startx, starty,
+                           POSITIONTOLERANCESQD)) {
             //TODO - collision detection
             
             this.timestamp = now;
@@ -298,19 +300,51 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public void attack(int targetID, float x, float y) {
-        /*if (checkXY(timestamp, x, y, POSITIONTOLERANCESQD)) {            
+        Long now = System.currentTimeMillis();
+        attack(now, targetID, x, y);
+    }
+    protected void attack(long now, int targetID, float x, float y) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+        
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           x, y, POSITIONTOLERANCESQD)) {
+            //get the target player and determine its location
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
+            Coordinate targetPosition = target.getExpectedPositionAtTime(now);
+            
+            boolean success = true;
+            //verify that target is in range
+            if(!checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                               targetPosition.getX(), targetPosition.getY(), 
+                               ATTACKTOLERANCESQD))
+                success = false;
+            
+            //TODO - collision detection
 
-            // check to see if the we can reach the target
-            if (target.checkXY(timestamp, x, y, getThrowDistanceSqd()))
+            //perform implicit stop
+            this.timestamp = now;
+            this.setLocation(x, y);
+            
+            if(success) {
                 currentGameRef.get().send(null,
-                        ServerMessages.createAttackedPkt(id, targetID, target.hit(ATTACKHP)));
-                
-            else
+                                          ServerMessages.createAttackedPkt(
+                                          id, targetID, target.hit(ATTACKHP)));
+            }
+            else {
                 currentGameRef.get().send(null,
-                        ServerMessages.createAttackedPkt(id, targetID, -1));
-        } else
-            logger.log(Level.WARNING, "attack from {0} failed check", name);*/
+                                          ServerMessages.createAttackedPkt(
+                                          id, targetID, 0));
+            }
+        }
+        else {
+            //ignore an invalid attack
+            logger.log(Level.WARNING, "attack from {0} failed attack position check", name);
+        }
     }
 
     public void getFlag(int flagID, float x, float y) {
