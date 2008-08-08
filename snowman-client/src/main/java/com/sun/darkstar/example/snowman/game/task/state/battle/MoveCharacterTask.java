@@ -135,11 +135,9 @@ public class MoveCharacterTask extends RealTimeTask {
 				direction.y = 0;
 				direction.normalizeLocal();
 				view.getLocalRotation().lookAt(direction.clone(), Vector3f.UNIT_Y);
-				//System.out.println("Direction: " + direction.toString());
 				Vector3f force = direction.multLocal(EForce.Movement.getMagnitude());
 				this.character.addForce(force);
 				PhysicsManager.getInstance().markForUpdate(this.character);
-				//System.out.println("Added force: " + force.toString());
 				// Step 9.
 				this.character.setState(EState.Moving);
 				ViewManager.getInstance().markForUpdate(this.character);
