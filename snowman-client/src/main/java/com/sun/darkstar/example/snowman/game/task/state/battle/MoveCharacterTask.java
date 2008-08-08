@@ -128,7 +128,10 @@ public class MoveCharacterTask extends RealTimeTask {
 					view.getLocalTranslation().x = this.startX;
 					view.getLocalTranslation().z = this.startZ;
 				}
-				Vector3f direction = destination.subtract(view.getLocalTranslation()).normalizeLocal();
+				destination.y = 0;
+				Vector3f lcoal = view.getLocalTranslation().clone();
+				lcoal.y = 0;
+				Vector3f direction = destination.subtract(lcoal).normalizeLocal();
 				direction.y = 0;
 				view.getLocalRotation().lookAt(direction.clone(), Vector3f.UNIT_Y);
 				//System.out.println("Direction: " + direction.toString());

@@ -1,8 +1,10 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
@@ -15,6 +17,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * <code>CorrectionTask</code> execution logic:
  * 1. Retrieve the character entity and view based on given ID.
  * 2. Teleport the character to the given coordinates.
+ * 3. Stop the movement and set state back to idle.
  * <p>
  * <code>CorrectionTask</code> are considered 'equal' if and only if the
  * <code>CharacterEntity</code> are 'equal'.
@@ -54,11 +57,16 @@ public class CorrectionTask extends RealTimeTask {
 	@Override
 	public void execute() {
 		// Step 1.
-		IEntity entity = EntityManager.getInstance().getEntity(this.id);
+		CharacterEntity entity = (CharacterEntity)EntityManager.getInstance().getEntity(this.id);
 		View view = (View)ViewManager.getInstance().getView(entity);
 		// Step 2.
 		view.getLocalTranslation().x = this.x;
 		view.getLocalTranslation().z = this.z;
+		// Step 3.
+		entity.resetForce();
+		entity.resetVelocity();
+		entity.setState(EState.Idle);
+		ViewManager.getInstance().markForUpdate(entity);
 	}
 
 	@Override
