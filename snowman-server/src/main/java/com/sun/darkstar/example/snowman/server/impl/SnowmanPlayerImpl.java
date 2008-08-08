@@ -66,6 +66,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 1.0f;
+    static float ATTACKTOLERANCESQD = 10.0f;
     static int RESPAWNHP = 100;
     static int ATTACKHP = 10;
     
@@ -190,10 +191,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             else {
                 float realDX = (float) Math.sqrt(
                         (distanceTraveled * distanceTraveled) / 
-                        ((dx*dx)/(dy*dy) + 1));
+                        ((dy*dy)/(dx*dx) + 1));
                 float realDY = (float) Math.sqrt(
                         (distanceTraveled * distanceTraveled) / 
-                        ((dy*dy)/(dx*dx) + 1));
+                        ((dx*dx)/(dy*dy) + 1));
                 
                 //ensure that the signs match for the deltas
                 if(((realDX > 0) && (dx < 0)) ||
@@ -263,6 +264,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     protected void moveMe(long now,
                           float startx, float starty,
                           float endx, float endy) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
@@ -288,7 +293,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             this.setLocation(expectedPosition.getX(), expectedPosition.getY());
             currentGameRef.get().send(
                     null,
-                    ServerMessages.createStopMOBPkt(id, startX, startY));
+                    ServerMessages.createStopMOBPkt(id, expectedPosition.getX(), expectedPosition.getY()));
         }
     }
     
@@ -348,6 +353,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             }
         }
         return hp;
+    }
+    
+    public int getHitPoints() {
+        return hitPoints;
     }
     
     static private class RespawnTask implements Task, Serializable {
