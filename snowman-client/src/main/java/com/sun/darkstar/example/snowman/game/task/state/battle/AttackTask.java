@@ -101,7 +101,7 @@ public class AttackTask extends RealTimeTask {
 				targetEntity.setState(EState.Death);
 				ViewManager.getInstance().markForUpdate(targetEntity);
 				if(targetEntity instanceof SnowmanEntity) {
-					InputManager.getInstance().setInputActive(false);
+					InputManager.getInstance().getController(targetEntity).setActive(false);
 				}
 			}
 			if(!this.self) {
@@ -115,7 +115,7 @@ public class AttackTask extends RealTimeTask {
 				// Step 5.
 				attackerEntity.setTarget(targetEntity);	
 				// Step 6.
-				if(this.local) this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, targetPosition.x, targetPosition.z));
+				if(this.local) this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, attackerPosition.x, attackerPosition.z));
 			}
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();

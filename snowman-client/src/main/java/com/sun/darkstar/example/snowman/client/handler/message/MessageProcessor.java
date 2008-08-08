@@ -94,7 +94,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attacked(int sourceID, int targetID, int hp) {
-		TaskManager.getInstance().createTask(ETask.Attacking, sourceID, targetID, 10, (sourceID == this.myID));
+		TaskManager.getInstance().createTask(ETask.Attacking, sourceID, targetID, hp, (sourceID == this.myID));
 	}
 
 	@Override
