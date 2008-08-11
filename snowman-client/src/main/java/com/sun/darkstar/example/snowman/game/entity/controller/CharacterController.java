@@ -30,10 +30,10 @@ public class CharacterController extends Controller {
 	 * The last known state.
 	 */
 	private EState lastState;
-	/**
-	 * The flag indicates if a snow ball has been thrown for the current attack.
-	 */
-	private boolean thrown;
+//	/**
+//	 * The flag indicates if a snow ball has been thrown for the current attack.
+//	 */
+//	private boolean thrown;
 
 	/**
 	 * Constructor of <code>CharacterController</code>.
@@ -53,14 +53,16 @@ public class CharacterController extends Controller {
 			if(this.lastState != EState.Attacking) {
 				this.getEntity().setDestination(null);
 				this.entity.resetVelocity();
-			}
-			if(!this.thrown && ((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentHalf()) {
 				TaskManager.getInstance().createTask(ETask.CreateSnowball, this.getEntity(), this.getEntity().getTarget());
-				this.thrown = true;
-			} else if(((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
+			}
+//			if(!this.thrown) {// && ((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentHalf()) {
+//				TaskManager.getInstance().createTask(ETask.CreateSnowball, this.getEntity(), this.getEntity().getTarget());
+//				this.thrown = true;
+//			} else
+			if(((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
 				this.getEntity().setState(EState.Idle);
 				ViewManager.getInstance().markForUpdate(this.entity);
-				this.thrown = false;
+				//this.thrown = false;
 				// Update target scale and speed.
 				ViewManager.getInstance().markForUpdate(this.getEntity().getTarget());
 			}

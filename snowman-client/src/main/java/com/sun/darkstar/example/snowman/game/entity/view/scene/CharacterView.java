@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
+import com.jme.bounding.CollisionTreeManager;
 import com.jme.scene.Spatial;
 import com.model.md5.JointAnimation;
 import com.model.md5.ModelNode;
@@ -86,6 +87,8 @@ public class CharacterView extends DynamicView {
 	public void update(float interpolation) {
 		this.setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()));
 		this.getEntity().setMass(SingletonRegistry.getHPConverter().convertMass(this.getEntity().getHP()));
+		this.updateWorldBound();
+		CollisionTreeManager.getInstance().updateCollisionTree(this);
 		switch(this.getEntity().getState()) {
 		case Moving:
 			if(this.jointController.getActiveAnimation() == this.animMove) return;
@@ -135,7 +138,7 @@ public class CharacterView extends DynamicView {
 	public boolean isCurrentHalf() {
 		float time = this.jointController.getActiveAnimation().getAnimationTime();
 		float value = (this.jointController.getActiveAnimation().getNextTime()/time);
-		return ((value >= 0.4f) && (value <= 0.6f));
+		return ((value >= 0.3f) && (value <= 0.7f));
 	}
 
 	/**
