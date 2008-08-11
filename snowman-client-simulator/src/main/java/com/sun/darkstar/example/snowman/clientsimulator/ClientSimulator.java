@@ -103,7 +103,7 @@ public class ClientSimulator extends JFrame {
         super("Client Simulator Controls");
         
         final String serverHost = System.getProperty("host", "localhost");
-        final String serverPort = System.getProperty("port", "1139");
+        final String serverPort = System.getProperty("port", "3000");
         
         logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
                    new Object[] {serverHost, serverPort});
@@ -135,7 +135,7 @@ public class ClientSimulator extends JFrame {
             }
         });
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         setVisible(true);
         (new Thread() {
@@ -175,7 +175,7 @@ public class ClientSimulator extends JFrame {
                             iter.remove();
                     }
                     try {
-                        sleep(players.size() != 0 ? 20 : 200);
+                        sleep(players.size() != 0 ? 1000 : 2000);
                     } catch (InterruptedException ignore) {}
                 }
             }

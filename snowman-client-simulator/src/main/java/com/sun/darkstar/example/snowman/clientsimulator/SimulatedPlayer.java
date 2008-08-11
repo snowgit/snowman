@@ -165,17 +165,14 @@ class SimulatedPlayer implements SimpleClientListener {
             if (state == PLAYERSTATE.Paused) {
                 logger.log(Level.FINE, "Ready message for {0}", name);
                 try{
+                    Thread.sleep(2000); //TEMPORARY until real client sends READY message properly
                     send(ClientMessages.createReadyPkt());
-                } catch (IOException ioe) {
+                } catch (Exception ioe) {
                     logger.log(Level.SEVERE, "" + name, ioe);
                 }
             } else
                 logger.log(Level.WARNING, "Received ready, but {0} is not paused",
                            name);
-        }
-
-        public void enterLounge(int myID) {
-            logger.log(Level.FINE, "Enter lounge message for {0}", name);
         }
 
         @Override
@@ -226,12 +223,8 @@ class SimulatedPlayer implements SimpleClientListener {
             if (objectID == id) {
                 logger.log(Level.FINEST, "Updating {0} our position to {1},{2}",
                            new Object[] {name, endx, endy});
-                synchronized (this) {
-                    startX = startx;
-                    startY = starty;
-                    destX = endx;
-                    destY = endy;
-                }
+                //reset destination position since we don't do collision detection
+                setDestination(endx, endy);
             } else
                 logger.log(Level.FINEST, "Message to {0}: Move MOB {1} from {2},{3} to {4},{5}",
                            new Object[] {name, objectID, startx, starty, endx, endy});
@@ -281,20 +274,20 @@ class SimulatedPlayer implements SimpleClientListener {
 
         @Override
         public void respawn(int objectID, float x, float y) {
-            //Respawn logic needs to be fixed with protocol change
-            /*if (objectID == id) {
-                setHitPoints(hp);
-                logger.log(Level.FINER, "Message to {0}: Set HP to {1}",
-                       new Object[] {name, hp});
+            if (objectID == id) {
+                logger.log(Level.FINER, "Message to {0}: Respawn at {1},{2}",
+                       new Object[] {name, x, y});
+                stop(x, y);
+                setState(PLAYERSTATE.Playing);
             } else
-                logger.log(Level.FINEST, "Message to {0}: Set HP on object {1} to {2}",
-                       new Object[] {name, objectID, hp});*/
+                logger.log(Level.FINEST, "Message to {0}: Respawn MOB {1} at {2},{3}",
+                       new Object[] {name, objectID, x, y});
         }
     }
     
     private synchronized void setHitPoints(int hp) {
-        setState(hp <= 0 ? PLAYERSTATE.Dead : PLAYERSTATE.Playing);
-        hitPoints = hp;
+        hitPoints -= hp;
+        setState(hitPoints <= 0 ? PLAYERSTATE.Dead : PLAYERSTATE.Playing);
         stop();
     }
     
@@ -326,7 +319,7 @@ class SimulatedPlayer implements SimpleClientListener {
         
         if (dx != 0.0f || dy != 0.0f) {
             // moves per ms
-            float rate = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.01f;
+            float rate = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hitPoints)) * 0.00001f;
             float maxDist = (float)Math.sqrt((dx * dx) + (dy * dy));
             long dt = System.currentTimeMillis() - lastTimestamp;
             
