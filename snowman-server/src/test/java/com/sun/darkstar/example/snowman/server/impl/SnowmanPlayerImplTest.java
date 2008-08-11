@@ -437,6 +437,50 @@ public class SnowmanPlayerImplTest
     
     
     /**
+     * Test move where where delta x is 0
+     */
+    @Test
+    public void testMoveMePlayerMovingAndValidStartAndVerticalMove()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 0.0f;
+        float destY = 100.0f;
+        long startTime = 1000;
+        long nowTime = 2000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //determine the expected position after 1 second
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        float distanceTraveled = ratePerMs * (nowTime - startTime);
+        float expX = startX;
+        float expY = startY + distanceTraveled;
+        
+        //setup expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, expX, expY, destX, destY));
+        EasyMock.replay(currentGame);
+        
+        //make the move
+        testPlayer.moveMe(nowTime, expX, expY, destX, destY);
+        
+        //verify player information has transitioned properly
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING);
+        verifyTimestamp(testPlayer, nowTime);
+        verifyLocation(testPlayer, expX, expY);
+        verifyDestination(testPlayer, destX, destY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
      * Verify that attacking with the following conditions works properly:
      *  - attacker is stopped
      *  - attackee is stopped

@@ -189,19 +189,17 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             //  dx/dy = realDX/realDY
             //  realDX^2 + realDY^2 = distanceTraveled^2
             else {
-                float realDX = (float) Math.sqrt(
-                        (distanceTraveled * distanceTraveled) / 
-                        ((dy*dy)/(dx*dx) + 1));
-                float realDY = (float) Math.sqrt(
+                float realDX = dx == 0.0f ? 0.0f : (float) Math.sqrt(
+                        (distanceTraveled * distanceTraveled) /
+                        ((dy * dy) / (dx * dx) + 1));
+                float realDY = dy == 0.0f ? 0.0f : (float) Math.sqrt(
                         (distanceTraveled * distanceTraveled) / 
                         ((dx*dx)/(dy*dy) + 1));
                 
                 //ensure that the signs match for the deltas
-                if(((realDX > 0) && (dx < 0)) ||
-                        ((realDX < 0) && (dx > 0)))
+                if(dx < 0)
                     realDX *= -1;
-                if(((realDY > 0) && (dy < 0)) ||
-                        ((realDY < 0) && (dy > 0)))
+                if(dy < 0)
                     realDY *= -1;
                 
                 currentX = startX + realDX;
