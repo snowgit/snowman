@@ -1,8 +1,6 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.bounding.BoundingBox;
-import com.jme.input.ChaseCamera;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
@@ -10,6 +8,7 @@ import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
+import com.sun.darkstar.example.snowman.game.input.SnowmanCameraHandler;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 
@@ -34,14 +33,14 @@ public class BattleState extends GameState {
 	 */
 	private final int expected;
 	/**
-	 * The chase camera object.
-	 */
-	private ChaseCamera chaseCam;
-	/**
 	 * The number of added entities.
 	 */
 	private int count;
-
+	/**
+	 * Our camera handler.
+	 */
+	private SnowmanCameraHandler cameraHandler;
+	
 	/**
 	 * Constructor of <code>BattleState</code>.
 	 * @param game The <code>Game</code> instance.
@@ -58,36 +57,23 @@ public class BattleState extends GameState {
 
 	@Override
 	protected void initializeState() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void updateState(float interpolation) {
-		this.chaseCam.update(interpolation);
+		this.cameraHandler.update(interpolation);
 	}
 	
 	/**
 	 * Initialize a chase camera with the given dynamic view as target.
 	 * @param view The target <code>DynamicView</code> instance.
 	 */
-	public void initializeChaseCam(DynamicView view) {
+	public void initializeCameraHandler(DynamicView view) {
 		view.updateGeometricState(0, false);
-		this.chaseCam = new ChaseCamera(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), view);
-		this.chaseCam.setMaintainAzimuth(true);
-		this.chaseCam.getMouseLook().setLookMouseButton(1);
-		this.chaseCam.setStayBehindTarget(true);
-		this.chaseCam.setSpringK(25);
-		this.chaseCam.setDampingK(10);
+		this.cameraHandler = new SnowmanCameraHandler(DisplaySystem.getDisplaySystem().getRenderer().getCamera(), view, this.game);
 		Vector3f targetOffset = new Vector3f(0,0,0);
-		targetOffset.setY(((BoundingBox)view.getWorldBound()).yExtent*0.2f);
-		this.chaseCam.setTargetOffset(targetOffset);
-		this.chaseCam.setActionSpeed(0.2f);
-		this.chaseCam.getMouseLook().setMaxAscent(50 * FastMath.DEG_TO_RAD);
-		this.chaseCam.getMouseLook().setMinAscent(-30 * FastMath.DEG_TO_RAD);
-		this.chaseCam.getMouseLook().setMaxRollOut(5);
-		this.chaseCam.getMouseLook().setMinRollOut(2);
-		this.chaseCam.getMouseLook().setMouseRollMultiplier(4);
-		this.chaseCam.setIdealSphereCoords(new Vector3f(5, 0, 40*FastMath.DEG_TO_RAD));
+		targetOffset.setY(((BoundingBox)view.getWorldBound()).yExtent*1.5f);
+		this.cameraHandler.setTargetOffset(targetOffset);
 	}
 	
 	/**
