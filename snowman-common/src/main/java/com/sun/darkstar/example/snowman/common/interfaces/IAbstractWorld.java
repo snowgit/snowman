@@ -17,7 +17,7 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 24:04 EST
- * @version Modified date: 08-11-2008 15:10 EST
+ * @version Modified date: 08-11-2008 16:26 EST
  */
 public interface IAbstractWorld extends Savable {
 	
@@ -32,6 +32,12 @@ public interface IAbstractWorld extends Savable {
 	 * @return The static entity root <code>Node</code>.
 	 */
 	public Node getStaticRoot();
+	
+	/**
+	 * Retrieve the root node of terrain entity.
+	 * @return The terrain entity root <code>Node</code>.
+	 */
+	public Node getTerrainRoot();
 	
 	/**
 	 * Retrieve the root node of all dynamic entities.

@@ -8,6 +8,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableWorld;
 import com.sun.darkstar.example.snowman.common.interfaces.IFinal;
@@ -29,7 +30,7 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 14:50 EST
- * @version Modified date: 08-11-2008 15:18 EST
+ * @version Modified date: 08-11-2008 16:30 EST
  */
 public class EditableWorld extends AbstractWorld implements IEditableWorld {
 	/**
@@ -66,7 +67,8 @@ public class EditableWorld extends AbstractWorld implements IEditableWorld {
 	public void attachView(IEditableView view) {
 		if(this.views.contains(view) || view == null) return;
 		this.views.add(view);
-		view.attachTo(this.staticRoot);
+		if(view.getEntity().getEnumn() == EEntity.Terrain) view.attachTo(this.terrainRoot);
+		else view.attachTo(this.staticRoot);
 	}
 
 	@Override
