@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
@@ -350,19 +351,40 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
 
     public void getFlag(int flagID, float x, float y) {
-        /*SnowmanGame game = currentGameRef.get();
+        Long now = System.currentTimeMillis();
+        getFlag(now, flagID, x, y);
+    }
+    protected void getFlag(long now, int flagID, float x, float y) {
+        SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
         
         // Can not get flag if same team or flag is held by another player
-        if (flag.getTeamColor() == teamColor ||
-            flag.isHeld())
+        if (flag == null || flag.getTeamColor() == teamColor || flag.isHeld())
             return;
         
-        if (checkXY(timestamp, flag.getX(), flag.getY(), flag.getGoalRadius())) {
-            flag.setHeldBy(this);   // TODO - save ref to flag
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           x, y, POSITIONTOLERANCESQD)) {
+            
+            //verify that the player is in range of the flag
+            if(checkTolerance(x, y, flag.getX(), flag.getY(),
+                               flag.getGoalRadius()*flag.getGoalRadius())) {
+                //perform implicit stop
+                this.timestamp = now;
+                this.setLocation(x, y);
+
+                //attach the flag
+                flag.setHeldBy(this);   // TODO - save ref to flag
             game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
-        } else
-            logger.log(Level.WARNING, "set flag from {0} failed check", name);*/
+            }
+            else {
+                logger.log(Level.WARNING, "get flag from {0} failed goal radius check", name);
+            }
+        } 
+        else {
+            logger.log(Level.WARNING, "get flag from {0} failed attach position check", name);
+        }
     }
     
     public void score(float x, float y) {

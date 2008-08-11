@@ -36,6 +36,7 @@ import com.sun.darkstar.example.snowman.server.context.MockAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
@@ -552,6 +553,65 @@ public class SnowmanPlayerImplTest
         
         //validate messages
         EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
+     * Verify picking up the flag works properly when the player is not moving
+     * and the position is within range
+     */
+    @Test
+    public void testGetFlagPlayerStoppedAndValidStartAndFlagInRange()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //choose a flag position within tolerance of flag radius
+        //setup flag behavior
+        float goalRadius = 1.0f;
+        int flagId = 100;
+        targetDistanceSqd = (goalRadius*goalRadius)/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float flagX = newX+xOffset;
+        float flagY = newY-yOffset;
+        SnowmanFlag flag = EasyMock.createMock(SnowmanFlag.class);
+        EasyMock.expect(flag.getID()).andStubReturn(flagId);
+        EasyMock.expect(flag.getGoalRadius()).andStubReturn(goalRadius);
+        EasyMock.expect(flag.getX()).andStubReturn(flagX);
+        EasyMock.expect(flag.getY()).andStubReturn(flagY);
+        EasyMock.expect(flag.isHeld()).andStubReturn(false);
+        EasyMock.expect(flag.getTeamColor()).andStubReturn(attackeeColor);
+        flag.setHeldBy(testPlayer);
+        EasyMock.replay(flag);
+        
+        //setup expected broadcast messages to the game and game behavior
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getFlag(flagId)).andStubReturn(flag);
+        currentGame.send(null, ServerMessages.createAttachObjPkt(this.testPlayerId, flagId));
+        EasyMock.replay(currentGame);
+        
+        //try getting the flag
+        testPlayer.getFlag(flagId, newX, newY);
+        
+        //verify player information has transitioned properly
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.STOPPED);
+        verifyLocation(testPlayer, newX, newY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+        EasyMock.verify(flag);
     }
     
     
