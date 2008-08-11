@@ -22,7 +22,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 08-07-2008 15:10 EST
+ * @version Modified date: 08-11-2008 16:56 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -66,6 +66,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
+		this.handler.incrementExpected();
 		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, team, x, y, (objectID == this.myID));
 	}
 

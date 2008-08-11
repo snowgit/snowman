@@ -25,13 +25,9 @@ import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 12:25 EST
- * @version Modified date: 07-17-2008 16:59 EST
+ * @version Modified date: 08-11-2008 16:54 EST
  */
 public class BattleState extends GameState {
-	/**
-	 * The expected number of entities.
-	 */
-	private final int expected;
 	/**
 	 * The number of added entities.
 	 */
@@ -47,7 +43,6 @@ public class BattleState extends GameState {
 	 */
 	public BattleState(Game game) {
 		super(EGameState.BattleState, game);
-		this.expected = 4;
 	}
 
 	@Override
@@ -81,14 +76,6 @@ public class BattleState extends GameState {
 	 */
 	public void incrementCount() {
 		this.count++;
-	}
-	
-	/**
-	 * Retrieve the expected number of added entities.
-	 * @return The expected number of added entities.
-	 */
-	public int getExpected() {
-		return this.expected;
 	}
 	
 	/**
