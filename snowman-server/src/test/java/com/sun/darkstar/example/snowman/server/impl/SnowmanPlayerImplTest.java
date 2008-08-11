@@ -488,6 +488,73 @@ public class SnowmanPlayerImplTest
         EasyMock.verify(currentGame);
     }
     
+    
+    /**
+     * Verify that attacking with the following conditions works properly:
+     *  - attacker is moving
+     *  - attackee is stopped
+     *  - client sends valid attack position to server
+     *  - attackee is within range
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testAttackPlayerMoving() 
+            throws Exception
+    {
+        this.initializeAttackee(attackeeId);
+        
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 9.0f;
+        float destY = 12.0f;
+        long startTime = 1000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //determine the expected time it will take to move 10 units
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        long nowTime = (long)((10.0f + (ratePerMs * startTime))/ratePerMs);
+        float expX = startX + 6.0f;
+        float expY = startY + 8.0f;
+        
+        //choose an attack position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = expX+xOffset;
+        float newY = expY-yOffset;
+        
+        //choose an attackee position within the tolerance
+        targetDistanceSqd = HPConverter.getInstance().convertRange(SnowmanPlayerImpl.RESPAWNHP)/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float attackeeX = newX+xOffset;
+        float attackeeY = newY-yOffset;
+        
+        //setup the attackee state
+        this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
+        
+        //setup expected broadcast messages to the game and behavior of game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
+        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
+        EasyMock.replay(currentGame);
+        
+        //do the attack
+        testPlayer.attack(nowTime, attackeeId, newX, newY);
+        
+        //verify player state
+        this.verifyAttackStop(testPlayer, newX, newY);
+        this.verifyAttackHit(attackee, attackeeX, attackeeY, SnowmanPlayerImpl.RESPAWNHP - SnowmanPlayerImpl.ATTACKHP);
+        
+        //validate messages
+        EasyMock.verify(currentGame);
+    }
+    
+    
     /**
      * Setup the dummy currentGame to return a SnowmanPlayer with the given
      * id intended to be used as the attackee in the attack tests
