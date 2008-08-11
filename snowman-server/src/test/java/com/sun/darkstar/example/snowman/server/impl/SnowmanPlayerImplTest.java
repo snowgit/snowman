@@ -36,6 +36,7 @@ import com.sun.darkstar.example.snowman.server.context.MockAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
@@ -436,6 +437,50 @@ public class SnowmanPlayerImplTest
     
     
     /**
+     * Test move where where delta x is 0
+     */
+    @Test
+    public void testMoveMePlayerMovingAndValidStartAndVerticalMove()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 0.0f;
+        float destY = 100.0f;
+        long startTime = 1000;
+        long nowTime = 2000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //determine the expected position after 1 second
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        float distanceTraveled = ratePerMs * (nowTime - startTime);
+        float expX = startX;
+        float expY = startY + distanceTraveled;
+        
+        //setup expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, expX, expY, destX, destY));
+        EasyMock.replay(currentGame);
+        
+        //make the move
+        testPlayer.moveMe(nowTime, expX, expY, destX, destY);
+        
+        //verify player information has transitioned properly
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING);
+        verifyTimestamp(testPlayer, nowTime);
+        verifyLocation(testPlayer, expX, expY);
+        verifyDestination(testPlayer, destX, destY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
      * Verify that attacking with the following conditions works properly:
      *  - attacker is stopped
      *  - attackee is stopped
@@ -487,6 +532,132 @@ public class SnowmanPlayerImplTest
         //validate messages
         EasyMock.verify(currentGame);
     }
+    
+    
+    /**
+     * Verify that attacking with the following conditions works properly:
+     *  - attacker is moving
+     *  - attackee is stopped
+     *  - client sends valid attack position to server
+     *  - attackee is within range
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testAttackPlayerMoving() 
+            throws Exception
+    {
+        this.initializeAttackee(attackeeId);
+        
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 9.0f;
+        float destY = 12.0f;
+        long startTime = 1000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //determine the expected time it will take to move 10 units
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        long nowTime = (long)((10.0f + (ratePerMs * startTime))/ratePerMs);
+        float expX = startX + 6.0f;
+        float expY = startY + 8.0f;
+        
+        //choose an attack position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = expX+xOffset;
+        float newY = expY-yOffset;
+        
+        //choose an attackee position within the tolerance
+        targetDistanceSqd = HPConverter.getInstance().convertRange(SnowmanPlayerImpl.RESPAWNHP)/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float attackeeX = newX+xOffset;
+        float attackeeY = newY-yOffset;
+        
+        //setup the attackee state
+        this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
+        
+        //setup expected broadcast messages to the game and behavior of game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
+        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
+        EasyMock.replay(currentGame);
+        
+        //do the attack
+        testPlayer.attack(nowTime, attackeeId, newX, newY);
+        
+        //verify player state
+        this.verifyAttackStop(testPlayer, newX, newY);
+        this.verifyAttackHit(attackee, attackeeX, attackeeY, SnowmanPlayerImpl.RESPAWNHP - SnowmanPlayerImpl.ATTACKHP);
+        
+        //validate messages
+        EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
+     * Verify picking up the flag works properly when the player is not moving
+     * and the position is within range
+     */
+    @Test
+    public void testGetFlagPlayerStoppedAndValidStartAndFlagInRange()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //choose a flag position within tolerance of flag radius
+        //setup flag behavior
+        float goalRadius = 1.0f;
+        int flagId = 100;
+        targetDistanceSqd = (goalRadius*goalRadius)/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float flagX = newX+xOffset;
+        float flagY = newY-yOffset;
+        SnowmanFlag flag = EasyMock.createMock(SnowmanFlag.class);
+        EasyMock.expect(flag.getID()).andStubReturn(flagId);
+        EasyMock.expect(flag.getGoalRadius()).andStubReturn(goalRadius);
+        EasyMock.expect(flag.getX()).andStubReturn(flagX);
+        EasyMock.expect(flag.getY()).andStubReturn(flagY);
+        EasyMock.expect(flag.isHeld()).andStubReturn(false);
+        EasyMock.expect(flag.getTeamColor()).andStubReturn(attackeeColor);
+        flag.setHeldBy(testPlayer);
+        EasyMock.replay(flag);
+        
+        //setup expected broadcast messages to the game and game behavior
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getFlag(flagId)).andStubReturn(flag);
+        currentGame.send(null, ServerMessages.createAttachObjPkt(this.testPlayerId, flagId));
+        EasyMock.replay(currentGame);
+        
+        //try getting the flag
+        testPlayer.getFlag(flagId, newX, newY);
+        
+        //verify player information has transitioned properly
+        verifyState(testPlayer, SnowmanPlayerImpl.PlayerState.STOPPED);
+        verifyLocation(testPlayer, newX, newY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+        EasyMock.verify(flag);
+    }
+    
     
     /**
      * Setup the dummy currentGame to return a SnowmanPlayer with the given
