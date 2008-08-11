@@ -66,6 +66,7 @@ import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.canvas.JMECanvas;
 import com.jme.system.canvas.SimplePassCanvasImpl;
+import com.jme.util.CloneImportExport;
 import com.jme.util.Debug;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
@@ -517,7 +518,10 @@ public class WorldEditor extends JFrame {
 							@Override
 							public Object call() throws Exception {
 									if(dlg.hasFile()) {
-										World node = (World)world.constructFinal();
+										CloneImportExport cloner = new CloneImportExport();
+										cloner.saveClone(world);
+										EditableWorld cloneWorld = (EditableWorld)cloner.loadClone();
+										World node = (World)cloneWorld.constructFinal();
 										if(!dlg.exportTextures()) {
 											this.stripTexure(node);
 										}
