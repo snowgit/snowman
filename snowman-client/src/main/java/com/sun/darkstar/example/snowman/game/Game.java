@@ -165,7 +165,7 @@ public class Game extends BaseGame implements IComponent{
 	private void initializeCamera() {
 		// Create the camera.
 		Camera camera = this.display.getRenderer().createCamera(this.display.getWidth(), this.display.getHeight());
-		camera.setFrustumPerspective(45.0f, this.display.getWidth()/this.display.getHeight(), 1, 1000);
+		camera.setFrustumPerspective(45.0f, this.display.getWidth()/this.display.getHeight(), .1f, 500);
 		Vector3f location = new Vector3f(0.0f, 0.0f, 0.0f);
 		Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
 		Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);

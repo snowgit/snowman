@@ -27,6 +27,6 @@ public class ObjectNotFoundException extends RuntimeException {
 	 * @param objectID The ID of the object attempted to retrieve.
 	 */
 	public ObjectNotFoundException(String objectID) {
-		super("Object " + objectID + "not found.");
+		super("Object " + objectID + " not found.");
 	}
 }

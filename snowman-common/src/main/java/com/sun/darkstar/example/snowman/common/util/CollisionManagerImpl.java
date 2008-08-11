@@ -138,9 +138,7 @@ public class CollisionManagerImpl implements CollisionManager
                 TriMesh mesh = (TriMesh) data.getTargetMesh();
                 mesh.getTriangle(triangles.get(0).intValue(), vertices);
                 for (int j = 0; j < vertices.length; j++) {
-                    vertices[j].multLocal(mesh.getWorldScale());
-                    mesh.getWorldRotation().mult(vertices[j], vertices[j]);
-                    vertices[j].addLocal(mesh.getWorldTranslation());
+                	mesh.localToWorld(vertices[j], vertices[j]);
                 }
                 hit = ray.intersectWhere(vertices[0], vertices[1], vertices[2], store);
                 if (hit && local) {
