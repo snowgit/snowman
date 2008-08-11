@@ -3,7 +3,6 @@ package com.sun.darkstar.example.snowman.common.world;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.jme.scene.Node;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -28,17 +27,13 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-17-2008 15:23 EST
- * @version Modified date: 07-01-2008 17:04 EST
+ * @version Modified date: 08-11-2008 15:20 EST
  */
-public class World extends Node implements IWorld {
+public class World extends AbstractWorld implements IWorld {
 	/**
 	 * Serial version.
 	 */
 	private static final long serialVersionUID = 4623946654242838364L;
-	/**
-	 * The <code>EWorld</code> enumeration of this <code>World</code>.
-	 */
-	private EWorld enumn;
 	/**
 	 * The <code>ArrayList</code> of <code>IStaticView</code>.
 	 */
@@ -54,8 +49,7 @@ public class World extends Node implements IWorld {
 	 * @param enumn The <code>EWorld</code> enumeration.
 	 */
 	public World(EWorld enumn) {
-		super("World" + enumn.toString());
-		this.enumn = enumn;
+		super(enumn);
 		this.views = new ArrayList<IStaticView>();
 	}
 
@@ -69,16 +63,11 @@ public class World extends Node implements IWorld {
 			}
 			// TODO Do quad-tree optimization here.
 			for(IStaticView view : this.views) {
-				view.attachTo(this);
+				view.attachTo(this.staticRoot);
 			}
 		}
 	}
 
-	@Override
-	public EWorld getWorldEnumn() {
-		return this.enumn;
-	}
-	
 	@Override
 	public ArrayList<IStaticView> getViews() {
 		return this.views;
@@ -88,7 +77,6 @@ public class World extends Node implements IWorld {
 	public void write(JMEExporter ex) throws IOException {
 		super.write(ex);
 		OutputCapsule oc = ex.getCapsule(this);
-		oc.write(this.enumn.toString(), "Enumeration", null);
 		oc.writeSavableArrayList(this.views, "Views", null);
 	}
 
@@ -97,8 +85,6 @@ public class World extends Node implements IWorld {
 	public void read(JMEImporter im) throws IOException {
 		super.read(im);
 		InputCapsule ic = im.getCapsule(this);
-		this.enumn = EWorld.valueOf(ic.readString("Enumeration", null));
-		this.setName("World"+this.enumn.toString());
 		this.views = ic.readSavableArrayList("Views", null);
 	}
 }

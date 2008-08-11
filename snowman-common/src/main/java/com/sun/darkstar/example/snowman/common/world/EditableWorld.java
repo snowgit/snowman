@@ -3,12 +3,12 @@ package com.sun.darkstar.example.snowman.common.world;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.jme.scene.Node;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableWorld;
 import com.sun.darkstar.example.snowman.common.interfaces.IFinal;
@@ -30,17 +30,13 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 14:50 EST
- * @version Modified date: 07-23-2008 11:07 EST
+ * @version Modified date: 08-11-2008 16:30 EST
  */
-public class EditableWorld extends Node implements IEditableWorld {
+public class EditableWorld extends AbstractWorld implements IEditableWorld {
 	/**
 	 * Serial version.
 	 */
 	private static final long serialVersionUID = 7100272026657161759L;
-	/**
-	 * The <code>EWorld</code> enumeration of this <code>World</code>.
-	 */
-	private EWorld enumn;
 	/**
 	 * The <code>ArrayList</code> of <code>IEditableView</code>.
 	 */
@@ -56,8 +52,7 @@ public class EditableWorld extends Node implements IEditableWorld {
 	 * @param enumn The <code>EWorld</code> enumeration.
 	 */
 	public EditableWorld(EWorld enumn) {
-		super("World" + enumn.toString());
-		this.enumn = enumn;
+		super(enumn);
 		this.views = new ArrayList<IEditableView>();
 	}
 
@@ -72,7 +67,8 @@ public class EditableWorld extends Node implements IEditableWorld {
 	public void attachView(IEditableView view) {
 		if(this.views.contains(view) || view == null) return;
 		this.views.add(view);
-		view.attachTo(this);
+		if(view.getEntity().getEnumn() == EEntity.Terrain) view.attachTo(this.terrainRoot);
+		else view.attachTo(this.staticRoot);
 	}
 
 	@Override
@@ -89,15 +85,9 @@ public class EditableWorld extends Node implements IEditableWorld {
 	}
 
 	@Override
-	public EWorld getWorldEnumn() {
-		return this.enumn;
-	}
-
-	@Override
 	public void write(JMEExporter ex) throws IOException {
 		super.write(ex);
 		OutputCapsule oc = ex.getCapsule(this);
-		oc.write(this.enumn.toString(), "Enumeration", null);
 		oc.writeSavableArrayList(this.views, "Views", null);
 	}
 
@@ -106,8 +96,6 @@ public class EditableWorld extends Node implements IEditableWorld {
 	public void read(JMEImporter im) throws IOException {
 		super.read(im);
 		InputCapsule ic = im.getCapsule(this);
-		this.enumn = EWorld.valueOf(ic.readString("Enumeration", null));
-		this.setName("World"+this.enumn.toString());
 		this.views = ic.readSavableArrayList("Views", null);
 	}
 }
