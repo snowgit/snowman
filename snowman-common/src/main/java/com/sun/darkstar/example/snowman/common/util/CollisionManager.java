@@ -33,7 +33,6 @@
 package com.sun.darkstar.example.snowman.common.util;
 
 import com.jme.math.Ray;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -49,10 +48,6 @@ import com.jme.scene.Spatial;
  */
 public interface CollisionManager {
 	
-    public static final float BACKOFFDISTANCE = 5.0f;
-    public static final float PATHHEIGHT = 5.0f;
-    public static final float THROWHEIGHT = 5.0f;
-
     /**
      * Retrieve the intersecting object under the given node.
      * @param ray The <code>Ray</code> to check with.

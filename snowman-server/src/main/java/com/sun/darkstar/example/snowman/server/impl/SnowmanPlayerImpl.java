@@ -40,6 +40,7 @@ import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcess
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
@@ -67,8 +68,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 1.0f;
-    static int RESPAWNHP = 100;
-    static int ATTACKHP = 10;
+    static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
+    static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     
     private ManagedReference<ClientSession> sessionRef;
     

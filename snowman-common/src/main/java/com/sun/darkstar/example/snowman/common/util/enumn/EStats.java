@@ -11,15 +11,27 @@ public enum EStats {
 	/**
 	 * The snow ball damage.
 	 */
-	SnowballDamage(10),
+	SnowballDamage(10f),
+        /**
+         * The snowman initial hitpoint value
+         */
+        SnowmanFullStrength(100f),
 	/**
 	 * The snowman height.
 	 */
-	SnowmanHeight(1),
+	SnowmanHeight(1f),
+        /**
+         * The snowball height
+         */
+        SnowballHeight(0.8f),
+        /**
+         * The backoff distance on a collision
+         */
+        BackoffDistance(0.25f),
 	/**
 	 * The grabbing range.
 	 */
-	GrabRange(1);
+	GrabRange(1f);
 	
 	/**
 	 * The value of this statistic.
