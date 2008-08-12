@@ -54,16 +54,12 @@ public interface GameWorldManager {
      * calculated and returned by the <code>CollisionManager</code>.
      * </p>
      * 
-     * @param playerId id of the player being moved
      * @param start coordinate of the start position
      * @param end coordinate of the destination position
-     * @param timestart timestamp that the player began moving
      * @return actual destination location when collisions are accounted for
      */
-    public Coordinate trimPath(int playerId,
-                               Coordinate start,
-                               Coordinate end,
-                               long timestart);
+    public Coordinate trimPath(Coordinate start,
+                               Coordinate end);
     
     /**
      * <p>

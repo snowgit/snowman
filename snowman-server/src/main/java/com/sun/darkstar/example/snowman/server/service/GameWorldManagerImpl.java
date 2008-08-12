@@ -51,11 +51,9 @@ public class GameWorldManagerImpl implements GameWorldManager {
     }
     
     /** {@inheritDoc} */
-    public Coordinate trimPath(int playerId,
-                               Coordinate start, 
-                               Coordinate end,
-                               long timestart) {
-        return backingService.trimPath(playerId, start, end, timestart);
+    public Coordinate trimPath(Coordinate start, 
+                               Coordinate end) {
+        return backingService.trimPath(start, end);
     }
 
     /** {@inheritDoc} */
