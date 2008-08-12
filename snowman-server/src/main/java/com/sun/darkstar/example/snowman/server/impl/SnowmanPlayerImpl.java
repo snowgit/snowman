@@ -42,6 +42,7 @@ import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
@@ -275,12 +276,15 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                            startx, starty,
                            POSITIONTOLERANCESQD)) {
             //TODO - collision detection
+            Coordinate trimPosition = appContext.getManager(GameWorldManager.class).
+                    trimPath(new Coordinate(startx, starty),
+                             new Coordinate(endx, endy));
             
             this.timestamp = now;
             this.startX = startx;
             this.startY = starty;
-            this.destX = endx;
-            this.destY = endy;
+            this.destX = trimPosition.getX();
+            this.destY = trimPosition.getY();
             this.state = PlayerState.MOVING;
             
             currentGameRef.get().send(null,

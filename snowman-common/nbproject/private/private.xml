@@ -3,5 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
         <file>file:/home/owen/svnwork/project-snowman-owenkellett-server/snowman-common/src/main/java/com/sun/darkstar/example/snowman/common/protocol/processor/IServerProcessor.java</file>
+        <file>file:/home/owen/svnwork/project-snowman-owenkellett-server/snowman-common/src/main/java/com/sun/darkstar/example/snowman/common/util/CollisionManager.java</file>
+        <file>file:/home/owen/svnwork/project-snowman-owenkellett-server/snowman-common/src/main/java/com/sun/darkstar/example/snowman/common/util/CollisionManagerImpl.java</file>
+        <file>file:/home/owen/svnwork/project-snowman-owenkellett-server/snowman-common/src/main/java/com/sun/darkstar/example/snowman/common/util/enumn/EStats.java</file>
+        <file>file:/home/owen/svnwork/project-snowman-owenkellett-server/snowman-common/src/test/java/com/sun/darkstar/example/snowman/common/util/CollisionManagerTest.java</file>
     </open-files>
 </project-private>

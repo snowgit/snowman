@@ -37,10 +37,12 @@ import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.ClientSession;
 import org.junit.Test;
 import org.junit.Before;
@@ -62,6 +64,7 @@ public class SnowmanPlayerImplTest
     private SnowmanGame currentGame;
     private ClientSession session;
     private SnowmanAppContext appContext;
+    private GameWorldManager gameWorldManager;
     
     private int attackeeId = 2;
     private ETeamColor attackeeColor = ETeamColor.Blue;
@@ -76,6 +79,7 @@ public class SnowmanPlayerImplTest
         
         //setup the player
         appContext = SnowmanAppContextFactory.getAppContext();
+        gameWorldManager = appContext.getManager(GameWorldManager.class);
         session = EasyMock.createNiceMock(ClientSession.class);
         currentGame = EasyMock.createNiceMock(SnowmanGame.class);
         EasyMock.replay(session);
@@ -118,6 +122,12 @@ public class SnowmanPlayerImplTest
         //choose a destination
         float destX = 20.0f;
         float destY = 15.0f;
+        Coordinate newStart = new Coordinate(newX, newY);
+        Coordinate destination = new Coordinate(destX, destY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.trimPath(newStart,
+                                                  destination)).andStubReturn(destination);
+        EasyMock.replay(gameWorldManager);
         
         //record timestamp for later verification
         Long timestamp = System.currentTimeMillis();
@@ -224,6 +234,14 @@ public class SnowmanPlayerImplTest
         float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
         float newX = expX+xOffset;
         float newY = expY-yOffset;
+        
+        //setup gameworldmanager with destination position
+        Coordinate newStart = new Coordinate(newX, newY);
+        Coordinate destination = new Coordinate(destX, destY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.trimPath(newStart,
+                                                  destination)).andStubReturn(destination);
+        EasyMock.replay(gameWorldManager);
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
@@ -417,6 +435,14 @@ public class SnowmanPlayerImplTest
         float newX = expX+xOffset;
         float newY = expY-yOffset;
         
+        //setup gameworldmanager with destination position
+        Coordinate newStart = new Coordinate(newX, newY);
+        Coordinate destination = new Coordinate(destX, destY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.trimPath(newStart,
+                                                  destination)).andStubReturn(destination);
+        EasyMock.replay(gameWorldManager);
+        
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
         currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
@@ -460,6 +486,14 @@ public class SnowmanPlayerImplTest
         float distanceTraveled = ratePerMs * (nowTime - startTime);
         float expX = startX;
         float expY = startY + distanceTraveled;
+        
+        //setup gameworldmanager with destination position
+        Coordinate newStart = new Coordinate(expX, expY);
+        Coordinate destination = new Coordinate(destX, destY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.trimPath(newStart,
+                                                  destination)).andStubReturn(destination);
+        EasyMock.replay(gameWorldManager);
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
