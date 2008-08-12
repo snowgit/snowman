@@ -19,7 +19,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-23-2008 17:41 EST
- * @version Modified date: 07-23-2008 17:52 EST
+ * @version Modified date: 08-11-2008 16:55 EST
  */
 public class ReadyTask extends RealTimeTask {
 	
@@ -30,7 +30,7 @@ public class ReadyTask extends RealTimeTask {
 	@Override
 	public void execute() {
 		BattleState state = (BattleState)this.game.getGameState(EGameState.BattleState);
-		if(state.getCount() == state.getExpected()) {
+		if(state.getCount() == this.game.getClient().getHandler().getExpected()) {
 			this.game.getClient().send(ClientMessages.createReadyPkt());
 			return;
 		} else {

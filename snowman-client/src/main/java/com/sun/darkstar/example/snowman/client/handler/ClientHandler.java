@@ -22,7 +22,7 @@ import com.sun.darkstar.example.snowman.unit.Component;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-28-2008 16:40 EST
- * @version Modified date: 06-06-2008 17:26 EST
+ * @version Modified date: 08-11-2008 16:55 EST
  */
 public class ClientHandler extends Component {
 	/**
@@ -41,6 +41,10 @@ public class ClientHandler extends Component {
 	 * The <code>PasswordAuthentication</code> instance.
 	 */
 	private PasswordAuthentication authentication;
+	/**
+	 * The expected number of MOBs.
+	 */
+	private int expected;
 	
 	/**
 	 * Constructor of <code>ClientHandler</code>.
@@ -59,8 +63,9 @@ public class ClientHandler extends Component {
 	}
 
 	@Override
-	@SuppressWarnings("unused")
-	public void initialize() {}
+	public void initialize() {
+		this.expected = 0;
+	}
 
 	@Override
 	public void connect(IComponent component) {
@@ -76,6 +81,13 @@ public class ClientHandler extends Component {
 	 */
 	public void authenticate(String username, String password) {
 		this.authentication = new PasswordAuthentication(username ,password.toCharArray());
+	}
+	
+	/**
+	 * Increment the expected number of entities.
+	 */
+	public void incrementExpected() {
+		this.expected++;
 	}
 	
 	/**
@@ -108,5 +120,13 @@ public class ClientHandler extends Component {
 	 */
 	public PasswordAuthentication getAuthentication() {
 		return this.authentication;
+	}
+	
+	/**
+	 * Retrieve the expected number of added entities.
+	 * @return The expected number of added entities.
+	 */
+	public int getExpected() {
+		return this.expected;
 	}
 }
