@@ -19,7 +19,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-24-2008 11:24 EST
- * @version Modified date: 08-06-2008 11:50 EST
+ * @version Modified date: 08-12-2008 11:47 EST
  */
 public class CharacterController extends Controller {
 	/**
@@ -72,6 +72,12 @@ public class CharacterController extends Controller {
 				this.getEntity().setState(EState.Idle);
 				ViewManager.getInstance().markForUpdate(this.entity);
 			}
+			break;
+		case Grabbing:
+			this.getEntity().setDestination(null);
+			this.entity.resetVelocity();
+			this.getEntity().setState(EState.Idle);
+			ViewManager.getInstance().markForUpdate(this.entity);
 			break;
 		default:
 			if(!this.getEntity().getVelocity().equals(Vector3f.ZERO)) {

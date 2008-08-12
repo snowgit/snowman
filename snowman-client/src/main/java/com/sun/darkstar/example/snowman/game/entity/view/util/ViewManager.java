@@ -18,6 +18,7 @@ import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -51,7 +52,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-16-2008 17:02 EST
- * @version Modified date: 07-24-2008 11:45 EST
+ * @version Modified date: 08-12-2008 11:15 EST
  */
 public class ViewManager extends Manager {
 	/**
@@ -149,6 +150,14 @@ public class ViewManager extends Manager {
 			ball.setModelBound(new BoundingBox());
 			ball.updateModelBound();
 			view.attachMesh(ball);
+			break;
+		case FlagBlue:
+			view = new FlagView((IDynamicEntity)entity);
+			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			break;
+		case FlagRed:
+			view = new FlagView((IDynamicEntity)entity);
+			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
 			break;
 		default:
 			switch(entity.getType()) {

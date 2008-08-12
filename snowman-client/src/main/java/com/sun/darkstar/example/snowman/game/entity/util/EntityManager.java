@@ -9,6 +9,7 @@ import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.exception.DuplicatedIDException;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
+import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
@@ -30,7 +31,7 @@ import com.sun.darkstar.example.snowman.unit.enumn.EManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-05-2008 11:15 EST
- * @version Modified date: 07-01-2008 14:09 EST
+ * @version Modified date: 08-12-2008 11:16 EST
  */
 public class EntityManager extends Manager {
 	/**
@@ -116,6 +117,7 @@ public class EntityManager extends Manager {
 			switch(enumn.getType()) {
 			case Static: entity = new StaticEntity(enumn, id); break;
 			case Editable: entity = new EditableEntity(enumn, id); break;
+			case Dynamic: entity = new DynamicEntity(enumn, id); break;
 			}
 			break;
 		}

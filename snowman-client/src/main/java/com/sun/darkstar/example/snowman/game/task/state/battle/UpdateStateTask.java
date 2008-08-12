@@ -10,13 +10,13 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.darkstar.example.snowman.common.world.World;
-import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
-import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
@@ -46,7 +46,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-18-2008 11:36 EST
- * @version Modified date: 07-25-2008 14:50 EST
+ * @version Modified date: 08-12-2008 11:45 EST
  */
 public class UpdateStateTask extends RealTimeTask {
 	/**
@@ -96,21 +96,21 @@ public class UpdateStateTask extends RealTimeTask {
 		if(result != null) {
 			CharacterView view = (CharacterView)result;
 			if(view.getEntity() == this.snowman || !this.validateTeam(view.getEntity())) return;
-			if(this.validateDeath((CharacterView)result) && this.validateRange(result) && this.validateBlocking(result)) {
+			if(this.validateDeath((CharacterView)result) && this.validateAttackRange(result) && this.validateBlocking(result)) {
 				this.snowman.setState(EState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
 				// TODO Change cursor to targeting.
 			}
 			return;
 		}
-		result = collisionManager.getIntersectObject(ray, world, DynamicView.class, false);
+		result = collisionManager.getIntersectObject(ray, world, FlagView.class, false);
 		if(result != null) {
-			this.snowman.setState(EState.TryingToGrab);
+			if(this.validateGrabRange(result)) this.snowman.setState(EState.TryingToGrab);
 			// TODO Change cursor to grabbing.
 			return;
 		}
 	}
-	
+
 	/**
 	 * Validate if the given character can be targeted.
 	 * @param character The <code>ChracterEntity</code> to be validated.
@@ -123,7 +123,7 @@ public class UpdateStateTask extends RealTimeTask {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Validate if the given target is still alive.
 	 * @param view The <code>CharacterView</code> instance.
@@ -138,15 +138,35 @@ public class UpdateStateTask extends RealTimeTask {
 	 * @param target The <code>Spatial</code> target to check.
 	 * @return True if the given target is in range. False otherwise.
 	 */
-	private boolean validateRange(Spatial target) {
+	private boolean validateAttackRange(Spatial target) {
 		float range = SingletonRegistry.getHPConverter().convertRange(this.snowman.getHP());
-		try {
-			float distance = this.getPlanarDistance((Spatial)ViewManager.getInstance().getView(this.snowman), target);
-			if(range * range >= distance) return true;
-		} catch (ObjectNotFoundException e) {
-			e.printStackTrace();
-		}
+		float distance = this.getPlanarDistance((Spatial)ViewManager.getInstance().getView(this.snowman), target);
+		if(range * range >= distance) return true;
 		return false;
+	}
+
+	/**
+	 * Validate if the given target is within grab range.
+	 * @param target The <code>Spatial</code> target to check.
+	 * @return True if the given target is in range. False otherwise.
+	 */
+	private boolean validateGrabRange(Spatial target) {
+		float distance = this.getPlanarDistance((Spatial)ViewManager.getInstance().getView(this.snowman), target);
+		if(EStats.GrabRange.getValue() * EStats.GrabRange.getValue() >= distance) return true;
+		return false;
+	}
+
+	/**
+	 * Validate if the given target is blocked by a static entity.
+	 * @param target The <code>Spatial</code> target to check.
+	 * @return True if the target is valid. False otherwise.
+	 */
+	private boolean validateBlocking(Spatial target) {
+		Spatial snowman = (Spatial) ViewManager.getInstance().getView(this.snowman);
+		Vector3f start = snowman.getLocalTranslation();
+		Vector3f end = target.getLocalTranslation();
+		World world = this.game.getGameState(EGameState.BattleState).getWorld();
+		return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world);
 	}
 
 	/**
@@ -161,23 +181,5 @@ public class UpdateStateTask extends RealTimeTask {
 		float dx = start.x - end.x;
 		float dz = start.z - end.z;
 		return (dx * dx) + (dz * dz);
-	}
-
-	/**
-	 * Validate if the given target is blocked by a static entity.
-	 * @param target The <code>Spatial</code> target to check.
-	 * @return True if the target is valid. False otherwise.
-	 */
-	private boolean validateBlocking(Spatial target) {
-		try {
-			Spatial snowman = (Spatial) ViewManager.getInstance().getView(this.snowman);
-			Vector3f start = snowman.getLocalTranslation();
-			Vector3f end = target.getLocalTranslation();
-			World world = this.game.getGameState(EGameState.BattleState).getWorld();
-			return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world);
-		} catch (ObjectNotFoundException e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 }

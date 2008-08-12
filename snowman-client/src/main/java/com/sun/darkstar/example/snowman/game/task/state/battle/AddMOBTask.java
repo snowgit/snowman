@@ -115,18 +115,20 @@ public class AddMOBTask extends RealTimeTask {
 		try {
 			BattleState state = ((BattleState)this.game.getGameState(EGameState.BattleState));
 			IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id);
-			if(entity == null) {
-				state.incrementCount();
-				return; // TODO A flag might be created.
-			}
+//			if(entity == null) {
+//				state.incrementCount();
+//				return; // TODO A flag might be created.
+//			}
 			IView view = ViewManager.getInstance().createView(entity);
 			((View)view).getLocalTranslation().x = this.x;
 			((View)view).getLocalTranslation().z = this.z;
-			IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
-			controller.setActive(true);
-			if(this.local) {
-				InputManager.getInstance().registerController(controller);
-				state.initializeCameraHandler((DynamicView)view);
+			if(this.enumn != EMOBType.FLAG) {
+				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
+				controller.setActive(true);
+				if(this.local) {
+					InputManager.getInstance().registerController(controller);
+					state.initializeCameraHandler((DynamicView)view);
+				}
 			}
 			view.attachTo(this.game.getGameState(EGameState.BattleState).getWorld().getDynamicRoot());
 			state.getWorld().updateRenderState();
