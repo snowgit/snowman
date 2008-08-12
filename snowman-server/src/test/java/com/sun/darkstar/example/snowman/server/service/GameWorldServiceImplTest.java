@@ -98,12 +98,10 @@ public class GameWorldServiceImplTest
     @Test
     public void testTrimPath() throws Exception {
         //prepare test data
-        int playerId = 1;
         float startx = 1.0f;
         float starty = 2.0f;
         float endx = 10.0f;
         float endy = 11.0f;
-        long timestart = 123l;
         float realEndx = 5.0f;
         float realEndy = 6.0f;
         Vector3f dummyDestination = new Vector3f(realEndx, 100.0f, realEndy);
@@ -118,10 +116,8 @@ public class GameWorldServiceImplTest
                                                                 mockTxnProxy);
         
         //call the service
-        Coordinate realDestination = service.trimPath(playerId,
-                                                      new Coordinate(startx, starty),
-                                                      new Coordinate(endx, endy),
-                                                      timestart);
+        Coordinate realDestination = service.trimPath(new Coordinate(startx, starty),
+                                                      new Coordinate(endx, endy));
         
         Assert.assertEquals(realDestination.getX(), realEndx);
         Assert.assertEquals(realDestination.getY(), realEndy);

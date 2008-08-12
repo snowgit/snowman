@@ -88,10 +88,8 @@ public class GameWorldServiceImpl implements GameWorldService {
     }
     
     /** {@inheritDoc} */
-    public Coordinate trimPath(int playerId,
-                               Coordinate start,
-                               Coordinate end,
-                               long timestart) {
+    public Coordinate trimPath(Coordinate start,
+                               Coordinate end) {
         Vector3f destination = SingletonRegistry.getCollisionManager().
                 getDestination(start.getX(), start.getY(), end.getX(), end.getY(), gameWorld);
         return new Coordinate(destination.getX(), destination.getZ());

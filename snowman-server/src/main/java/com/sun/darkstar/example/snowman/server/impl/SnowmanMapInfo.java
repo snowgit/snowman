@@ -45,8 +45,10 @@ import java.util.Random;
 public class SnowmanMapInfo 
 {
     public static String DEFAULT = "default_map";
-    private static float[] defaultXY = new float[]{50, 50};
-    private static Random generator = new Random();
+    private static final float[] defaultXY = new float[]{100, 100};
+    private static final Random generator = new Random();
+    private static final float SPAWNMULTIPLIER = 4.0f;
+    private static final float FLAGMULTIPLIER = 5.0f;
     
     /**
      * Retrieve the x,y dimensions of the map with the given name.
@@ -82,10 +84,10 @@ public class SnowmanMapInfo
         float y = 0;
         switch(team) {
             case Red:
-                y = yAxis/8.0f;
+                y = yAxis/SPAWNMULTIPLIER;
                 break;
             case Blue:
-                y = yAxis/8.0f*7.0f;
+                y = yAxis/SPAWNMULTIPLIER*(SPAWNMULTIPLIER-1);
                 break;
         }
         
@@ -118,9 +120,9 @@ public class SnowmanMapInfo
         
         switch(team) {
             case Red:
-                return new Coordinate(xAxis / 2.0f, yAxis / 10.0f);
+                return new Coordinate(xAxis / 2.0f, yAxis / FLAGMULTIPLIER);
             case Blue:
-                return new Coordinate(xAxis / 2.0f, yAxis / 10.0f * 9.0f);
+                return new Coordinate(xAxis / 2.0f, yAxis / FLAGMULTIPLIER * (FLAGMULTIPLIER-1));
         }
         return null;
     }

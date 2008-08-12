@@ -168,14 +168,22 @@ public class ClientSimulator extends JFrame {
                         players.remove(0).quit();
                     }
 
-                    // do a move
-                    Iterator<SimulatedPlayer> iter = players.iterator();
-                    while (iter.hasNext()) {
-                        if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit)
-                            iter.remove();
+                    // do a move only if players are not logging in
+                    if(players.size() == usersSlider.getValue()) {
+                        Iterator<SimulatedPlayer> iter = players.iterator();
+                        while (iter.hasNext()) {
+                            if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
+                                iter.remove();
+                            }
+                            //stagger move messages to prevent a storm
+                            try {
+                                sleep(50);
+                            } catch (InterruptedException ignore) {}
+                        }
                     }
+                    
                     try {
-                        sleep(players.size() != 0 ? 1000 : 2000);
+                        sleep(players.size() < usersSlider.getValue() ? 20 : 2000);
                     } catch (InterruptedException ignore) {}
                 }
             }
