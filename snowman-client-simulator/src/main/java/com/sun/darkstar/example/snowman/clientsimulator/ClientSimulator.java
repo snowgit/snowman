@@ -63,7 +63,7 @@ import javax.swing.event.ChangeListener;
  * <dt> <i>Property:</i> <code><b>
  *	port
  *	</b></code><br>
- *	<i>Default:</i> {@code 1139}
+ *	<i>Default:</i> {@code 3000}
  *
  * <dd style="padding-top: .5em"> 
  *	Specifies the port of the snowman game server.<p>
@@ -79,7 +79,7 @@ import javax.swing.event.ChangeListener;
  *  <dt> <i>Property:</i> <code><b>
  *	moveDelay
  *	</b></code><br>
- *	<i>Default:</i> 1000 (one second)<br>
+ *	<i>Default:</i> 2000 (two seconds)<br>
  *
  * <dd style="padding-top: .5em"> 
  * Specifies the minimun delay, in milliseconds, between when a player
@@ -108,7 +108,7 @@ public class ClientSimulator extends JFrame {
         logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
                    new Object[] {serverHost, serverPort});
                 
-        final int moveDelay = Integer.getInteger("moveDelay", 1000);
+        final int moveDelay = Integer.getInteger("moveDelay", 2000);
         
         logger.log(Level.CONFIG, "Move delay set to {0} milliseconds", moveDelay);
 
@@ -183,7 +183,7 @@ public class ClientSimulator extends JFrame {
                     }
                     
                     try {
-                        sleep(players.size() < usersSlider.getValue() ? 20 : 2000);
+                        sleep(players.size() != 0 ? 20 : 200);
                     } catch (InterruptedException ignore) {}
                 }
             }
