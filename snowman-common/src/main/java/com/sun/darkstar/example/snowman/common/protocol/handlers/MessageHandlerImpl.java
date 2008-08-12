@@ -94,16 +94,16 @@ public class MessageHandlerImpl implements MessageHandler
                 byte[] mapname = new byte[packet.getInt()];
                 packet.get(mapname);
                 String mapString = new String(mapname);
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}", new Object[]{code, myID, mapString});
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}", new Object[]{code, myID, mapString});
                 unit.newGame(myID, mapString);
                 break;
             case STARTGAME:
                 unit.startGame();
-                logger.log(Level.INFO, "Processing {0} packet ", code);
+                logger.log(Level.FINEST, "Processing {0} packet ", code);
                 break;
             case ENDGAME:
                 EEndState endState = EEndState.values()[packet.getInt()];
-                logger.log(Level.INFO, "Processing {0} packet : {1}", new Object[]{code, endState});
+                logger.log(Level.FINEST, "Processing {0} packet : {1}", new Object[]{code, endState});
                 unit.endGame(endState);
                 break;
             case ADDMOB:
@@ -112,7 +112,7 @@ public class MessageHandlerImpl implements MessageHandler
                 float addY = packet.getFloat();
                 EMOBType addType = EMOBType.values()[packet.getInt()];
                 ETeamColor addColor = ETeamColor.values()[packet.getInt()];
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}", 
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}", 
                            new Object[]{code, addId, addX, addY, addType, addColor});
                 unit.addMOB(addId,
                             addX,
@@ -122,7 +122,7 @@ public class MessageHandlerImpl implements MessageHandler
                 break;
             case REMOVEMOB:
                 int removeId = packet.getInt();
-                logger.log(Level.INFO, "Processing {0} packet : {1}", new Object[]{code, removeId});
+                logger.log(Level.FINEST, "Processing {0} packet : {1}", new Object[]{code, removeId});
                 unit.removeMOB(removeId);
                 break;
             case MOVEMOB:
@@ -131,7 +131,7 @@ public class MessageHandlerImpl implements MessageHandler
                 float moveStartY = packet.getFloat();
                 float moveEndX = packet.getFloat();
                 float moveEndY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}",
                            new Object[]{code, moveId, moveStartX, moveStartY, moveEndX, moveEndY});
                 unit.moveMOB(moveId,
                              moveStartX,
@@ -143,7 +143,7 @@ public class MessageHandlerImpl implements MessageHandler
                 int stopId = packet.getInt();
                 float stopX = packet.getFloat();
                 float stopY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}",
                            new Object[]{code, stopId, stopX, stopY});
                 unit.stopMOB(stopId,
                              stopX,
@@ -152,7 +152,7 @@ public class MessageHandlerImpl implements MessageHandler
             case ATTACHOBJ:
                 int attachId1 = packet.getInt();
                 int attachId2 = packet.getInt();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}",
                            new Object[]{code, attachId1, attachId2});
                 unit.attachObject(attachId1,
                                   attachId2);
@@ -161,7 +161,7 @@ public class MessageHandlerImpl implements MessageHandler
                 int attackId = packet.getInt();
                 int attackTarget = packet.getInt();
                 int attackHp = packet.getInt();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}",
                            new Object[]{code, attackId, attackTarget, attackHp});
                 unit.attacked(attackId,
                               attackTarget,
@@ -171,7 +171,7 @@ public class MessageHandlerImpl implements MessageHandler
                 int respawnId = packet.getInt();
                 float respawnX = packet.getFloat();
                 float respawnY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}",
                            new Object[]{code, respawnId, respawnX, respawnY});
                 unit.respawn(respawnId,
                              respawnX,
@@ -199,7 +199,7 @@ public class MessageHandlerImpl implements MessageHandler
                 float moveStartY = packet.getFloat();
                 float moveEndX = packet.getFloat();
                 float moveEndY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}, {4}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}, {4}",
                            new Object[]{code, moveStartX, moveStartY, moveEndX, moveEndY});
                 unit.moveMe(moveStartX,
                             moveStartY,
@@ -210,7 +210,7 @@ public class MessageHandlerImpl implements MessageHandler
                 int attackId = packet.getInt();
                 float attackX = packet.getFloat();
                 float attackY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}",
                            new Object[]{code, attackId, attackX, attackY});
                 unit.attack(attackId,
                             attackX,
@@ -220,7 +220,7 @@ public class MessageHandlerImpl implements MessageHandler
                 int getflagId = packet.getInt();
                 float getflagX = packet.getFloat();
                 float getflagY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}, {3}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}",
                            new Object[]{code, getflagId, getflagX, getflagY});
                 unit.getFlag(getflagId,
                              getflagX,
@@ -229,7 +229,7 @@ public class MessageHandlerImpl implements MessageHandler
             case SCORE:
                 float scoreX = packet.getFloat();
                 float scoreY = packet.getFloat();
-                logger.log(Level.INFO, "Processing {0} packet : {1}, {2}",
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}",
                            new Object[]{code, scoreX, scoreY});
                 unit.score(scoreX,
                            scoreY);
@@ -251,7 +251,7 @@ public class MessageHandlerImpl implements MessageHandler
         // Parse common code.
         switch (code) {
             case READY:
-                logger.log(Level.INFO, "Processing {0} packet", code);
+                logger.log(Level.FINEST, "Processing {0} packet", code);
                 processor.ready();
                 break;
             default:
