@@ -70,6 +70,7 @@ public class GameWorldServiceImpl implements GameWorldService {
 	DisplaySystem.setSystemProvider(provider);
         
         this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
+        this.gameWorld.updateGeometricState(0, false);
     }
 
     /** {@inheritDoc} **/

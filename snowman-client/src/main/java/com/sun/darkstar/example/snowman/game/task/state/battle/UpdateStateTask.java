@@ -174,7 +174,7 @@ public class UpdateStateTask extends RealTimeTask {
 			Vector3f start = snowman.getLocalTranslation();
 			Vector3f end = target.getLocalTranslation();
 			World world = this.game.getGameState(EGameState.BattleState).getWorld();
-			return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world);
+			return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world.getStaticRoot());
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
