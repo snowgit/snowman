@@ -80,13 +80,13 @@ public class ServerMessagesTest extends AbstractTestMessages
     
     @Test
     public void testCreateEndgamePkt() {
-        ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.WIN);
+        ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.RedWin);
         packet.flip();
         checkOpcode(packet, EOPCODE.ENDGAME);
         
         EEndState state = EEndState.values()[packet.getInt()];
         
-        Assert.assertEquals(state, EEndState.WIN);
+        Assert.assertEquals(state, EEndState.RedWin);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

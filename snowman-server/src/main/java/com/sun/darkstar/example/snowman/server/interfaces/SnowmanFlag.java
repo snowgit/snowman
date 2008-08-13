@@ -54,6 +54,9 @@ public interface SnowmanFlag extends DynamicEntity
      * @param player the snowman who holds the flag, or null
      */
     public void setHeldBy(SnowmanPlayer player);
+    
+    
+    public void drop(float x, float y);
 
     public boolean isHeld();
     
