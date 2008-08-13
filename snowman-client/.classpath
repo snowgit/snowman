@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="/lib/lwjgl/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="/lib/lwjgl/lwjgl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lib/lwjgl/native/win32"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lib/lwjgl/win32-x86"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/lib/bdb-4.5.20/db.jar"/>
