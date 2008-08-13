@@ -32,19 +32,16 @@
 
 package com.sun.darkstar.example.snowman.common.util;
 
-import java.util.ArrayList;
-
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.jme.intersection.PickData;
 import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
-import com.jme.intersection.BoundingPickResults;
-import com.jme.math.FastMath;
 import com.jme.math.Ray;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import java.util.ArrayList;
 
 /**
  * <code>CollisionManager</code> is a <code>Manager</code> that is responsible
@@ -154,8 +151,8 @@ public class CollisionManagerImpl implements CollisionManager
 
     public Vector3f getDestination(float x1, float z1, float x2, float z2, Spatial spatial) {
         //generate the start and destination points
-        Vector3f start = new Vector3f(x1, CollisionManager.PATHHEIGHT, z1);
-        Vector3f destination = new Vector3f(x2, CollisionManager.PATHHEIGHT, z2);
+        Vector3f start = new Vector3f(x1, EStats.SnowmanHeight.getValue()/2.0f, z1);
+        Vector3f destination = new Vector3f(x2, EStats.SnowmanHeight.getValue()/2.0f, z2);
         
         //convert points to world coordinate system
         spatial.localToWorld(start, start);
@@ -177,10 +174,10 @@ public class CollisionManagerImpl implements CollisionManager
             float originalDistance = destination.distance(start);
             float newDistance = hitPoint.distance(start);
             
-            if(originalDistance > newDistance - BACKOFFDISTANCE) {
+            if(originalDistance > newDistance - EStats.BackoffDistance.getValue()) {
                 //we are either trying to go through a hit point
                 //or get to close to one
-                direction.multLocal(BACKOFFDISTANCE);
+                direction.multLocal(EStats.BackoffDistance.getValue());
                 Vector3f newDestination = hitPoint.subtractLocal(direction);
                 spatial.worldToLocal(newDestination, newDestination);
                 return newDestination;
@@ -195,8 +192,8 @@ public class CollisionManagerImpl implements CollisionManager
 
     public boolean validate(float x1, float z1, float x2, float z2, Spatial spatial) {
         //generate the start and destination points
-        Vector3f start = new Vector3f(x1, CollisionManager.THROWHEIGHT, z1);
-        Vector3f destination = new Vector3f(x2, CollisionManager.THROWHEIGHT, z2);
+        Vector3f start = new Vector3f(x1, EStats.SnowballHeight.getValue(), z1);
+        Vector3f destination = new Vector3f(x2, EStats.SnowballHeight.getValue(), z2);
         
         //convert points to world coordinate system
         spatial.localToWorld(start, start);

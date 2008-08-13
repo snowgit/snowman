@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.common.util;
 
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
@@ -383,17 +384,17 @@ public class CollisionManagerTest {
     private void testGetDestinationCollision(boolean local) {
         //move the box up by the PATHHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowmanHeight.getValue()/2.0f + c.getY(), c.getZ());
         
         //calculate the starting and ending positions
         //starting position should be backed off by the BACKOFFDISTANCE
         float startx = 0.0f;
-        float startz = 0.0f - CollisionManager.BACKOFFDISTANCE;
+        float startz = 0.0f - EStats.BackoffDistance.getValue();
         float endx = 0.0f;
         float endz = 50.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        Vector3f trimmed = new Vector3f(0.0f, EStats.SnowmanHeight.getValue()/2.0f, 15.0f - EStats.BackoffDistance.getValue());
         
         //transpose the world if necessary
         if(local)
@@ -424,7 +425,7 @@ public class CollisionManagerTest {
     private void testGetDestinationMiss(boolean local) {
         //move the box up by the PATHHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowmanHeight.getValue()/2.0f + c.getY(), c.getZ());
         
         //calculate the starting and ending positions
         float startx = 0.0f;
@@ -433,7 +434,7 @@ public class CollisionManagerTest {
         float endz = -50.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, -50.0f);
+        Vector3f trimmed = new Vector3f(0.0f, EStats.SnowmanHeight.getValue()/2.0f, -50.0f);
         
         //transpose the world if necessary
         if(local)
@@ -465,17 +466,17 @@ public class CollisionManagerTest {
     private void testGetDestinationNearMiss(boolean local) {
         //move the box up by the PATHHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.PATHHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowmanHeight.getValue()/2.0f + c.getY(), c.getZ());
         
         //calculate the starting and ending positions
         //starting position should be backed off by the BACKOFFDISTANCE
         float startx = 0.0f;
-        float startz = 0.0f - CollisionManager.BACKOFFDISTANCE;
+        float startz = 0.0f - EStats.BackoffDistance.getValue();
         float endx = 0.0f;
-        float endz = 15.0f - CollisionManager.BACKOFFDISTANCE/2.0f;
+        float endz = 15.0f - EStats.BackoffDistance.getValue()/2.0f;
 
         //in the test world, trimmed destination should always be:
-        Vector3f trimmed = new Vector3f(0.0f, CollisionManager.PATHHEIGHT, 15.0f - CollisionManager.BACKOFFDISTANCE);
+        Vector3f trimmed = new Vector3f(0.0f, EStats.SnowmanHeight.getValue()/2.0f, 15.0f - EStats.BackoffDistance.getValue());
         
         //transpose the world if necessary
         if(local)
@@ -507,7 +508,7 @@ public class CollisionManagerTest {
     private void testValidateBasicHit(boolean local) {
         //move the box up by the THROWHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowballHeight.getValue() + c.getY(), c.getZ());
         
         //start point and end point
         float startx = 0.0f;
@@ -542,7 +543,7 @@ public class CollisionManagerTest {
     private void testValidateMiss(boolean local) {
         //move the box up by the THROWHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowballHeight.getValue() + c.getY(), c.getZ());
         
         //start point and end point
         float startx = 0.0f;
@@ -577,7 +578,7 @@ public class CollisionManagerTest {
     private void testValidateComplexHit(boolean local) {
         //move the box up by the THROWHEIGHT
         Vector3f c = box.getLocalTranslation();
-        box.setLocalTranslation(c.getX(), CollisionManager.THROWHEIGHT + c.getY(), c.getZ());
+        box.setLocalTranslation(c.getX(), EStats.SnowballHeight.getValue() + c.getY(), c.getZ());
         
         //start point and end point
         float startx = -5.0f;
