@@ -44,6 +44,7 @@ import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.NameNotBoundException;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -112,7 +113,9 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
             playerRef.get().getGame().removePlayer(playerRef.get());
             playerRef.get().setGame(null);
         }
-        logger.info("Player "+playerRef.get().getName()+" logged out");
+        if (logger.isLoggable(Level.FINE))
+            logger.log(Level.FINE,
+                       "Player {0} logged out", playerRef.get().getName());
     }
     
     public SnowmanPlayer getSnowmanPlayer() {
