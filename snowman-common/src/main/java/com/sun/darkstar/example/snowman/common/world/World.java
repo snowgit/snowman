@@ -7,6 +7,7 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditable;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
@@ -63,7 +64,8 @@ public class World extends AbstractWorld implements IWorld {
 			}
 			// TODO Do quad-tree optimization here.
 			for(IStaticView view : this.views) {
-				view.attachTo(this.staticRoot);
+				if(view.getEntity().getEnumn() == EEntity.Terrain) view.attachTo(terrainRoot);
+				else view.attachTo(this.staticRoot);
 			}
 		}
 	}
