@@ -65,8 +65,8 @@ public class AuthenticateTask extends RealTimeTask {
 		gui.setButtonText("Please wait...");
 		this.game.getClient().getHandler().authenticate(this.username, this.password);
 		Properties properties = new Properties();
-		properties.setProperty("host", "localhost");
-		properties.setProperty("port", "3000");
+		properties.setProperty("host", System.getProperty("host", "localhost"));
+		properties.setProperty("port", System.getProperty("port", "3000"));
 		this.game.getClient().login(properties);
 	}
 }
