@@ -45,10 +45,11 @@ import java.util.Random;
 public class SnowmanMapInfo 
 {
     public static String DEFAULT = "default_map";
-    private static final float[] defaultXY = new float[]{100, 100};
+    private static final float[] defaultXY = new float[]{96,96};
     private static final Random generator = new Random();
-    private static final float SPAWNMULTIPLIER = 4.0f;
-    private static final float FLAGMULTIPLIER = 5.0f;
+    private static final float SPAWNMULTIPLIER = 2.0f;
+    private static final float SPAWNTEAMWIDTH = 10.0f;
+    private static final float FLAGMULTIPLIER = 2.0f;
     
     /**
      * Retrieve the x,y dimensions of the map with the given name.
@@ -76,25 +77,33 @@ public class SnowmanMapInfo
                                               int player,
                                               int teamPlayers) {
         float[] dimensions = getDimensions(map);
-        float xAxis = dimensions[0];
-        float yAxis = dimensions[1];
+        float xAxisMid = dimensions[0]/2.0f;
+        float yAxisMid = dimensions[1]/2.0f;
         
-        //set the y coordinate to be either near the bottom or near
-        //the top depending on the team
-        float y = 0;
+        //set the team coordinate to be either near the top left or 
+        //the bottom right depending on the team
+        float xOffset = xAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        float yOffset = yAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        Coordinate teamCoordinate = new Coordinate(xAxisMid, yAxisMid);
         switch(team) {
             case Red:
-                y = yAxis/SPAWNMULTIPLIER;
+                teamCoordinate = new Coordinate(xAxisMid + xOffset, yAxisMid + yOffset);
                 break;
             case Blue:
-                y = yAxis/SPAWNMULTIPLIER*(SPAWNMULTIPLIER-1);
+                teamCoordinate = new Coordinate(xAxisMid - xOffset, yAxisMid - yOffset);
                 break;
         }
         
-        //set the x position to be equidistant
-        float x = xAxis/(float)(teamPlayers+1.0f)*player;
-        
-        return new Coordinate(x,y);
+        //if there is only one player on the team, return the team coordinate
+        //otherwise, spread the players out along a line with the team coordinate
+        //at the center
+        if(teamPlayers == 1)
+            return teamCoordinate;
+
+        return new Coordinate(teamCoordinate.getX() -
+                              SPAWNTEAMWIDTH / 2.0f +
+                              SPAWNTEAMWIDTH / (float) (teamPlayers+1.0f) * player,
+                              teamCoordinate.getY());
     }
     
     /**
@@ -115,16 +124,22 @@ public class SnowmanMapInfo
     public static Coordinate getFlagStart(String map,
                                           ETeamColor team) {
         float[] dimensions = getDimensions(map);
-        float xAxis = dimensions[0];
-        float yAxis = dimensions[1];
+        float xAxisMid = dimensions[0]/2.0f;
+        float yAxisMid = dimensions[1]/2.0f;
         
+        float xOffset = xAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        float yOffset = yAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        Coordinate coordinate = new Coordinate(xAxisMid, yAxisMid);
         switch(team) {
             case Red:
-                return new Coordinate(xAxis / 2.0f, yAxis / FLAGMULTIPLIER);
+                coordinate = new Coordinate(xAxisMid + xOffset, yAxisMid + yOffset);
+                break;
             case Blue:
-                return new Coordinate(xAxis / 2.0f, yAxis / FLAGMULTIPLIER * (FLAGMULTIPLIER-1));
+                coordinate = new Coordinate(xAxisMid - xOffset, yAxisMid - yOffset);
+                break;
         }
-        return null;
+        
+        return coordinate;
     }
     
     public static Coordinate getFlagGoal(String map,
