@@ -261,9 +261,9 @@ class SimulatedPlayer implements SimpleClientListener {
                                new Object[] {name, objectID, startx, starty, endx, endy});
                 
                 // If the player is on the other team, set it to be target
-                // for the next move
-                if (players.get(objectID) != myTeam)
-                    setTarget(objectID, endx, endy);
+                // for the next move, maybe
+                if (players.get(objectID) != myTeam && random.nextBoolean())
+                    setTarget(objectID, startx, starty);
             }
         }
 
@@ -415,8 +415,8 @@ class SimulatedPlayer implements SimpleClientListener {
                            new Object[] {name, target.id});
                 send(ClientMessages.createAttackPkt(target.id, startX, startY));
             }
-            destX = target.x;
-            destY = target.y;
+            destX = target.x + 10 * (random.nextFloat() - 0.5f);
+            destY = target.y + 10 * (random.nextFloat() - 0.5f);
             target = null;
         } else {
             destX = startX + 10 * (random.nextFloat() - 0.5f);
