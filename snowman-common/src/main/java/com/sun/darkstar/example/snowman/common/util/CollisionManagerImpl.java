@@ -205,11 +205,13 @@ public class CollisionManagerImpl implements CollisionManager
         
         //calculate the intersection between the move ray and the spatial
         Vector3f hitPoint = getIntersection(moveRay, spatial, null, false);
+        if(hitPoint == null) return true;
         
-        //if there are no obstacles, it's a valid throw
-        if(hitPoint == null)
-            return true;
-        else
-            return false;
+        // Compare the distances.
+        float distance1 = start.distanceSquared(destination);
+        float distance2 = start.distanceSquared(hitPoint);
+        
+        if(distance1 <= distance2) return true;
+        else return false;
     }
 }
