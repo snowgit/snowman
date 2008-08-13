@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -172,7 +173,13 @@ public class ClientSimulator extends JFrame {
                     if(players.size() == usersSlider.getValue()) {
                         Iterator<SimulatedPlayer> iter = players.iterator();
                         while (iter.hasNext()) {
-                            if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
+                            try {
+                                if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
+                                    iter.remove();
+                                }
+                            } catch (IOException ex) {
+                                logger.log(Level.SEVERE,
+                                           "IO exception from player", ex);
                                 iter.remove();
                             }
                             //stagger move messages to prevent a storm

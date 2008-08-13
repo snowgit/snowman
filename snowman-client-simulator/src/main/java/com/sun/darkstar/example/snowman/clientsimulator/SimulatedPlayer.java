@@ -47,6 +47,8 @@ import com.sun.sgs.client.simple.SimpleClientListener;
 import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
@@ -79,8 +81,9 @@ class SimulatedPlayer implements SimpleClientListener {
     private final SimpleClient simpleClient;
     private final IClientProcessor pktHandler;
     
-    // this players ID, provided by the server
+    // this players ID and team, provided by the server
     private int id;
+    private ETeamColor myTeam;
 
     // Must be synchronized
     private PLAYERSTATE state;
@@ -97,6 +100,23 @@ class SimulatedPlayer implements SimpleClientListener {
 
     // (approximate) timestamp of the last move sent
     private long lastTimestamp;
+    
+    private static class Target {
+        final int id;
+        final float x;
+        final float y;
+        
+        Target(int id, float x, float y) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+        }
+    }
+    
+    private Target target = null;
+    
+    // map player IDs to team
+    private final Map<Integer, ETeamColor> players = new HashMap<Integer, ETeamColor>();
     
     /**
      * Construct a simulated player. The {@code props} argument supports the
@@ -169,6 +189,7 @@ class SimulatedPlayer implements SimpleClientListener {
                     send(ClientMessages.createReadyPkt());
                 } catch (Exception ioe) {
                     logger.log(Level.SEVERE, "" + name, ioe);
+                    setState(PLAYERSTATE.Quit);
                 }
             } else
                 logger.log(Level.WARNING, "Received ready, but {0} is not paused",
@@ -209,10 +230,16 @@ class SimulatedPlayer implements SimpleClientListener {
             if (objectID == id) {
                 logger.log(Level.FINE, "Updating {0} start and end XY to {1},{2}",
                            new Object[] {name, x, y});
+                myTeam = team;
                 stop(x, y);
-            } else
+            } else {
                 logger.log(Level.FINER, "Message to {0}: Add MOB {1}",
                        new Object[] {name, objectID});
+                // Note: saving all players. We can't check for team since
+                // myTeam may not yet been set.
+                if (objType == EMOBType.SNOWMAN)
+                    players.put(objectID, team);
+            }
         }
 
         @Override
@@ -221,23 +248,35 @@ class SimulatedPlayer implements SimpleClientListener {
                             float endx, float endy)
         {
             if (objectID == id) {
-                logger.log(Level.FINEST, "Updating {0} our position to {1},{2}",
-                           new Object[] {name, endx, endy});
+                if (logger.isLoggable(Level.FINEST))
+                    logger.log(Level.FINEST,
+                               "Updating {0} our position to {1},{2}",
+                               new Object[] {name, endx, endy});
                 //reset destination position since we don't do collision detection
                 setDestination(endx, endy);
-            } else
-                logger.log(Level.FINEST, "Message to {0}: Move MOB {1} from {2},{3} to {4},{5}",
-                           new Object[] {name, objectID, startx, starty, endx, endy});
+            } else {
+                if (logger.isLoggable(Level.FINEST))
+                    logger.log(Level.FINEST,
+                               "Message to {0}: Move MOB {1} from {2},{3} to {4},{5}",
+                               new Object[] {name, objectID, startx, starty, endx, endy});
+                
+                // If the player is on the other team, set it to be target
+                // for the next move
+                if (players.get(objectID) != myTeam)
+                    setTarget(objectID, endx, endy);
+            }
         }
 
         @Override
         public void removeMOB(int objectID) {
             if (objectID == id) {
-                logger.log(Level.FINE, "Message to {0} remove itself", name);
+                logger.log(Level.FINE, "Message to {0} to remove itself", name);
                 quit();
-            } else
+            } else {
                 logger.log(Level.FINER, "Message to {0}: Remove MOB {1}",
                            new Object[] {name, objectID});
+                players.remove(objectID);
+            }
         }
 
         @Override
@@ -257,6 +296,7 @@ class SimulatedPlayer implements SimpleClientListener {
         public void attachObject(int sourceID, int targetID) {
             logger.log(Level.FINER, "Message to {0}: Attach object {1} to {2}",
                        new Object[] {name, sourceID, targetID});
+            // ignore
         }
 
         @Override
@@ -285,6 +325,11 @@ class SimulatedPlayer implements SimpleClientListener {
         }
     }
     
+    // set a target player for the next move
+    private synchronized void setTarget(int id, float x, float y) {
+        target = new Target(id, x, y);
+    }
+
     private synchronized void setHitPoints(int hp) {
         hitPoints -= hp;
         setState(hitPoints <= 0 ? PLAYERSTATE.Dead : PLAYERSTATE.Playing);
@@ -346,17 +391,36 @@ class SimulatedPlayer implements SimpleClientListener {
      * Make a move. A move is made only if in the {@code Playing} state
      * @return the current state
      */
-    synchronized PLAYERSTATE move() {
+    synchronized PLAYERSTATE move() throws IOException {
         if (state != PLAYERSTATE.Playing ||
             (System.currentTimeMillis() - lastTimestamp) < moveDelay)
             return state;
-        
-        logger.log(Level.FINEST, "{0} moving", name);
-        
+                
         setCurrentStart();
-        destX = startX + 10 * (random.nextFloat() - 0.5f);
-        destY = startY + 10 * (random.nextFloat() - 0.5f);
         
+        // if we know of a target, move towards it
+        if (target != null) {
+            
+            // if it's within rage, attack
+            float dx = startX - target.x;
+            float dy = startY - target.y;
+            float range = HPConverter.getInstance().convertRange(hitPoints);
+            if (((dx * dx) + (dy * dy)) < (range * range)) {
+                logger.log(Level.FINER, "{0} attacking {1}",
+                           new Object[] {name, target.id});
+                send(ClientMessages.createAttackPkt(target.id, startX, startY));
+            }
+            destX = target.x;
+            destY = target.y;
+            target = null;
+        } else {
+            destX = startX + 10 * (random.nextFloat() - 0.5f);
+            destY = startY + 10 * (random.nextFloat() - 0.5f);
+        }
+        if (logger.isLoggable(Level.FINEST))
+            logger.log(Level.FINEST, "{0} moving to {1},{2}",
+                       new Object[] {name, destX, destY});
+
         // There is a slight skew potential here, since the real timestamp
         // is being set in the createMoveMePkt method. But it should be small.
         lastTimestamp = System.currentTimeMillis();
@@ -370,11 +434,8 @@ class SimulatedPlayer implements SimpleClientListener {
 
         // No collision detection here. We count on the returning moveMOB
         // to reset out end point if necessary.
-        try {
-            send(ClientMessages.createMoveMePkt(startX, startY, destX, destY));
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
+        send(ClientMessages.createMoveMePkt(startX, startY, destX, destY));
+        
         return state;
     }
 
