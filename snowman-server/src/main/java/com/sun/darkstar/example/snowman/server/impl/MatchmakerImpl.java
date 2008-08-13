@@ -47,6 +47,19 @@ import java.util.logging.Logger;
  * This class is the simple Project Snowman matchmaker.  It keeps a
  * list of 4 logged in players,  When all four "seats" are filled, it
  * launches a game session and assigns them to it
+ * 
+ * <dl style="margin-left: 1em">
+ *
+ * <dt> <i>Property:</i> <code><b>
+ *	numPlayersPerGame
+ *	</b></code><br>
+ *	<i>Default:</i> {@code 2}
+ *
+ * <dd style="padding-top: .5em">
+ *      Specifies the number of players required to start a game.<p>
+ *
+ * </dl> <p>
+ * 
  * @author Jeffrey Kesselman
  */
 public class MatchmakerImpl implements Matchmaker, Serializable {
@@ -54,19 +67,19 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
 
     private static Logger logger = Logger.getLogger(MatchmakerImpl.class.getName());
     
-    public static final int NUMPLAYERSPERGAME = 2;
+    private static final String PLAYERS_PER_GAME_PROP = "numPlayersPerGame";
+    private static final int DEFAULT_PLAYERS_PER_GAME = 2;
     
     /**
      * The list of waiting players
      */
-    @SuppressWarnings("unchecked")
-    private ManagedReference<SnowmanPlayer>[] waiting =
-            new ManagedReference[NUMPLAYERSPERGAME];
+    private final int numPlayersPerGame;
+    private final ManagedReference<SnowmanPlayer>[] waiting;
     
     /**
      * The name of the game to launch
      */
-    private String namePrefix = "Game";
+    private final String NAME_PREFIX = "Game";
     private int gameCount = 0;
     
     private final SnowmanAppContext appContext;
@@ -75,14 +88,17 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
     
     /**
      * The constuctor
-     * @param name The name of the game to launch.  Must be unique
      */
+    @SuppressWarnings("unchecked")
     public MatchmakerImpl(SnowmanAppContext appContext,
                           GameFactory gameFactory,
                           EntityFactory entityFactory) {
         this.appContext = appContext;
         this.gameFactory = gameFactory;
         this.entityFactory = entityFactory;
+        numPlayersPerGame = Integer.getInteger(PLAYERS_PER_GAME_PROP,
+                                               DEFAULT_PLAYERS_PER_GAME);
+        waiting = new ManagedReference[numPlayersPerGame];
         clearQueue();
     }
 
@@ -125,7 +141,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         }
         waiting[idx] = appContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
-            launchGameSession(namePrefix+(gameCount++));
+            launchGameSession(NAME_PREFIX + (gameCount++));
         }
     }
 
@@ -154,7 +170,10 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
      */
     private void launchGameSession(String name) {
         appContext.getDataManager().markForUpdate(this);
-        SnowmanGame game = gameFactory.createSnowmanGame(name, NUMPLAYERSPERGAME, appContext, entityFactory);
+        SnowmanGame game = gameFactory.createSnowmanGame(name,
+                                                         numPlayersPerGame,
+                                                         appContext,
+                                                         entityFactory);
         ETeamColor color = ETeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);
