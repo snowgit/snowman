@@ -50,6 +50,7 @@ public class TextureLayer {
 	private Texture colorMap;
 	private Texture alphaMap;
 	private String name;
+	private String alphaName;
 	private float dx;
 	private float dz;
 	private PassNodeState pass;
@@ -65,6 +66,8 @@ public class TextureLayer {
 			e.printStackTrace();
 		}
 		name = color.getName();
+		String name = alpha.getName();
+		this.alphaName = name.substring(0, name.lastIndexOf("."));
 		this.dx = xBound*2/(this.alphaMap.getImage().getWidth()-1);
 		this.dz = zBound*2/(this.alphaMap.getImage().getHeight()-1);
 	}
@@ -146,5 +149,9 @@ public class TextureLayer {
 	
 	public String toString(){
 		return name;
+	}
+	
+	public String getAlphaName() {
+		return this.alphaName;
 	}
 }

@@ -110,6 +110,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -161,6 +162,7 @@ import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.EditableWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
+import com.sun.darkstar.example.snowman.data.enumn.EDataType;
 
 /**
  * This is the main class for the World Editor gui It uses Swing and JME
@@ -272,6 +274,8 @@ public class WorldEditor extends JFrame {
 	
 	private ExportDialog dlg;
 
+	private LinkedList<TextureLayer> layers;
+	
 	/**
 	 * Holds brush properties
 	 */
@@ -283,6 +287,7 @@ public class WorldEditor extends JFrame {
 	 * the returned instance.
 	 */
 	public WorldEditor() {
+		this.layers = new LinkedList<TextureLayer>();
 		this.setMinimumSize(new Dimension(1024, 768));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
@@ -474,6 +479,7 @@ public class WorldEditor extends JFrame {
 					float xBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).xExtent;
 					float zBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).zExtent;
 					TextureLayer layer = new TextureLayer(colorMap,alphaMap, xBound, zBound);
+					layers.add(layer);
 					mdl.add(mdl.size(),layer);
 					terrainView.attachPass(layer.createPass(blend));
 					terrainView.updateRenderState();
@@ -524,6 +530,10 @@ public class WorldEditor extends JFrame {
 										World node = (World)cloneWorld.constructFinal();
 										if(!dlg.exportTextures()) {
 											this.stripTexure(node);
+										} else {
+											while(!layers.isEmpty()) {
+												this.exportAlpha(layers.pop());
+											}
 										}
 										try {
 											BinaryExporter.getInstance().save(node, dlg.getFile());
@@ -541,6 +551,18 @@ public class WorldEditor extends JFrame {
 									if(child instanceof PassNode) ((PassNode)child).clearAll();
 									else if(child instanceof Node) this.stripTexure((Node)child);
 									else child.clearRenderState(RenderState.RS_TEXTURE);
+								}
+							}
+							
+							private void exportAlpha(TextureLayer layer) {
+								String raw = dlg.getFile().getPath();
+								String path = raw.substring(0, raw.lastIndexOf("\\")+1) + layer.getAlphaName() + EDataType.Texture.getExtension();
+								File file = new File(path);
+								try {file.createNewFile();} catch (IOException e) {e.printStackTrace();}
+								try {
+									BinaryExporter.getInstance().save(layer.getAlpha().getImage(), file);
+								} catch (IOException e) {
+									e.printStackTrace();
 								}
 							}
 						};
