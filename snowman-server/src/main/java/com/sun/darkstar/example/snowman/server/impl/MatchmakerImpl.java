@@ -41,6 +41,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -56,7 +57,8 @@ import java.util.logging.Logger;
  *	<i>Default:</i> {@code 2}
  *
  * <dd style="padding-top: .5em">
- *      Specifies the number of players required to start a game.<p>
+ *      Specifies the number of players required to start a game. Value
+ *      must be > 0.<p>
  *
  * </dl> <p>
  * 
@@ -98,6 +100,11 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         this.entityFactory = entityFactory;
         numPlayersPerGame = Integer.getInteger(PLAYERS_PER_GAME_PROP,
                                                DEFAULT_PLAYERS_PER_GAME);
+        if (numPlayersPerGame <= 0)
+            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + " must be > 0");
+        logger.log(Level.CONFIG,
+                   "Number of players required to start a game set to {0}",
+                   numPlayersPerGame);
         waiting = new ManagedReference[numPlayersPerGame];
         clearQueue();
     }

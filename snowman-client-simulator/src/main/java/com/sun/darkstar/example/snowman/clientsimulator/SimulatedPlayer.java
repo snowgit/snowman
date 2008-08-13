@@ -173,7 +173,7 @@ class SimulatedPlayer implements SimpleClientListener {
         password = props.getProperty("password", "");
         pktHandler = new ClientProcessor();
         state = PLAYERSTATE.LoggingIn;
-        hitPoints = HPConverter.getInstance().getMaxHP();
+        resetHitPoints();
         simpleClient = new SimpleClient(this);
         simpleClient.login(props);
     }
@@ -318,6 +318,7 @@ class SimulatedPlayer implements SimpleClientListener {
                 logger.log(Level.FINER, "Message to {0}: Respawn at {1},{2}",
                        new Object[] {name, x, y});
                 stop(x, y);
+                resetHitPoints();
                 setState(PLAYERSTATE.Playing);
             } else
                 logger.log(Level.FINEST, "Message to {0}: Respawn MOB {1} at {2},{3}",
@@ -330,6 +331,10 @@ class SimulatedPlayer implements SimpleClientListener {
         target = new Target(id, x, y);
     }
 
+    private synchronized void resetHitPoints() {
+        hitPoints = HPConverter.getInstance().getMaxHP();
+    }
+    
     private synchronized void setHitPoints(int hp) {
         hitPoints -= hp;
         setState(hitPoints <= 0 ? PLAYERSTATE.Dead : PLAYERSTATE.Playing);
