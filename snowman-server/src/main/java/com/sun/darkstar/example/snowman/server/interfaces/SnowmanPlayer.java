@@ -96,7 +96,7 @@ public interface SnowmanPlayer extends DynamicEntity
      * @param hp
      * @return the number of hit points deducted from the player's value
      */
-    public int hit(int hp);
+    public int hit(int hp, float attackX, float attackY);
     
     public int getHitPoints();
     

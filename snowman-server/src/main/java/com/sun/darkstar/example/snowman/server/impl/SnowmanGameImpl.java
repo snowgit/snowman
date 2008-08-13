@@ -249,7 +249,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     private void endGame() {
-        send(null, ServerMessages.createEndGamePkt(EEndState.DRAW));
+        send(null, ServerMessages.createEndGamePkt(EEndState.Draw));
         appContext.getDataManager().removeObject(this);
     }
     
