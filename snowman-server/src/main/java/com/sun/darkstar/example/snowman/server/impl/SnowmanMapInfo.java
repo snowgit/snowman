@@ -45,7 +45,7 @@ import java.util.Random;
 public class SnowmanMapInfo 
 {
     public static String DEFAULT = "default_map";
-    private static final float[] defaultXY = new float[]{96,96};
+    private static float[] defaultXY = new float[]{96,96};
     private static final Random generator = new Random();
     private static final float SPAWNMULTIPLIER = 2.0f;
     private static final float SPAWNTEAMWIDTH = 10.0f;
@@ -58,6 +58,11 @@ public class SnowmanMapInfo
      */
     public static float[] getDimensions(String map) {
         return defaultXY;
+    }
+    
+    public static void setDimensions(float x, float y) {
+        defaultXY[0] = x;
+        defaultXY[1] = y;
     }
     
     /**
@@ -127,15 +132,15 @@ public class SnowmanMapInfo
         float xAxisMid = dimensions[0]/2.0f;
         float yAxisMid = dimensions[1]/2.0f;
         
-        float xOffset = xAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
-        float yOffset = yAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        float xOffset = xAxisMid / FLAGMULTIPLIER * (FLAGMULTIPLIER - 1);
+        float yOffset = yAxisMid / FLAGMULTIPLIER * (FLAGMULTIPLIER - 1);
         Coordinate coordinate = new Coordinate(xAxisMid, yAxisMid);
         switch(team) {
             case Red:
-                coordinate = new Coordinate(xAxisMid + xOffset, yAxisMid + yOffset);
+                coordinate = new Coordinate(xAxisMid - xOffset, yAxisMid + yOffset);
                 break;
             case Blue:
-                coordinate = new Coordinate(xAxisMid - xOffset, yAxisMid - yOffset);
+                coordinate = new Coordinate(xAxisMid + xOffset, yAxisMid - yOffset);
                 break;
         }
         

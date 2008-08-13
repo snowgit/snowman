@@ -37,6 +37,7 @@ import com.sun.sgs.service.TransactionProxy;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.server.impl.SnowmanMapInfo;
 import com.jme.scene.Spatial;
 import com.jme.math.Vector3f;
 import com.jme.system.dummy.DummySystemProvider;
@@ -71,6 +72,8 @@ public class GameWorldServiceImpl implements GameWorldService {
         
         this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
         this.gameWorld.updateGeometricState(0, false);
+        SnowmanMapInfo.setDimensions(gameWorld.getWorldBound().getCenter().getX() * 2.0f,
+                                     gameWorld.getWorldBound().getCenter().getZ() * 2.0f);
     }
 
     /** {@inheritDoc} **/
