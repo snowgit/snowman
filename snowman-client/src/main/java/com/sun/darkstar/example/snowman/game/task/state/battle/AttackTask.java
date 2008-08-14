@@ -62,7 +62,7 @@ public class AttackTask extends RealTimeTask {
 	 * @param targetID The ID number of the target.
 	 */
 	public AttackTask(Game game, int attackerID, int targetID) {
-		super(ETask.Attacking, game);
+		super(ETask.Attack, game);
 		this.attackerID = attackerID;
 		this.targetID = targetID;
 		this.delta = 0;
@@ -79,7 +79,7 @@ public class AttackTask extends RealTimeTask {
 	 * @param self True if this is echoed back for the locally controlled player.
 	 */
 	public AttackTask(Game game, int attackerID, int targetID, int delta, boolean self) {
-		super(ETask.Attacking, game);
+		super(ETask.Attack, game);
 		this.attackerID = attackerID;
 		this.targetID = targetID;
 		this.delta = delta;

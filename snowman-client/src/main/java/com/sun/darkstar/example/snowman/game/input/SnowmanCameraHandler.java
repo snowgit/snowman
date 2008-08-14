@@ -45,7 +45,9 @@ public class SnowmanCameraHandler extends InputHandler {
 	private final Vector3f targetLocation = new Vector3f();
 
 	private final Vector3f targetOffset = new Vector3f();
+	private final Vector3f distStore = new Vector3f();
 
+	
 	/**
 	 * The <code>Game</code> instance.
 	 */
@@ -110,18 +112,25 @@ public class SnowmanCameraHandler extends InputHandler {
 		// scenery)
 		checkRay.getOrigin().set(targetLocation);
 		checkRay.getDirection().set(direction).negateLocal();
+
 		CollisionManager collisionManager = SingletonRegistry
 				.getCollisionManager();
-		Vector3f store = new Vector3f();
-		// FIXME: change this to grab the "static" sub node of the world once we
-		// have that.
 		World world = this.game.getGameState(EGameState.BattleState).getWorld();
-		Vector3f pick = collisionManager.getIntersection(checkRay, world
-				.getChild("Terrain_View"), store, false);
+		distStore.zero();
+		Vector3f pick1 = collisionManager.getIntersection(checkRay, world
+				.getStaticRoot(), distStore, false);
 		float actualZoomDistance = zoomDistance;
-		if (pick != null) {
-			float pLength = pick.subtractLocal(targetLocation).length() - 1.0f;
-			if (pLength > 0.5f && pLength < zoomDistance) {
+		if (pick1 != null) {
+			float pLength = pick1.subtractLocal(targetLocation).length() - 1.0f;
+			if (pLength > .5f && pLength < actualZoomDistance) {
+				actualZoomDistance = pLength;
+			}
+		}
+		Vector3f pick2 = collisionManager.getIntersection(checkRay, world
+				.getTerrainRoot(), distStore, false);
+		if (pick2 != null) {
+			float pLength = pick2.subtractLocal(targetLocation).length() - 1.0f;
+			if (pLength > .5f && pLength < actualZoomDistance) {
 				actualZoomDistance = pLength;
 			}
 		}

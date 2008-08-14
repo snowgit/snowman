@@ -32,7 +32,8 @@
 
 package com.sun.darkstar.example.snowman.common.util;
 
-import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import java.util.ArrayList;
+
 import com.jme.intersection.PickData;
 import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
@@ -41,7 +42,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import java.util.ArrayList;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 
 /**
  * <code>CollisionManager</code> is a <code>Manager</code> that is responsible
@@ -123,6 +124,7 @@ public class CollisionManagerImpl implements CollisionManager
         if (store == null) {
             store = new Vector3f();
         }
+
         TrianglePickResults results = new TrianglePickResults();
         results.setCheckDistance(true);
         Vector3f[] vertices = new Vector3f[3];
@@ -146,6 +148,7 @@ public class CollisionManagerImpl implements CollisionManager
                 }
             }
         }
+
         return null;
     }
 

@@ -392,7 +392,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 //attach the flag
                 flag.setHeldBy(this);
                 holdingFlagRef = appContext.getDataManager().createReference(flag);
-                game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
+                game.send(null, ServerMessages.createAttachObjPkt(flagID, id));
             }
             else {
                 logger.log(Level.WARNING, "get flag from {0} failed radius check", name);

@@ -89,13 +89,14 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attachObject(int sourceID, int targetID) {
-		// TODO Auto-generated method stub
-
+		System.out.println(sourceID + " " + targetID);
+		if(targetID == this.myID) return;
+		TaskManager.getInstance().createTask(ETask.Grab, sourceID, targetID);
 	}
 
 	@Override
 	public void attacked(int sourceID, int targetID, int hp) {
-		TaskManager.getInstance().createTask(ETask.Attacking, sourceID, targetID, hp, (sourceID == this.myID));
+		TaskManager.getInstance().createTask(ETask.Attack, sourceID, targetID, hp, (sourceID == this.myID));
 	}
 
 	@Override

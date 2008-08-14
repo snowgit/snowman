@@ -42,10 +42,10 @@ public class SnowmanController extends CharacterController implements MouseInput
 				TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
 				break;
 			case Targeting:
-				TaskManager.getInstance().createTask(ETask.Attacking, this.entity.getID(), this.getEntity().getTarget().getID());
+				TaskManager.getInstance().createTask(ETask.Attack, this.entity.getID(), this.getEntity().getTarget().getID());
 				break;
 			case TryingToGrab:
-				System.out.println("Grab flag");
+				TaskManager.getInstance().createTask(ETask.Grab, this.getEntity().getTarget().getID(), this.entity.getID());
 				break;
 			}
 		}

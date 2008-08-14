@@ -82,7 +82,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     /**
      * List of flags in the game
      */
-    private final List<ManagedReference<SnowmanFlag>> flagRefs;
+    private final Map< Integer, ManagedReference<SnowmanFlag>> flagRefs;
     /**
      * Map of player IDs to players that are part of this game
      */
@@ -108,7 +108,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         this.numPlayers = numPlayers;
         initMaxTeamPlayers();
         
-        this.flagRefs = new ArrayList<ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
+        this.flagRefs = new HashMap< Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
         this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
 
         this.appContext = appContext;
@@ -160,7 +160,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             flag.setLocation(flagStart.getX(), flagStart.getY());
             ManagedReference<SnowmanFlag> ref =
                         appContext.getDataManager().createReference(flag);
-            flagRefs.add(ref);
+            flagRefs.put(flag.getID(), ref);
         }
     }
     
@@ -214,7 +214,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                     player.getID(), player.getX(), player.getY(), 
                     EMOBType.SNOWMAN, player.getTeamColor()));
         }
-        for(ManagedReference<SnowmanFlag> flagRef : flagRefs){
+        for(ManagedReference<SnowmanFlag> flagRef : flagRefs.values()){
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
                     flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor()));
@@ -256,7 +256,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             appContext.getDataManager().removeObject(ref.get());
         }
             
-        for (ManagedReference<SnowmanFlag> ref : flagRefs) {
+        for (ManagedReference<SnowmanFlag> ref : flagRefs.values()) {
             appContext.getDataManager().removeObject(ref.get());
         }
     }

@@ -46,7 +46,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TexCoords;
 import com.jme.util.geom.BufferUtils;
 import com.jmex.terrain.TerrainPage;
-import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainMesh;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainMeshBlock;
 
 public class Brush extends Line {
 	/**
@@ -162,9 +162,9 @@ public class Brush extends Line {
 	/**
 	 * Update the brush with new center position.
 	 * @param center The center <code>Vector3f</code> position.
-	 * @param mesh The <code>TerrainMesh</code> reference.
+	 * @param block The <code>TerrainMeshBlock</code> reference.
 	 */
-	public void update(Vector3f center, TerrainMesh mesh) {
+	public void update(Vector3f center, TerrainMeshBlock block) {
 		this.getLocalTranslation().set(center);
 		this.getVertexBuffer().rewind();
 		float newY = 0;

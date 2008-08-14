@@ -50,7 +50,11 @@ public enum ETask {
 	/**
 	 * The task used to start the attacking process.
 	 */
-	Attacking(ETaskType.RealTime),
+	Attack(ETaskType.RealTime),
+	/**
+	 * The task used to grab a flag.
+	 */
+	Grab(ETaskType.RealTime),
 	/**
 	 * The task used to create snow balls.
 	 */
