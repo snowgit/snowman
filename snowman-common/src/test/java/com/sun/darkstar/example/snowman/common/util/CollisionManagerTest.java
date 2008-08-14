@@ -604,6 +604,42 @@ public class CollisionManagerTest {
         testValidateComplexHit(false);
     }
     
+    /**
+     * Verify validate works properly when there is a no collision
+     * but the detection ray collides with an object that is behind the
+     * target point
+     * 
+     * @param local if the testWorld should be transposed to verify world to local mapping
+     */
+    private void testValidateBehindNoHit(boolean local) {
+        //move the box up by the THROWHEIGHT
+        Vector3f c = box.getLocalTranslation();
+        box.setLocalTranslation(c.getX(), EStats.SnowballHeight.getValue() + c.getY(), c.getZ());
+        
+        //start point and end point
+        float startx = 0.0f;
+        float startz = 0.0f;
+        float endx = 0.0f;
+        float endz = 10.0f;
+
+        //transpose the world if necessary
+        if(local)
+            moveWorld(new Vector3f(50f, 50f, 50f));
+        
+        //calculate the actual result
+        boolean result = SingletonRegistry.getCollisionManager().validate(startx, startz, endx, endz, testWorld);
+        
+        //verify
+        Assert.assertTrue(result);
+    }
+    
+    @Test public void testValidateBehindNoHitLocal() {
+        testValidateBehindNoHit(true);
+    }
+    @Test public void testValidateBehindHitNotLocal() {
+        testValidateBehindNoHit(false);
+    }
+    
     @After
     public void cleanupTestWorld() {
         box = null;
