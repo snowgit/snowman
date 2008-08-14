@@ -52,9 +52,9 @@ public enum ETask {
 	 */
 	Attack(ETaskType.RealTime),
 	/**
-	 * The task used to grab a flag.
+	 * The task used to attach entity.
 	 */
-	Grab(ETaskType.RealTime),
+	Attach(ETaskType.RealTime),
 	/**
 	 * The task used to create snow balls.
 	 */

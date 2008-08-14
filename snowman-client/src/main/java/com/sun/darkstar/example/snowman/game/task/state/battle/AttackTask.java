@@ -105,7 +105,7 @@ public class AttackTask extends RealTimeTask {
 					InputManager.getInstance().getController(targetEntity).setActive(false);
 				}
 				if(targetEntity.isCarrying()) {
-					TaskManager.getInstance().createTask(ETask.Grab, targetEntity.getFlag().getID(), 0);
+					TaskManager.getInstance().createTask(ETask.Attach, targetEntity.getFlag().getID(), 0);
 					targetEntity.setFlag(null);
 				}
 			}

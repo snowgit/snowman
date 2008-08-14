@@ -19,7 +19,7 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.AddMOBTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.AttackTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.CorrectionTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.CreateSnowballTask;
-import com.sun.darkstar.example.snowman.game.task.state.battle.GrabTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.AttachTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.MoveCharacterTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.MoveSnowballTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RemoveMOBTask;
@@ -205,7 +205,7 @@ public class TaskManager extends Manager {
 		case MoveSnowball: task = new MoveSnowballTask(this.game, (SnowballEntity)args[0]); break;
 		case Correction: task = new CorrectionTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2]); break;
 		case Respawn: task = new RespawnTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Boolean)args[3]); break;
-		case Grab: task = new GrabTask(this.game, (Integer)args[0], (Integer)args[1]); break;
+		case Attach: task = new AttachTask(this.game, (Integer)args[0], (Integer)args[1]); break;
 		case Remove: task = new RemoveMOBTask(this.game, (Integer)args[0]); break;
 		}
 		this.submit(task);
