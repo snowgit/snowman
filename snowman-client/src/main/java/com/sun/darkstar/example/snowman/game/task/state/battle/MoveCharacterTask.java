@@ -151,11 +151,8 @@ public class MoveCharacterTask extends RealTimeTask {
 		if(this.local) {
 			DisplaySystem display = DisplaySystem.getDisplaySystem();
 			CollisionManager collisionManager = SingletonRegistry.getCollisionManager();
-			Vector3f worldCoords = new Vector3f();
-			display.getWorldCoordinates(new Vector2f(this.x, this.y), 1, worldCoords);
 			Ray ray = new Ray();
-			ray.setOrigin(display.getRenderer().getCamera().getLocation());
-			ray.setDirection(worldCoords.subtractLocal(display.getRenderer().getCamera().getLocation()).normalizeLocal());
+			display.getPickRay(new Vector2f(this.x, this.y), false, ray);
 			World world = this.game.getGameState(EGameState.BattleState).getWorld();
 			Vector3f click = collisionManager.getIntersection(ray, world, new Vector3f(), true);
 			if(click == null) return null;
