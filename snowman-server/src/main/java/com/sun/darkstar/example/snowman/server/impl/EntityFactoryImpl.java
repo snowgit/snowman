@@ -54,10 +54,9 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
     {
         return new SnowmanPlayerImpl(context, session);
     }
-    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY,
-            float flagGoalRadius)
+    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY)
     {
-        return new SnowmanFlagImpl(teamColor, flagGoalX, flagGoalY, flagGoalRadius);
+        return new SnowmanFlagImpl(teamColor, flagGoalX, flagGoalY);
     }
 
 }

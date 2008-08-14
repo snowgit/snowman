@@ -60,12 +60,7 @@ public interface SnowmanFlag extends DynamicEntity
 
     public boolean isHeld();
     
-    public float getGoalRadius();
+    public float getGoalX();
+    public float getGoalY();
     
-    /**
-     * Checks to see if the flag is within its goal circle
-     * @return true if the flag is within the goal circle.  otherwise false
-     */
-    public boolean isAtGoal();
-
 }

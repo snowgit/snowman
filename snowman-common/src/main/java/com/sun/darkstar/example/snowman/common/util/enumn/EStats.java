@@ -31,7 +31,11 @@ public enum EStats {
 	/**
 	 * The grabbing range.
 	 */
-	GrabRange(1f);
+	GrabRange(1f),
+        /**
+         * The goal radius
+         */
+        GoalRadius(1f);
 	
 	/**
 	 * The value of this statistic.

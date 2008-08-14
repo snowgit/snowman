@@ -96,6 +96,10 @@ public interface IServerProcessor extends IProtocolProcessor {
      * the snowball can't be thrown (because it is out of range or there
      * is something in the way), broadcast an ATTACKED message with the
      * HP set to 0.</li>
+     * <li>If the attack is a success, deduct the standard HP deduction
+     * from the attackee.  Also, check to see if the player is dead and
+     * if they hold the flag.  If death, drop the flag and schedule a
+     * respawn.</li>
      * </ul>
      * </p>
      * @param targetID The ID number of the target.

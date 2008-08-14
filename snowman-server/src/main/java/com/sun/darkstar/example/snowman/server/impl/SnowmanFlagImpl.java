@@ -74,10 +74,6 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      */
     private final float goalY;
     /**
-     * The radius of the goal circle
-     */
-    private final float goalRadius;
-    /**
      * This is either a reference to a SnowmanPlayer who is currently holding
      * th flsg or null if it is currently on the board
      */
@@ -100,12 +96,10 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * @param flagGoalY the Y coordinate of the centroid of the winning circle
      * @param flagGoalRadius the radius of the winning circle
      */
-    public SnowmanFlagImpl(ETeamColor teamColor, float flagGoalX, float flagGoalY,
-            float flagGoalRadius) {
+    public SnowmanFlagImpl(ETeamColor teamColor, float flagGoalX, float flagGoalY) {
         flagColor = teamColor;
         goalX = flagGoalX;
         goalY = flagGoalY;
-        goalRadius = flagGoalRadius;
         id = FLAGBASEID + teamColor.ordinal();
     }
 
@@ -170,21 +164,6 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     }
     
     /**
-     * Checks to see if the flag is within its goal circle
-     * @return true if the flag is within the goal circle.  otherwise false
-     */
-    // TODO - pass in x, y from player holding flag
-    // TODO - so when to we actually check? there is no explict stop from
-    // a player... do we need a drop / or score message?
-    public boolean isAtGoal(){
-        //we compare in distacne sqd space for efficiency
-        // for more efficiency we could cache goalRadiusSqd
-        float deltaX = x-goalX;
-        float deltaY = y-goalY;
-        return((goalRadius*goalRadius)<= ((deltaX*deltaX)+(deltaY*deltaY)));
-    }
-
-    /**
      * This method sets the Flag ID.  A flag's ID must be unique among flags in
      * a game but may not be unique among all the objects in the game.
      * @param i the ID
@@ -208,7 +187,10 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         return heldByRef != null;
     }
 
-    public float getGoalRadius() {
-        return goalRadius;
+    public float getGoalX() {
+        return goalX;
+    }
+    public float getGoalY() {
+        return goalY;
     }
 }

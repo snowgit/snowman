@@ -45,7 +45,6 @@ public interface EntityFactory
 {
     public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
                                              ClientSession session);
-    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY,
-            float flagGoalRadius);
+    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY);
 
 }
