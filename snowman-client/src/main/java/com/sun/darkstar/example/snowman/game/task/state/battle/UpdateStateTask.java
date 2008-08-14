@@ -8,6 +8,7 @@ import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
@@ -105,21 +106,27 @@ public class UpdateStateTask extends RealTimeTask {
 		}
 		result = collisionManager.getIntersectObject(ray, world, FlagView.class, false);
 		if(result != null) {
-			if(this.validateGrabRange(result)) this.snowman.setState(EState.TryingToGrab);
-			// TODO Change cursor to grabbing.
+			FlagView view = (FlagView)result;
+			if(this.validateGrabRange(result) && this.validateTeam(view.getEntity())) {
+				this.snowman.setState(EState.TryingToGrab);
+				this.snowman.setTarget(view.getEntity());
+				// TODO Change cursor to grabbing.
+			}
 			return;
 		}
 	}
 
 	/**
-	 * Validate if the given character can be targeted.
-	 * @param character The <code>ChracterEntity</code> to be validated.
-	 * @return True of the character can be targeted. False otherwise.
+	 * Validate if the given entity can be targeted.
+	 * @param entity The <code>IEntity</code> to be validated.
+	 * @return True of the entity can be targeted. False otherwise.
 	 */
-	private boolean validateTeam(CharacterEntity character) {
-		switch(character.getEnumn()) {
+	private boolean validateTeam(IEntity entity) {
+		switch(entity.getEnumn()) {
 		case SnowmanDistributedBlue: return (this.snowman.getEnumn() != EEntity.SnowmanLocalBlue);
 		case SnowmanDistributedRed: return (this.snowman.getEnumn() != EEntity.SnowmanLocalRed);
+		case FlagBlue: return (this.snowman.getEnumn() != EEntity.SnowmanLocalBlue);
+		case FlagRed: return (this.snowman.getEnumn() != EEntity.SnowmanLocalRed);
 		}
 		return false;
 	}

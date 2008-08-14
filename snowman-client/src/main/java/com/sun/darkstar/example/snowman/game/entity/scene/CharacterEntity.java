@@ -3,6 +3,7 @@ package com.sun.darkstar.example.snowman.game.entity.scene;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 
@@ -28,9 +29,9 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	protected Vector3f destination;
 	/**
-	 * The target <code>CharacterEntity</code> instance.
+	 * The target <code>IDynamicEntity</code> instance.
 	 */
-	protected CharacterEntity target;
+	protected IDynamicEntity target;
 
 	/**
 	 * Constructor of <code>CharacterEntity</code>.
@@ -76,10 +77,10 @@ public class CharacterEntity extends DynamicEntity {
 	}
 	
 	/**
-	 * Set the current attacking target of this character.
-	 * @param target The target <code>CharacterEntity</code> instance.
+	 * Set the current target of this character.
+	 * @param target The target <code>IDynamicEntity</code> instance.
 	 */
-	public void setTarget(CharacterEntity target) {
+	public void setTarget(IDynamicEntity target) {
 		this.target = target;
 	}
 
@@ -108,10 +109,10 @@ public class CharacterEntity extends DynamicEntity {
 	}
 	
 	/**
-	 * Retrieve the target <code>CharacterEntity</code> instance.
-	 * @return The target <code>CharacterEntity</code> instance.
+	 * Retrieve the target <code>IDynamicEntity</code> instance.
+	 * @return The target <code>IDynamicEntity</code> instance.
 	 */
-	public CharacterEntity getTarget() {
+	public IDynamicEntity getTarget() {
 		return this.target;
 	}
 	

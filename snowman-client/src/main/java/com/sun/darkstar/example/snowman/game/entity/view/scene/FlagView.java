@@ -38,4 +38,9 @@ public class FlagView extends DynamicView {
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public IDynamicEntity getEntity() {
+		return (IDynamicEntity) this.entity;
+	}
 }
