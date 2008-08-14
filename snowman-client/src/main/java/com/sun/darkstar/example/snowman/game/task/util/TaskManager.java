@@ -1,6 +1,5 @@
 package com.sun.darkstar.example.snowman.game.task.util;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.jme.util.Debug;
@@ -13,11 +12,21 @@ import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.stats.SnowmanStatType;
-import com.sun.darkstar.example.snowman.game.task.enumn.*;
+import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask.ETaskType;
-import com.sun.darkstar.example.snowman.game.task.state.*;
-import com.sun.darkstar.example.snowman.game.task.state.battle.*;
-import com.sun.darkstar.example.snowman.game.task.state.login.*;
+import com.sun.darkstar.example.snowman.game.task.state.GameStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.AddMOBTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.AttackTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.CorrectionTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.CreateSnowballTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.MoveCharacterTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.MoveSnowballTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.RespawnTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.StartGameTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
 import com.sun.darkstar.example.snowman.interfaces.IRealTimeTask;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -77,7 +86,7 @@ public class TaskManager extends Manager {
 	/**
 	 * The temporary <code>LinkedList</code> buffer of submitted <code>ITask</code>.
 	 */
-	private final LinkedList<ITask> submitted;
+	private final ConcurrentLinkedQueue<ITask> submitted;
 	/**
 	 * The time before the last execution started in nanoseconds.
 	 */
@@ -101,7 +110,7 @@ public class TaskManager extends Manager {
 		this.executeTime = 20;
 		this.enqueueTime = 5;
 		this.taskQueue = new ConcurrentLinkedQueue<ITask>();
-		this.submitted = new LinkedList<ITask>();
+		this.submitted = new ConcurrentLinkedQueue<ITask>();
 	}
 
 	/**
@@ -133,7 +142,7 @@ public class TaskManager extends Manager {
 		// Enqueue tasks.
 		while(!this.submitted.isEmpty() && this.totaltime < this.enqueueTime) {
 			this.starttime = System.nanoTime();
-			this.enqueue(this.submitted.pop());
+			this.enqueue(this.submitted.poll());
 			this.endtime = System.nanoTime();
 			this.totaltime += (this.endtime-this.starttime)/1000000.0f;
 		}

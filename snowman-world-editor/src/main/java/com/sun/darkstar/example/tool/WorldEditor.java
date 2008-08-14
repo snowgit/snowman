@@ -699,6 +699,7 @@ public class WorldEditor extends JFrame {
 		JMECanvas jmeCanvas = ((JMECanvas) comp);
 		jmeCanvas.setImplementor(impl);
 		jmeCanvas.setUpdateInput(true);
+		jmeCanvas.setTargetRate(60);
 
 		viewPanel.add(comp, BorderLayout.CENTER);
 	}
@@ -759,6 +760,9 @@ public class WorldEditor extends JFrame {
 		String selected = (String) JOptionPane.showInputDialog(
 				WorldEditor.this, "What kind of entity", "Create Entity",
 				JOptionPane.PLAIN_MESSAGE, null, names, names[0]);
+		if (selected == null) {
+			return;
+		}
 		EEntity selectedEntity = EEntity.valueOf(selected);
 		if (selectedEntity == null)	return;
 		EditableEntity entity = (EditableEntity) EntityManager.getInstance().createEntity(selectedEntity);
@@ -1092,7 +1096,7 @@ public class WorldEditor extends JFrame {
 		}
 
 		private void updateTexturing() {
-			if(pressed && selectedLayer != null) {
+			if(pressed && selectedLayer != null && currentMode != null) {
 				switch(currentMode) {
 				case Paint: selectedLayer.modifyAlpha(mouseListener.getIntersection(), brush.getRadius(), brush.getIntensity()); break;
 				case Erase: selectedLayer.modifyAlpha(mouseListener.getIntersection(), brush.getRadius(), -brush.getIntensity()); break;
