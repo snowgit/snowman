@@ -32,7 +32,8 @@
 
 package com.sun.darkstar.example.snowman.common.util;
 
-import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import java.util.ArrayList;
+
 import com.jme.intersection.PickData;
 import com.jme.intersection.PickResults;
 import com.jme.intersection.TrianglePickResults;
@@ -41,7 +42,11 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
-import java.util.ArrayList;
+import com.jmex.terrain.util.BresenhamTerrainPicker;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
+import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import com.sun.darkstar.example.snowman.common.world.EditableWorld;
 
 /**
  * <code>CollisionManager</code> is a <code>Manager</code> that is responsible
@@ -123,29 +128,48 @@ public class CollisionManagerImpl implements CollisionManager
         if (store == null) {
             store = new Vector3f();
         }
-        TrianglePickResults results = new TrianglePickResults();
-        results.setCheckDistance(true);
-        Vector3f[] vertices = new Vector3f[3];
-        parent.findPick(ray, results);
-        boolean hit = false;
-        if (results.getNumber() > 0) {
-            PickData data = results.getPickData(0);
-            ArrayList<Integer> triangles = data.getTargetTris();
-            if (!triangles.isEmpty()) {
-                TriMesh mesh = (TriMesh) data.getTargetMesh();
-                mesh.getTriangle(triangles.get(0).intValue(), vertices);
-                for (int j = 0; j < vertices.length; j++) {
-                	mesh.localToWorld(vertices[j], vertices[j]);
-                }
-                hit = ray.intersectWhere(vertices[0], vertices[1], vertices[2], store);
-                if (hit && local) {
-                    parent.worldToLocal(store, store);
-                    return store;
-                } else if (hit && !local) {
-                    return store;
-                }
-            }
+
+        if ("TerrainRoot".equals(parent.getName())) {
+        	parent = ((Node)parent).getChild("Terrain");
         }
+        if (parent instanceof TerrainView) {
+        	parent = ((TerrainView)parent).getTerrainCluster();
+        }
+        if (parent instanceof TerrainCluster) {
+        	BresenhamTerrainPicker picker = new BresenhamTerrainPicker(parent);
+        	boolean hit = (picker.getTerrainIntersection(ray, store) != null);
+        	if (hit) {
+        		if (local) {
+        			parent.worldToLocal(store, store);
+        		}
+    			return store;
+        	}
+        } else {
+	        TrianglePickResults results = new TrianglePickResults();
+	        results.setCheckDistance(true);
+	        Vector3f[] vertices = new Vector3f[3];
+	        parent.findPick(ray, results);
+	        boolean hit = false;
+	        if (results.getNumber() > 0) {
+	            PickData data = results.getPickData(0);
+	            ArrayList<Integer> triangles = data.getTargetTris();
+	            if (!triangles.isEmpty()) {
+	                TriMesh mesh = (TriMesh) data.getTargetMesh();
+	                mesh.getTriangle(triangles.get(0).intValue(), vertices);
+	                for (int j = 0; j < vertices.length; j++) {
+	                	mesh.localToWorld(vertices[j], vertices[j]);
+	                }
+	                hit = ray.intersectWhere(vertices[0], vertices[1], vertices[2], store);
+	                if (hit && local) {
+	                    parent.worldToLocal(store, store);
+	                    return store;
+	                } else if (hit && !local) {
+	                    return store;
+	                }
+	            }
+	        }
+        }
+
         return null;
     }
 
