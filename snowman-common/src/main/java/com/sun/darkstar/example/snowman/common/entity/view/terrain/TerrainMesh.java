@@ -10,9 +10,8 @@ import com.jme.bounding.CollisionTreeManager;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Renderer;
 import com.jme.scene.TexCoords;
-import com.jme.scene.lod.AreaClodMesh;
+import com.jme.scene.TriMesh;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
@@ -32,8 +31,9 @@ import com.jme.util.geom.BufferUtils;
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-01-2008 14:24 EST
  * @version Modified date: 07-01-2008 16:59 EST
+ * @deprecated
  */
-public class TerrainMesh extends AreaClodMesh {
+public class TerrainMesh extends TriMesh {
 	/**
 	 * Serial version.
 	 */
@@ -66,10 +66,6 @@ public class TerrainMesh extends AreaClodMesh {
 	 * The height values of this <code>TerrainMesh</code>.
 	 */
 	private float[][] heights;
-	/**
-	 * The flag indicates if level of detail data has been generated.
-	 */
-	private boolean lod;
 	/**
 	 * The temporary <code>Vector3f</code>.
 	 */
@@ -373,22 +369,6 @@ public class TerrainMesh extends AreaClodMesh {
 		}
 	}
 
-	@Override
-	public int chooseTargetRecord(Renderer r) {
-		if(this.lod) return super.chooseTargetRecord(r);
-		return 0;
-	}
-
-	/**
-	 * Generate the level of detail data.
-	 * @param trisPerPixel The number of triangles per pixels.
-	 */
-	public void generateLOD(float trisPerPixel) {
-		this.setTrisPerPixel(trisPerPixel);
-		this.create(null);
-		this.lod = true;
-	}
-
 	/**
 	 * Retrieve the size of this terrain mesh.
 	 * @return The size of this <code>TerrainMesh</code>.
@@ -412,6 +392,14 @@ public class TerrainMesh extends AreaClodMesh {
 	public int getColumnIndex() {
 		return this.col;
 	}
+
+	/**
+	 * 
+	 * @return the heights underlying this terrain mesh.
+	 */
+	public float[][] getHeights() {
+		return heights;
+	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -430,7 +418,6 @@ public class TerrainMesh extends AreaClodMesh {
 		oc.write(this.clusterWidth, "ClusterWidth", 1);
 		oc.write(this.clusterDepth, "ClusterDepth", 1);
 		oc.write(this.heights, "Heights", null);
-		oc.write(this.lod, "LOD", false);
 	}
 
 	@Override
@@ -444,6 +431,5 @@ public class TerrainMesh extends AreaClodMesh {
 		this.clusterWidth = ic.readInt("ClusterWidth", 1);
 		this.clusterDepth = ic.readInt("ClusterDepth", 1);
 		this.heights = ic.readFloatArray2D("Heights", null);
-		this.lod = ic.readBoolean("LOD", false);
 	}
 }

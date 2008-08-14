@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.math.FastMath;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.util.export.InputCapsule;
@@ -18,7 +17,7 @@ import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt
 
 /**
  * <code>TerrainCluster</code> extends <code>Node</code> to define a cluster
- * of <code>TerrainMesh</code> that represents the entire terrain.
+ * of <code>TerrainMeshBlock</code> that represents the entire terrain.
  * <p>
  * <code>TerrainCluster</code> provides the functionality for geometry sculpting
  * and detail texture coordinates duplication during world editing stages. It
@@ -35,61 +34,65 @@ public class TerrainCluster extends Node {
 	 */
 	private static final long serialVersionUID = -6194334491013311239L;
 	/**
-	 * The number <code>TerrainMesh</code> along x axis.
+	 * The number <code>TerrainMeshBlock</code> along x axis.
 	 */
 	private int width;
 	/**
-	 * The number <code>TerrainMesh</code> along z axis.
+	 * The number <code>TerrainMeshBlock</code> along z axis.
 	 */
 	private int depth;
 	/**
-	 * The two dimensional array of <code>TerrainMesh</code> attached to the cluster.
+	 * The two dimensional array of <code>TerrainMeshBlock</code> attached to the cluster.
 	 */
-	private TerrainMesh[][] meshes;
+	private TerrainMeshBlock[][] meshes;
 	/**
-	 * The x and z extent of a single <code>TerrainMesh</code>.
+	 * The x and z extent of a single <code>TerrainMeshBlock</code>.
 	 */
 	private float extent;
 	/**
-	 * The diagonal distance of a single <code>TerrainMesh</code>.
+	 * The diagonal distance of a single <code>TerrainMeshBlock</code>.
 	 */
 	private float diagonal;
 	/**
-	 * The temporary <code>ArrayList</code> of <code>TerrainMesh</code> to be sculpted.
+	 * The temporary <code>ArrayList</code> of <code>TerrainMeshBlock</code> to be sculpted.
 	 */
-	private final ArrayList<TerrainMesh> tempMeshes;
+	private final ArrayList<TerrainMeshBlock> tempMeshes;
 	/**
 	 * The temporary <code>Vector3f</code> used to averaging vertices and normals.
 	 */
 	private final Vector3f tempVector;
-
+	
 	/**
 	 * Constructor of <code>TerrainCluster</code>.
 	 */
 	public TerrainCluster() {
-		this.tempMeshes = new ArrayList<TerrainMesh>();
+		this.tempMeshes = new ArrayList<TerrainMeshBlock>();
 		this.tempVector = new Vector3f();
 	}
 
 	/**
 	 * Constructor of <code>TerrainGroup</code>.
 	 * @param name The <code>String</code> name of this cluster.
-	 * @param width The number <code>TerrainMesh</code> along x axis.
-	 * @param depth The number <code>TerrainMesh</code> along z axis.
-	 * @param trianglesPerMesh The number of triangles per <Code>TerrainMesh</code>.
+	 * @param width The number <code>TerrainMeshBlock</code> along x axis.
+	 * @param depth The number <code>TerrainMeshBlock</code> along z axis.
+	 * @param trianglesPerMesh The number of triangles per <Code>TerrainMeshBlock</code>.
 	 */
 	public TerrainCluster(String name, int width, int depth, int trianglesPerMesh) {
 		super(name);
 		this.width = width;
 		this.depth = depth;
-		this.meshes = new TerrainMesh[width][depth];
-		this.tempMeshes = new ArrayList<TerrainMesh>();
+		this.meshes = new TerrainMeshBlock[width][depth];
+		this.tempMeshes = new ArrayList<TerrainMeshBlock>();
 		this.tempVector = new Vector3f();
-		TerrainMesh mesh = null;
+		TerrainMeshBlock mesh = null;
 		for(int row = 0; row < width; row++) {
 			for(int col = 0; col < depth; col++) {
-				Vector2f offset = new Vector2f(2*row*this.extent, 2*col*this.extent);
-				mesh = new TerrainMesh("TerrainMesh_"+row+"_"+col, trianglesPerMesh, offset, row, col, this.width, this.depth);
+				Vector3f offset = new Vector3f(2*row*this.extent, 0, 2*col*this.extent);
+				int size = (int)FastMath.ceil(FastMath.sqrt(trianglesPerMesh/2) + 1);
+				float[] floats = new float[size*size];
+				mesh = new TerrainMeshBlock("TerrainBlock_"+row+"_"+col, size, new Vector3f(1,1,1), floats, offset, row, col, width, depth);
+				mesh.setModelBound(new BoundingBox());
+				mesh.updateModelBound();
 				if(row == 0 && col == 0) {
 					mesh.updateGeometricState(0, false);
 					this.extent = ((BoundingBox)mesh.getWorldBound()).xExtent;
@@ -113,7 +116,7 @@ public class TerrainCluster extends Node {
 		this.tempMeshes.clear();
 		for(int row = 0; row < this.meshes.length; row++) {
 			for(int col = 0; col < this.meshes[row].length; col++) {
-				float distance = this.getPlanarDistance(this.meshes[row][col].getWorldBound().getCenter(), boundCenter);
+				float distance = TerrainCluster.getPlanarDistance(this.meshes[row][col].getWorldBound().getCenter(), boundCenter);
 				if(distance < this.diagonal + radius) {
 					this.tempMeshes.add(this.meshes[row][col]);
 				}
@@ -121,13 +124,13 @@ public class TerrainCluster extends Node {
 		}
 		switch(enumn) {
 		case Raise:
-			for(TerrainMesh mesh : this.tempMeshes) {
-				mesh.modifyHeight(worldcoords, radius, intentisy);
+			for(TerrainMeshBlock block : this.tempMeshes) {
+				block.modifyHeight(worldcoords, radius, intentisy);
 			}
 			break;
 		case Lower:
-			for(TerrainMesh mesh : this.tempMeshes) {
-				mesh.modifyHeight(worldcoords, radius, -intentisy);
+			for(TerrainMeshBlock block : this.tempMeshes) {
+				block.modifyHeight(worldcoords, radius, -intentisy);
 			}
 			break;
 		case Smooth:
@@ -148,7 +151,7 @@ public class TerrainCluster extends Node {
 		float total = 0;
 		float count = 0;
 		ArrayList<Vector3f> values = null;
-		for(TerrainMesh mesh : this.tempMeshes) {
+		for(TerrainMeshBlock mesh : this.tempMeshes) {
 			values = mesh.populateVertices(center, radius);
 			for(Vector3f vector : values) {
 				total += vector.y;
@@ -156,7 +159,7 @@ public class TerrainCluster extends Node {
 			count += values.size();
 		}
 		float average = total / count;
-		for(TerrainMesh mesh : this.tempMeshes) {
+		for(TerrainMeshBlock mesh : this.tempMeshes) {
 			mesh.smoothHeight(average, radius, intensity);
 		}
 	}
@@ -166,11 +169,11 @@ public class TerrainCluster extends Node {
 	 * the right below the mesh.
 	 */
 	private void averageVertices() {
-		for(TerrainMesh mesh : this.tempMeshes) {
+		for(TerrainMeshBlock mesh : this.tempMeshes) {
 			int size = mesh.getSize();
-			TerrainMesh right = this.getRightMesh(mesh.getRowIndex(), mesh.getColumnIndex());
-			TerrainMesh down = this.getDownMesh(mesh.getRowIndex(), mesh.getColumnIndex());
-			TerrainMesh cross = this.getCrossMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock right = this.getRightMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock down = this.getDownMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock cross = this.getCrossMesh(mesh.getRowIndex(), mesh.getColumnIndex());
 			// First average the overlapping vertex between right, down and cross meshes.
 			if(right != null && down != null && cross != null) {
 				BufferUtils.populateFromBuffer(this.tempVector, right.getVertexBuffer(), (size*size) - size);
@@ -222,11 +225,11 @@ public class TerrainCluster extends Node {
 	 * the right below the mesh.
 	 */
 	private void averageNormals() {
-		for(TerrainMesh mesh : this.tempMeshes) {
+		for(TerrainMeshBlock mesh : this.tempMeshes) {
 			int size = mesh.getSize();
-			TerrainMesh right = this.getRightMesh(mesh.getRowIndex(), mesh.getColumnIndex());
-			TerrainMesh down = this.getDownMesh(mesh.getRowIndex(), mesh.getColumnIndex());
-			TerrainMesh cross = this.getCrossMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock right = this.getRightMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock down = this.getDownMesh(mesh.getRowIndex(), mesh.getColumnIndex());
+			TerrainMeshBlock cross = this.getCrossMesh(mesh.getRowIndex(), mesh.getColumnIndex());
 			// First average the overlapping normal between right, down and cross meshes.
 			if(right != null && down != null && cross != null) {
 				BufferUtils.populateFromBuffer(this.tempVector, right.getNormalBuffer(), (size*size) - size);
@@ -273,7 +276,7 @@ public class TerrainCluster extends Node {
 	 * @param vec2 The <code>Vector3f</code> to check.
 	 * @return The float planar distance between the given two vectors.
 	 */
-	private float getPlanarDistance(Vector3f vec1, Vector3f vec2) {
+	public static float getPlanarDistance(Vector3f vec1, Vector3f vec2) {
 		float dx = vec1.x - vec2.x;
 		float dy = vec1.z - vec2.z;
 		return FastMath.sqrt(dx* dx + dy * dy);
@@ -283,9 +286,9 @@ public class TerrainCluster extends Node {
 	 * Retrieve the mesh to the right of given index set.
 	 * @param row The base row index number.
 	 * @param col The base column index number.
-	 * @return The <code>TerrainMesh</code> to the right of given index set.
+	 * @return The <code>TerrainMeshBlock</code> to the right of given index set.
 	 */
-	private TerrainMesh getRightMesh(int row, int col) {
+	private TerrainMeshBlock getRightMesh(int row, int col) {
 		if(row == this.meshes.length - 1) return null;
 		return this.meshes[row + 1][col];
 	}
@@ -294,9 +297,9 @@ public class TerrainCluster extends Node {
 	 * Retrieve the mesh below the given index set.
 	 * @param row The base row index number.
 	 * @param col The base column index number.
-	 * @return The <code>TerrainMesh</code> below the given index set.
+	 * @return The <code>TerrainMeshBlock</code> below the given index set.
 	 */
-	private TerrainMesh getDownMesh(int row, int col) {
+	private TerrainMeshBlock getDownMesh(int row, int col) {
 		if(col == this.meshes[row].length - 1) return null;
 		return this.meshes[row][col + 1];
 	}
@@ -305,9 +308,9 @@ public class TerrainCluster extends Node {
 	 * Retrieve the mesh below and to the right of the given index set.
 	 * @param row The base row index number.
 	 * @param col The base column index number.
-	 * @return The <code>TerrainMesh</code> below and to the right of the given index set.
+	 * @return The <code>TerrainMeshBlock</code> below and to the right of the given index set.
 	 */
-	private TerrainMesh getCrossMesh(int row, int col) {
+	private TerrainMeshBlock getCrossMesh(int row, int col) {
 		if(row == this.meshes.length - 1 || col == this.meshes[row].length - 1) return null;
 		return this.meshes[row + 1][col + 1];
 	}
@@ -362,11 +365,11 @@ public class TerrainCluster extends Node {
 		InputCapsule ic = im.getCapsule(this);
 		this.width = ic.readInt("Width", 0);
 		this.depth = ic.readInt("Depth", 0);
-		this.meshes = new TerrainMesh[this.width][this.depth];
+		this.meshes = new TerrainMeshBlock[this.width][this.depth];
 		Savable[][] temp = ic.readSavableArray2D("Meshes", null);
 		for(int i = 0; i < temp.length; i++) {
 			for(int j = 0; j < temp[i].length; j++) {
-				this.meshes[i][j] = (TerrainMesh)temp[i][j];
+				this.meshes[i][j] = (TerrainMeshBlock)temp[i][j];
 			}
 		}
 		this.extent = ic.readFloat("Extent", 0);
