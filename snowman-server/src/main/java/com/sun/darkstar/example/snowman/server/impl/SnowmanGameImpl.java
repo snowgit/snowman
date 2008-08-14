@@ -68,7 +68,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
      */
     public static final String CHANPREFIX = "_GAMECHAN_";
     
-    private static final float GOALRADIUS = 1.0f;
     private static final int PLAYERIDSTART = 1;
     
     /**
@@ -157,8 +156,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             SnowmanFlag flag =
                         entityFactory.createSnowmanFlag(color,
                                                         flagGoal.getX(),
-                                                        flagGoal.getY(),
-                                                        GOALRADIUS); 
+                                                        flagGoal.getY()); 
             flag.setLocation(flagStart.getX(), flagStart.getY());
             ManagedReference<SnowmanFlag> ref =
                         appContext.getDataManager().createReference(flag);

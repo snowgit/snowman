@@ -93,7 +93,6 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
                                                              EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
@@ -139,7 +138,6 @@ public class SnowmanGameImplTest
         EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
@@ -201,7 +199,6 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
                                                              EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
@@ -231,7 +228,6 @@ public class SnowmanGameImplTest
         EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
@@ -293,7 +289,6 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
                                                              EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
@@ -345,7 +340,6 @@ public class SnowmanGameImplTest
         EntityFactory dummyEntityFactory = EasyMock.createMock(EntityFactory.class);
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
                                                              EasyMock.anyFloat(),
                                                              EasyMock.anyFloat())).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);

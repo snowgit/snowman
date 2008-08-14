@@ -38,6 +38,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcessor;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
@@ -68,7 +69,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
-    static float POSITIONTOLERANCESQD = 1.0f;
+    static float POSITIONTOLERANCESQD = 4.0f;
     static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
     static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     
@@ -276,7 +277,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                            startx, starty,
                            POSITIONTOLERANCESQD)) {
-            //TODO - collision detection
+            //collision detection
             Coordinate trimPosition = appContext.getManager(GameWorldManager.class).
                     trimPath(new Coordinate(startx, starty),
                              new Coordinate(endx, endy));
@@ -326,10 +327,17 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             float range = HPConverter.getInstance().convertRange(hitPoints);
             if(!checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                                targetPosition.getX(), targetPosition.getY(), 
-                               range*range))
+                               range*range)) {
+                logger.log(Level.WARNING, "attack from {0} out of range", name);
                 success = false;
+            }
             
-            //TODO - collision detection
+            //collision detection
+            if(!appContext.getManager(GameWorldManager.class).validThrow(new Coordinate(x, y), 
+                                                                          targetPosition)) {
+                logger.log(Level.WARNING, "attack from {0} detected a collision", name);
+                success = false;
+            }
 
             //perform implicit stop
             this.timestamp = now;
@@ -376,7 +384,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             
             //verify that the player is in range of the flag
             if(checkTolerance(x, y, flag.getX(), flag.getY(),
-                               flag.getGoalRadius()*flag.getGoalRadius())) {
+                               EStats.GrabRange.getValue()*EStats.GrabRange.getValue())) {
                 //perform implicit stop
                 this.timestamp = now;
                 this.setLocation(x, y);
@@ -391,12 +399,41 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             }
         } 
         else {
-            logger.log(Level.WARNING, "get flag from {0} failed attach position check", name);
+            logger.log(Level.WARNING, "get flag from {0} failed position check", name);
         }
     }
     
     public void score(float x, float y) {
+        Long now = System.currentTimeMillis();
+        score(now, x, y);
+    }
+    protected void score(long now, float x, float y) {
+        //ignore if we aren't holding the flag
+        if(holdingFlagRef == null) {
+            logger.log(Level.WARNING, "score from {0} failed, not holding flag", name);
+            return;
+        }
         
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           x, y, POSITIONTOLERANCESQD)) {
+            SnowmanFlag flag = holdingFlagRef.get();
+            
+            //verify that the player is in range of the score position
+            if(checkTolerance(x, y, flag.getGoalX(), flag.getGoalY(),
+                               EStats.GoalRadius.getValue()*EStats.GoalRadius.getValue())) {
+                //send end game packet
+                EEndState end = teamColor == ETeamColor.Red ? EEndState.RedWin : EEndState.BlueWin;
+                currentGameRef.get().send(null, ServerMessages.createEndGamePkt(end));
+            }
+            else {
+                logger.log(Level.WARNING, "score from {0} failed radius check", name);
+            }
+        } 
+        else {
+            logger.log(Level.WARNING, "score from {0} failed position check", name);
+        }
     }
     
     // respawn

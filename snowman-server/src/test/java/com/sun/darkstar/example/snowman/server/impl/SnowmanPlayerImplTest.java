@@ -40,9 +40,11 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.sgs.app.ClientSession;
 import org.junit.Test;
 import org.junit.Before;
@@ -604,6 +606,14 @@ public class SnowmanPlayerImplTest
         float newX = startX+xOffset;
         float newY = startY-yOffset;
         
+        //setup collision detection
+        Coordinate attackerPosition = new Coordinate(newX, newY);
+        Coordinate attackeePosition = new Coordinate(attackeeX, attackeeY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.validThrow(attackerPosition,
+                                                    attackeePosition)).andStubReturn(true);
+        EasyMock.replay(gameWorldManager);
+        
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
@@ -670,6 +680,14 @@ public class SnowmanPlayerImplTest
         //setup the attackee state
         this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
         
+        //setup collision detection
+        Coordinate attackerPosition = new Coordinate(newX, newY);
+        Coordinate attackeePosition = new Coordinate(attackeeX, attackeeY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.validThrow(attackerPosition,
+                                                    attackeePosition)).andStubReturn(true);
+        EasyMock.replay(gameWorldManager);
+        
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
@@ -682,6 +700,69 @@ public class SnowmanPlayerImplTest
         //verify player state
         this.verifyAttackStop(testPlayer, newX, newY);
         this.verifyAttackHit(attackee, attackeeX, attackeeY, SnowmanPlayerImpl.RESPAWNHP - SnowmanPlayerImpl.ATTACKHP);
+        
+        //validate messages
+        EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
+     * Verify that attacking with the following conditions works properly:
+     *  - attacker is stopped
+     *  - attackee is stopped
+     *  - client sends valid attack position to server
+     *  - attackee is within range
+     *  - collision is detected between attacker and attackee
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testAttackPlayerStoppedAndCollision() 
+            throws Exception
+    {
+        this.initializeAttackee(attackeeId);
+        
+        //setup the test players current state
+        float startX = 5.0f;
+        float startY = 10.0f;
+        this.setupStoppedPlayer(testPlayer, startX, startY);
+        
+        //choose an attackee position within the tolerance
+        float targetDistanceSqd = HPConverter.getInstance().convertRange(SnowmanPlayerImpl.RESPAWNHP)/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float attackeeX = startX+xOffset;
+        float attackeeY = startY-yOffset;
+        
+        //setup the attackee state
+        this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
+        
+        //choose an attack position within the tolerance
+        targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = startX+xOffset;
+        float newY = startY-yOffset;
+        
+        //setup collision detection
+        Coordinate attackerPosition = new Coordinate(newX, newY);
+        Coordinate attackeePosition = new Coordinate(attackeeX, attackeeY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.validThrow(attackerPosition,
+                                                    attackeePosition)).andStubReturn(false);
+        EasyMock.replay(gameWorldManager);
+        
+        //setup expected broadcast messages to the game and behavior of game
+        EasyMock.resetToDefault(currentGame);
+        EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
+        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, 0));
+        EasyMock.replay(currentGame);
+        
+        //do the attack
+        testPlayer.attack(attackeeId, newX, newY);
+        
+        //verify player state
+        this.verifyAttackStop(testPlayer, newX, newY);
+        this.verifyAttackHit(attackee, attackeeX, attackeeY, SnowmanPlayerImpl.RESPAWNHP);
         
         //validate messages
         EasyMock.verify(currentGame);
@@ -709,18 +790,16 @@ public class SnowmanPlayerImplTest
         float newX = startX+xOffset;
         float newY = startY-yOffset;
         
-        //choose a flag position within tolerance of flag radius
+        //choose a flag position within tolerance of grab radius
         //setup flag behavior
-        float goalRadius = 1.0f;
         int flagId = 100;
-        targetDistanceSqd = (goalRadius*goalRadius)/2.0f;
+        targetDistanceSqd = (EStats.GrabRange.getValue()*EStats.GrabRange.getValue())/2.0f;
         xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
         yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
         float flagX = newX+xOffset;
         float flagY = newY-yOffset;
         SnowmanFlag flag = EasyMock.createMock(SnowmanFlag.class);
         EasyMock.expect(flag.getID()).andStubReturn(flagId);
-        EasyMock.expect(flag.getGoalRadius()).andStubReturn(goalRadius);
         EasyMock.expect(flag.getX()).andStubReturn(flagX);
         EasyMock.expect(flag.getY()).andStubReturn(flagY);
         EasyMock.expect(flag.isHeld()).andStubReturn(false);
@@ -748,6 +827,71 @@ public class SnowmanPlayerImplTest
     
     
     /**
+     * Test the processing of a SCORE packet when the player is in
+     * the moving position and the client sends a position that is
+     * both valid and in range of the score position
+     */
+    @Test
+    public void testScorePlayerMovingAndValidStartAndScore()
+            throws Exception
+    {
+        //setup the test players current state
+        float startX = 0.0f;
+        float startY = 0.0f;
+        float destX = 100.0f;
+        float destY = 100.0f;
+        long startTime = 1000;
+        long nowTime = 2000;
+        int hp = 100;
+        testPlayer.setReadyToPlay(true);
+        testPlayer.setLocation(startX, startY);
+        this.setup(testPlayer, SnowmanPlayerImpl.PlayerState.MOVING, startTime, destX, destY, hp);
+        
+        //attach the flag to the player
+        SnowmanFlag flag = EasyMock.createNiceMock(SnowmanFlag.class);
+        this.setupFlag(testPlayer, flag);
+        
+        //determine the expected position after 1 second
+        float ratePerMs = (EForce.Movement.getMagnitude() / HPConverter.getInstance().convertMass(hp)) * 0.00001f;
+        float distanceTraveled = ratePerMs * (nowTime - startTime);
+        float offset = (float)Math.sqrt(((distanceTraveled*distanceTraveled)/2.0f));
+        float expX = startX + offset;
+        float expY = startY + offset;
+
+        //choose a position within the tolerance
+        float targetDistanceSqd = SnowmanPlayerImpl.POSITIONTOLERANCESQD/2.0f;
+        float xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        float yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float newX = expX+xOffset;
+        float newY = expY-yOffset;
+        
+        //choose a score position within the tolerance
+        targetDistanceSqd = EStats.GoalRadius.getValue()*EStats.GoalRadius.getValue()/2.0f;
+        xOffset = (float)Math.sqrt(targetDistanceSqd/2.0f);
+        yOffset = (float) Math.sqrt(targetDistanceSqd / 2.0f);
+        float goalX = newX+xOffset;
+        float goalY = newY-yOffset;
+        
+        //setup the flag with the score position
+        EasyMock.resetToDefault(flag);
+        EasyMock.expect(flag.getGoalX()).andStubReturn(goalX);
+        EasyMock.expect(flag.getGoalY()).andStubReturn(goalY);
+        EasyMock.replay(flag);
+        
+        //setup expected broadcast messages to the game
+        EasyMock.resetToDefault(currentGame);
+        currentGame.send(null, ServerMessages.createEndGamePkt(EEndState.RedWin));
+        EasyMock.replay(currentGame);
+        
+        //make the score
+        testPlayer.score(nowTime, newX, newY);
+        
+        //verify message has been sent
+        EasyMock.verify(currentGame);
+    }
+    
+    
+    /**
      * Setup the dummy currentGame to return a SnowmanPlayer with the given
      * id intended to be used as the attackee in the attack tests
      */
@@ -768,6 +912,16 @@ public class SnowmanPlayerImplTest
             throws Exception {
        player.setReadyToPlay(true);
        player.setLocation(x, y);
+    }
+    
+    /**
+     * Setup the player to be holding the given flag
+     */
+    private void setupFlag(SnowmanPlayerImpl player, SnowmanFlag flag)
+            throws Exception {
+        Field flagField = SnowmanPlayerImpl.class.getDeclaredField("holdingFlagRef");
+        flagField.setAccessible(true);
+        flagField.set(player, appContext.getDataManager().createReference(flag));
     }
     
     /**
