@@ -68,7 +68,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
-    static float POSITIONTOLERANCESQD = 1.0f;
+    static float POSITIONTOLERANCESQD = 4.0f;
     static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
     static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     
@@ -276,7 +276,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                            startx, starty,
                            POSITIONTOLERANCESQD)) {
-            //TODO - collision detection
+            //collision detection
             Coordinate trimPosition = appContext.getManager(GameWorldManager.class).
                     trimPath(new Coordinate(startx, starty),
                              new Coordinate(endx, endy));
@@ -326,10 +326,17 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             float range = HPConverter.getInstance().convertRange(hitPoints);
             if(!checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                                targetPosition.getX(), targetPosition.getY(), 
-                               range*range))
+                               range*range)) {
+                logger.log(Level.WARNING, "attack from {0} out of range", name);
                 success = false;
+            }
             
-            //TODO - collision detection
+            //collision detection
+            if(!appContext.getManager(GameWorldManager.class).validThrow(new Coordinate(x, y), 
+                                                                          targetPosition)) {
+                logger.log(Level.WARNING, "attack from {0} detected a collision", name);
+                success = false;
+            }
 
             //perform implicit stop
             this.timestamp = now;

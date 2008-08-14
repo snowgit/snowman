@@ -604,6 +604,14 @@ public class SnowmanPlayerImplTest
         float newX = startX+xOffset;
         float newY = startY-yOffset;
         
+        //setup collision detection
+        Coordinate attackerPosition = new Coordinate(newX, newY);
+        Coordinate attackeePosition = new Coordinate(attackeeX, attackeeY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.validThrow(attackerPosition,
+                                                    attackeePosition)).andStubReturn(true);
+        EasyMock.replay(gameWorldManager);
+        
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
@@ -669,6 +677,14 @@ public class SnowmanPlayerImplTest
         
         //setup the attackee state
         this.setupStoppedPlayer(attackee, attackeeX, attackeeY);
+        
+        //setup collision detection
+        Coordinate attackerPosition = new Coordinate(newX, newY);
+        Coordinate attackeePosition = new Coordinate(attackeeX, attackeeY);
+        EasyMock.resetToDefault(gameWorldManager);
+        EasyMock.expect(gameWorldManager.validThrow(attackerPosition,
+                                                    attackeePosition)).andStubReturn(true);
+        EasyMock.replay(gameWorldManager);
         
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
