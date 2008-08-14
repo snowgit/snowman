@@ -35,10 +35,13 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -86,115 +89,174 @@ import javax.swing.event.ChangeListener;
  * Specifies the minimun delay, in milliseconds, between when a player
  * will send a move message.<p>
  * 
+ * <dt> <i>Property:</i> <code><b>
+ *	newClientDelay
+ *	</b></code><br>
+ *	<i>Default:</i> 175<br>
+ *
+ * <dd style="padding-top: .5em"> 
+ * Specifies the delay, in milliseconds, between new client
+ * creation. This delay also applies to client destruction.<p>
  * </dl> <p>
  * 
  * @author Jeffrey Kesselman
  * @author Keith Thompson
  */
-public class ClientSimulator extends JFrame {
+public class ClientSimulator extends JFrame implements ChangeListener {
     static final long serialVersionUID = 1L;
 
     static private final Logger logger = Logger.getLogger(
             ClientSimulator.class.getName());
 
+    private final String serverHost;
+    private final String serverPort;
+    private final int moveDelay;
+    private final int newClientDelay;
+    
+    private final JSlider usersSlider;
+    private final JLabel userCount;
+    
+    private final Map<SimulatedPlayer, SimulatedPlayer> players =
+            new ConcurrentHashMap<SimulatedPlayer, SimulatedPlayer>();
+    
+    private final ChangeThread changeThread;
+    
     /**
      * Create and display the client simulator slider.
      */
-    public ClientSimulator() {
+    ClientSimulator() {
         super("Client Simulator Controls");
         
-        final String serverHost = System.getProperty("host", "localhost");
-        final String serverPort = System.getProperty("port", "3000");
-        
+        serverHost = System.getProperty("host", "localhost");
+        serverPort = System.getProperty("port", "3000");
         logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
                    new Object[] {serverHost, serverPort});
                 
-        final int moveDelay = Integer.getInteger("moveDelay", 2000);
-        
+        moveDelay = Integer.getInteger("moveDelay", 2000);
         logger.log(Level.CONFIG, "Move delay set to {0} milliseconds", moveDelay);
+        
+        newClientDelay = Integer.getInteger("newClientDelay", 175);
+        logger.log(Level.CONFIG,
+                   "New client delay set to {0} milliseconds", newClientDelay);
+
+        final int maxClients = Integer.getInteger("maxClients", 100);
+        logger.log(Level.CONFIG, "Max number of clients set to {0}", maxClients);
 
         Container c = getContentPane();
-        //c.setLayout(new GridLayout(1,3));
         c.setLayout(new FlowLayout());
         c.add(new JLabel("Number of Clients:"));
-        final JSlider usersSlider =
-                new JSlider(0, Integer.getInteger("maxClients", 100));
+        usersSlider = new JSlider(0, maxClients);
         usersSlider.setValue(0);
         c.add(usersSlider);
-        final JLabel userCount = new JLabel("0");
+        userCount = new JLabel("0");
         c.add(userCount);
-
-        usersSlider.addChangeListener(new ChangeListener() {
-
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                int val = usersSlider.getValue();
-                String numstr = Integer.toString(val);
-                userCount.setText(numstr);
-                ClientSimulator.this.pack();
-                userCount.repaint();
-            }
-        });
-
+        usersSlider.addChangeListener(this);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
+        changeThread = new ChangeThread();
+        changeThread.start();
+        new MoveThread().start();
         setVisible(true);
-        (new Thread() {
+    }
 
-            @Override
-            public void run() {
-                final List<SimulatedPlayer> players =
-                        new ArrayList<SimulatedPlayer>();
-                int userId = 0;
-                
-                while (true) {
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        int val = usersSlider.getValue();
+        String numstr = Integer.toString(val);
+        userCount.setText(numstr);
+        ClientSimulator.this.pack();
+        userCount.repaint();
+        changeThread.wakeUp();
+    }
+    
+    // Thread to handle change in players
+    private class ChangeThread extends Thread {
 
-                    if (usersSlider.getValue() > players.size()) {
-                        Properties properties = new Properties();
-                        properties.setProperty("host",
-                                System.getProperty("host", serverHost));
-                        properties.setProperty("port",
-                                System.getProperty("port", serverPort));
-                        properties.setProperty("name", "Robot" + userId++);
-                        try {
-                            players.add(new SimulatedPlayer(properties, moveDelay));
-                        } catch (Exception ex) {
-                            logger.log(Level.SEVERE,
-                                       "Exception creating simulated player",
-                                       ex);
-                        }
-                    } else if (usersSlider.getValue() < players.size()) {
-                        // 0 cannot be out of bounds if size > slider
-                        // minimum i.e. size > zero.
-                        players.remove(0).quit();
-                    }
+        private final Lock lock = new ReentrantLock();
+        private final Condition change = lock.newCondition();
+        
+        @Override
+        public void run() {
+            int userId = 0;
 
-                    // do a move only if players are not logging in
-                    if(players.size() == usersSlider.getValue()) {
-                        Iterator<SimulatedPlayer> iter = players.iterator();
-                        while (iter.hasNext()) {
-                            try {
-                                if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
-                                    iter.remove();
-                                }
-                            } catch (IOException ex) {
-                                logger.log(Level.SEVERE,
-                                           "IO exception from player", ex);
-                                iter.remove();
-                            }
-                            //stagger move messages to prevent a storm
-                            try {
-                                sleep(50);
-                            } catch (InterruptedException ignore) {}
-                        }
-                    }
-                    
+            while (true) {
+
+                if (usersSlider.getValue() > players.size()) {
+                    Properties properties = new Properties();
+                    properties.setProperty("host",
+                            System.getProperty("host", serverHost));
+                    properties.setProperty("port",
+                            System.getProperty("port", serverPort));
+                    properties.setProperty("name", "Robot" + userId++);
                     try {
-                        sleep(players.size() != 0 ? 20 : 200);
+                        SimulatedPlayer player =
+                                new SimulatedPlayer(properties, moveDelay);
+                        players.put(player, player);
+                    } catch (Exception ex) {
+                        logger.log(Level.SEVERE,
+                                   "Exception creating simulated player",
+                                   ex);
+                    }
+                    pause(); // avoid storm
+                } else if (usersSlider.getValue() < players.size()) {
+                    Iterator<SimulatedPlayer> iter = players.values().iterator();
+                    if (iter.hasNext()) {
+                        iter.next().quit();
+                        iter.remove();
+                        pause(); // avoid storm
+                    }
+                } else {
+                    lock.lock();
+                    try {
+                        change.await();
+                    } catch (InterruptedException ignore) {
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+            }
+        }
+        
+        void wakeUp() {
+            lock.lock();
+            change.signal();
+            lock.unlock();
+        }
+        
+        private void pause() {
+            try {
+                sleep(newClientDelay);
+            } catch (InterruptedException ignore) {}
+        }
+    }
+       
+    // Thread to invoke player activity
+    private class MoveThread extends Thread {
+
+        @Override
+        public void run() {
+
+            while (true) {
+
+                Iterator<SimulatedPlayer> iter = players.values().iterator();
+                while (iter.hasNext()) {
+                    try {
+                        if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
+                            iter.remove();
+                            changeThread.wakeUp();
+                        }
+                    } catch (IOException ex) {
+                        logger.log(Level.SEVERE,
+                                   "IO exception from player", ex);
+                        iter.remove();
+                        changeThread.wakeUp();
+                    }
+                    try {
+                        sleep(50);
                     } catch (InterruptedException ignore) {}
                 }
             }
-        }).start();
+        }
     }
 
     /**

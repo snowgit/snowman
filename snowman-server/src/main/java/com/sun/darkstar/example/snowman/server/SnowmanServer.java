@@ -47,6 +47,7 @@ import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -74,7 +75,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     }
 
     public ClientSessionListener loggedIn(ClientSession arg0) {
-        logger.info("Player "+arg0.getName()+" logged in");
+        if (logger.isLoggable(Level.FINE))
+            logger.log(Level.FINE, "Player {0} logged in", arg0.getName());
         SnowmanPlayerListener player =  SnowmanPlayerListener.find(arg0, appContext, entityFactory, matchMakerRef.get());
         matchMakerRef.get().addWaitingPlayer(player.getSnowmanPlayer());
         return player;
