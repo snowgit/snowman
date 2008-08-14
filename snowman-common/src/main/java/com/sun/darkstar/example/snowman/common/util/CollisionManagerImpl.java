@@ -46,7 +46,6 @@ import com.jmex.terrain.util.BresenhamTerrainPicker;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
-import com.sun.darkstar.example.snowman.common.world.EditableWorld;
 
 /**
  * <code>CollisionManager</code> is a <code>Manager</code> that is responsible
@@ -129,12 +128,12 @@ public class CollisionManagerImpl implements CollisionManager
             store = new Vector3f();
         }
 
-        if ("TerrainRoot".equals(parent.getName())) {
-        	parent = ((Node)parent).getChild("Terrain");
-        }
-        if (parent instanceof TerrainView) {
-        	parent = ((TerrainView)parent).getTerrainCluster();
-        }
+//        if ("TerrainRoot".equals(parent.getName())) {
+//        	parent = ((Node)parent).getChild("Terrain");
+//        }
+//        if (parent instanceof TerrainView) {
+//        	parent = ((TerrainView)parent).getTerrainCluster();
+//        }
         if (parent instanceof TerrainCluster) {
         	BresenhamTerrainPicker picker = new BresenhamTerrainPicker(parent);
         	boolean hit = (picker.getTerrainIntersection(ray, store) != null);
