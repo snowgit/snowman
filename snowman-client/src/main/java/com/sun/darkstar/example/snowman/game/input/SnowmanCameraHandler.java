@@ -119,8 +119,6 @@ public class SnowmanCameraHandler extends InputHandler {
 		distStore.zero();
 		Vector3f pick1 = collisionManager.getIntersection(checkRay, world
 				.getStaticRoot(), distStore, false);
-		Vector3f pick2 = collisionManager.getIntersection(checkRay, world
-				.getTerrainRoot(), distStore, false);
 		float actualZoomDistance = zoomDistance;
 		if (pick1 != null) {
 			float pLength = pick1.subtractLocal(targetLocation).length() - 1.0f;
@@ -128,13 +126,14 @@ public class SnowmanCameraHandler extends InputHandler {
 				actualZoomDistance = pLength;
 			}
 		}
-//		if (pick2 != null) {
-//			float pLength = pick2.subtractLocal(targetLocation).length() - 1.0f;
-//			if (pLength > .5f && pLength < actualZoomDistance) {
-//				actualZoomDistance = pLength;
-//			}
-//			System.err.println(pLength);
-//		}
+		Vector3f pick2 = collisionManager.getIntersection(checkRay, world
+				.getTerrainRoot(), distStore, false);
+		if (pick2 != null) {
+			float pLength = pick2.subtractLocal(targetLocation).length() - 1.0f;
+			if (pLength > .5f && pLength < actualZoomDistance) {
+				actualZoomDistance = pLength;
+			}
+		}
 
 		Vector3f loc = tempVec.multLocal(actualZoomDistance).addLocal(
 				targetLocation);
