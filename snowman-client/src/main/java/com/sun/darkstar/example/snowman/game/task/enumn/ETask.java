@@ -8,7 +8,7 @@ package com.sun.darkstar.example.snowman.game.task.enumn;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 06-03-2008 11:07 EST
- * @version Modified date: 08-07-2008 15:03 EST
+ * @version Modified date: 08-14-2008 16:23 EST
  */
 public enum ETask {
 	/**
@@ -70,7 +70,11 @@ public enum ETask {
 	/**
 	 * The task used to respawn a character.
 	 */
-	Respawn(ETaskType.RealTime);
+	Respawn(ETaskType.RealTime),
+	/**
+	 * The task used to remove a MOB.
+	 */
+	Remove(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

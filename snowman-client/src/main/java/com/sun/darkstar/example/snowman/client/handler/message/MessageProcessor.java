@@ -78,8 +78,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void removeMOB(int objectID) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.Remove, objectID);
 	}
 
 	@Override
