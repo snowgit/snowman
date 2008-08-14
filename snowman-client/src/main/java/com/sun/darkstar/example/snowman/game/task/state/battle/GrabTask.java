@@ -5,11 +5,13 @@ import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ClientMessages;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -61,10 +63,14 @@ public class GrabTask extends RealTimeTask {
 		// Step 2.
 		if(target instanceof CharacterEntity) {
 			flagView.setLocalTranslation(0.3f, 0.5f, 0);
+			((CharacterEntity)target).setFlag((DynamicEntity)flag);
+			flagView.detachFromParent();
+			flagView.attachTo(targetView);
 		} else if(target.getEnumn() == EEntity.Terrain && flagView.getParent() instanceof CharacterView) {
-			flagView.setLocalTranslation(flagView.getParent().getLocalTranslation());
+			flagView.getLocalTranslation().set(flagView.getParent().getLocalTranslation());
+			flagView.detachFromParent();
+			flagView.attachTo(this.game.getGameState(EGameState.BattleState).getWorld().getDynamicRoot());
 		}
-		flagView.attachTo(targetView);
 		// Step 3.
 		if(target instanceof SnowmanEntity) {
 			this.game.getClient().send(ClientMessages.createGetFlagPkt(this.flagID, targetView.getLocalTranslation().x, targetView.getLocalTranslation().z));

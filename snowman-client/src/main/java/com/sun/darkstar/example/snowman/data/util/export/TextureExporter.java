@@ -24,7 +24,7 @@ public class TextureExporter extends Exporter {
 	/**
 	 * The source image file name with extension.
 	 */
-	private final String inputFile = "512x512_3.png";
+	private final String inputFile = "Road.jpg";
 	/**
 	 * The <code>AlphaState</code> for transparency.
 	 */

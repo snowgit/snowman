@@ -13,6 +13,7 @@ import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 
 /**
  * <code>AttackTask</code> extends <code>RealTimeTask</code> to define
@@ -102,6 +103,10 @@ public class AttackTask extends RealTimeTask {
 				ViewManager.getInstance().markForUpdate(targetEntity);
 				if(targetEntity instanceof SnowmanEntity) {
 					InputManager.getInstance().getController(targetEntity).setActive(false);
+				}
+				if(targetEntity.isCarrying()) {
+					TaskManager.getInstance().createTask(ETask.Grab, targetEntity.getFlag().getID(), 0);
+					targetEntity.setFlag(null);
 				}
 			}
 			if(!this.self) {

@@ -32,6 +32,10 @@ public class CharacterEntity extends DynamicEntity {
 	 * The target <code>IDynamicEntity</code> instance.
 	 */
 	protected IDynamicEntity target;
+	/**
+	 * The flag entity instance.
+	 */
+	protected DynamicEntity flag;
 
 	/**
 	 * Constructor of <code>CharacterEntity</code>.
@@ -83,6 +87,14 @@ public class CharacterEntity extends DynamicEntity {
 	public void setTarget(IDynamicEntity target) {
 		this.target = target;
 	}
+	
+	/**
+	 * Set the flag entity the snowman is carrying.
+	 * @param flag The flag <code>DynamicEntity</code> instance.
+	 */
+	public void setFlag(DynamicEntity flag) {
+		this.flag = flag;
+	}
 
 	/**
 	 * Retrieve the current HP value.
@@ -117,10 +129,26 @@ public class CharacterEntity extends DynamicEntity {
 	}
 	
 	/**
+	 * Retrieve the flag entity that is carried by the character.
+	 * @return The <code>IDynamicEntity</code> instance.
+	 */
+	public IDynamicEntity getFlag() {
+		return this.flag;
+	}
+	
+	/**
 	 * Check if this character is still alive.
 	 * @return True if this character is still alive. False otherwise.
 	 */
 	public boolean isAlive() {
 		return (this.hp > 0);
+	}
+	
+	/**
+	 * Check if the character is carrying a flag.
+	 * @return True if the character is carrying a flag. False otherwise.
+	 */
+	public boolean isCarrying() {
+		return (this.flag != null);
 	}
 }

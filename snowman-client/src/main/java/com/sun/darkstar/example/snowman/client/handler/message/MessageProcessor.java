@@ -89,7 +89,6 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attachObject(int sourceID, int targetID) {
-		System.out.println(sourceID + " " + targetID);
 		if(targetID == this.myID) return;
 		TaskManager.getInstance().createTask(ETask.Grab, sourceID, targetID);
 	}
