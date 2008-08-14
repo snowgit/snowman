@@ -89,6 +89,14 @@ import javax.swing.event.ChangeListener;
  * Specifies the minimun delay, in milliseconds, between when a player
  * will send a move message.<p>
  * 
+ * <dt> <i>Property:</i> <code><b>
+ *	newClientDelay
+ *	</b></code><br>
+ *	<i>Default:</i> 175<br>
+ *
+ * <dd style="padding-top: .5em"> 
+ * Specifies the delay, in milliseconds, between new client
+ * creation. This delay also applies to client destruction.<p>
  * </dl> <p>
  * 
  * @author Jeffrey Kesselman
@@ -103,6 +111,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     private final String serverHost;
     private final String serverPort;
     private final int moveDelay;
+    private final int newClientDelay;
     
     private final JSlider usersSlider;
     private final JLabel userCount;
@@ -125,6 +134,10 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                 
         moveDelay = Integer.getInteger("moveDelay", 2000);
         logger.log(Level.CONFIG, "Move delay set to {0} milliseconds", moveDelay);
+        
+        newClientDelay = Integer.getInteger("newClientDelay", 175);
+        logger.log(Level.CONFIG,
+                   "New client delay set to {0} milliseconds", newClientDelay);
 
         final int maxClients = Integer.getInteger("maxClients", 100);
         logger.log(Level.CONFIG, "Max number of clients set to {0}", maxClients);
@@ -212,7 +225,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         private void pause() {
             try {
-                sleep(200);
+                sleep(newClientDelay);
             } catch (InterruptedException ignore) {}
         }
     }
