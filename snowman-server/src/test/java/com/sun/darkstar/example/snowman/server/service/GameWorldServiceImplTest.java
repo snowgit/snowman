@@ -40,7 +40,8 @@ import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.kernel.ComponentRegistry;
 import com.sun.sgs.service.TransactionProxy;
 import com.jme.scene.Spatial;
-import com.jme.scene.Node;
+import com.jme.scene.shape.Box;
+import com.jme.bounding.BoundingBox;
 import com.jme.system.DisplaySystem;
 import com.jme.math.Vector3f;
 import org.junit.Test;
@@ -66,17 +67,19 @@ public class GameWorldServiceImplTest
     private CollisionManager mockCollisionManager;
     
     /** dummy spatial object representing dummy game world */
-    private static Spatial dummyWorld = new Node();
+    private static Spatial dummyWorld;
     
     @Before
     public void mockKernelInterfaces() {
         //create the mock objects to be sent to the constructor
         this.mockRegistry = EasyMock.createMock(ComponentRegistry.class);
         this.mockTxnProxy = EasyMock.createMock(TransactionProxy.class);
-    }
-    
-    @Before
-    public void mockSingletons() {
+        
+        //create the dummy world
+        dummyWorld = new Box();
+        dummyWorld.setModelBound(new BoundingBox());
+        dummyWorld.updateModelBound();
+
         //create the mock singletons
         this.mockDataImporter = EasyMock.createMock(DataImporter.class);
         this.mockCollisionManager = EasyMock.createMock(CollisionManager.class);
@@ -188,6 +191,7 @@ public class GameWorldServiceImplTest
     public void cleanupMocks() {
         this.mockRegistry = null;
         this.mockTxnProxy = null;
+        this.dummyWorld = null;
     }
     
     @After

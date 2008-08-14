@@ -151,10 +151,10 @@ public class MessageHandlerImplTest
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.WIN);
+        ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.RedWin);
         packet.flip();
         // record expected processor calls
-        mockProcessor.endGame(EEndState.WIN);
+        mockProcessor.endGame(EEndState.RedWin);
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);

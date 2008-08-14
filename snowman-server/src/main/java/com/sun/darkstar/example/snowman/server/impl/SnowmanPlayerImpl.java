@@ -92,6 +92,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private long timestamp;
     private ETeamColor teamColor;
     private ManagedReference<SnowmanGame> currentGameRef;
+    private ManagedReference<SnowmanFlag> holdingFlagRef;
     private PlayerState state = PlayerState.NONE;
     private int hitPoints = RESPAWNHP;
     private SnowmanAppContext appContext;
@@ -339,7 +340,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 target.setLocation(targetPosition.getX(), targetPosition.getY());
                 currentGameRef.get().send(null,
                                           ServerMessages.createAttackedPkt(
-                                          id, targetID, target.hit(ATTACKHP)));
+                                          id, targetID, target.hit(ATTACKHP, targetPosition.getX(), targetPosition.getY())));
             }
             else {
                 currentGameRef.get().send(null,
@@ -362,7 +363,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         SnowmanFlag flag = game.getFlag(flagID);
         
         // Can not get flag if same team or flag is held by another player
-        if (flag == null || flag.getTeamColor() == teamColor || flag.isHeld())
+        if (flag == null || 
+                flag.getTeamColor() == teamColor || 
+                flag.isHeld() ||
+                holdingFlagRef != null)
             return;
         
         //verify that the start location is valid
@@ -378,11 +382,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 this.setLocation(x, y);
 
                 //attach the flag
-                flag.setHeldBy(this);   // TODO - save ref to flag
-            game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
+                flag.setHeldBy(this);
+                holdingFlagRef = appContext.getDataManager().createReference(flag);
+                game.send(null, ServerMessages.createAttachObjPkt(id, flagID));
             }
             else {
-                logger.log(Level.WARNING, "get flag from {0} failed goal radius check", name);
+                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
             }
         } 
         else {
@@ -404,11 +409,18 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                                   ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
     }
     
-    public int hit(int hp) {
+    public int hit(int hp, float attackX, float attackY) {
         if (hitPoints > 0) { // not already dead
             hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
-                // TODO - drop flag
+                // drop flag
+                SnowmanFlag flag = holdingFlagRef == null ? null : holdingFlagRef.get();
+                if(flag != null) {
+                    flag.drop(attackX, attackY);
+                }
+                holdingFlagRef = null;
+                
+                // schedule respawn
                 appContext.getTaskManager().scheduleTask(
                         new RespawnTask(appContext.getDataManager().createReference((SnowmanPlayer)this)),
                                         DEATHDELAYMS);

@@ -41,7 +41,7 @@ package com.sun.darkstar.example.snowman.common.protocol.enumn;
  * @version Modified date: 05-29-08 12:23 EST
  */
 public enum EEndState {
-	WIN,
-	LOSE,
-	DRAW
+	RedWin,
+	BlueWin,
+	Draw
 }
