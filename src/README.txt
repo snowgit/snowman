@@ -49,6 +49,10 @@ property name:	maxClients
 default value:	1000
 description:	Maximum number of clients that a client simulator VM can startup
 
+property name:	newClientDelay
+default value:	175
+description:	Delay in milliseconds between adding clients to the server
+
 property name:	move.delay
 default value:	5000
 description:	Minimum time required in ms between simulated client moves
