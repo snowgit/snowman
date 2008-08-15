@@ -76,7 +76,7 @@ public class EntityManager extends Manager {
 	public boolean registerEntity(IEntity entity) {
 		final int id = entity.getID();
 		if(this.entities.containsKey(id)) {
-			this.logger.info("ID: " + id + " already in use");
+			this.logger.fine("ID: " + id + " already in use");
 			return false;
 		}
 		if(this.idcount > id) this.idcount = id;
@@ -122,7 +122,7 @@ public class EntityManager extends Manager {
 			break;
 		}
 		this.entities.put(Integer.valueOf(id), entity);
-		this.logger.info("Created entity " + enumn.toString() + "with ID number: " + id);
+		this.logger.fine("Created entity " + enumn.toString() + "with ID number: " + id);
 		return entity;
 	}
 	
@@ -134,10 +134,10 @@ public class EntityManager extends Manager {
 	public boolean removeEntity(int id) {
 		final IEntity entity = this.entities.remove(Integer.valueOf(id));
 		if(entity == null) {
-			this.logger.info("Entity with ID number: " + id + " does not exist.");
+			this.logger.fine("Entity with ID number: " + id + " does not exist.");
 			return false;
 		}
-		this.logger.info("Destroyed entity with ID number: " + id);
+		this.logger.fine("Destroyed entity with ID number: " + id);
 		return true;
 	}
 	

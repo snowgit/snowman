@@ -107,7 +107,7 @@ public class ViewManager extends Manager {
 	public boolean registerView(IView view) {
 		final IEntity entity = view.getEntity();
 		if(this.views.containsKey(entity)) {
-			this.logger.info("View has already been registered.");
+			this.logger.fine("View has already been registered.");
 			return false;
 		}
 		this.views.put(view.getEntity(), view);
@@ -121,7 +121,7 @@ public class ViewManager extends Manager {
 	 */
 	public IView createView(IEntity entity) {
 		if(this.views.containsKey(entity)) {
-			this.logger.info("Entity already has a view.");
+			this.logger.fine("Entity already has a view.");
 			return this.views.get(entity);
 		}
 		IView view = null;
@@ -174,7 +174,7 @@ public class ViewManager extends Manager {
 		break;
 		}
 		this.views.put(entity, view);
-		this.logger.info("Created " + entity.getType().toString() + " based on " + entity.getEnumn().toString() + "Entity");
+		this.logger.fine("Created " + entity.getType().toString() + " based on " + entity.getEnumn().toString() + "Entity");
 		return view;
 	}
 
@@ -185,7 +185,7 @@ public class ViewManager extends Manager {
 	public boolean removeView(IEntity entity) {
 		final IView view = this.views.remove(entity);
 		if(view == null) {
-			this.logger.info("There is no view represents entity: " + entity.toString());
+			this.logger.fine("There is no view represents entity: " + entity.toString());
 			return false;
 		}
 		view.detachFromParent();
@@ -201,7 +201,7 @@ public class ViewManager extends Manager {
 		if(view instanceof IDynamicView) {
 			this.dirty.add((IDynamicView)view);
 		} else {
-			this.logger.info("Cannot update static view.");
+			this.logger.fine("Cannot update static view.");
 		}
 	}
 

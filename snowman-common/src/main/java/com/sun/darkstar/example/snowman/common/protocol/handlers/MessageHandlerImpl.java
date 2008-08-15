@@ -255,7 +255,7 @@ public class MessageHandlerImpl implements MessageHandler
                 processor.ready();
                 break;
             default:
-                this.logger.info("Unsupported OPCODE: " + code.toString());
+                this.logger.warning("Unsupported OPCODE: " + code.toString());
         }
     }
     

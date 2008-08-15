@@ -64,7 +64,7 @@ public class InfluenceManager extends Manager {
 	public boolean registerInfluence(IInfluence influence) {
 		final EInfluence enumn = influence.getEnumn();
 		if(this.influences.containsKey(enumn)) {
-			this.logger.info("Influence has already been registered.");
+			this.logger.fine("Influence has already been registered.");
 			return false;
 		}
 		this.influences.put(enumn, influence);
@@ -98,7 +98,7 @@ public class InfluenceManager extends Manager {
 			break;
 		}
 		this.influences.put(enumn, influence);
-		this.logger.info("Created " + enumn.toString() + " influence");
+		this.logger.fine("Created " + enumn.toString() + " influence");
 		return influence;
 	}
 	

@@ -124,7 +124,7 @@ public class TaskManager extends Manager {
 		if(game == null) return null;
 		if(TaskManager.instance == null) {
 			TaskManager.instance = new TaskManager(game);
-			TaskManager.instance.logger.info("Created new TaskManager.");
+			TaskManager.instance.logger.fine("Created new TaskManager.");
 		}
 		return TaskManager.instance;
 	}
@@ -246,11 +246,11 @@ public class TaskManager extends Manager {
 						// Remove existing one.
 						if(given.isLaterThan(inQueue)) {
 							this.taskQueue.remove(inQueue);
-							this.logger.info("Replaced older real time task " + inQueue.getEnumn());
+							this.logger.fine("Replaced older real time task " + inQueue.getEnumn());
 							break;
 							// Discard the given one.
 						} else {
-							this.logger.info("Discarded given real time task " + given.getEnumn());
+							this.logger.fine("Discarded given real time task " + given.getEnumn());
 						}
 					}
 				}
