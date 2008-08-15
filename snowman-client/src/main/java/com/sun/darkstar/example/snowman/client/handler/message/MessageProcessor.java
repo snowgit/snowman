@@ -78,8 +78,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void removeMOB(int objectID) {
-		// TODO Auto-generated method stub
-
+		TaskManager.getInstance().createTask(ETask.Remove, objectID);
 	}
 
 	@Override
@@ -89,9 +88,8 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void attachObject(int sourceID, int targetID) {
-		System.out.println(sourceID + " " + targetID);
 		if(targetID == this.myID) return;
-		TaskManager.getInstance().createTask(ETask.Grab, sourceID, targetID);
+		TaskManager.getInstance().createTask(ETask.Attach, sourceID, targetID);
 	}
 
 	@Override
