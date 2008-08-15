@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="snowman-runner" basedir=".">
+
+    <description>
+        Targets for running stuff
+    </description>
+
+    <!-- VARIABLE DEFINITIONS -->
+
+    <property name="ant.java.version" value="1.6"/>
+
+    <!-- Executable jar locations -->
+    <property name="snowman-server.jar" value="snowman-server/SnowmanServer.jar"/>
+    <property name="snowman-client.jar" value="snowman-client/SnowmanClient.jar"/>
+    <property name="snowman-client-simulator.jar" value="snowman-client-simulator/SnowmanClientSimulator.jar"/>
+    <property name="snowman-world-editor.jar" value="snowman-world-editor/SnowmanWorldEditor.jar"/>
+
+    <!-- Snowman/Darkstar server host and port -->
+    <property name="server.host" value="localhost"/>
+    <property name="server.port" value="3000"/>
+
+    <!-- Configurable app properties -->
+    <property name="maxClients" value="1000"/>
+    <property name="move.delay" value="5000"/>
+    <property name="numPlayersPerGame" value="4"/>
+
+    <!-- Darkstar core server host -->
+    <property name="core.host" value="localhost"/>
+
+    <!-- Runtime platform for DB native libraries -->
+    <condition property="platform" value="macosx-x86">
+    <and>
+      <os family="mac"/>
+      <or>
+        <os arch="x86_64"/>
+        <os arch="i386"/>
+      </or>
+    </and>
+    </condition>
+    <condition property="platform" value="solaris-x86">
+    <and>
+      <os name="SunOS"/>
+      <os arch="x86"/>
+    </and>
+    </condition>
+    <condition property="platform" value="solaris-sparc">
+    <and>
+      <os name="SunOS"/>
+      <os arch="sparc"/>
+    </and>
+    </condition>
+    <condition property="platform" value="linux-x86">
+    <and>
+      <os name="Linux"/>
+      <os arch="i386"/>
+    </and>
+    </condition>
+    <condition property="platform" value="win32-x86">
+    <and>
+      <os family="Windows"/>
+    </and>
+    </condition>
+
+    <!-- File/directory locations -->
+    <property name="lib.dir" location="natives"/>
+    <property name="db.lib.dir" location="${lib.dir}/bdb-4.5.20"/>
+    <property name="db.library.path" location="${db.lib.dir}/${platform}" />
+    <property name="lwjgl.library.path" location="${lib.dir}/lwjgl/${platform}" />
+    <property name="tmp.dir" location="tmp"/>
+    <property name="app.dir" location="${tmp.dir}/snowman"/>
+    <property name="props.dir" location="properties"/>
+
+    <!-- Set use.je to test with BDB Java Edition -->
+    <condition property="bdb.env"
+               value="com.sun.sgs.impl.service.data.store.db.je.JeEnvironment"
+               else="com.sun.sgs.impl.service.data.store.db.bdb.BdbEnvironment">
+        <isset property="use.je"/>
+    </condition>
+    
+    <!-- JVM arguments -->
+    <property name="server.jvm.args"
+              value="-server
+                     -XX:+AggressiveOpts
+                     -XX:+UseParallelOldGC
+                     -Xmx768M
+                     -XX:NewRatio=1"/>
+
+    <property name="client.jvm.args"
+              value="-client
+                     -Xmx384m
+                     -Xms32m"/>
+                     
+    <!-- Removes database, temporary property files, and directories -->
+    <target name="clean"
+            description="Removes database, temporary property files, and directories">
+        <delete dir="${app.dir}"/>
+    </target>
+
+    <!-- Deletes the data store files unless the retain.datastore property is set. -->
+    <target name="-maybe-delete-datastore"
+            unless="retain.datastore">
+        <delete dir="${app.dir}/dsdb"/>
+    </target>
+
+    <!-- Runs the server in single-node mode -->
+    <target name="run-single"
+            depends="-maybe-delete-datastore"
+            description="Runs the server as a single node">
+        <property name="app.logging" location="${props.dir}/server-logging.properties"/>
+        <mkdir dir="${app.dir}"/>
+        <mkdir dir="${app.dir}/dsdb"/>
+        <property name="app.properties" location="${app.dir}/single.properties"/>
+        <concat destfile="${app.properties}">
+            <header filtering="no" trimleading="yes">
+                com.sun.sgs.app.name=Snowman
+                com.sun.sgs.app.root=${app.dir}
+		com.sun.sgs.app.port=${server.port}
+		com.sun.sgs.impl.service.transport.udp.port=1234
+                com.sun.sgs.impl.service.data.store.db.environment.class=${bdb.env}
+            </header>
+            <fileset file="${props.dir}/darkstar-server.properties"/>
+            <fileset file="${props.dir}/snowman-server.properties"/>
+        </concat>
+        <java jar="${snowman-server.jar}"
+              fork="true">
+            <jvmarg line="${server.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame}"/>
+            <sysproperty key="java.library.path" file="${db.library.path}"/>
+            <sysproperty key="java.util.logging.config.file" file="${app.logging}"/>
+            <arg file="${app.properties}"/>
+        </java>
+    </target>
+
+    <!-- Runs the server for use with multi-node mode -->
+    <target name="run-server"
+            depends="-maybe-delete-datastore"
+            description="Runs the Wonderland application server">
+        <property name="app.logging" location="${props.dir}/server-logging.properties"/>
+        <mkdir dir="${app.dir}"/>
+        <property name="app.properties" location="${app.dir}/server.properties"/>
+        <concat destfile="${app.properties}">
+            <header filtering="no" trimleading="yes">
+                com.sun.sgs.app.name=Wonderland
+                com.sun.sgs.node.type=appNode
+                com.sun.sgs.app.root=${app.dir}
+                com.sun.sgs.app.port=${server.port}
+                com.sun.sgs.server.host=${core.host}
+            </header>
+            <fileset file="${props.dir}/darkstar-server.properties"/>
+            <fileset file="${props.dir}/snowman-server.properties"/>
+        </concat>
+        <java jar="${snowman-server.jar}"
+              fork="true">
+            <jvmarg line="${server.jvm.args}"/>
+            <sysproperty key="java.util.logging.config.file" file="${app.logging}"/>
+            <arg file="${app.properties}"/>
+        </java>
+    </target>
+
+    <!-- Runs the core server for use with multi-node mode -->
+    <target name="run-core"
+            depends="-maybe-delete-datastore"
+            description="Runs the core server for use with multi-node mode">
+        <property name="app.logging" location="${props.dir}/server-logging.properties"/>
+        <mkdir dir="${app.dir}"/>
+        <mkdir dir="${app.dir}/dsdb"/>
+        <property name="app.properties" location="${app.dir}/core.properties"/>
+        <concat destfile="${app.properties}">
+	  com.sun.sgs.app.name=Wonderland
+	  com.sun.sgs.node.type=coreServerNode
+	  com.sun.sgs.app.root=${app.dir}
+	  com.sun.sgs.impl.service.data.store.db.environment.class=${bdb.env}
+        </concat>
+        <java jar="${snowman-server.jar}"
+              fork="true">
+            <jvmarg line="${server.jvm.args}"/>
+            <sysproperty key="java.library.path" file="${db.library.path}"/>
+            <sysproperty key="java.util.logging.config.file" file="${app.logging}"/>
+            <arg file="${app.properties}"/>
+        </java>
+    </target>
+
+    <!-- Runs the simulated client -->
+    <target name="run-sim" 
+            description="Runs the client simulator">
+        <buildnumber/>
+        <java jar="${snowman-client-simulator.jar}"
+              fork="true">
+            <jvmarg line="${client.jvm.args} -DmaxClients=${maxClients} -DmoveDelay=${move.delay} -Dhost=${server.host} -Dport=${server.port}"/>
+            <sysproperty key="reliable" file="true"/>
+            <sysproperty key="java.util.logging.config.file" file="${props.dir}/sim-logging.properties"/>
+        </java>
+    </target>
+
+    <!-- Runs the client -->
+    <target name="run-client" 
+            description="Runs the client">
+        <buildnumber/>
+        <mkdir dir="${app.dir}"/>
+        <property name="app.properties" location="${app.dir}/client.${build.number}.properties"/>
+        <concat destfile="${app.properties}">
+	  host=${server.host}
+	  port=${server.port}
+        </concat>
+        <java jar="${snowman-client.jar}"
+              fork="true">
+            <jvmarg line="${client.jvm.args} -Dreliable=false -Dhost=${server.host}"/>
+            <sysproperty key="java.library.path" file="${lwjgl.library.path}"/>
+            <sysproperty key="reliable" file="true"/>
+            <sysproperty key="java.util.logging.config.file" file="${props.dir}/client-logging.properties"/>
+            <arg file="${app.properties}"/>
+        </java>
+    </target>
+</project>
