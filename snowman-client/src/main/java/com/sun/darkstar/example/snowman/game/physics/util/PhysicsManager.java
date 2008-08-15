@@ -135,7 +135,7 @@ public class PhysicsManager extends Manager {
 			view.getLocalTranslation().addLocal(this.tempVector);
 			if(entity instanceof SnowmanEntity) ((SnowmanEntity)entity).updateTimeStamp();
 		} catch (ObjectNotFoundException e) {
-			this.logger.info("Entity " + entity.toString() + " does not exist.");
+			this.logger.warning("Entity " + entity.toString() + " does not exist.");
 		}
 		entity.resetForce();
 	}
