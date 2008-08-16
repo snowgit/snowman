@@ -46,6 +46,7 @@ import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.ObjectNotFoundException;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -66,7 +67,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 {
     public static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
+    protected static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 4.0f;
@@ -92,20 +93,21 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private float destY;
     private long timestamp;
     private ETeamColor teamColor;
-    private ManagedReference<SnowmanGame> currentGameRef;
+    protected ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<SnowmanFlag> holdingFlagRef;
-    private PlayerState state = PlayerState.NONE;
+    protected PlayerState state = PlayerState.NONE;
     private int hitPoints = RESPAWNHP;
-    private SnowmanAppContext appContext;
+    protected SnowmanAppContext appContext;
     
     public SnowmanPlayerImpl(SnowmanAppContext appContext,
+                             String name,
                              ClientSession session) {
         this.appContext = appContext;
-        name = session.getName();
+        this.name = name;
         setSession(session);
     } 
     
-    static enum PlayerState {
+    protected static enum PlayerState {
         //indicates the player is not in a game
         NONE, 
         //player is not moving
@@ -253,7 +255,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      // IServerProcessor Messages
 
     public void ready() {
-        this.setReadyToPlay(true);
+        setReadyToPlay(true);
         currentGameRef.get().startGameIfReady();
     }
 
@@ -456,6 +458,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                     flag.drop(attackX, attackY);
                 }
                 holdingFlagRef = null;
+                state = PlayerState.DEAD;
                 
                 // schedule respawn
                 appContext.getTaskManager().scheduleTask(
@@ -478,7 +481,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         
         public void run() throws Exception {
-            playerRef.get().respawn();
+            try {
+                playerRef.get().respawn();
+            } catch (ObjectNotFoundException gameDone) {}
         }           
     }
     

@@ -178,12 +178,13 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
     private void launchGameSession(String name) {
         appContext.getDataManager().markForUpdate(this);
         SnowmanGame game = gameFactory.createSnowmanGame(name,
-                                                         numPlayersPerGame,
+                                                         numPlayersPerGame * 2,
                                                          appContext,
                                                          entityFactory);
         ETeamColor color = ETeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
         	game.addPlayer(waiting[i].get(), color);
+                game.addPlayer(new RobotImpl(appContext, waiting[i].get().getName()+"s_robot"), color);
         	waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
             color = ETeamColor.values()[

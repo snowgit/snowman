@@ -49,8 +49,6 @@ import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -195,8 +193,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         player.setTeamColor(color);
         player.setGame(this);
         
-        //add the players session to the channel
-        channelRef.get().join(player.getSession());
+        //add the real players session to the channel
+        if (player.getSession() != null)
+            channelRef.get().join(player.getSession());
     }
     
     // A player disconnected
