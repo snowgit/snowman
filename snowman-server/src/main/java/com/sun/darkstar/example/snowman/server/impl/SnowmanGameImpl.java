@@ -203,12 +203,16 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     public void removePlayer(SnowmanPlayer player){
         Integer playerId = new Integer(player.getID());
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
-        if (playerRefs.isEmpty()) { // TODO - with robots this doesn't work
-            endGame();
-        } else if(playerRef != null) {
-            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+        Channel channel = channelRef.get();
+        if(playerRef != null) {
+            channel.leave(player.getSession());
+            send(null, ServerMessages.createRemoveMOBPkt(playerId));
             appContext.getDataManager().removeObject(player);
         }
+        
+        // if all real players have gone, end the game
+        if (!channel.hasSessions())
+            endGame();
     }
     
     public void sendMapInfo(){

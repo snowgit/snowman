@@ -50,18 +50,16 @@ import java.util.Random;
  * @author kbt
  */
 public class RobotImpl extends SnowmanPlayerImpl {
-    
-    private final static int MOVE_DELAY_DEFAULT = 2000;
-    
+        
     private final int moveDelay;
     private final Random random = new Random();
     
     // Player IDs of potential targets
     private ArrayList<Integer> targets = null;
     
-    public RobotImpl(SnowmanAppContext appContext, String name) {
+    public RobotImpl(SnowmanAppContext appContext, String name, int delay) {
         super(appContext, name, null);
-        moveDelay = Integer.getInteger("robotMoveDelay", MOVE_DELAY_DEFAULT);
+        moveDelay = delay;
         scheduleMove(10000);// TODO need to find out when the game starts
     }
     
