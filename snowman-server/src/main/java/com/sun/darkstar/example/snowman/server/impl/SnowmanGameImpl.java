@@ -51,6 +51,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * This object represents an actual running game session of Project Snowman,
@@ -202,8 +203,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     public void removePlayer(SnowmanPlayer player){
         Integer playerId = new Integer(player.getID());
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
-        if(playerRef != null)
+        if (playerRefs.isEmpty()) { // TODO - with robots this doesn't work
+            endGame();
+        } else if(playerRef != null) {
             send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+            appContext.getDataManager().removeObject(player);
+        }
     }
     
     public void sendMapInfo(){
@@ -236,6 +241,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             }
         }
         send(null,ServerMessages.createStartGamePkt());
+    }
+    
+    public Set<Integer> getPlayerIds() {
+        return playerRefs.keySet();
     }
     
     public SnowmanPlayer getPlayer(int id){

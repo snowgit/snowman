@@ -37,6 +37,7 @@ import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedObjectRemoval;
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 /**
  * The <code>SnowmanGame</code> interface describes the basic behavior
@@ -92,6 +93,8 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * @return
      */
     public SnowmanPlayer getPlayer(int id);
+    
+    public Set<Integer> getPlayerIds();
     
     public String getName();
 

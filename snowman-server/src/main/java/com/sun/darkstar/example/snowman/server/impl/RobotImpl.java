@@ -32,13 +32,17 @@
 package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -51,6 +55,9 @@ public class RobotImpl extends SnowmanPlayerImpl {
     
     private final int moveDelay;
     private final Random random = new Random();
+    
+    // Player IDs of potential targets
+    private ArrayList<Integer> targets = null;
     
     public RobotImpl(SnowmanAppContext appContext, String name) {
         super(appContext, name, null);
@@ -65,14 +72,47 @@ public class RobotImpl extends SnowmanPlayerImpl {
     }
     
     private void moveRobot() {
-        System.out.println("moving robot, state= " + state);
+        if (currentGameRef == null) // game over
+            return;
+        
+        if (targets == null) {
+            appContext.getDataManager().markForUpdate(this);
+            SnowmanGame game = currentGameRef.get();
+            targets = new ArrayList<Integer>();
+            for (int id : game.getPlayerIds()) {
+                if (game.getPlayer(id).getTeamColor() != getTeamColor())
+                    targets.add(id);
+            }
+        }
+        
         if (state != PlayerState.NONE || state != PlayerState.DEAD) {
+            appContext.getDataManager().markForUpdate(this);
+            SnowmanGame game = currentGameRef.get();
             long now = System.currentTimeMillis();
             Coordinate currentPos = getExpectedPositionAtTime(now);
-            moveMe(now,
-                   currentPos.getX(), currentPos.getY(),
-                   currentPos.getX() + 10 * (random.nextFloat() - 0.5f),
-                   currentPos.getY() + 10 * (random.nextFloat() - 0.5f));
+            SnowmanPlayer target =
+                    game.getPlayer(targets.get(random.nextInt(targets.size())));
+            
+            // If a target is available, move towards it. Attack if it's
+            // within range
+            if (target != null) {
+                Coordinate targetPos = target.getExpectedPositionAtTime(now);
+
+                float dx = currentPos.getX() - targetPos.getX();
+                float dy = currentPos.getY() - targetPos.getY();
+                float range = HPConverter.getInstance().convertRange(hitPoints);
+                if (((dx * dx) + (dy * dy)) < (range * range)) {
+                    attack(now, target.getID(), currentPos.getX(), currentPos.getY());
+                }
+                moveMe(now,
+                       currentPos.getX(), currentPos.getY(),
+                       targetPos.getX() + 10 * (random.nextFloat() - 0.5f),
+                       targetPos.getY() + 10 * (random.nextFloat() - 0.5f));
+            } else
+                moveMe(now,
+                       currentPos.getX(), currentPos.getY(),
+                       currentPos.getX() + 10 * (random.nextFloat() - 0.5f),
+                       currentPos.getY() + 10 * (random.nextFloat() - 0.5f));
             scheduleMove(moveDelay);
         } else
             scheduleMove(moveDelay * 4);

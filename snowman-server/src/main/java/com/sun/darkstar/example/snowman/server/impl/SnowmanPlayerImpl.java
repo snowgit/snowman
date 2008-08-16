@@ -96,7 +96,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     protected ManagedReference<SnowmanGame> currentGameRef;
     private ManagedReference<SnowmanFlag> holdingFlagRef;
     protected PlayerState state = PlayerState.NONE;
-    private int hitPoints = RESPAWNHP;
+    protected int hitPoints = RESPAWNHP;
     protected SnowmanAppContext appContext;
     
     public SnowmanPlayerImpl(SnowmanAppContext appContext,
@@ -137,9 +137,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         sessionRef = appContext.getDataManager().createReference(arg0);
     }
     
-    public void setGame(SnowmanGame game){
+    public void setGame(SnowmanGame game) {
+        appContext.getDataManager().markForUpdate(this);
+
         if (game == null){
             currentGameRef = null;
+            state = PlayerState.NONE;
         } else {
             currentGameRef = appContext.getDataManager().createReference(game);
         }
@@ -232,7 +235,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return id;
     }
     
-    public void setReadyToPlay(boolean readyToPlay){
+    public void setReadyToPlay(boolean readyToPlay) {
+        appContext.getDataManager().markForUpdate(this);
+
         if(readyToPlay)
             this.state = PlayerState.STOPPED;
         else
@@ -255,8 +260,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      // IServerProcessor Messages
 
     public void ready() {
-        setReadyToPlay(true);
-        currentGameRef.get().startGameIfReady();
+        if (currentGameRef != null) {
+            setReadyToPlay(true);
+            currentGameRef.get().startGameIfReady();
+        }
     }
 
     public void moveMe(float startx, float starty,
@@ -273,6 +280,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
             return;
         
+        appContext.getDataManager().markForUpdate(this);
+
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
@@ -315,6 +324,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
             return;
         
+        appContext.getDataManager().markForUpdate(this);
+
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
@@ -369,6 +380,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         getFlag(now, flagID, x, y);
     }
     protected void getFlag(long now, int flagID, float x, float y) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
         SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
         
@@ -383,7 +398,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                            x, y, POSITIONTOLERANCESQD)) {
-            
+            appContext.getDataManager().markForUpdate(this);
+
             //verify that the player is in range of the flag
             if(checkTolerance(x, y, flag.getX(), flag.getY(),
                                EStats.GrabRange.getValue()*EStats.GrabRange.getValue())) {
@@ -410,6 +426,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         score(now, x, y);
     }
     protected void score(long now, float x, float y) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
         //ignore if we aren't holding the flag
         if(holdingFlagRef == null) {
             logger.log(Level.WARNING, "score from {0} failed, not holding flag", name);
@@ -440,16 +460,20 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     
     // respawn
     public void respawn() {
-        appContext.getDataManager().markForUpdate(this);
-        hitPoints = RESPAWNHP;
-        Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
-        setLocation(position.getX(), position.getY());
-        currentGameRef.get().send(null,
-                                  ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
+        if (currentGameRef != null) {
+            appContext.getDataManager().markForUpdate(this);
+            hitPoints = RESPAWNHP;
+            Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
+            setLocation(position.getX(), position.getY());
+            currentGameRef.get().send(null,
+                                      ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
+        }
     }
     
     public int hit(int hp, float attackX, float attackY) {
         if (hitPoints > 0) { // not already dead
+            appContext.getDataManager().markForUpdate(this);
+
             hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
                 // drop flag
