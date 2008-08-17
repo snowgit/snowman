@@ -137,7 +137,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
             throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0"); 
         robotDelay = Integer.getInteger(ROBOT_DELAY_PROP,
                                         DEFAULT_ROBOT_DELAY);
-        if (numRobotsPerGame < 0)
+        if (robotDelay < 0)
             throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
         logger.log(Level.CONFIG,
                    "Number of robots per game: {0}, with delay of {1} milliseconds",

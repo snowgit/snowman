@@ -212,7 +212,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         
         // if all real players have gone, end the game
         if (!channel.hasSessions())
-            endGame();
+            endGame(EEndState.Draw);
     }
     
     public void sendMapInfo(){
@@ -258,8 +258,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         return null;
     }
     
-    private void endGame() {
-        send(null, ServerMessages.createEndGamePkt(EEndState.Draw));
+    public void endGame(EEndState endState) {
+        send(null, ServerMessages.createEndGamePkt(endState));
         appContext.getDataManager().removeObject(this);
     }
     
@@ -273,6 +273,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         }
     }
 
+    public Set<Integer> getFLagIds() {
+        return flagRefs.keySet();
+    }
+    
     public SnowmanFlag getFlag(int id) {
         return flagRefs.get(id).get();
     }

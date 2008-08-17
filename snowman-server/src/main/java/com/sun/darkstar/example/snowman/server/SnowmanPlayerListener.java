@@ -42,6 +42,7 @@ import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.NameNotBoundException;
+import com.sun.sgs.app.ObjectNotFoundException;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -105,7 +106,12 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     }
 
     public void disconnected(boolean arg0) {
-        SnowmanPlayer player = playerRef.get();
+        SnowmanPlayer player;
+        try {
+            player = playerRef.get();
+        } catch (ObjectNotFoundException ex) {
+            return;
+        }
         if (player == null)
             return;
         

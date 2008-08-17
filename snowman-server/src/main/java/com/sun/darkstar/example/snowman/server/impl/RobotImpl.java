@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.ClientSession;
@@ -56,6 +57,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
     
     // Player IDs of potential targets
     private ArrayList<Integer> targets = null;
+    private ManagedReference<SnowmanFlag> theirFlagRef = null;
     
     public RobotImpl(SnowmanAppContext appContext, String name, int delay) {
         super(appContext, name, null);
@@ -81,13 +83,44 @@ public class RobotImpl extends SnowmanPlayerImpl {
                 if (game.getPlayer(id).getTeamColor() != getTeamColor())
                     targets.add(id);
             }
+            for (int id : game.getFLagIds()) {
+                SnowmanFlag flag = game.getFlag(id);
+                if (flag.getTeamColor() != getTeamColor())
+                    theirFlagRef = appContext.getDataManager().createReference(flag);
+            }
+            random.setSeed(getID());
         }
         
-        if (state != PlayerState.NONE || state != PlayerState.DEAD) {
-            appContext.getDataManager().markForUpdate(this);
+        if (state == PlayerState.NONE || state == PlayerState.DEAD) {
+            scheduleMove(moveDelay * 4);
+            return;
+        }
+        long now = System.currentTimeMillis();
+        Coordinate currentPos = getExpectedPositionAtTime(now);
+        
+        // If holding the flag, try to score
+        if (holdingFlagRef != null) {
+            if (!score(now, currentPos.getX(), currentPos.getY()))
+                moveMe(now,
+                       currentPos.getX(), currentPos.getY(),
+                       theirFlagRef.get().getGoalX() + 10 * (random.nextFloat() - 0.5f),
+                       theirFlagRef.get().getGoalY() + 10 * (random.nextFloat() - 0.5f));
+            
+        // randomly go after the flag
+        } else if (random.nextBoolean() && !theirFlagRef.get().isHeld()) {
+            SnowmanFlag flag = theirFlagRef.get();
+            getFlag(now, flag.getID(), currentPos.getX(), currentPos.getY());
+            // if we didn't get it, move towards it
+            if (holdingFlagRef == null)
+                moveMe(now,
+                       currentPos.getX(), currentPos.getY(),
+                       flag.getX() + 10 * (random.nextFloat() - 0.5f),
+                       flag.getY() + 10 * (random.nextFloat() - 0.5f));
+        
+        // else just move towards a target snowman
+        } else {
             SnowmanGame game = currentGameRef.get();
-            long now = System.currentTimeMillis();
-            Coordinate currentPos = getExpectedPositionAtTime(now);
+            
             SnowmanPlayer target =
                     game.getPlayer(targets.get(random.nextInt(targets.size())));
             
@@ -111,10 +144,8 @@ public class RobotImpl extends SnowmanPlayerImpl {
                        currentPos.getX(), currentPos.getY(),
                        currentPos.getX() + 10 * (random.nextFloat() - 0.5f),
                        currentPos.getY() + 10 * (random.nextFloat() - 0.5f));
-            scheduleMove(moveDelay);
-        } else
-            scheduleMove(moveDelay * 4);
-
+        }
+        scheduleMove(moveDelay);
     }
     
     static private class MoveTask implements Task, Serializable {

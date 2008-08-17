@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
@@ -80,6 +81,8 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      */
     public void startGameIfReady();
     
+    void endGame(EEndState endState);
+    
     /**
      * Return the flag from the game with the given id
      * @param id
@@ -87,6 +90,8 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      */
     public SnowmanFlag getFlag(int id);
 
+    public Set<Integer> getFLagIds();
+    
     /**
      * Return the player from the game with the given id
      * @param id

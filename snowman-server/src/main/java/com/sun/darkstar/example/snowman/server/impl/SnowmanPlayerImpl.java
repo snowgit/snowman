@@ -94,7 +94,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private long timestamp;
     private ETeamColor teamColor;
     protected ManagedReference<SnowmanGame> currentGameRef;
-    private ManagedReference<SnowmanFlag> holdingFlagRef;
+    protected ManagedReference<SnowmanFlag> holdingFlagRef;
     protected PlayerState state = PlayerState.NONE;
     protected int hitPoints = RESPAWNHP;
     protected SnowmanAppContext appContext;
@@ -412,9 +412,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 holdingFlagRef = appContext.getDataManager().createReference(flag);
                 game.send(null, ServerMessages.createAttachObjPkt(flagID, id));
             }
-            else {
-                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
-            }
+//            else {
+//                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
+//            }
         } 
         else {
             logger.log(Level.WARNING, "get flag from {0} failed position check", name);
@@ -425,15 +425,25 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Long now = System.currentTimeMillis();
         score(now, x, y);
     }
-    protected void score(long now, float x, float y) {
+    
+    /**
+     * Attempt to score. If sucessful return true. Note that a true
+     * return may mean that the currentGameRef will no longer resolve
+     * to a game object
+     * @param now
+     * @param x
+     * @param y
+     * @return success
+     */
+    protected boolean score(long now, float x, float y) {
         //no op if player is dead or not in a game
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
-            return;
+            return false;
         
         //ignore if we aren't holding the flag
         if(holdingFlagRef == null) {
             logger.log(Level.WARNING, "score from {0} failed, not holding flag", name);
-            return;
+            return false;
         }
         
         //verify that the start location is valid
@@ -445,9 +455,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             //verify that the player is in range of the score position
             if(checkTolerance(x, y, flag.getGoalX(), flag.getGoalY(),
                                EStats.GoalRadius.getValue()*EStats.GoalRadius.getValue())) {
-                //send end game packet
-                EEndState end = teamColor == ETeamColor.Red ? EEndState.RedWin : EEndState.BlueWin;
-                currentGameRef.get().send(null, ServerMessages.createEndGamePkt(end));
+                // end game 
+                currentGameRef.get().endGame(teamColor == ETeamColor.Red ?
+                                                        EEndState.RedWin :
+                                                        EEndState.BlueWin);
+                return true;
             }
             else {
                 logger.log(Level.WARNING, "score from {0} failed radius check", name);
@@ -456,6 +468,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         else {
             logger.log(Level.WARNING, "score from {0} failed position check", name);
         }
+        return false;
     }
     
     // respawn
