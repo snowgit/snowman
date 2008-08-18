@@ -880,7 +880,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createEndGamePkt(EEndState.RedWin));
+        currentGame.endGame(EEndState.RedWin);
         EasyMock.replay(currentGame);
         
         //make the score
