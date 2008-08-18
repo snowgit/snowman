@@ -34,16 +34,18 @@ package com.sun.darkstar.example.tool;
 
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 public class EnumButtonBar<K extends Enum<K>> extends JPanel implements ActionListener {
+
+	private static final long serialVersionUID = 1L;
+
 	Class enumClassName;
 	List<EnumButtonBarListener> listeners = new ArrayList<EnumButtonBarListener>();
 	public EnumButtonBar(K ... buttons) {

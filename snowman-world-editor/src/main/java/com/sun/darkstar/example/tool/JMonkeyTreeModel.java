@@ -31,17 +31,18 @@
 */ 
 package com.sun.darkstar.example.tool;
 
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 
 /**
  * This class interprets a JME scene graph as a Swing JTree Model
