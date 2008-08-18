@@ -4,10 +4,7 @@ import java.io.IOException;
 
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
-import com.jme.util.export.InputCapsule;
-import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
-
 import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
