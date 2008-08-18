@@ -101,7 +101,9 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.util.export.Savable;
 import com.jme.util.export.binary.BinaryExporter;
+import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.Debugger;
 import com.jme.util.stat.StatCollector;
 import com.jme.util.stat.graph.DefColorFadeController;
@@ -137,7 +139,7 @@ public class WorldEditor extends JFrame {
 	 */
 	JTabbedPane consolePane;
 	/**
-	 * This is the tabbed panel that scene graoh display and the assets list
+	 * This is the tabbed panel that scene graph display and the assets list
 	 */
 	JTabbedPane projectPane;
 	/**
@@ -145,15 +147,15 @@ public class WorldEditor extends JFrame {
 	 */
 	JPanel viewPanel;
 	/**
-	 * This is the pannel that contaisn the object attributes editor
+	 * This is the panel that contains the object attributes editor
 	 */
 	JPanel objectAttr;
 	/**
-	 * This is the pannel that contaisn the tool attributes editor
+	 * This is the panel that contains the tool attributes editor
 	 */
 	JPanel toolAttr;
 	/**
-	 * These are the actual atribute editors. They are specialized JTables that
+	 * These are the actual attribute editors. They are specialized JTables that
 	 * accept and edit a Map.
 	 */
 	AttributeEditor objectAttrTable;
@@ -168,7 +170,7 @@ public class WorldEditor extends JFrame {
 	 */
 	JTree sceneTree;
 	/**
-	 * This is the model that interpets the scene graph for the JTree
+	 * This is the model that interprets the scene graph for the JTree
 	 */
 	JMonkeyTreeModel treeModel;
 
@@ -187,10 +189,6 @@ public class WorldEditor extends JFrame {
 	 * This is an AWT canvas that JME will use to paint the 3D output onto
 	 */
 	private Canvas canvas;
-	/**
-	 * This is the root of the current JME scene graph
-	 */
-	Node rootNode;
 	/**
 	 * This is the actual "game object" for JME. The one in this file at the
 	 * moment is just a skeleton that should be replaced with the real JME logic
@@ -242,7 +240,7 @@ public class WorldEditor extends JFrame {
 
 	/**
 	 * This is the constructor for the world editor. To start it all running
-	 * you instance the WorldEditor using this contructor and call start() on
+	 * you instance the WorldEditor using this constructor and call start() on
 	 * the returned instance.
 	 */
 	public WorldEditor() {
@@ -258,7 +256,7 @@ public class WorldEditor extends JFrame {
 					setJMenuBar(new JKMenuBar((List<Tuple>) tuple.getValue()));
 				}
 			}
-			// for the moment lets do it by hand, soemday well make it data
+			// for the moment lets do it by hand, someday well make it data
 			// driven
 			EnumButtonBar<ModeEnum> bar = new EnumButtonBar<ModeEnum>(ModeEnum.values());
 			bar.addListener(new EnumButtonBarListener() {
@@ -266,21 +264,12 @@ public class WorldEditor extends JFrame {
 				@Override
 				public void enumSet(Enum actualEnum) {
 					currentMode = (ModeEnum)actualEnum;
-					if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth
-							|| currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
-						if(world == null || terrainView == null) return;
-						if(brush.getParent() == null) world.attachChild(brush);
-					} else {
-						if(world == null || terrainView == null) return;
-						world.detachChild(brush);
-					}
 					if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth) {
 						brush.setColor(ColorRGBA.red);
 					} else if(currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
 						brush.setColor(ColorRGBA.blue);
 					}
 					mouseListener.setMode(currentMode);
-					brush.updateRenderState();
 				}
 			});
 			c.add(bar, BorderLayout.NORTH);
@@ -363,8 +352,7 @@ public class WorldEditor extends JFrame {
 			impl = new WorldEditorCanvasImpl(800, 600);
 			set3DCanvas(impl);
 			initProperties();
-			((JKMenuBar) getJMenuBar())
-			.addListener(new WorldEditorMenuListener() {
+			((JKMenuBar) getJMenuBar()).addListener(new WorldEditorMenuListener() {
 
 				@Override
 				public void doAttachTo() {
@@ -527,12 +515,42 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doLoad() {
-					
+					// show load dialog
+					final File in = new File("c:/test.wld");
+					// queue up a task...
+					runFirstAction = new Callable<Void>() {
+						@Override
+						public Void call() throws Exception {
+							// in task, load file
+							BinaryImporter imp = new BinaryImporter();
+							Savable result = imp.load(in);
+							// if valid, replace children of rootNode with children of loaded item.
+							if (result instanceof EditableWorld) {
+								world = (EditableWorld)result;
+								treeModel.addChild(impl.getRootNode(), world);
+								terrainView = (TerrainView) world.getChild("Terrain_View");
+								WorldEditor.this.repaint();
+							}
+							WorldEditor.this.repaint();
+							return null;
+						}
+					};
 				}
 
 				@Override
 				public void doSave() {
-					
+					// show save dialog
+					final File out = new File("c:/test.wld");
+					// queue up a task...
+					runFirstAction = new Callable<Void>() {
+						@Override
+						public Void call() throws Exception {
+							// in task, take current root node and export to file.
+							BinaryExporter exp = new BinaryExporter();
+							exp.save(world, out);
+							return null;
+						}
+					};
 				}
 
 				@Override
@@ -587,8 +605,8 @@ public class WorldEditor extends JFrame {
 	}
 
 	/**
-	 * This is the metohd that actually installs the canvas implementation into
-	 * the interfsce
+	 * This is the method that actually installs the canvas implementation into
+	 * the interface
 	 * 
 	 * @param impl
 	 *            An implementation of the JME SimpleCanvasImpl class
@@ -601,14 +619,12 @@ public class WorldEditor extends JFrame {
 		display.setMinDepthBits(24);
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
-		display.setMinSamples(2);
 		display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
 		final Canvas comp = (Canvas)display.createCanvas(1024, 768);
 		canvas = comp;
 
 		// add a listener... if window is resized, we can do something about it.
 		comp.addComponentListener(new ComponentAdapter() {
-
 			@Override
 			public void componentResized(ComponentEvent ce) {
 				impl.resizeCanvas(comp.getWidth(), comp.getHeight());
@@ -1031,7 +1047,11 @@ public class WorldEditor extends JFrame {
 
 		@Override
 		public void simpleRender() {
-			doDebug(display.getRenderer());
+			if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth
+					|| currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
+				brush.draw(getRenderer());
+			}
+			doDebug(getRenderer());
 		}
 
 		protected void doDebug(Renderer r) {
