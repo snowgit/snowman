@@ -87,7 +87,7 @@ public class SnowmanPlayerImplTest
         EasyMock.replay(session);
         EasyMock.replay(currentGame);
         
-        testPlayer = new SnowmanPlayerImpl(appContext, session);
+        testPlayer = new SnowmanPlayerImpl(appContext, "name", session);
         testPlayer.setGame(currentGame);
         testPlayer.setID(testPlayerId);
         testPlayer.setTeamColor(testPlayerColor);
@@ -880,7 +880,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createEndGamePkt(EEndState.RedWin));
+        currentGame.endGame(EEndState.RedWin);
         EasyMock.replay(currentGame);
         
         //make the score
@@ -899,7 +899,7 @@ public class SnowmanPlayerImplTest
         attackeeSession = EasyMock.createNiceMock(ClientSession.class);
         EasyMock.replay(attackeeSession);
         
-        attackee = new SnowmanPlayerImpl(appContext, session);
+        attackee = new SnowmanPlayerImpl(appContext, "name", session);
         attackee.setGame(currentGame);
         attackee.setID(attackeeId);
         attackee.setTeamColor(attackeeColor);

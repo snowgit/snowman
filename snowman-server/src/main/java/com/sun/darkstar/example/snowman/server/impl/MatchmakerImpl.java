@@ -60,6 +60,24 @@ import java.util.logging.Logger;
  *      Specifies the number of players required to start a game. Value
  *      must be > 0.<p>
  *
+ * <dt> <i>Property:</i> <code><b>
+ *	numRobotsPerGame
+ *	</b></code><br>
+ *	<i>Default:</i> {@code 2}
+ *
+ * <dd style="padding-top: .5em">
+ *      Specifies the number of robot players added to each game. Value
+ *      must be >= 0.<p>
+ * 
+ * <dt> <i>Property:</i> <code><b>
+ *	robotDelay
+ *	</b></code><br>
+ *	<i>Default:</i> {@code 2000} (two seconds)
+ * 
+ * <dd style="padding-top: .5em">
+ *      Specifies the minimun delay, in milliseconds, between robot player moves.
+ *      Value must be >= 0.<p>
+ * 
  * </dl> <p>
  * 
  * @author Jeffrey Kesselman
@@ -72,11 +90,19 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
     private static final String PLAYERS_PER_GAME_PROP = "numPlayersPerGame";
     private static final int DEFAULT_PLAYERS_PER_GAME = 2;
     
+    private static final String ROBOTS_PER_GAME_PROP = "numRobotsPerGame";
+    private static final int DEFAULT_ROBOTS_PER_GAME = 2;
+    
+    private static final String ROBOT_DELAY_PROP = "robotDelay";
+    private static final int DEFAULT_ROBOT_DELAY = 2000;
     /**
      * The list of waiting players
      */
     private final int numPlayersPerGame;
     private final ManagedReference<SnowmanPlayer>[] waiting;
+    
+    private final int numRobotsPerGame;
+    private final int robotDelay;
     
     /**
      * The name of the game to launch
@@ -105,6 +131,17 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         logger.log(Level.CONFIG,
                    "Number of players required to start a game set to {0}",
                    numPlayersPerGame);
+        numRobotsPerGame = Integer.getInteger(ROBOTS_PER_GAME_PROP,
+                                              DEFAULT_ROBOTS_PER_GAME);
+        if (numRobotsPerGame < 0)
+            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0"); 
+        robotDelay = Integer.getInteger(ROBOT_DELAY_PROP,
+                                        DEFAULT_ROBOT_DELAY);
+        if (robotDelay < 0)
+            throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
+        logger.log(Level.CONFIG,
+                   "Number of robots per game: {0}, with delay of {1} milliseconds",
+                   new Object[] {numRobotsPerGame, robotDelay});
         waiting = new ManagedReference[numPlayersPerGame];
         clearQueue();
     }
@@ -178,14 +215,20 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
     private void launchGameSession(String name) {
         appContext.getDataManager().markForUpdate(this);
         SnowmanGame game = gameFactory.createSnowmanGame(name,
-                                                         numPlayersPerGame,
+                                                         numPlayersPerGame + numRobotsPerGame,
                                                          appContext,
                                                          entityFactory);
         ETeamColor color = ETeamColor.values()[0];
         for (int i = 0; i < waiting.length; i++) {
-        	game.addPlayer(waiting[i].get(), color);
-        	waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
+            game.addPlayer(waiting[i].get(), color);
+            waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
             	"default_map"));
+            color = ETeamColor.values()[
+                    (color.ordinal()+1)%ETeamColor.values().length];
+        }
+        for (int i = 0; i < numRobotsPerGame; i++) {
+            game.addPlayer(new RobotImpl(appContext, name +"_robot" + i, robotDelay),
+                           color);
             color = ETeamColor.values()[
                     (color.ordinal()+1)%ETeamColor.values().length];
         }

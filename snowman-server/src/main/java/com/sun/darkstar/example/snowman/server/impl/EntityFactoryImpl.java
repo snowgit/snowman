@@ -52,7 +52,7 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
     public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
                                              ClientSession session)
     {
-        return new SnowmanPlayerImpl(context, session);
+        return new SnowmanPlayerImpl(context, session.getName(), session);
     }
     public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY)
     {

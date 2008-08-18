@@ -32,11 +32,13 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedObjectRemoval;
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 /**
  * The <code>SnowmanGame</code> interface describes the basic behavior
@@ -79,6 +81,8 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      */
     public void startGameIfReady();
     
+    void endGame(EEndState endState);
+    
     /**
      * Return the flag from the game with the given id
      * @param id
@@ -86,12 +90,16 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      */
     public SnowmanFlag getFlag(int id);
 
+    public Set<Integer> getFLagIds();
+    
     /**
      * Return the player from the game with the given id
      * @param id
      * @return
      */
     public SnowmanPlayer getPlayer(int id);
+    
+    public Set<Integer> getPlayerIds();
     
     public String getName();
 

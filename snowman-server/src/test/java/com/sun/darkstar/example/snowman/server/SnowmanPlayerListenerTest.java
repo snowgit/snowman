@@ -134,7 +134,6 @@ public class SnowmanPlayerListenerTest
         EasyMock.verify(entityFactory);
         //verify that the player is who we expect
         Assert.assertSame(player.getSnowmanPlayer(), dummySP);
-        Assert.assertSame(player.getMatchmaker(), dummyMM);
         //verify that the player is entered into the datamanager
         DataManager dataManager = appContext.getDataManager();
         SnowmanPlayerListener playerListener = (SnowmanPlayerListener)dataManager.getBinding(SnowmanPlayerListener.PREFIX+playerName);
