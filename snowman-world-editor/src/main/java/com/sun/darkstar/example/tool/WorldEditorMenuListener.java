@@ -33,17 +33,16 @@
 package com.sun.darkstar.example.tool;
 
 /**
- * This interface mirrors the action merthods in the current menu bar
+ * This interface mirrors the action methods in the current menu bar
  * SADDL file.  Listeners to JKMenuBar can implement this interface and know
- * they have all possible menu actiosn covered
+ * they have all possible menu actions covered
  * @author Jeffrey Kesselman
  */
 public interface WorldEditorMenuListener {
     public void doNew();
-    public void doOpen();
-    public void doImportModel();
-    public void doExportWorld(); 
-    public void doExportSelected();
+    public void doLoad();
+    public void doSave();
+    public void doExportWorld();
     public void doExit();
     public void doAttachTo();
     public void doDettachFromParent();

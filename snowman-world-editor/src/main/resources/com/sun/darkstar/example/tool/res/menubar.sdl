@@ -1,12 +1,9 @@
 MenuBar
     File
         New=doNew
-        Open=doOpen
-        Import
-            Model=doImportModel
-        Export
-            World=doExportWorld 
-            Selected=doExportSelected
+        Load=doLoad
+        Save=doSave
+        Export World=doExportWorld 
         Exit=doExit
     Edit
         Attach to=doAttachTo

@@ -31,37 +31,66 @@
 */ 
 package com.sun.darkstar.example.tool;
 
-import com.jme.app.BaseSimpleGame;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
 import com.jme.bounding.BoundingBox;
-import com.jme.image.Image;
-import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.MouseInput;
 import com.jme.light.DirectionalLight;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.PassNode;
-import com.jme.scene.PassNodeState;
 import com.jme.scene.Spatial;
-import com.jme.scene.Text;
-import com.jme.scene.Spatial.CullHint;
-import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.BlendState;
-import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.canvas.JMECanvas;
@@ -74,84 +103,10 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.geom.Debugger;
-import com.jme.util.lwjgl.LWJGLTextureUpdater;
 import com.jme.util.stat.StatCollector;
-import com.jme.util.stat.StatType;
 import com.jme.util.stat.graph.DefColorFadeController;
-import com.jme.util.stat.graph.GraphFactory;
-import com.jme.util.stat.graph.LineGrapher;
-import com.jme.util.stat.graph.TabledLabelGrapher;
-import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
-import com.jmex.terrain.TerrainPage;
-import com.jmex.terrain.util.ImageBasedHeightMap;
-import com.jmex.terrain.util.ProceduralSplatTextureGenerator;
-import com.worldwizards.saddl.SADDL;
-import com.worldwizards.saddl.Tuple;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTree;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
-import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.common.entity.EditableEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
@@ -163,9 +118,13 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.EditableWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
+import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
+import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.worldwizards.saddl.SADDL;
+import com.worldwizards.saddl.Tuple;
 
 /**
- * This is the main class for the World Editor gui It uses Swing and JME
+ * This is the main class for the World Editor gui. It uses Swing and JME
  * together. It also uses a few utility classes I wrote to make building it up a
  * bit easier
  * 
@@ -270,7 +229,7 @@ public class WorldEditor extends JFrame {
 
 	private TextureLayer selectedLayer;
 	
-	private Callable exportAction;
+	private Callable<Void> runFirstAction;
 	
 	private ExportDialog dlg;
 
@@ -301,7 +260,7 @@ public class WorldEditor extends JFrame {
 			}
 			// for the moment lets do it by hand, soemday well make it data
 			// driven
-			EnumButtonBar bar = new EnumButtonBar<ModeEnum>(ModeEnum.values());
+			EnumButtonBar<ModeEnum> bar = new EnumButtonBar<ModeEnum>(ModeEnum.values());
 			bar.addListener(new EnumButtonBarListener() {
 
 				@Override
@@ -400,7 +359,7 @@ public class WorldEditor extends JFrame {
 			eastPanel.add(toolAttr);
 			eastPanel.setPreferredSize(new Dimension(200, 400));
 			c.add(eastPanel, BorderLayout.EAST);
-			setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			impl = new WorldEditorCanvasImpl(800, 600);
 			set3DCanvas(impl);
 			initProperties();
@@ -409,50 +368,34 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doAttachTo() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateDirectionalLight() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateLineParticle() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreatePointLight() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateProjectedWater() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateQuadParticle() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateQuadWater() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doCreateSpotLight() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
@@ -462,11 +405,16 @@ public class WorldEditor extends JFrame {
 					FileNameExtensionFilter filter = new FileNameExtensionFilter(
 							"Color Map Images", "jpg","bmp","tga");
 					chooser.setFileFilter(filter);
+					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					int returnVal = chooser.showOpenDialog(WorldEditor.this);
 					if (returnVal != JFileChooser.APPROVE_OPTION){
 						return;
 					}
 					File colorMap = chooser.getSelectedFile();
+					if (colorMap == null || !colorMap.exists() || !colorMap.isFile()) {
+						JOptionPane.showMessageDialog(WorldEditor.this, "Invalid color map chosen.");
+						return;
+					}
 					filter = new FileNameExtensionFilter(
 							"AlphaMapImage", "tga", "png");
 					chooser.setFileFilter(filter);
@@ -475,6 +423,10 @@ public class WorldEditor extends JFrame {
 						return;
 					}
 					File alphaMap = chooser.getSelectedFile();
+					if (alphaMap == null || !alphaMap.exists() || !alphaMap.isFile()) {
+						JOptionPane.showMessageDialog(WorldEditor.this, "Invalid alpha map chosen.");
+						return;
+					}
 					DefaultListModel mdl = (DefaultListModel) textures.getModel();
 					float xBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).xExtent;
 					float zBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).zExtent;
@@ -487,19 +439,21 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doCreateWorld() {
-					String[] names = new String[EWorld.values().length];
-					for (int i = 0; i < names.length; i++) {
-						names[i] = EWorld.values()[i].name();
-					}
-					String selected = (String) JOptionPane
-					.showInputDialog(WorldEditor.this,
-							"What kind of world",
-							"Create World",
-							JOptionPane.PLAIN_MESSAGE, null,
-							names, names[0]);
-					if (selected == null)
-						return;
-					EWorld selectedEworld = EWorld.valueOf(selected);
+//					String[] names = new String[EWorld.values().length];
+//					for (int i = 0; i < names.length; i++) {
+//						names[i] = EWorld.values()[i].name();
+//					}
+//					String selected = (String) JOptionPane.showInputDialog(WorldEditor.this,
+//							"What kind of world",
+//							"Create World",
+//							JOptionPane.PLAIN_MESSAGE, null,
+//							names, names[0]);
+//					if (selected == null)
+//						return;
+//					EWorld selectedEworld = EWorld.valueOf(selected);
+					
+					// Uncomment above if we actually start to use multiple world types.
+					EWorld selectedEworld = EWorld.Battle;
 					world = new EditableWorld(selectedEworld);
 					treeModel.addChild(impl.getRootNode(), world);
 					WorldEditor.this.repaint();
@@ -507,8 +461,6 @@ public class WorldEditor extends JFrame {
 
 				@Override
 				public void doDettachFromParent() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
@@ -520,9 +472,9 @@ public class WorldEditor extends JFrame {
 				public void doExportWorld() {
 					dlg = new ExportDialog(WorldEditor.this);
 					if (dlg.showDialog()){
-						exportAction = new Callable() {
+						runFirstAction = new Callable<Void>() {
 							@Override
-							public Object call() throws Exception {
+							public Void call() throws Exception {
 									if(dlg.hasFile()) {
 										CloneImportExport cloner = new CloneImportExport();
 										cloner.saveClone(world);
@@ -570,72 +522,45 @@ public class WorldEditor extends JFrame {
 				}
 
 				@Override
-				public void doExportSelected() {
-					ExportDialog dlg = new ExportDialog(WorldEditor.this);
-					if (dlg.showDialog()){
-						String exportName = dlg.getName();
-						boolean exportTextures = dlg.exportTextures();
-					}
-
-				}
-
-				@Override
 				public void doHelp() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
-				public void doImportModel() {
-					// TODO
+				public void doLoad() {
+					
 				}
 
 				@Override
-				public void doModelPerspective() {
-					// TODO Auto-generated method stub
-
+				public void doSave() {
+					
 				}
 
 				@Override
 				public void doMove() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doNew() {
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void doOpen() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doRotateX() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doRotateY() {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void doRotateZ() {
-					// TODO Auto-generated method stub
+				}
 
+				@Override
+				public void doModelPerspective() {
 				}
 
 				@Override
 				public void doWorldPerspective() {
-					// TODO Auto-generated method stub
-
 				}
 			});
 
@@ -973,13 +898,13 @@ public class WorldEditor extends JFrame {
 
 		@Override
 		public void simpleUpdate() {
-			if(exportAction != null) {
+			if(runFirstAction != null) {
 				try {
-					exportAction.call();
+					runFirstAction.call();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				exportAction = null;
+				runFirstAction = null;
 			}
 			/** Check for key/mouse updates. */
 			input.update(tpf);
