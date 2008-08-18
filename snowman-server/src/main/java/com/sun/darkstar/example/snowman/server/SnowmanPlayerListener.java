@@ -42,6 +42,7 @@ import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.NameNotBoundException;
+import com.sun.sgs.app.ObjectNotFoundException;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -61,7 +62,7 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     public static final long serialVersionUID = 1L;
     public static final String PREFIX = "__PLAYER_";
     
-    private ManagedReference<SnowmanPlayer> playerRef;
+    private final ManagedReference<SnowmanPlayer> playerRef;
     private ManagedReference<Matchmaker> matchmakerRef;
     
     /**
@@ -105,24 +106,29 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     }
 
     public void disconnected(boolean arg0) {
-        if (matchmakerRef!=null){
-            matchmakerRef.get().removeWaitingPlayer(playerRef.get());
-            matchmakerRef = null;
+        SnowmanPlayer player;
+        try {
+            player = playerRef.get();
+        } catch (ObjectNotFoundException ex) {
+            return;
         }
-        if (playerRef.get().getGame() != null) {
-            playerRef.get().getGame().removePlayer(playerRef.get());
-            playerRef.get().setGame(null);
-        }
+        if (player == null)
+            return;
+        
         if (logger.isLoggable(Level.FINE))
             logger.log(Level.FINE,
-                       "Player {0} logged out", playerRef.get().getName());
+                       "Player {0} logged out", player.getName());
+        
+        if (matchmakerRef!=null){
+            matchmakerRef.get().removeWaitingPlayer(player);
+            matchmakerRef = null;
+        }
+        if (player.getGame() != null) {
+            player.getGame().removePlayer(player);
+        }
     }
     
     public SnowmanPlayer getSnowmanPlayer() {
         return playerRef.get();
-    }
-    
-    public Matchmaker getMatchmaker() {
-        return matchmakerRef.get();
     }
 }

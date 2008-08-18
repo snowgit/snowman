@@ -267,7 +267,6 @@ public class Game extends BaseGame implements IComponent{
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	protected void reinit() {}
 
 	@Override

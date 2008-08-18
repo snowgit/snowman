@@ -46,6 +46,7 @@ import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.ObjectNotFoundException;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -66,7 +67,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 {
     public static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
+    protected static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 4.0f;
@@ -92,20 +93,21 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     private float destY;
     private long timestamp;
     private ETeamColor teamColor;
-    private ManagedReference<SnowmanGame> currentGameRef;
-    private ManagedReference<SnowmanFlag> holdingFlagRef;
-    private PlayerState state = PlayerState.NONE;
-    private int hitPoints = RESPAWNHP;
-    private SnowmanAppContext appContext;
+    protected ManagedReference<SnowmanGame> currentGameRef;
+    protected ManagedReference<SnowmanFlag> holdingFlagRef;
+    protected PlayerState state = PlayerState.NONE;
+    protected int hitPoints = RESPAWNHP;
+    protected SnowmanAppContext appContext;
     
     public SnowmanPlayerImpl(SnowmanAppContext appContext,
+                             String name,
                              ClientSession session) {
         this.appContext = appContext;
-        name = session.getName();
+        this.name = name;
         setSession(session);
     } 
     
-    static enum PlayerState {
+    protected static enum PlayerState {
         //indicates the player is not in a game
         NONE, 
         //player is not moving
@@ -135,9 +137,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         sessionRef = appContext.getDataManager().createReference(arg0);
     }
     
-    public void setGame(SnowmanGame game){
+    public void setGame(SnowmanGame game) {
+        appContext.getDataManager().markForUpdate(this);
+
         if (game == null){
             currentGameRef = null;
+            state = PlayerState.NONE;
         } else {
             currentGameRef = appContext.getDataManager().createReference(game);
         }
@@ -230,7 +235,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return id;
     }
     
-    public void setReadyToPlay(boolean readyToPlay){
+    public void setReadyToPlay(boolean readyToPlay) {
+        appContext.getDataManager().markForUpdate(this);
+
         if(readyToPlay)
             this.state = PlayerState.STOPPED;
         else
@@ -253,8 +260,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      // IServerProcessor Messages
 
     public void ready() {
-        this.setReadyToPlay(true);
-        currentGameRef.get().startGameIfReady();
+        if (currentGameRef != null) {
+            setReadyToPlay(true);
+            currentGameRef.get().startGameIfReady();
+        }
     }
 
     public void moveMe(float startx, float starty,
@@ -271,6 +280,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
             return;
         
+        appContext.getDataManager().markForUpdate(this);
+
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
@@ -313,6 +324,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
             return;
         
+        appContext.getDataManager().markForUpdate(this);
+
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         
@@ -367,6 +380,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         getFlag(now, flagID, x, y);
     }
     protected void getFlag(long now, int flagID, float x, float y) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return;
+        
         SnowmanGame game = currentGameRef.get();
         SnowmanFlag flag = game.getFlag(flagID);
         
@@ -381,7 +398,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                            x, y, POSITIONTOLERANCESQD)) {
-            
+            appContext.getDataManager().markForUpdate(this);
+
             //verify that the player is in range of the flag
             if(checkTolerance(x, y, flag.getX(), flag.getY(),
                                EStats.GrabRange.getValue()*EStats.GrabRange.getValue())) {
@@ -394,9 +412,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 holdingFlagRef = appContext.getDataManager().createReference(flag);
                 game.send(null, ServerMessages.createAttachObjPkt(flagID, id));
             }
-            else {
-                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
-            }
+//            else {
+//                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
+//            }
         } 
         else {
             logger.log(Level.WARNING, "get flag from {0} failed position check", name);
@@ -407,11 +425,25 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Long now = System.currentTimeMillis();
         score(now, x, y);
     }
-    protected void score(long now, float x, float y) {
+    
+    /**
+     * Attempt to score. If sucessful return true. Note that a true
+     * return may mean that the currentGameRef will no longer resolve
+     * to a game object
+     * @param now
+     * @param x
+     * @param y
+     * @return success
+     */
+    protected boolean score(long now, float x, float y) {
+        //no op if player is dead or not in a game
+        if(state == PlayerState.DEAD || state == PlayerState.NONE)
+            return false;
+        
         //ignore if we aren't holding the flag
         if(holdingFlagRef == null) {
             logger.log(Level.WARNING, "score from {0} failed, not holding flag", name);
-            return;
+            return false;
         }
         
         //verify that the start location is valid
@@ -423,9 +455,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             //verify that the player is in range of the score position
             if(checkTolerance(x, y, flag.getGoalX(), flag.getGoalY(),
                                EStats.GoalRadius.getValue()*EStats.GoalRadius.getValue())) {
-                //send end game packet
-                EEndState end = teamColor == ETeamColor.Red ? EEndState.RedWin : EEndState.BlueWin;
-                currentGameRef.get().send(null, ServerMessages.createEndGamePkt(end));
+                // end game 
+                currentGameRef.get().endGame(teamColor == ETeamColor.Red ?
+                                                        EEndState.RedWin :
+                                                        EEndState.BlueWin);
+                return true;
             }
             else {
                 logger.log(Level.WARNING, "score from {0} failed radius check", name);
@@ -434,20 +468,25 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         else {
             logger.log(Level.WARNING, "score from {0} failed position check", name);
         }
+        return false;
     }
     
     // respawn
     public void respawn() {
-        appContext.getDataManager().markForUpdate(this);
-        hitPoints = RESPAWNHP;
-        Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
-        setLocation(position.getX(), position.getY());
-        currentGameRef.get().send(null,
-                                  ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
+        if (currentGameRef != null) {
+            appContext.getDataManager().markForUpdate(this);
+            hitPoints = RESPAWNHP;
+            Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
+            setLocation(position.getX(), position.getY());
+            currentGameRef.get().send(null,
+                                      ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
+        }
     }
     
     public int hit(int hp, float attackX, float attackY) {
         if (hitPoints > 0) { // not already dead
+            appContext.getDataManager().markForUpdate(this);
+
             hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
                 // drop flag
@@ -456,6 +495,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                     flag.drop(attackX, attackY);
                 }
                 holdingFlagRef = null;
+                state = PlayerState.DEAD;
                 
                 // schedule respawn
                 appContext.getTaskManager().scheduleTask(
@@ -478,7 +518,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         
         public void run() throws Exception {
-            playerRef.get().respawn();
+            try {
+                playerRef.get().respawn();
+            } catch (ObjectNotFoundException gameDone) {}
         }           
     }
     

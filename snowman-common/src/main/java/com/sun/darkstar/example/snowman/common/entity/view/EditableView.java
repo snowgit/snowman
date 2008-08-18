@@ -85,6 +85,6 @@ public class EditableView extends View implements IEditableView {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Class getClassTag() {
-		return EditableView.class;
+		return this.getClass();
 	}
 }

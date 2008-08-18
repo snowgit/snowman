@@ -32,22 +32,21 @@
 
 package com.sun.darkstar.example.snowman.jmx;
 
-import com.sun.darkstar.example.snowman.server.SnowmanGameValues;
-import com.sun.sgs.app.AppContext;
-import com.sun.sgs.app.ManagedReference;
-import com.sun.sgs.auth.Identity;
-import com.sun.sgs.impl.util.AbstractKernelRunnable;
-import com.sun.sgs.kernel.ComponentRegistry;
-import com.sun.sgs.kernel.KernelRunnable;
-import com.sun.sgs.kernel.TransactionScheduler;
-import com.sun.sgs.service.Service;
-import com.sun.sgs.service.TransactionProxy;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
+import com.sun.darkstar.example.snowman.server.SnowmanGameValues;
+import com.sun.sgs.auth.Identity;
+import com.sun.sgs.impl.util.AbstractKernelRunnable;
+import com.sun.sgs.kernel.ComponentRegistry;
+import com.sun.sgs.kernel.TransactionScheduler;
+import com.sun.sgs.service.Service;
+import com.sun.sgs.service.TransactionProxy;
 
 /**
  *

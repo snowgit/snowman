@@ -78,8 +78,7 @@ public class CollisionManagerImpl implements CollisionManager
     }
     
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    public Spatial getIntersectObject(Ray ray, Node root, Class reference, boolean iterate) {
+    public Spatial getIntersectObject(Ray ray, Node root, Class<? extends Spatial> reference, boolean iterate) {
         PickResults results = new TrianglePickResults();
         results.setCheckDistance(true);
         root.findPick(ray, results);
@@ -101,8 +100,7 @@ public class CollisionManagerImpl implements CollisionManager
      * @param reference The <code>Class</code> reference of the expected object. 
      * @return The <code>Spatial</code> that is of the given reference <code>Class</code>.
      */
-    @SuppressWarnings("unchecked")
-    private Spatial validateClass(Node root, Spatial spatial, Class reference) {
+    private Spatial validateClass(Node root, Spatial spatial, Class<? extends Spatial> reference) {
         if (spatial.getClass().equals(reference)) {
             return spatial;
         } else {

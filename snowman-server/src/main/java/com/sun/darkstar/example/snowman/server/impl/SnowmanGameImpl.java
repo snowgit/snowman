@@ -33,26 +33,26 @@
 package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * This object represents an actual running game session of Project Snowman,
@@ -195,16 +195,25 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         player.setTeamColor(color);
         player.setGame(this);
         
-        //add the players session to the channel
-        channelRef.get().join(player.getSession());
+        //add the real players session to the channel
+        if (player.getSession() != null)
+            channelRef.get().join(player.getSession());
     }
     
     // A player disconnected
     public void removePlayer(SnowmanPlayer player){
         Integer playerId = new Integer(player.getID());
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
-        if(playerRef != null)
-            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+        Channel channel = channelRef.get();
+        if(playerRef != null) {
+            channel.leave(player.getSession());
+            send(null, ServerMessages.createRemoveMOBPkt(playerId));
+            appContext.getDataManager().removeObject(player);
+        }
+        
+        // if all real players have gone, end the game
+        if (!channel.hasSessions())
+            endGame(EEndState.Draw);
     }
     
     public void sendMapInfo(){
@@ -239,6 +248,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         send(null,ServerMessages.createStartGamePkt());
     }
     
+    public Set<Integer> getPlayerIds() {
+        return playerRefs.keySet();
+    }
+    
     public SnowmanPlayer getPlayer(int id){
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
         if(playerRef != null)
@@ -246,8 +259,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         return null;
     }
     
-    private void endGame() {
-        send(null, ServerMessages.createEndGamePkt(EEndState.Draw));
+    public void endGame(EEndState endState) {
+        send(null, ServerMessages.createEndGamePkt(endState));
         appContext.getDataManager().removeObject(this);
     }
     
@@ -261,6 +274,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         }
     }
 
+    public Set<Integer> getFLagIds() {
+        return flagRefs.keySet();
+    }
+    
     public SnowmanFlag getFlag(int id) {
         return flagRefs.get(id).get();
     }

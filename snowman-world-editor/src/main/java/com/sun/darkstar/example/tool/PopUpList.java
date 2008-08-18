@@ -41,9 +41,11 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.ListModel;
-import javax.swing.tree.TreePath;
 
 public class PopUpList extends JList{
+
+	private static final long serialVersionUID = 1L;
+
 	JPopupMenu popup;
 	
 	public PopUpList(ListModel model){

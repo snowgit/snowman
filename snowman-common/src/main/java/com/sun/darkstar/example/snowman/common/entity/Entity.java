@@ -75,7 +75,7 @@ public abstract class Entity implements IEntity {
 	
 	@SuppressWarnings("unchecked")
 	public Class getClassTag() {
-		return Entity.class;
+		return this.getClass();
 	}
 	
 	@Override

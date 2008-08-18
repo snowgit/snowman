@@ -469,7 +469,9 @@ class SimulatedPlayer implements SimpleClientListener {
         logger.log(Level.FINE, "Player: {0} quit", name);
         if ((state == PLAYERSTATE.Playing) ||
             (state == PLAYERSTATE.Paused)) {
-            simpleClient.logout(false);
+            try {
+                simpleClient.logout(false);
+            } catch (Exception ignore) {}
         }
         state = PLAYERSTATE.Quit;
     }

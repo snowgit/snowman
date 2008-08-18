@@ -43,7 +43,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
-import com.sun.darkstar.example.snowman.common.util.CollisionManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.tool.WorldEditor.ModeEnum;
 

@@ -31,17 +31,18 @@
 */ 
 package com.sun.darkstar.example.tool;
 
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 
 /**
  * This class interprets a JME scene graph as a Swing JTree Model
@@ -56,14 +57,17 @@ class JMonkeyTreeModel implements TreeModel {
         root = sceneRoot;
     }
 
-    public Object getRoot() {
+    @Override
+    public Spatial getRoot() {
         return root;
     }
 
+    @Override
     public Object getChild(Object parent, int index) {
         return ((Node) parent).getChild(index);
     }
 
+    @Override
     public int getChildCount(Object parent) {
         if (parent instanceof Node) {
             List<Spatial> children = ((Node) parent).getChildren();
@@ -74,6 +78,7 @@ class JMonkeyTreeModel implements TreeModel {
         return 0;
     }
 
+    @Override
     public boolean isLeaf(Object node) {
         return !(node instanceof Node);
     }
@@ -99,18 +104,22 @@ class JMonkeyTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         return ((DefaultMutableTreeNode) parent).getIndex(
                 (DefaultMutableTreeNode) child);
     }
 
+    @Override
     public void addTreeModelListener(TreeModelListener l) {
         listeners.add(l);
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         listeners.remove(l);
     }

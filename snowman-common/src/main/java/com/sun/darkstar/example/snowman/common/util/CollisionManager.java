@@ -56,7 +56,7 @@ public interface CollisionManager {
      * @param iterate True if all intersected objects should be checked. Otherwise only the first is checked.
      * @return The <code>Spatial</code> that is of the given reference <code>Class</code>.
      */
-    public Spatial getIntersectObject(Ray ray, Node root, Class reference, boolean iterate);
+    public Spatial getIntersectObject(Ray ray, Node root, Class<? extends Spatial> reference, boolean iterate);
 
     /**
      * Retrieve the intersection point with the given ray and spatial in either
