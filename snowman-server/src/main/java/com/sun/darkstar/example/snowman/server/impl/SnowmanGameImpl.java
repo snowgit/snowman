@@ -32,27 +32,26 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * This object represents an actual running game session of Project Snowman,

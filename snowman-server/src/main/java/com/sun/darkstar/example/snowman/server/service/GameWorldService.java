@@ -32,7 +32,6 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
-import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.service.Service;
 
 
