@@ -38,7 +38,7 @@ public class SnowmanCameraHandler extends InputHandler {
 
 	private final Ray checkRay = new Ray();
 	private final Vector3f camSphereCoords = new Vector3f(1, 0,
-			25 * FastMath.DEG_TO_RAD);
+			15 * FastMath.DEG_TO_RAD);
 	private final Vector3f tempVec = new Vector3f();
 
 	private final Node target;

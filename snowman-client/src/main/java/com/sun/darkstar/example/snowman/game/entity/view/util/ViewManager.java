@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Sphere;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
@@ -19,6 +21,7 @@ import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagGoalView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -159,6 +162,12 @@ public class ViewManager extends Manager {
 			view = new FlagView((IDynamicEntity)entity);
 			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
+                    case FlagBlueGoal:
+                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagBlueGoal);
+                        break;
+                    case FlagRedGoal:
+                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagRedGoal);
+                        break;
 		default:
 			switch(entity.getType()) {
 			case Static:
