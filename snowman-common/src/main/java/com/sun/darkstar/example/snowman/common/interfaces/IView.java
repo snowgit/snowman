@@ -33,7 +33,7 @@ public interface IView extends Savable {
 	 * Attach the given mesh to this view.
 	 * @param mesh The <code>Spatial</code> to be attached.
 	 */
-	public void attachMesh(Spatial mesh);
+	public void attachSpatial(Spatial child);
 	
 	/**
 	 * Attach this view to the given <code>Node</code>.

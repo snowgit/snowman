@@ -54,7 +54,7 @@ public abstract class View extends Node implements IView {
 	}
 	
 	@Override
-	public void attachMesh(Spatial mesh) {
+	public void attachSpatial(Spatial mesh) {
 		this.attachChild(mesh);
 	}
 
