@@ -267,6 +267,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     public void endGame(EEndState endState) {
         send(null, ServerMessages.createEndGamePkt(endState));
+        appContext.getDataManager().removeObject(channelRef.get());
         appContext.getDataManager().removeObject(this);
     }
     
