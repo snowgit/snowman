@@ -90,71 +90,95 @@ public class AddMOBTask extends RealTimeTask {
 
 	@Override
 	public void execute() {
-		EEntity enumn = null;
-		switch(this.enumn) {
-		case SNOWMAN: 
-			if(this.local) {
-				switch(this.color) {
-				case Red: enumn = EEntity.SnowmanLocalRed; break;
-				case Blue: enumn = EEntity.SnowmanLocalBlue; break;
-				}
-			} else {
-				switch(this.color) {
-				case Red: enumn = EEntity.SnowmanDistributedRed; break;
-				case Blue: enumn = EEntity.SnowmanDistributedBlue; break;
-				}
-			}
-			break;
-		case FLAG:
-			switch(this.color) {
-			case Red: enumn = EEntity.FlagRed; break;
-			case Blue: enumn = EEntity.FlagBlue; break;
-			}
-			break;
-		default: throw new IllegalArgumentException("Invalid entity type: " + this.enumn.toString());
-		}
-		try {
-			BattleState state = ((BattleState)this.game.getGameState(EGameState.BattleState));
-			IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id);
-//			if(entity == null) {
-//				state.incrementCount();
-//				return; // TODO A flag might be created.
-//			}
-			IView view = ViewManager.getInstance().createView(entity);
-			((View)view).getLocalTranslation().x = this.x;
-			((View)view).getLocalTranslation().z = this.z;
-			if (state.getRootNode().getWorldBound() == null) {
-				state.getRootNode().updateGeometricState(0, true);
-			}
-
-			if (state.getRootNode().getWorldBound() != null) {
-				Vector3f center = state.getRootNode().getWorldBound().getCenter();
-				if (center != null) {
-					// have view look towards center
-					Vector3f direction = center.subtract(this.x, 0, this.z);
-					direction.y = 0;
-					direction.normalizeLocal();
-					((View)view).getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
-				}
-			}
-
-			if(this.enumn != EMOBType.FLAG) {
-				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
-				controller.setActive(true);
-				if(this.local) {
-					InputManager.getInstance().registerController(controller);
-					state.initializeCameraHandler((DynamicView)view);
-				}
-			}
-			view.attachTo(state.getWorld().getDynamicRoot());
-			state.getWorld().updateRenderState();
-			state.incrementCount();
-		} catch (DuplicatedIDException e) {
-			e.printStackTrace();
-		}
+            switch (this.enumn) {
+                case SNOWMAN:
+                    if (this.local) {
+                        switch (this.color) {
+                            case Red:
+                                addMob(EEntity.SnowmanLocalRed);
+                                break;
+                            case Blue:
+                                addMob(EEntity.SnowmanLocalBlue);
+                                break;
+                        }
+                    } else {
+                        switch (this.color) {
+                            case Red:
+                                addMob(EEntity.SnowmanDistributedRed);
+                                break;
+                            case Blue:
+                                addMob(EEntity.SnowmanDistributedBlue);
+                                break;
+                        }
+                    }
+                    break;
+                case FLAG:
+                    switch (this.color) {
+                        case Red:
+                            addMob(EEntity.FlagRed);
+                            break;
+                        case Blue:
+                            addMob(EEntity.FlagBlue);
+                            break;
+                    }
+                    break;
+                case FLAGGOAL:
+                    switch (this.color) {
+                        case Red:
+                            addMob(EEntity.FlagRedGoal);
+                            break;
+                        case Blue:
+                            addMob(EEntity.FlagBlueGoal);
+                            break;
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid entity type: " + this.enumn.toString());
+            }
+		
 	}
+        
+        private void addMob(EEntity enumn)
+        {
+            try {
+                BattleState state = ((BattleState) this.game.getGameState(EGameState.BattleState));
+                IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id);
+                IView view = ViewManager.getInstance().createView(entity);
+                ((View) view).getLocalTranslation().x = this.x;
+                ((View) view).getLocalTranslation().z = this.z;
 
-	@Override
+                if (state.getRootNode().getWorldBound() == null) {
+                    state.getRootNode().updateGeometricState(0, true);
+                }
+
+                if (state.getRootNode().getWorldBound() != null) {
+                    Vector3f center = state.getRootNode().getWorldBound().getCenter();
+                    if (center != null) {
+                        // have view look towards center
+                        Vector3f direction = center.subtract(this.x, 0, this.z);
+                        direction.y = 0;
+                        direction.normalizeLocal();
+                        ((View) view).getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
+                    }
+                }
+
+                if (this.enumn == EMOBType.SNOWMAN) {
+                    IController controller = InputManager.getInstance().getController((IDynamicEntity) entity);
+                    controller.setActive(true);
+                    if (this.local) {
+                        InputManager.getInstance().registerController(controller);
+                        state.initializeCameraHandler((DynamicView) view);
+                    }
+                }
+                view.attachTo(state.getWorld().getDynamicRoot());
+                state.getWorld().updateRenderState();
+                state.incrementCount();
+            } catch (DuplicatedIDException e) {
+                e.printStackTrace();
+            }
+    }
+
+    @Override
 	public boolean equals(Object object) {
 		if(!super.equals(object)) return false;
 		AddMOBTask given = (AddMOBTask)object;

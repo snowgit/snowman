@@ -60,8 +60,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void endGame(EEndState endState) {
-		// TODO Auto-generated method stub
-
+            //TaskManager.getInstance().createTask(ETask.GameState, EGameState.LoginState);
 	}
 
 	@Override
