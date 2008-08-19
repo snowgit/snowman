@@ -36,7 +36,10 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.List;
@@ -52,6 +55,8 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.SwingWorker;
@@ -188,15 +193,19 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         labelPanel.add(userCount);
         labelPanel.add(userRealCount);
         
+        JTextArea profilePanel = new JTextArea(5, 20);
+        
         c.add(textPanel, BorderLayout.WEST);
         c.add(progressPanel, BorderLayout.CENTER);
         c.add(labelPanel, BorderLayout.EAST);
+        c.add(new JScrollPane(profilePanel), BorderLayout.SOUTH);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         changeThread = new ChangeThread();
         changeThread.execute();
         new MoveThread().start();
+        new ProfileThread(profilePanel).start();
         setVisible(true);
     }
 
@@ -224,10 +233,8 @@ public class ClientSimulator extends JFrame implements ChangeListener {
 
                 if (usersSlider.getValue() > players.size()) {
                     Properties properties = new Properties();
-                    properties.setProperty("host",
-                            System.getProperty("host", serverHost));
-                    properties.setProperty("port",
-                            System.getProperty("port", serverPort));
+                    properties.setProperty("host", serverHost);
+                    properties.setProperty("port", serverPort);
                     properties.setProperty("name", hostname + "_" + buildNumber + "_Robot" + userId++);
                     try {
                         SimulatedPlayer player =
@@ -305,6 +312,46 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                         sleep(50);
                     } catch (InterruptedException ignore) {}
                 }
+            }
+        }
+    }
+
+    // Thread to monitor server profile output
+    private class ProfileThread extends Thread {
+        final JTextArea profilePanel;
+        final int profilePort;
+        
+        ProfileThread(JTextArea profilePanel) {
+            this.profilePanel = profilePanel;
+            profilePort = Integer.getInteger("profilePort", 43007);
+        }
+        
+        @Override
+        public void run() {
+            InputStream is = null;
+            while (true) {
+                try {
+                    if (is == null) {
+                        Socket socket = new Socket(serverHost, profilePort);
+                        is = socket.getInputStream();
+                        profilePanel.setText("Monitoring game server on " +
+                                             serverHost + ":" + profilePort);
+                    }
+                    byte[] buff = new byte[1024];
+                    int bytes = is.read(buff);
+                    while (bytes > 0) {
+                        profilePanel.setText(new String(Arrays.copyOf(buff, bytes)));
+                        bytes = is.read(buff);
+                    }
+                } catch (Exception ex) {
+                    profilePanel.setText("Exception connecting to game server on " +
+                                         serverHost + ":" + profilePort + "\n");
+                    profilePanel.append(ex.getLocalizedMessage());
+                }
+                is = null;
+                try {
+                    sleep(15 * 1000);
+                } catch (InterruptedException ignore) {}
             }
         }
     }
