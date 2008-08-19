@@ -1,8 +1,10 @@
 package com.sun.darkstar.example.snowman.common.entity.view.terrain;
 
+import java.io.IOException;
+
 import com.jme.scene.PassNode;
 import com.jme.scene.PassNodeState;
-
+import com.jme.util.export.JMEImporter;
 import com.sun.darkstar.example.snowman.common.entity.terrain.TerrainEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
@@ -78,5 +80,12 @@ public class TerrainView extends EditableView {
 	 */
 	public TerrainCluster getTerrainCluster() {
 		return this.terrain;
+	}
+
+	@Override
+	public void read(JMEImporter im) throws IOException {
+		super.read(im);
+		this.passNode = (PassNode) getChild("TerrainPassNode");
+		this.terrain = (TerrainCluster) getChild("Terrain");
 	}
 }

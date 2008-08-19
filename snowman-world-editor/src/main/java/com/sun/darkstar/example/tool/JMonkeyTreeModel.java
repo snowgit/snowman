@@ -57,14 +57,17 @@ class JMonkeyTreeModel implements TreeModel {
         root = sceneRoot;
     }
 
-    public Object getRoot() {
+    @Override
+    public Spatial getRoot() {
         return root;
     }
 
+    @Override
     public Object getChild(Object parent, int index) {
         return ((Node) parent).getChild(index);
     }
 
+    @Override
     public int getChildCount(Object parent) {
         if (parent instanceof Node) {
             List<Spatial> children = ((Node) parent).getChildren();
@@ -75,6 +78,7 @@ class JMonkeyTreeModel implements TreeModel {
         return 0;
     }
 
+    @Override
     public boolean isLeaf(Object node) {
         return !(node instanceof Node);
     }
@@ -100,18 +104,22 @@ class JMonkeyTreeModel implements TreeModel {
         }
     }
 
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
     }
 
+    @Override
     public int getIndexOfChild(Object parent, Object child) {
         return ((DefaultMutableTreeNode) parent).getIndex(
                 (DefaultMutableTreeNode) child);
     }
 
+    @Override
     public void addTreeModelListener(TreeModelListener l) {
         listeners.add(l);
     }
 
+    @Override
     public void removeTreeModelListener(TreeModelListener l) {
         listeners.remove(l);
     }

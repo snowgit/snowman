@@ -33,22 +33,27 @@
 package com.sun.darkstar.example.snowman.clientsimulator;
 
 import java.awt.Container;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Queue;
+import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.JProgressBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.SwingWorker;
 
 /**
  * Program which will start and stop multiple simulated snowman game players.
@@ -115,9 +120,11 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     
     private final JSlider usersSlider;
     private final JLabel userCount;
+    private final JProgressBar usersBar;
+    private final JLabel userRealCount;
     
-    private final Map<SimulatedPlayer, SimulatedPlayer> players =
-            new ConcurrentHashMap<SimulatedPlayer, SimulatedPlayer>();
+    private final Queue<SimulatedPlayer> players =
+            new ConcurrentLinkedQueue<SimulatedPlayer>();
     
     private final ChangeThread changeThread;
     
@@ -143,18 +150,38 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         logger.log(Level.CONFIG, "Max number of clients set to {0}", maxClients);
 
         Container c = getContentPane();
-        c.setLayout(new FlowLayout());
-        c.add(new JLabel("Number of Clients:"));
+        c.setLayout(new BorderLayout(5,5));
+        
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new GridLayout(2,1,5,5));
+        textPanel.add(new JLabel("Target Number of Clients:"));
+        textPanel.add(new JLabel("Actual Number of Clients:"));
+        
+        JPanel progressPanel = new JPanel();
+        progressPanel.setLayout(new GridLayout(2,1,5,5));
         usersSlider = new JSlider(0, maxClients);
         usersSlider.setValue(0);
-        c.add(usersSlider);
-        userCount = new JLabel("0");
-        c.add(userCount);
         usersSlider.addChangeListener(this);
+        usersBar = new JProgressBar(0, maxClients);
+        usersBar.setValue(0);
+        progressPanel.add(usersSlider);
+        progressPanel.add(usersBar);
+        
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new GridLayout(2,1,5,5));
+        userCount = new JLabel("0");
+        userRealCount = new JLabel("0");
+        labelPanel.add(userCount);
+        labelPanel.add(userRealCount);
+        
+        c.add(textPanel, BorderLayout.WEST);
+        c.add(progressPanel, BorderLayout.CENTER);
+        c.add(labelPanel, BorderLayout.EAST);
+        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         changeThread = new ChangeThread();
-        changeThread.start();
+        changeThread.execute();
         new MoveThread().start();
         setVisible(true);
     }
@@ -170,13 +197,13 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     }
     
     // Thread to handle change in players
-    private class ChangeThread extends Thread {
+    private class ChangeThread extends SwingWorker<Void, Integer> {
 
         private final Lock lock = new ReentrantLock();
         private final Condition change = lock.newCondition();
         
         @Override
-        public void run() {
+        public Void doInBackground() {
             int userId = 0;
 
             while (true) {
@@ -191,18 +218,20 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                     try {
                         SimulatedPlayer player =
                                 new SimulatedPlayer(properties, moveDelay);
-                        players.put(player, player);
+                        players.add(player);
                     } catch (Exception ex) {
                         logger.log(Level.SEVERE,
                                    "Exception creating simulated player",
                                    ex);
                     }
+                    publish(players.size());
                     pause(); // avoid storm
                 } else if (usersSlider.getValue() < players.size()) {
-                    Iterator<SimulatedPlayer> iter = players.values().iterator();
-                    if (iter.hasNext()) {
-                        iter.next().quit();
-                        iter.remove();
+                    SimulatedPlayer p = players.peek();
+                    if (p != null) {
+                        p.quit();
+                        players.poll();
+                        publish(players.size());
                         pause(); // avoid storm
                     }
                 } else {
@@ -217,6 +246,13 @@ public class ClientSimulator extends JFrame implements ChangeListener {
             }
         }
         
+        @Override
+        protected void process(List<Integer> chunks) {
+            Integer size = chunks.get(chunks.size()-1);
+            usersBar.setValue(size);
+            userRealCount.setText(size.toString());
+        }
+        
         void wakeUp() {
             lock.lock();
             change.signal();
@@ -225,7 +261,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         private void pause() {
             try {
-                sleep(newClientDelay);
+                Thread.sleep(newClientDelay);
             } catch (InterruptedException ignore) {}
         }
     }
@@ -238,7 +274,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
 
             while (true) {
 
-                Iterator<SimulatedPlayer> iter = players.values().iterator();
+                Iterator<SimulatedPlayer> iter = players.iterator();
                 while (iter.hasNext()) {
                     try {
                         if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {

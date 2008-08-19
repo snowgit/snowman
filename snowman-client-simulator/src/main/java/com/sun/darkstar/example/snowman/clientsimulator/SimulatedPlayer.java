@@ -527,17 +527,22 @@ class SimulatedPlayer implements SimpleClientListener {
 
     @Override
     public void reconnecting() {
-        logger.log(Level.FINE, "Re-connecting player: {0}", name);
+        logger.log(Level.WARNING, "Re-connecting player: {0}", name);
     }
 
     @Override
     public void reconnected() {
-        logger.log(Level.FINE, "Re-connected player: {0}", name);
+        logger.log(Level.WARNING, "Re-connected player: {0}", name);
     }
 
     @Override
-    public void disconnected(boolean arg0, String arg1) {
-        logger.log(Level.FINE, "Disconnected player: {0}", name);
+    public void disconnected(boolean graceful, String reason) {
+        if(graceful) {
+            logger.log(Level.FINE, "Disconnected player: {0}", name);
+        }
+        else {
+            logger.log(Level.WARNING, "Disconnected player: {0}, Reason: {1}", new Object[]{name, reason});
+        }
         quit();
     }
 }
