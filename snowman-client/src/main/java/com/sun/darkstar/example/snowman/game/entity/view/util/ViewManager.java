@@ -129,19 +129,19 @@ public class ViewManager extends Manager {
 		case Terrain: view = new TerrainView((IEditableEntity)entity); break;
 		case SnowmanLocalRed:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanDistributedRed:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanLocalBlue:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanDistributedBlue:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case Snowball:
 			view = new SnowballView((SnowballEntity)entity);
@@ -149,26 +149,26 @@ public class ViewManager extends Manager {
 			Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
 			ball.setModelBound(new BoundingBox());
 			ball.updateModelBound();
-			view.attachMesh(ball);
+			view.attachSpatial(ball);
 			break;
 		case FlagBlue:
 			view = new FlagView((IDynamicEntity)entity);
-			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
 		case FlagRed:
 			view = new FlagView((IDynamicEntity)entity);
-			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
 		default:
 			switch(entity.getType()) {
 			case Static:
 				view = new StaticView((IStaticEntity)entity);
-				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+				view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 				((StaticView)view).lock();
 				break;
 			case Editable:
 				view = new EditableView((IEditableEntity)entity);
-				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+				view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 				break;
 			}
 		break;

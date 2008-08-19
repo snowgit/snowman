@@ -30,7 +30,7 @@ public class SnowballView extends DynamicView {
 	}
 	
 	@Override
-	public void attachMesh(Spatial mesh) {
+	public void attachSpatial(Spatial mesh) {
 		SharedMesh shared = new SharedMesh((TriMesh)mesh);
 		this.attachChild(shared);
 	}

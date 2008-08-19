@@ -1,8 +1,5 @@
 package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
-import com.jme.bounding.BoundingBox;
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 
@@ -26,11 +23,6 @@ public class FlagView extends DynamicView {
 	 */
 	public FlagView(IDynamicEntity entity) {
 		super(entity);
-		// FIXME Delete this when model is ready.
-		Box b = new Box(this.entity.getEnumn().toString(), new Vector3f(), 0.2f, 0.2f, 0.2f);
-		b.setModelBound(new BoundingBox());
-		b.updateModelBound();
-		this.attachChild(b);
 	}
 
 	@Override
