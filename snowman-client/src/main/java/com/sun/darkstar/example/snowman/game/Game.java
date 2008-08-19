@@ -250,9 +250,9 @@ public class Game extends BaseGame implements IComponent{
 		} else if (KeyBindingManager.getKeyBindingManager().isValidCommand("flip_stats+", false)) {
 	        StatsManager.getInstance().flipForward();
 		} else if(KeyBindingManager.getKeyBindingManager().isValidCommand("screenshot", false)) {
-//			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
-//			this.count++;
-			this.client.getHandler().getProcessor().newGame(-1, null);
+			this.display.getRenderer().takeScreenShot("Snowman" + this.count);
+			this.count++;
+//			this.client.getHandler().getProcessor().newGame(-1, null);
 		}
 	}
 

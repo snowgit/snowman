@@ -36,6 +36,7 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.List;
@@ -112,11 +113,14 @@ public class ClientSimulator extends JFrame implements ChangeListener {
 
     static private final Logger logger = Logger.getLogger(
             ClientSimulator.class.getName());
-
+    
+    private String hostname;
+    
     private final String serverHost;
     private final String serverPort;
     private final int moveDelay;
     private final int newClientDelay;
+    private final int buildNumber;
     
     private final JSlider usersSlider;
     private final JLabel userCount;
@@ -134,6 +138,12 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     ClientSimulator() {
         super("Client Simulator Controls");
         
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch(Exception e) {
+            hostname = "localhost";
+        }
+        
         serverHost = System.getProperty("host", "localhost");
         serverPort = System.getProperty("port", "3000");
         logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
@@ -148,7 +158,11 @@ public class ClientSimulator extends JFrame implements ChangeListener {
 
         final int maxClients = Integer.getInteger("maxClients", 100);
         logger.log(Level.CONFIG, "Max number of clients set to {0}", maxClients);
-
+        
+        buildNumber = Integer.getInteger("buildNumber", 0);
+        logger.log(Level.CONFIG,
+                   "Build Number set to {0}", buildNumber);
+        
         Container c = getContentPane();
         c.setLayout(new BorderLayout(5,5));
         
@@ -214,7 +228,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                             System.getProperty("host", serverHost));
                     properties.setProperty("port",
                             System.getProperty("port", serverPort));
-                    properties.setProperty("name", "Robot" + userId++);
+                    properties.setProperty("name", hostname + "_" + buildNumber + "_Robot" + userId++);
                     try {
                         SimulatedPlayer player =
                                 new SimulatedPlayer(properties, moveDelay);

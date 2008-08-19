@@ -1,5 +1,6 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
@@ -122,6 +123,21 @@ public class AddMOBTask extends RealTimeTask {
 			IView view = ViewManager.getInstance().createView(entity);
 			((View)view).getLocalTranslation().x = this.x;
 			((View)view).getLocalTranslation().z = this.z;
+			if (state.getRootNode().getWorldBound() == null) {
+				state.getRootNode().updateGeometricState(0, true);
+			}
+
+			if (state.getRootNode().getWorldBound() != null) {
+				Vector3f center = state.getRootNode().getWorldBound().getCenter();
+				if (center != null) {
+					// have view look towards center
+					Vector3f direction = center.subtract(this.x, 0, this.z);
+					direction.y = 0;
+					direction.normalizeLocal();
+					((View)view).getLocalRotation().lookAt(direction, Vector3f.UNIT_Y);
+				}
+			}
+
 			if(this.enumn != EMOBType.FLAG) {
 				IController controller = InputManager.getInstance().getController((IDynamicEntity)entity);
 				controller.setActive(true);
@@ -130,7 +146,7 @@ public class AddMOBTask extends RealTimeTask {
 					state.initializeCameraHandler((DynamicView)view);
 				}
 			}
-			view.attachTo(this.game.getGameState(EGameState.BattleState).getWorld().getDynamicRoot());
+			view.attachTo(state.getWorld().getDynamicRoot());
 			state.getWorld().updateRenderState();
 			state.incrementCount();
 		} catch (DuplicatedIDException e) {

@@ -1,6 +1,7 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
@@ -69,6 +70,9 @@ public class BattleState extends GameState {
 		Vector3f targetOffset = new Vector3f(0,0,0);
 		targetOffset.setY(((BoundingBox)view.getWorldBound()).yExtent*1.5f);
 		this.cameraHandler.setTargetOffset(targetOffset);
+		Vector3f dir = view.getLocalRotation().mult(new Vector3f(0,0,-1));
+		Vector3f store = new Vector3f();
+		this.cameraHandler.setAzimuth(FastMath.cartesianToSpherical(dir, store).y);
 	}
 	
 	/**
