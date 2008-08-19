@@ -23,8 +23,10 @@
     <!-- Configurable app properties -->
     <property name="maxClients" value="1000"/>
     <property name="newClientDelay" value="175"/>
-    <property name="move.delay" value="5000"/>
-    <property name="numPlayersPerGame" value="4"/>
+    <property name="moveDelay" value="5000"/>
+    <property name="numPlayersPerGame" value="2"/>
+    <property name="numRobotsPerGame" value="2"/>
+    <property name="robotDelay" value="2000"/>
 
     <!-- Darkstar core server host -->
     <property name="core.host" value="localhost"/>
@@ -125,7 +127,7 @@
         </concat>
         <java jar="${snowman-server.jar}"
               fork="true">
-            <jvmarg line="${server.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame}"/>
+            <jvmarg line="${server.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame} -DnumRobotsPerGame=${numRobotsPerGame} -DrobotDelay=${robotDelay}"/>
             <sysproperty key="java.library.path" file="${db.library.path}"/>
             <sysproperty key="java.util.logging.config.file" file="${app.logging}"/>
             <arg file="${app.properties}"/>
@@ -135,7 +137,7 @@
     <!-- Runs the server for use with multi-node mode -->
     <target name="run-server"
             depends="-maybe-delete-datastore"
-            description="Runs the Wonderland application server">
+            description="Runs the multi node application server">
         <property name="app.logging" location="${props.dir}/server-logging.properties"/>
         <mkdir dir="${app.dir}"/>
         <property name="app.properties" location="${app.dir}/server.properties"/>
@@ -152,7 +154,7 @@
         </concat>
         <java jar="${snowman-server.jar}"
               fork="true">
-            <jvmarg line="${server.jvm.args}"/>
+            <jvmarg line="${server.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame} -DnumRobotsPerGame=${numRobotsPerGame} -DrobotDelay=${robotDelay}"/>
             <sysproperty key="java.util.logging.config.file" file="${app.logging}"/>
             <arg file="${app.properties}"/>
         </java>
@@ -187,7 +189,7 @@
         <buildnumber/>
         <java jar="${snowman-client-simulator.jar}"
               fork="true">
-            <jvmarg line="${client.jvm.args} -DmaxClients=${maxClients} -DmoveDelay=${move.delay} -DnewClientDelay=${newClientDelay} -Dhost=${server.host} -Dport=${server.port}"/>
+            <jvmarg line="${client.jvm.args} -DmaxClients=${maxClients} -DmoveDelay=${moveDelay} -DnewClientDelay=${newClientDelay} -Dhost=${server.host} -Dport=${server.port} -DbuildNumber=${build.number}"/>
             <sysproperty key="reliable" file="true"/>
             <sysproperty key="java.util.logging.config.file" file="${props.dir}/sim-logging.properties"/>
         </java>

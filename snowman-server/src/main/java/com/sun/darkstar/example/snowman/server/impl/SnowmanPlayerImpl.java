@@ -70,7 +70,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     protected static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
-    static float POSITIONTOLERANCESQD = 4.0f;
+    static float POSITIONTOLERANCESQD = 16.0f;
     static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
     static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     
@@ -305,7 +305,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                    id, startX, startY, destX, destY));
         }
         else {
-            logger.log(Level.WARNING, "move from {0} failed start position check", name);
+            logger.log(Level.FINE, "move from {0} failed start position check", name);
             
             this.timestamp = now;
             this.setLocation(expectedPosition.getX(), expectedPosition.getY());
@@ -341,14 +341,14 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             if(!checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                                targetPosition.getX(), targetPosition.getY(), 
                                range*range)) {
-                logger.log(Level.WARNING, "attack from {0} out of range", name);
+                logger.log(Level.FINE, "attack from {0} out of range", name);
                 success = false;
             }
             
             //collision detection
             if(!appContext.getManager(GameWorldManager.class).validThrow(new Coordinate(x, y), 
                                                                           targetPosition)) {
-                logger.log(Level.WARNING, "attack from {0} detected a collision", name);
+                logger.log(Level.FINE, "attack from {0} detected a collision", name);
                 success = false;
             }
 
@@ -371,7 +371,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
         else {
             //ignore an invalid attack
-            logger.log(Level.WARNING, "attack from {0} failed attack position check", name);
+            logger.log(Level.FINE, "attack from {0} failed attack position check", name);
         }
     }
 
@@ -412,12 +412,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 holdingFlagRef = appContext.getDataManager().createReference(flag);
                 game.send(null, ServerMessages.createAttachObjPkt(flagID, id));
             }
-//            else {
-//                logger.log(Level.WARNING, "get flag from {0} failed radius check", name);
-//            }
+            else {
+                logger.log(Level.FINE, "get flag from {0} failed radius check", name);
+            }
         } 
         else {
-            logger.log(Level.WARNING, "get flag from {0} failed position check", name);
+            logger.log(Level.FINE, "get flag from {0} failed position check", name);
         }
     }
     
@@ -442,7 +442,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         
         //ignore if we aren't holding the flag
         if(holdingFlagRef == null) {
-            logger.log(Level.WARNING, "score from {0} failed, not holding flag", name);
+            logger.log(Level.FINE, "score from {0} failed, not holding flag", name);
             return false;
         }
         
@@ -462,11 +462,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 return true;
             }
             else {
-                logger.log(Level.WARNING, "score from {0} failed radius check", name);
+                logger.log(Level.FINE, "score from {0} failed radius check", name);
             }
         } 
         else {
-            logger.log(Level.WARNING, "score from {0} failed position check", name);
+            logger.log(Level.FINE, "score from {0} failed position check", name);
         }
         return false;
     }

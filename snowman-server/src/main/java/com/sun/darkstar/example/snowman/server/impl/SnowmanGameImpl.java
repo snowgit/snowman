@@ -52,6 +52,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -62,6 +64,8 @@ import java.util.Set;
 public class SnowmanGameImpl implements SnowmanGame, Serializable
 {
     public static final long serialVersionUID = 1L;
+    
+    protected static Logger logger = Logger.getLogger(SnowmanGameImpl.class.getName());
     /**
      * A prefix that is appended to the darkstar bound name for
      * all game channels.
@@ -170,6 +174,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
+        appContext.getDataManager().markForUpdate(this);
         //ensure we are not going over the limit
         if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
             throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
@@ -202,6 +207,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     // A player disconnected
     public void removePlayer(SnowmanPlayer player){
+        appContext.getDataManager().markForUpdate(this);
         Integer playerId = new Integer(player.getID());
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
         Channel channel = channelRef.get();

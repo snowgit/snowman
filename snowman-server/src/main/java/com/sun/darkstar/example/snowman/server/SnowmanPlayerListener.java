@@ -41,7 +41,6 @@ import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ManagedObject;
-import com.sun.sgs.app.NameNotBoundException;
 import com.sun.sgs.app.ObjectNotFoundException;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
@@ -60,7 +59,6 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
 {
     private static Logger logger = Logger.getLogger(SnowmanPlayerListener.class.getName());
     public static final long serialVersionUID = 1L;
-    public static final String PREFIX = "__PLAYER_";
     
     private final ManagedReference<SnowmanPlayer> playerRef;
     private ManagedReference<Matchmaker> matchmakerRef;
@@ -78,19 +76,9 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
                                              SnowmanAppContext appContext,
                                              EntityFactory entityFactory,
                                              Matchmaker matchmaker) {
-        String pname = PREFIX + session.getName();
-        SnowmanPlayerListener player;
-        try {
-            player = (SnowmanPlayerListener) appContext.getDataManager().getBinding(pname);
-            player.getSnowmanPlayer().setSession(session);
-            player.getSnowmanPlayer().setReadyToPlay(false);
-        } catch (NameNotBoundException e) {
-            player = new SnowmanPlayerListener(appContext,
-                                               entityFactory.createSnowmanPlayer(appContext, session),
-                                               matchmaker);
-            appContext.getDataManager().setBinding(pname, player);
-        }
-        return player;
+        return new SnowmanPlayerListener(appContext,
+                                         entityFactory.createSnowmanPlayer(appContext, session),
+                                         matchmaker);
     }
     
     protected SnowmanPlayerListener(SnowmanAppContext appContext,
