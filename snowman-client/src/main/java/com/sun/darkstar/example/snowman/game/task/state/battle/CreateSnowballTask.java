@@ -95,4 +95,13 @@ public class CreateSnowballTask extends Task {
 			e.printStackTrace();
 		}
 	}
+        
+        @Override
+	public boolean equals(Object object) {
+            if (object instanceof CreateSnowballTask) {
+                CreateSnowballTask given = (CreateSnowballTask) object;
+                return given == this;
+            }
+            return false;
+	}
 }

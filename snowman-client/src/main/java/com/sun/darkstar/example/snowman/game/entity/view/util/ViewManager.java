@@ -148,11 +148,6 @@ public class ViewManager extends Manager {
 			break;
 		case Snowball:
 			view = new SnowballView((SnowballEntity)entity);
-			//view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
-			Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
-			ball.setModelBound(new BoundingBox());
-			ball.updateModelBound();
-			view.attachSpatial(ball);
 			break;
 		case FlagBlue:
 			view = new FlagView((IDynamicEntity)entity);

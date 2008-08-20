@@ -98,6 +98,11 @@ public interface SnowmanPlayer extends DynamicEntity
      */
     public int hit(int hp, float attackX, float attackY);
     
+    /**
+     * If this snowman is holding the flag, drop the flag
+     */
+    public void dropFlag();
+    
     public int getHitPoints();
     
     public void setSession(ClientSession session);

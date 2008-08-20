@@ -52,7 +52,7 @@ public class SnowballController extends Controller {
 			EntityManager.getInstance().removeEntity(this.entity.getID());
 			ViewManager.getInstance().removeView(this.entity);
 			InputManager.getInstance().removeController((IDynamicEntity)this.entity);
-		}
+		} 
 	}
 	
 	/**

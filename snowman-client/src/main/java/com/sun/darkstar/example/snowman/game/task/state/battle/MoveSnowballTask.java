@@ -74,6 +74,7 @@ public class MoveSnowballTask extends RealTimeTask {
 			this.snowball.addForce(force);
 			// Step 7.
 			PhysicsManager.getInstance().markForUpdate(this.snowball);
+                        System.out.println("Moving snowball");
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -96,7 +97,7 @@ public class MoveSnowballTask extends RealTimeTask {
 		if(super.equals(object)) {
 			if(object instanceof MoveSnowballTask) {
 				MoveSnowballTask given = (MoveSnowballTask)object;
-				return given.snowball.equals(this.snowball);
+				return given.snowball == this.snowball;
 			}
 		}
 		return false;
