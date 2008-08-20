@@ -4,6 +4,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Sphere;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
+import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 
 /**
  * <code>SnowballView</code> extends <code>DynamicView</code> to define
@@ -41,5 +42,10 @@ public class SnowballView extends DynamicView {
 
     @Override
     public void update(float interpolation) {
+    }
+    
+    @Override
+    public IDynamicEntity getEntity() {
+        return (IDynamicEntity) this.entity;
     }
 }
