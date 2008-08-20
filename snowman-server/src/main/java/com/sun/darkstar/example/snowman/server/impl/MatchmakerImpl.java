@@ -224,7 +224,9 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         public void run() throws Exception {
             SnowmanGame game =
                     new GameFactoryImpl().createSnowmanGame(name,
-                                                            newPlayers.length + numRobotsPerGame);
+                                                            newPlayers.length + numRobotsPerGame,
+                                                            SnowmanAppContextFactory.getAppContext(),
+                                                            new EntityFactoryImpl());
             ETeamColor color = ETeamColor.values()[0];
             for (int i = 0; i < newPlayers.length; i++) {
                 game.addPlayer(newPlayers[i].get(), color);
