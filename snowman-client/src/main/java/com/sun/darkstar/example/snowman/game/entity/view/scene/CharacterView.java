@@ -62,9 +62,9 @@ public class CharacterView extends DynamicView {
 	}
 
 	@Override
-	public void attachMesh(Spatial mesh) {
+	public void attachSpatial(Spatial mesh) {
 		if(!(mesh instanceof ModelNode)) throw new IllegalArgumentException("Mesh is not a dynamic ModelNode.");
-		super.attachMesh(mesh);
+		super.attachSpatial(mesh);
 		this.model = (ModelNode)mesh;
 		this.jointController = new JointController(this.model.getJoints());
 		this.jointController.setActive(true);

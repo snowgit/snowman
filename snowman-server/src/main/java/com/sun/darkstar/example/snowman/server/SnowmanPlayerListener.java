@@ -90,7 +90,9 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     }
     
     public void receivedMessage(ByteBuffer arg0) {
-        SingletonRegistry.getMessageHandler().parseServerPacket(arg0,playerRef.get().getProcessor());
+        try {
+            SingletonRegistry.getMessageHandler().parseServerPacket(arg0,playerRef.get().getProcessor());
+        } catch (ObjectNotFoundException disconnected) {}
     }
 
     public void disconnected(boolean arg0) {
@@ -100,8 +102,6 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
         } catch (ObjectNotFoundException ex) {
             return;
         }
-        if (player == null)
-            return;
         
         if (logger.isLoggable(Level.FINE))
             logger.log(Level.FINE,

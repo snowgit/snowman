@@ -43,4 +43,5 @@ package com.sun.darkstar.example.snowman.common.protocol.enumn;
 public enum EMOBType {
 	SNOWMAN,
 	FLAG,
+        FLAGGOAL
 }

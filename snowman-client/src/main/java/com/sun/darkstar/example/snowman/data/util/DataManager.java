@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.scene.TriMesh;
+import com.jme.scene.Spatial;
 import com.jme.util.ImageLoader;
 import com.jme.util.TextureManager;
 import com.jme.util.export.Savable;
@@ -60,9 +60,9 @@ public class DataManager extends Manager {
 	 */
 	private final HashMap<EAnimation, JointAnimation> animationPool;
 	/**
-	 * The <code>TriMesh</code> asset pool.
+	 * The <code>Spatial</code> asset pool.
 	 */
-	private final HashMap<EEntity, TriMesh> meshPool;
+	private final HashMap<EEntity, Spatial> spatialPool;
 	/**
 	 * The character <code>ModelNode</code> asset pool.
 	 */
@@ -82,7 +82,7 @@ public class DataManager extends Manager {
 	private DataManager() {
 		super(EManager.DataManager);
 		this.animationPool = new HashMap<EAnimation, JointAnimation>();
-		this.meshPool = new HashMap<EEntity, TriMesh>();
+		this.spatialPool = new HashMap<EEntity, Spatial>();
 		this.characterPool = new HashMap<EEntity, ModelNode>();
 		this.texturePool = new HashMap<ETexture, Texture>();
 		this.loader = this.getClass().getClassLoader();
@@ -139,11 +139,11 @@ public class DataManager extends Manager {
 	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @return The cached <code>SharedMesh</code> with given enumeration.
 	 */
-	public TriMesh getStaticMesh(EEntity enumn) {
-		TriMesh mesh = this.meshPool.get(enumn);
+	public Spatial getStaticSpatial(EEntity enumn) {
+		Spatial mesh = this.spatialPool.get(enumn);
 		if(mesh == null) {
-			mesh = (TriMesh)this.getResource(EDataType.StaticMesh.toPath(enumn.toString()));
-			this.meshPool.put(enumn, mesh);
+			mesh = (Spatial)this.getResource(EDataType.StaticMesh.toPath(enumn.toString()));
+			this.spatialPool.put(enumn, mesh);
 		}
 		return mesh;
 	}
@@ -230,7 +230,7 @@ public class DataManager extends Manager {
 	@Override
 	public void cleanup() {
 		this.animationPool.clear();
-		this.meshPool.clear();
+		this.spatialPool.clear();
 		this.characterPool.clear();
 		this.texturePool.clear();
 		TextureManager.clearCache();

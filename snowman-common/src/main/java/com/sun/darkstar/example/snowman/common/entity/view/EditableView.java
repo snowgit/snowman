@@ -42,7 +42,7 @@ public class EditableView extends View implements IEditableView {
 	}
 	
 	@Override
-	public void attachMesh(Spatial mesh) {
+	public void attachSpatial(Spatial mesh) {
 		SharedMesh shared = new SharedMesh((TriMesh)mesh);
 		this.attachChild(shared);
 	}

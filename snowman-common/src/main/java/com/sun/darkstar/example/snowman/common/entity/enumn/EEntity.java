@@ -40,6 +40,14 @@ public enum EEntity {
 	 * The blue flag entity.
 	 */
 	FlagBlue(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+        /**
+         * The red goal area
+         */
+        FlagRedGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+        /**
+         * The blue goal area
+         */
+        FlagBlueGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
 	/**
 	 * The snow ball entity.
 	 */

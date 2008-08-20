@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Sphere;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
@@ -19,6 +21,7 @@ import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagGoalView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -129,19 +132,19 @@ public class ViewManager extends Manager {
 		case Terrain: view = new TerrainView((IEditableEntity)entity); break;
 		case SnowmanLocalRed:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanDistributedRed:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanLocalBlue:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case SnowmanDistributedBlue:
 			view = new CharacterView((CharacterEntity)entity);
-			view.attachMesh(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getDynamicMesh(entity.getEnumn()));
 			break;
 		case Snowball:
 			view = new SnowballView((SnowballEntity)entity);
@@ -149,26 +152,32 @@ public class ViewManager extends Manager {
 			Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
 			ball.setModelBound(new BoundingBox());
 			ball.updateModelBound();
-			view.attachMesh(ball);
+			view.attachSpatial(ball);
 			break;
 		case FlagBlue:
 			view = new FlagView((IDynamicEntity)entity);
-			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
 		case FlagRed:
 			view = new FlagView((IDynamicEntity)entity);
-			// FIXME view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
+                    case FlagBlueGoal:
+                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagBlueGoal);
+                        break;
+                    case FlagRedGoal:
+                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagRedGoal);
+                        break;
 		default:
 			switch(entity.getType()) {
 			case Static:
 				view = new StaticView((IStaticEntity)entity);
-				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+				view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 				((StaticView)view).lock();
 				break;
 			case Editable:
 				view = new EditableView((IEditableEntity)entity);
-				view.attachMesh(DataManager.getInstance().getStaticMesh(entity.getEnumn()));
+				view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 				break;
 			}
 		break;
