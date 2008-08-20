@@ -18,14 +18,6 @@ public enum EState {
 	 */
 	Moving,
 	/**
-	 * The targeting other snowman state.
-	 */
-	Targeting,
-	/**
-	 * The trying to grab flag state.
-	 */
-	TryingToGrab,
-	/**
 	 * The attacking state.
 	 */
 	Attacking,

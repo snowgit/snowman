@@ -32,21 +32,22 @@ public class SnowmanController extends CharacterController implements MouseInput
 	public void onButton(int button, boolean pressed, int x, int y) {
 		if(!this.isActive()) return;
 		if(this.getEntity().getState() == EState.Attacking) return;
+                if(this.getEntity().getState() == EState.Hit) return;
 		if(button == 0 && pressed) {
-			TaskManager.getInstance().createTask(ETask.UpdateState, this.entity, x, y).execute();
-			switch(this.getEntity().getState()) {
-			case Idle:
-				TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
-				break;
-			case Moving:
-				TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
-				break;
-			case Targeting:
-				TaskManager.getInstance().createTask(ETask.Attack, this.entity.getID(), this.getEntity().getTarget().getID());
-				break;
-			case TryingToGrab:
-				TaskManager.getInstance().createTask(ETask.Attach, this.getEntity().getTarget().getID(), this.entity.getID(), true);
-				break;
+			TaskManager.getInstance().createTask(ETask.UpdateCursorState, this.entity, x, y).execute();
+			switch(this.getEntity().getCursorState()) {
+                            case Invalid:
+                                //do nothing
+                                break;
+                            case TryingToMove:
+                                TaskManager.getInstance().createTask(ETask.MoveCharacter, this.entity, x, y);
+                                break;
+                            case Targeting:
+                                TaskManager.getInstance().createTask(ETask.Attack, this.entity.getID(), this.getEntity().getTarget().getID());
+                                break;
+                            case TryingToGrab:
+                                TaskManager.getInstance().createTask(ETask.Attach, this.getEntity().getTarget().getID(), this.entity.getID(), true);
+                                break;
 			}
 		}
 	}
@@ -54,7 +55,7 @@ public class SnowmanController extends CharacterController implements MouseInput
 	@Override
 	public void onMove(int delta, int delta2, int newX, int newY) {
 		if(!this.isActive()) return;
-		TaskManager.getInstance().createTask(ETask.UpdateState, this.entity, newX, newY);
+		TaskManager.getInstance().createTask(ETask.UpdateCursorState, this.entity, newX, newY);
 	}
 
 	@Override

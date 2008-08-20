@@ -42,7 +42,7 @@ public enum ETask {
 	/**
 	 * The task used to update all value associated with mouse position.
 	 */
-	UpdateState(ETaskType.RealTime),
+	UpdateCursorState(ETaskType.RealTime),
 	/**
 	 * The task used to initiate the movement of a snowman.
 	 */

@@ -26,7 +26,7 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.MoveSnowballTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RemoveMOBTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RespawnTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.StartGameTask;
-import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateCursorStateTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.ScoreTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
@@ -193,8 +193,8 @@ public class TaskManager extends Manager {
                     case StartGame:
                         task = new StartGameTask(this.game);
                         break;
-                    case UpdateState:
-                        task = new UpdateStateTask(this.game, (SnowmanEntity) args[0], (Integer) args[1], (Integer) args[2]);
+                    case UpdateCursorState:
+                        task = new UpdateCursorStateTask(this.game, (SnowmanEntity) args[0], (Integer) args[1], (Integer) args[2]);
                         break;
                     case MoveCharacter:
                         if (args.length == 3) {
