@@ -74,7 +74,11 @@ public enum ETask {
 	/**
 	 * The task used to remove a MOB.
 	 */
-	Remove(ETaskType.RealTime);
+	Remove(ETaskType.RealTime),
+        /**
+         * The task used to score a win
+         */
+        Score(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

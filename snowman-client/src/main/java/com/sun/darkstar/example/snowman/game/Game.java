@@ -26,6 +26,7 @@ import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
+import com.sun.darkstar.example.snowman.game.state.scene.EndState;
 import com.sun.darkstar.example.snowman.game.stats.StatsManager;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
@@ -209,16 +210,21 @@ public class Game extends BaseGame implements IComponent{
 	
 	@Override
 	protected void initGame() {
-		LoginState login = new LoginState(this);
-		this.stateManager.attachChild(login);
-		login.setActive(true);
-		login.initialize();
-		BattleState battle = new BattleState(this);
-		battle.setActive(false);
-		this.stateManager.attachChild(battle);
+            LoginState login = new LoginState(this);
+            this.stateManager.attachChild(login);
+            login.setActive(true);
+            login.initialize();
 
-        // reinit stats as needed
-        StatsManager.getInstance().recreateStatsDisplay();
+            BattleState battle = new BattleState(this);
+            battle.setActive(false);
+            this.stateManager.attachChild(battle);
+            
+            EndState end = new EndState(this);
+            end.setActive(false);
+            this.stateManager.attachChild(end);
+
+            // reinit stats as needed
+            StatsManager.getInstance().recreateStatsDisplay();
 	}
 	
 	@Override

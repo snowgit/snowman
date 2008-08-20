@@ -6,6 +6,7 @@ import com.jme.util.Debug;
 import com.jme.util.stat.StatCollector;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
@@ -26,6 +27,7 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.RemoveMOBTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RespawnTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.StartGameTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.ScoreTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
@@ -169,47 +171,78 @@ public class TaskManager extends Manager {
 	public ITask createTask(ETask enumn, Object... args) {
 		ITask task = null;
 		switch(enumn) {
-		case Authenticate: task = new AuthenticateTask(this.game, (String)args[0], (String)args[1]); break;
-		case ResetLogin: task = new ResetLoginTask(this.game); break;
-		case GameState: task = new GameStateTask(this.game, (EGameState)args[0]); break;
-		case AddMOB: task = new AddMOBTask(this.game, (Integer)args[0], (EMOBType)args[1], (ETeamColor) args[2], (Float)args[3], (Float)args[4], (Boolean)args[5]); break;
-		case Ready: task = new ReadyTask(this.game); break;
-		case StartGame: task = new StartGameTask(this.game); break;
-		case UpdateState: task = new UpdateStateTask(this.game, (SnowmanEntity)args[0], (Integer)args[1], (Integer)args[2]); break;
-		case MoveCharacter:
-			if(args.length == 3) {
-				if (Debug.stats) {
-					StatCollector.addStat(SnowmanStatType.STAT_LOCALMOVE_COUNT, 1);
-				}
-				task = new MoveCharacterTask(this.game, (CharacterEntity)args[0], (Integer)args[1], (Integer)args[2]);
+                    case Authenticate:
+                        task = new AuthenticateTask(this.game, (String) args[0], (String) args[1]);
+                        break;
+                    case ResetLogin:
+                        task = new ResetLoginTask(this.game);
+                        break;
+                    case GameState:
+                        if(args.length == 1) {
+                            task = new GameStateTask(this.game, (EGameState) args[0]);
+                        } else {
+                            task = new GameStateTask(this.game, (EGameState) args[0], (EEndState) args[1]);
+                        }
+                        break;
+                    case AddMOB:
+                        task = new AddMOBTask(this.game, (Integer) args[0], (EMOBType) args[1], (ETeamColor) args[2], (Float) args[3], (Float) args[4], (Boolean) args[5]);
+                        break;
+                    case Ready:
+                        task = new ReadyTask(this.game);
+                        break;
+                    case StartGame:
+                        task = new StartGameTask(this.game);
+                        break;
+                    case UpdateState:
+                        task = new UpdateStateTask(this.game, (SnowmanEntity) args[0], (Integer) args[1], (Integer) args[2]);
+                        break;
+                    case MoveCharacter:
+                        if (args.length == 3) {
+                            if (Debug.stats) {
+                                StatCollector.addStat(SnowmanStatType.STAT_LOCALMOVE_COUNT, 1);
+                            }
+                            task = new MoveCharacterTask(this.game, (CharacterEntity) args[0], (Integer) args[1], (Integer) args[2]);
 			} else {
-				if (Debug.stats) {
-					StatCollector.addStat(SnowmanStatType.STAT_ENTITYMOVE_COUNT, 1);
-				}
-				task = new MoveCharacterTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Float)args[3], (Float)args[4]);
-			}
-			break;
-		case Attack: 
-			if(args.length == 2) {
-				task = new AttackTask(this.game, (Integer)args[0], (Integer)args[1]);
-			} else if(args.length == 4) {
-				task = new AttackTask(this.game, (Integer)args[0], (Integer)args[1], (Integer)args[2], (Boolean)args[3]);
-			}
-			break;
-		case CreateSnowball: 
-			task = new CreateSnowballTask(this.game, (CharacterEntity)args[0], (CharacterEntity)args[1]);
-			if (Debug.stats) {
-				StatCollector.addStat(SnowmanStatType.STAT_SNOWBALL_COUNT, 1);
-			}
-			break;
-		case MoveSnowball: task = new MoveSnowballTask(this.game, (SnowballEntity)args[0]); break;
-		case Correction: task = new CorrectionTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2]); break;
-		case Respawn: task = new RespawnTask(this.game, (Integer)args[0], (Float)args[1], (Float)args[2], (Boolean)args[3]); break;
-		case Attach: task = new AttachTask(this.game, (Integer)args[0], (Integer)args[1]); break;
-		case Remove: task = new RemoveMOBTask(this.game, (Integer)args[0]); break;
-		}
-		this.submit(task);
-		return task;
+                            if (Debug.stats) {
+                                StatCollector.addStat(SnowmanStatType.STAT_ENTITYMOVE_COUNT, 1);
+                            }
+                            task = new MoveCharacterTask(this.game, (Integer) args[0], (Float) args[1], (Float) args[2], (Float) args[3], (Float) args[4]);
+                        }
+                        break;
+                    case Attack:
+                        if (args.length == 2) {
+                            task = new AttackTask(this.game, (Integer) args[0], (Integer) args[1]);
+                        } else if (args.length == 4) {
+                            task = new AttackTask(this.game, (Integer) args[0], (Integer) args[1], (Integer) args[2], (Boolean) args[3]);
+                        }
+                        break;
+                    case CreateSnowball:
+                        task = new CreateSnowballTask(this.game, (CharacterEntity) args[0], (CharacterEntity) args[1]);
+                        if (Debug.stats) {
+                            StatCollector.addStat(SnowmanStatType.STAT_SNOWBALL_COUNT, 1);
+                        }
+                        break;
+                    case MoveSnowball:
+                        task = new MoveSnowballTask(this.game, (SnowballEntity) args[0]);
+                        break;
+                    case Correction:
+                        task = new CorrectionTask(this.game, (Integer) args[0], (Float) args[1], (Float) args[2]);
+                        break;
+                    case Respawn:
+                        task = new RespawnTask(this.game, (Integer) args[0], (Float) args[1], (Float) args[2], (Boolean) args[3]);
+                        break;
+                    case Attach:
+                        task = new AttachTask(this.game, (Integer) args[0], (Integer) args[1]);
+                        break;
+                    case Remove:
+                        task = new RemoveMOBTask(this.game, (Integer) args[0]);
+                        break;
+                    case Score:
+                        task = new ScoreTask(this.game, (ETeamColor) args[0], (Float) args[1], (Float) args[2]);
+                        break;
+            }
+            this.submit(task);
+            return task;
 	}
 
 	/**

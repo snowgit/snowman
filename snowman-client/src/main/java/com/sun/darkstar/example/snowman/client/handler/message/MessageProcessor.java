@@ -60,7 +60,7 @@ public class MessageProcessor implements IClientProcessor {
 
 	@Override
 	public void endGame(EEndState endState) {
-            //TaskManager.getInstance().createTask(ETask.GameState, EGameState.LoginState);
+            TaskManager.getInstance().createTask(ETask.GameState, EGameState.EndState, endState);
 	}
 
 	@Override
