@@ -4,6 +4,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
@@ -67,12 +68,15 @@ public class RespawnTask extends RealTimeTask {
 	@Override
 	public void execute() {
 		// Step 1.
-		CharacterEntity entity = (CharacterEntity)EntityManager.getInstance().getEntity(this.id);
+		DynamicEntity entity = (DynamicEntity)EntityManager.getInstance().getEntity(this.id);
 		View view = (View)ViewManager.getInstance().getView(entity);
-		// Step 2.
-		entity.setHP(SingletonRegistry.getHPConverter().getMaxHP());
-		// Step 3.
-		entity.setState(EState.Idle);
+                if (entity instanceof CharacterEntity) {
+                    CharacterEntity character = (CharacterEntity)entity;
+                    // Step 2.
+                    character.setHP(SingletonRegistry.getHPConverter().getMaxHP());
+                    // Step 3.
+                    character.setState(EState.Idle);
+                }
 		// Step 4.
 		ViewManager.getInstance().markForUpdate(entity);
 		// Step 5.

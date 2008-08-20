@@ -68,7 +68,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
     private void scheduleMove(int delay) {
         appContext.getTaskManager().scheduleTask(
                 new MoveTask(appContext.getDataManager().createReference((RobotImpl)this)),
-                                delay);
+                                delay + random.nextInt(100));
     }
     
     private void moveRobot() {
@@ -103,8 +103,8 @@ public class RobotImpl extends SnowmanPlayerImpl {
             if (!score(now, currentPos.getX(), currentPos.getY()))
                 moveMe(now,
                        currentPos.getX(), currentPos.getY(),
-                       theirFlagRef.get().getGoalX() + 10 * (random.nextFloat() - 0.5f),
-                       theirFlagRef.get().getGoalY() + 10 * (random.nextFloat() - 0.5f));
+                       theirFlagRef.get().getGoalX() + 5 * (random.nextFloat() - 0.5f),
+                       theirFlagRef.get().getGoalY() + 5 * (random.nextFloat() - 0.5f));
             
         // randomly go after the flag
         } else if (random.nextBoolean() && !theirFlagRef.get().isHeld()) {
@@ -114,8 +114,8 @@ public class RobotImpl extends SnowmanPlayerImpl {
             if (holdingFlagRef == null)
                 moveMe(now,
                        currentPos.getX(), currentPos.getY(),
-                       flag.getX() + 10 * (random.nextFloat() - 0.5f),
-                       flag.getY() + 10 * (random.nextFloat() - 0.5f));
+                       flag.getX() + 5 * (random.nextFloat() - 0.5f),
+                       flag.getY() + 5 * (random.nextFloat() - 0.5f));
         
         // else just move towards a target snowman
         } else {
