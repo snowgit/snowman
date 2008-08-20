@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
@@ -59,8 +60,8 @@ public class RobotImpl extends SnowmanPlayerImpl {
     private ArrayList<Integer> targets = null;
     private ManagedReference<SnowmanFlag> theirFlagRef = null;
     
-    public RobotImpl(SnowmanAppContext appContext, String name, int delay) {
-        super(appContext, name, null);
+    public RobotImpl(String name, int delay) {
+        super(SnowmanAppContextFactory.getAppContext(), name, null);
         moveDelay = delay;
         scheduleMove(10000);// TODO need to find out when the game starts
     }

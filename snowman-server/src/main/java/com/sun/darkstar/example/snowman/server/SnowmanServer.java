@@ -34,10 +34,8 @@ package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.impl.MatchmakerImpl;
 import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
-import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.sgs.app.AppListener;
@@ -61,25 +59,23 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
 
     private ManagedReference<Matchmaker> matchMakerRef;
     private EntityFactory entityFactory;
-    private GameFactory gameFactory;
     private SnowmanAppContext appContext;
     
     public void initialize(Properties arg0) {
         this.appContext = SnowmanAppContextFactory.getAppContext();
         this.entityFactory = new EntityFactoryImpl();
-        this.gameFactory = new GameFactoryImpl();
-        Matchmaker matchMaker = new MatchmakerImpl(appContext,
-                                                   gameFactory,
-                                                   entityFactory);
+        Matchmaker matchMaker = new MatchmakerImpl(appContext);
         matchMakerRef = appContext.getDataManager().createReference(matchMaker);
     }
 
     public ClientSessionListener loggedIn(ClientSession arg0) {
         if (logger.isLoggable(Level.FINE))
             logger.log(Level.FINE, "Player {0} logged in", arg0.getName());
-        SnowmanPlayerListener player =  SnowmanPlayerListener.find(arg0, appContext, entityFactory, matchMakerRef.get());
+        SnowmanPlayerListener player =
+                new SnowmanPlayerListener(appContext,
+                                          entityFactory.createSnowmanPlayer(appContext, arg0),
+                                          matchMakerRef.get());
         matchMakerRef.get().addWaitingPlayer(player.getSnowmanPlayer());
         return player;
     }
-
 }

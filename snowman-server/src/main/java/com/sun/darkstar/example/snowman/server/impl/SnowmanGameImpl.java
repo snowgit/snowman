@@ -38,6 +38,7 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
@@ -103,11 +104,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
      */
     private int[] maxTeamPlayers = new int[ETeamColor.values().length];
     
-    public SnowmanGameImpl(String gameName,
-                           int numPlayers,
-                           SnowmanAppContext appContext, 
-                           EntityFactory entityFactory)
-    {
+    public SnowmanGameImpl(String gameName, int numPlayers) {
         this.gameName = gameName;
         this.numPlayers = numPlayers;
         initMaxTeamPlayers();
@@ -115,8 +112,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         this.flagRefs = new HashMap< Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
         this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
 
-        this.appContext = appContext;
-        this.entityFactory = entityFactory;
+        this.appContext = SnowmanAppContextFactory.getAppContext();;
+        this.entityFactory = new EntityFactoryImpl();
         this.channelRef = appContext.getDataManager().createReference(
                 appContext.getChannelManager().createChannel(
                 CHANPREFIX+gameName, null, Delivery.RELIABLE));

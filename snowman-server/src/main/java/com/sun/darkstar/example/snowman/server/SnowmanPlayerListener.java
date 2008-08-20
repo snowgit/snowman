@@ -35,10 +35,8 @@ package com.sun.darkstar.example.snowman.server;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSessionListener;
-import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ObjectNotFoundException;
@@ -62,24 +60,6 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     
     private final ManagedReference<SnowmanPlayer> playerRef;
     private ManagedReference<Matchmaker> matchmakerRef;
-    
-    /**
-     * Lookup the SnowmanPlayerListener in the datastore.  If it is not
-     * there, create a new one and return it
-     * @param session ClientSession of the connecting client
-     * @param appContext the application context
-     * @param entityFactory factory used to create a SnowmanPlayer if necessary
-     * @param matchmaker the matchmaker requesting the player
-     * @return
-     */
-    public static SnowmanPlayerListener find(ClientSession session,
-                                             SnowmanAppContext appContext,
-                                             EntityFactory entityFactory,
-                                             Matchmaker matchmaker) {
-        return new SnowmanPlayerListener(appContext,
-                                         entityFactory.createSnowmanPlayer(appContext, session),
-                                         matchmaker);
-    }
     
     protected SnowmanPlayerListener(SnowmanAppContext appContext,
                                     SnowmanPlayer player,
