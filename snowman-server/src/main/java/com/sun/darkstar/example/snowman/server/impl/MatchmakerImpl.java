@@ -37,9 +37,11 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,7 +101,7 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
      * The list of waiting players
      */
     private final int numPlayersPerGame;
-    private final ManagedReference<SnowmanPlayer>[] waiting;
+    private ManagedReference<SnowmanPlayer>[] waiting;
     
     private final int numRobotsPerGame;
     private final int robotDelay;
@@ -111,19 +113,12 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
     private int gameCount = 0;
     
     private final SnowmanAppContext appContext;
-    private final GameFactory gameFactory;
-    private final EntityFactory entityFactory;
     
     /**
      * The constuctor
      */
-    @SuppressWarnings("unchecked")
-    public MatchmakerImpl(SnowmanAppContext appContext,
-                          GameFactory gameFactory,
-                          EntityFactory entityFactory) {
+    public MatchmakerImpl(SnowmanAppContext appContext) {
         this.appContext = appContext;
-        this.gameFactory = gameFactory;
-        this.entityFactory = entityFactory;
         numPlayersPerGame = Integer.getInteger(PLAYERS_PER_GAME_PROP,
                                                DEFAULT_PLAYERS_PER_GAME);
         if (numPlayersPerGame <= 0)
@@ -142,7 +137,6 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         logger.log(Level.CONFIG,
                    "Number of robots per game: {0}, with delay of {1} milliseconds",
                    new Object[] {numRobotsPerGame, robotDelay});
-        waiting = new ManagedReference[numPlayersPerGame];
         clearQueue();
     }
 
@@ -151,11 +145,10 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
      * It must be done at initialization to make the places in the list
      * to set the actual players.
      */
+    @SuppressWarnings("unchecked")
     private void clearQueue() {
         appContext.getDataManager().markForUpdate(this);
-        for (int i = 0; i < waiting.length; i++) {
-            waiting[i] = null;
-        }
+        waiting = new ManagedReference[numPlayersPerGame];
     }
 
     /**
@@ -185,7 +178,12 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         }
         waiting[idx] = appContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
-            launchGameSession(NAME_PREFIX + (gameCount++));
+            appContext.getTaskManager().scheduleTask(
+                                new LaunchGameTask(NAME_PREFIX + (gameCount++),
+                                                   waiting,
+                                                   numRobotsPerGame,
+                                                   robotDelay));
+            clearQueue();
         }
     }
 
@@ -206,35 +204,45 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
         }
     }
 
-    /**
-     * This method gets called by the addWaitingPlayer method when the 
-     * fourth player gets added.  It creates the game session and starts it.
-     * Then it clears the queu so it can wait for 4 new players.
-     * @param name The unique name of the game session to launch
-     */
-    private void launchGameSession(String name) {
-        appContext.getDataManager().markForUpdate(this);
-        SnowmanGame game = gameFactory.createSnowmanGame(name,
-                                                         numPlayersPerGame + numRobotsPerGame,
-                                                         appContext,
-                                                         entityFactory);
-        ETeamColor color = ETeamColor.values()[0];
-        for (int i = 0; i < waiting.length; i++) {
-            game.addPlayer(waiting[i].get(), color);
-            waiting[i].get().send(ServerMessages.createNewGamePkt(waiting[i].get().getID(), 
-            	"default_map"));
-            color = ETeamColor.values()[
-                    (color.ordinal()+1)%ETeamColor.values().length];
+    static private class LaunchGameTask implements Task, Serializable {
+        private final String name;
+        private final ManagedReference<SnowmanPlayer>[] newPlayers;
+        private final int numRobotsPerGame;
+        private final int robotDelay;
+        
+        LaunchGameTask(String name,
+                       ManagedReference<SnowmanPlayer>[] waiting,
+                       int numRobotsPerGame,
+                       int robotDelay)
+        {
+            this.name = name;
+            newPlayers = waiting;
+            this.numRobotsPerGame = numRobotsPerGame;
+            this.robotDelay = robotDelay;
         }
-        for (int i = 0; i < numRobotsPerGame; i++) {
-            game.addPlayer(new RobotImpl(appContext, name +"_robot" + i, robotDelay),
-                           color);
-            color = ETeamColor.values()[
-                    (color.ordinal()+1)%ETeamColor.values().length];
+        
+        public void run() throws Exception {
+            SnowmanGame game =
+                    new GameFactoryImpl().createSnowmanGame(name,
+                                                            newPlayers.length + numRobotsPerGame,
+                                                            SnowmanAppContextFactory.getAppContext(),
+                                                            new EntityFactoryImpl());
+            ETeamColor color = ETeamColor.values()[0];
+            for (int i = 0; i < newPlayers.length; i++) {
+                game.addPlayer(newPlayers[i].get(), color);
+                newPlayers[i].get().send(ServerMessages.createNewGamePkt(newPlayers[i].get().getID(), 
+                    "default_map"));
+                color = ETeamColor.values()[
+                        (color.ordinal()+1)%ETeamColor.values().length];
+            }
+            for (int i = 0; i < numRobotsPerGame; i++) {
+                game.addPlayer(new RobotImpl(name +"_robot" + i, robotDelay),
+                               color);
+                color = ETeamColor.values()[
+                        (color.ordinal()+1)%ETeamColor.values().length];
+            }
+            game.sendMapInfo();
         }
-        game.sendMapInfo();
-      
-        clearQueue();
     }
 }
 

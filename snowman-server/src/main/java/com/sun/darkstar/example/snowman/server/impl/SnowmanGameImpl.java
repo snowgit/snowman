@@ -105,7 +105,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     public SnowmanGameImpl(String gameName,
                            int numPlayers,
-                           SnowmanAppContext appContext, 
+                           SnowmanAppContext appContext,
                            EntityFactory entityFactory)
     {
         this.gameName = gameName;
