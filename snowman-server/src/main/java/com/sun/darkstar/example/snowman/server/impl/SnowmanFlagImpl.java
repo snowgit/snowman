@@ -35,8 +35,13 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.ObjectNotFoundException;
+import com.sun.sgs.app.Task;
 import java.io.Serializable;
 
 /**
@@ -49,20 +54,24 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
 
     static public final long serialVersionbUID = 1L;
     
-    /**
-     * This is a base number for the flag IDs to keep them
-     * unqiue from other object IDs.
-     */
+     /**
+      * This is a base number for the flag IDs to keep them
+      * unqiue from other object IDs.
+      */
     private static final int FLAGBASEID = 100;
-    
+
     /**
-     * The X location of a flag that is on the map
+     * The current X location
      */
     private float x;
     /**
-     * The Y location of a flag on the mao
+     * The current Y location
      */
     private float y;
+    
+    private final float homeX;
+    private final float homeY;
+    
     /**
      * The X location of the centroid of the goal circle this flag must be
      * carried into to win the game
@@ -82,12 +91,15 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * The team color of this particular flag
      */
     private final ETeamColor flagColor;
+    
     /**
-     * The id of the flag.  This is unique among flags in the game but not
-     * necc unique among all objects in the game
+     * The id of the flag.
      */
     private final int id;
+    private static final long FLAG_RETURN_DELAY = 40 * 1000;
 
+    private final ManagedReference<SnowmanGame> gameRef;
+    
     /**
      * The constructor for a flag
      * 
@@ -96,11 +108,18 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * @param flagGoalY the Y coordinate of the centroid of the winning circle
      * @param flagGoalRadius the radius of the winning circle
      */
-    public SnowmanFlagImpl(ETeamColor teamColor, float flagGoalX, float flagGoalY) {
-        flagColor = teamColor;
-        goalX = flagGoalX;
-        goalY = flagGoalY;
+    public SnowmanFlagImpl(SnowmanGame game,
+                           ETeamColor teamColor,
+                           Coordinate flagHome,
+                           Coordinate flagGoal)
+    {
         id = FLAGBASEID + teamColor.ordinal();
+        flagColor = teamColor;
+        homeX = flagHome.getX();
+        homeY = flagHome.getY();
+        goalX = flagGoal.getX();
+        goalY = flagGoal.getY();
+        gameRef = AppContext.getDataManager().createReference(game);
     }
 
     /**
@@ -161,16 +180,37 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         
         setLocation(x, y);
         heldByRef = null;
+        AppContext.getTaskManager().scheduleTask(
+                        new FlagReturnTask(AppContext.getDataManager().createReference((SnowmanFlag)this)),
+                        FLAG_RETURN_DELAY);
     }
     
-    /**
-     * This method sets the Flag ID.  A flag's ID must be unique among flags in
-     * a game but may not be unique among all the objects in the game.
-     * @param i the ID
-     */
+    static private class FlagReturnTask implements Task, Serializable {
+        private final ManagedReference<SnowmanFlag> flagRef;
+        
+        FlagReturnTask(ManagedReference<SnowmanFlag> flagRef) {
+            this.flagRef = flagRef;
+        }
+        
+        public void run() throws Exception {
+            try {
+                flagRef.get().returnFlag();
+            } catch (ObjectNotFoundException ex) {
+                return;
+            }
+        }
+    }
+    
+    public void returnFlag() {
+        if (!isHeld()) {
+            setLocation(homeX, homeY);
+            gameRef.get().send(null,
+                               ServerMessages.createRespawnPkt(id, x, y));
+        }
+    }
+    
     public void setID(int i) {
-        assert false;   // TODO - fix bad logic in game impl
-//        id = i;
+        assert false;
     }
     
     /**
@@ -178,7 +218,6 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * a game but may not be unique among all the objects in the game.
      * @returns the flag's ID
      */
-    
     public int getID(){
         return id;
     }

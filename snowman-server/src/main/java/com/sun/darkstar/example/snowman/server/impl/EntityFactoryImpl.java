@@ -37,6 +37,8 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.sgs.app.ClientSession;
 import java.io.Serializable;
 
@@ -54,10 +56,12 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
     {
         return new SnowmanPlayerImpl(context, session.getName(), session);
     }
-    public SnowmanFlag createSnowmanFlag(ETeamColor teamColor, float flagGoalX, float flagGoalY)
+    public SnowmanFlag createSnowmanFlag(SnowmanGame game,
+                                         ETeamColor teamColor,
+                                         Coordinate flagHome,
+                                         Coordinate flagGoal)
     {
-        return new SnowmanFlagImpl(teamColor, flagGoalX, flagGoalY);
+        return new SnowmanFlagImpl(game, teamColor, flagHome, flagGoal);
     }
-
 }
 

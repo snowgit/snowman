@@ -158,9 +158,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
             Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
             SnowmanFlag flag =
-                        entityFactory.createSnowmanFlag(color,
-                                                        flagGoal.getX(),
-                                                        flagGoal.getY()); 
+                        entityFactory.createSnowmanFlag(this,
+                                                        color,
+                                                        flagStart,
+                                                        flagGoal);
             flag.setLocation(flagStart.getX(), flagStart.getY());
             ManagedReference<SnowmanFlag> ref =
                         appContext.getDataManager().createReference(flag);

@@ -413,7 +413,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 game.send(null, ServerMessages.createAttachObjPkt(flagID, id));
             }
             else {
-                logger.log(Level.FINE, "get flag from {0} failed radius check", name);
+                logger.log(Level.FINER, "get flag from {0} failed radius check", name);
             }
         } 
         else {
@@ -462,7 +462,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 return true;
             }
             else {
-                logger.log(Level.FINE, "score from {0} failed radius check", name);
+                logger.log(Level.FINER, "score from {0} failed radius check", name);
             }
         } 
         else {

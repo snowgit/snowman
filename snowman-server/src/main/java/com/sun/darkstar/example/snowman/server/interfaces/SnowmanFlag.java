@@ -55,6 +55,7 @@ public interface SnowmanFlag extends DynamicEntity
      */
     public void setHeldBy(SnowmanPlayer player);
     
+    void returnFlag();
     
     public void drop(float x, float y);
 
