@@ -232,7 +232,7 @@ public class TaskManager extends Manager {
                         task = new RespawnTask(this.game, (Integer) args[0], (Float) args[1], (Float) args[2], (Boolean) args[3]);
                         break;
                     case Attach:
-                        task = new AttachTask(this.game, (Integer) args[0], (Integer) args[1]);
+                        task = new AttachTask(this.game, (Integer) args[0], (Integer) args[1], (Boolean) args[2]);
                         break;
                     case Remove:
                         task = new RemoveMOBTask(this.game, (Integer) args[0]);

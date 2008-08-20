@@ -32,59 +32,67 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * @version Modified date: 08-14-2008 12:50 EST
  */
 public class AttachTask extends RealTimeTask {
-	/**
-	 * The ID number of the flag.
-	 */
-	private final int flagID;
-	/**
-	 * The ID number of the target to attach to.
-	 */
-	private final int targetID;
+    /**
+     * The ID number of the flag.
+     */
+    private final int flagID;
+    /**
+     * The ID number of the target to attach to.
+     */
+    private final int targetID;
+    /**
+     * True if initiated by the client side
+     */
+    private final boolean local;
 
-	/**
-	 * Constructor of <code>AttachTask</code>.
-	 * @param game The <code>Game</code> instance.
-	 * @param flagID The ID number of the flag.
-	 * @param targetID The ID number of the target to attach to.
-	 */
-	public AttachTask(Game game, int flagID, int targetID) {
-		super(ETask.Attach, game);
-		this.flagID = flagID;
-		this.targetID = targetID;
-	}
 
-	@Override
-	public void execute() {
-		// Step 1.
-		IEntity target = EntityManager.getInstance().getEntity(this.targetID);
-		IEntity flag = EntityManager.getInstance().getEntity(this.flagID);
-		View targetView = (View)ViewManager.getInstance().getView(target);
-		View flagView = (View)ViewManager.getInstance().getView(flag);
-		// Step 2.
-		if(target instanceof CharacterEntity) {
-			flagView.setLocalTranslation(0.3f, 0.5f, 0);
-			((CharacterEntity)target).setFlag((DynamicEntity)flag);
-			flagView.detachFromParent();
-			flagView.attachTo(targetView);
-		} else if(target.getEnumn() == EEntity.Terrain && flagView.getParent() instanceof CharacterView) {
-			flagView.getLocalTranslation().set(flagView.getParent().getLocalTranslation());
-			flagView.detachFromParent();
-			flagView.attachTo(this.game.getGameState(EGameState.BattleState).getWorld().getDynamicRoot());
-		}
-		// Step 3.
-		if(target instanceof SnowmanEntity) {
-			this.game.getClient().send(ClientMessages.createGetFlagPkt(this.flagID, targetView.getLocalTranslation().x, targetView.getLocalTranslation().z));
-		}
-	}
-	
-	@Override
-	public boolean equals(Object object) {
-		if(super.equals(object)) {
-			if(object instanceof AttachTask) {
-				AttachTask given = (AttachTask)object;
-				return (given.flagID == this.flagID) && (given.targetID == this.targetID);
-			}
-		}
-		return false;
-	}
+    /**
+     * Constructor of <code>AttachTask</code>.
+     * @param game The <code>Game</code> instance.
+     * @param flagID The ID number of the flag.
+     * @param targetID The ID number of the target to attach to.
+     * @param local true if initiated by client side
+     */
+    public AttachTask(Game game, int flagID, int targetID, boolean local) {
+        super(ETask.Attach, game);
+        this.flagID = flagID;
+        this.targetID = targetID;
+        this.local = local;
+    }
+
+    @Override
+    public void execute() {
+        IEntity target = EntityManager.getInstance().getEntity(this.targetID);
+        IEntity flag = EntityManager.getInstance().getEntity(this.flagID);
+        View targetView = (View) ViewManager.getInstance().getView(target);
+        View flagView = (View) ViewManager.getInstance().getView(flag);
+
+        if(this.local) {
+            this.game.getClient().send(ClientMessages.createGetFlagPkt(this.flagID, targetView.getLocalTranslation().x, targetView.getLocalTranslation().z));
+        }
+        else {
+            if (target instanceof CharacterEntity) {
+                flagView.setLocalTranslation(0.3f, 0.5f, 0);
+                ((CharacterEntity) target).setFlag((DynamicEntity) flag);
+                flagView.detachFromParent();
+                flagView.attachTo(targetView);
+            } else if (target.getEnumn() == EEntity.Terrain && flagView.getParent() instanceof CharacterView) {
+                flagView.getLocalTranslation().set(flagView.getParent().getLocalTranslation());
+                flagView.detachFromParent();
+                flagView.attachTo(this.game.getGameState(EGameState.BattleState).getWorld().getDynamicRoot());
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+            if (super.equals(object)) {
+                if (object instanceof AttachTask) {
+                    AttachTask given = (AttachTask) object;
+                    return (given.flagID == this.flagID) && (given.targetID == this.targetID) && 
+                            (given.local == this.local);
+                }
+            }
+            return false;
+    }
 }

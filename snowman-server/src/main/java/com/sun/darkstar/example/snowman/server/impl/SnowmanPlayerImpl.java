@@ -510,6 +510,15 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return hitPoints;
     }
     
+    public void dropFlag() {
+        SnowmanFlag flag = holdingFlagRef == null ? null : holdingFlagRef.get();
+        if (flag != null) {
+            Coordinate expectedPosition = this.getExpectedPositionAtTime(System.currentTimeMillis());
+            flag.drop(expectedPosition.getX(), expectedPosition.getY());
+        }
+        holdingFlagRef = null;
+    }
+    
     static private class RespawnTask implements Task, Serializable {
         final ManagedReference<SnowmanPlayer> playerRef;
         
