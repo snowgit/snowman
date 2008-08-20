@@ -42,6 +42,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ChannelManager;
 import com.sun.sgs.app.Delivery;
@@ -94,9 +95,10 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyFlag.getID()).andStubReturn(new Integer(0));
         EasyMock.replay(dummyFlag);
-        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(SnowmanGame.class),
+                                                             EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.isA(Coordinate.class),
+                                                             EasyMock.isA(Coordinate.class))).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
         //create the player
@@ -142,9 +144,10 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyFlag.getID()).andStubReturn(new Integer(0));
         EasyMock.replay(dummyFlag);
-        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(SnowmanGame.class),
+                                                             EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.isA(Coordinate.class),
+                                                             EasyMock.isA(Coordinate.class))).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
         //create the player
@@ -204,9 +207,10 @@ public class SnowmanGameImplTest
         SnowmanFlag dummyFlag = EasyMock.createNiceMock(SnowmanFlag.class);
         EasyMock.expect(dummyFlag.getID()).andStubReturn(new Integer(0));
         EasyMock.replay(dummyFlag);
-        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(ETeamColor.class),
-                                                             EasyMock.anyFloat(),
-                                                             EasyMock.anyFloat())).andStubReturn(dummyFlag);
+        EasyMock.expect(dummyEntityFactory.createSnowmanFlag(EasyMock.isA(SnowmanGame.class),
+                                                             EasyMock.isA(ETeamColor.class),
+                                                             EasyMock.isA(Coordinate.class),
+                                                             EasyMock.isA(Coordinate.class))).andStubReturn(dummyFlag);
         EasyMock.replay(dummyEntityFactory);
         
         //create the players
