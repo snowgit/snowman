@@ -1,10 +1,12 @@
 package com.sun.darkstar.example.snowman.game.task.state;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
+import com.sun.darkstar.example.snowman.game.state.scene.EndState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
@@ -32,6 +34,10 @@ public class GameStateTask extends RealTimeTask {
 	 * The <code>EGameState</code> enumeration of the state to be activated.
 	 */
 	private final EGameState enumn;
+        /**
+         * The <code>EEndState</code> to display if ending
+         */
+        private EEndState endState;
 
 	/**
 	 * Constructor of <code>GameStateTask</code>.
@@ -42,16 +48,40 @@ public class GameStateTask extends RealTimeTask {
 		super(ETask.GameState, game);
 		this.enumn = enumn;
 	}
+        
+        public GameStateTask(Game game, EGameState enumn, EEndState endState) {
+		super(ETask.GameState, game);
+		this.enumn = enumn;
+                this.endState = endState;
+	}
 
 	@Override
 	public void execute() {
 		GameState state = this.game.getGameState(this.enumn);
 		if(state.isActive()) return;
+                
 		this.game.getPassManager().clearAll();
 		LoginState login = (LoginState)this.game.getGameState(EGameState.LoginState);
 		if(login.isActive()) login.getGUI().getDisplay().removeAllWidgets();
+                EndState end = (EndState)this.game.getGameState(EGameState.EndState);
+		if(end.isActive()) end.getGUI().getDisplay().removeAllWidgets();
+                
 		InputManager.getInstance().setInputActive(false);
 		state.initialize();
+                if(state instanceof EndState) {
+                    switch(endState) {
+                        case RedWin:
+                            ((EndState)state).getGUI().setWinner("Red has won!");
+                            break;
+                        case BlueWin:
+                            ((EndState)state).getGUI().setWinner("Blue has won!");
+                            break;
+                        case Draw:
+                            ((EndState)state).getGUI().setWinner("Game is a draw!");
+                            break;
+                    }
+                            
+                }
 		state.setActive(false);
 	}
 }

@@ -15,5 +15,9 @@ public enum EGameState {
 	/**
 	 * The battle game state enumeration.
 	 */
-	BattleState
+	BattleState,
+        /**
+         * The end game state enumeration.
+         */
+        EndState
 }

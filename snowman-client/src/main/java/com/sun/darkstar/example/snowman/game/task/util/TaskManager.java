@@ -6,6 +6,7 @@ import com.jme.util.Debug;
 import com.jme.util.stat.StatCollector;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
@@ -177,7 +178,11 @@ public class TaskManager extends Manager {
                         task = new ResetLoginTask(this.game);
                         break;
                     case GameState:
-                        task = new GameStateTask(this.game, (EGameState) args[0]);
+                        if(args.length == 1) {
+                            task = new GameStateTask(this.game, (EGameState) args[0]);
+                        } else {
+                            task = new GameStateTask(this.game, (EGameState) args[0], (EEndState) args[1]);
+                        }
                         break;
                     case AddMOB:
                         task = new AddMOBTask(this.game, (Integer) args[0], (EMOBType) args[1], (ETeamColor) args[2], (Float) args[3], (Float) args[4], (Boolean) args[5]);
