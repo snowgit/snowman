@@ -170,6 +170,9 @@ public class AddMOBTask extends RealTimeTask {
                         state.initializeCameraHandler((DynamicView) view);
                     }
                 }
+                if(this.enumn == EMOBType.FLAGGOAL) {
+                    state.addFlagGoalId(color, id);
+                }
                 view.attachTo(state.getWorld().getDynamicRoot());
                 state.getWorld().updateRenderState();
                 state.incrementCount();

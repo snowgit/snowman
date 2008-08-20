@@ -6,12 +6,15 @@ import com.jme.math.Vector3f;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.input.SnowmanCameraHandler;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * <code>BattleState</code> extends <code>GameState</code> to define the world
@@ -33,6 +36,10 @@ public class BattleState extends GameState {
 	 * The number of added entities.
 	 */
 	private int count;
+        /**
+         * The id's of the flag goals
+         */
+        private Map<ETeamColor, Integer> flagGoals = new HashMap<ETeamColor, Integer>();
 	/**
 	 * Our camera handler.
 	 */
@@ -89,4 +96,12 @@ public class BattleState extends GameState {
 	public int getCount() {
 		return this.count;
 	}
+        
+        public void addFlagGoalId(ETeamColor color, Integer id) {
+            this.flagGoals.put(color, id);
+        }
+        
+        public Integer getFlagGoalId(ETeamColor color) {
+            return this.flagGoals.get(color);
+        }
 }

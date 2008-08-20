@@ -2,7 +2,9 @@ package com.sun.darkstar.example.snowman.game.entity.controller;
 
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
@@ -89,6 +91,10 @@ public class CharacterController extends Controller {
 				} else {
 					PhysicsManager.getInstance().markForUpdate(this.entity);
 				}
+                                
+                                if(this.getEntity().isCarrying()) {
+                                    tryScore();
+                                }
 			}
 			break;
 		}
@@ -112,6 +118,18 @@ public class CharacterController extends Controller {
 		}
 		return false;
 	}
+        
+        /**
+         * Try to score with a score task if this player is carrying the flag
+         */
+        private void tryScore() {
+            CharacterEntity character = ((CharacterEntity) this.entity);
+            View view = (View) ViewManager.getInstance().getView(character);
+            float xPos = view.getLocalTranslation().x;
+            float zPos = view.getLocalTranslation().z;
+            ETeamColor color = character.getEnumn() == EEntity.SnowmanLocalBlue ? ETeamColor.Blue : ETeamColor.Red;
+            TaskManager.getInstance().createTask(ETask.Score, color, xPos, zPos);
+        }
 	
 	@Override
 	public CharacterEntity getEntity() {
