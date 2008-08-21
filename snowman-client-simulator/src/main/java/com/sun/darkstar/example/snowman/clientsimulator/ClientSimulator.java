@@ -35,7 +35,6 @@ package com.sun.darkstar.example.snowman.clientsimulator;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -302,9 +301,9 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                             iter.remove();
                             changeThread.wakeUp();
                         }
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         logger.log(Level.SEVERE,
-                                   "IO exception from player", ex);
+                                   "Exception from player", ex);
                         iter.remove();
                         changeThread.wakeUp();
                     }
