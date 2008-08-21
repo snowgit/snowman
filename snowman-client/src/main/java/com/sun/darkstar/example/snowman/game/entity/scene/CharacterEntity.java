@@ -3,6 +3,7 @@ package com.sun.darkstar.example.snowman.game.entity.scene;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
@@ -24,6 +25,10 @@ public class CharacterEntity extends DynamicEntity {
 	 * The current <code>EState</code>.
 	 */
 	protected EState state;
+        /**
+	 * The current <code>ECursorState</code>.
+	 */
+	protected ECursorState cursorState;
 	/**
 	 * The current <code>Vector3f</code> destination.
 	 */
@@ -46,6 +51,7 @@ public class CharacterEntity extends DynamicEntity {
 		super(enumn, id);
 		this.hp = SingletonRegistry.getHPConverter().getMaxHP();
 		this.state = EState.Idle;
+                this.cursorState = ECursorState.Invalid;
 	}
 	
 	/**
@@ -70,6 +76,14 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public void setState(EState state) {
 		this.state = state;
+	}
+        
+        /**
+	 * Set the current cursor state of the snowman.
+	 * @param state The <code>ECursorState</code> enumeration.
+	 */
+	public void setCursorState(ECursorState cursorState) {
+		this.cursorState = cursorState;
 	}
 	
 	/**
@@ -110,6 +124,14 @@ public class CharacterEntity extends DynamicEntity {
 	 */
 	public EState getState() {
 		return this.state;
+	}
+        
+        /**
+	 * Retrieve the current cursor state of the snowman.
+	 * @return The <code>ECursorState</code> enumeration.
+	 */
+	public ECursorState getCursorState() {
+		return this.cursorState;
 	}
 	
 	/**

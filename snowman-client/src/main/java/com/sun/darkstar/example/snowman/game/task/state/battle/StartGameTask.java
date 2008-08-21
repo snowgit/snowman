@@ -33,6 +33,8 @@ public class StartGameTask extends RealTimeTask {
 		state.setActive(true);
 		state = this.game.getGameState(EGameState.LoginState);
 		state.setActive(false);
+                state = this.game.getGameState(EGameState.EndState);
+		state.setActive(false);
 		InputManager.getInstance().setInputActive(true);
 		
 		StatsManager.getInstance().resetStats();

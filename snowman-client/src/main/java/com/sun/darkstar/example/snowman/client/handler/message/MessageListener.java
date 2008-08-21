@@ -45,15 +45,18 @@ public class MessageListener implements SimpleClientListener, ClientChannelListe
 	}
 
 	@Override
-	public void loggedIn() {}
+	public void loggedIn() {
+            TaskManager.getInstance().createTask(ETask.LoginSuccess);
+        }
 
 	@Override
 	public void loginFailed(String reason) {
-		TaskManager.getInstance().createTask(ETask.ResetLogin);
+		TaskManager.getInstance().createTask(ETask.ResetLogin, reason);
 	}
 
 	@Override
 	public void disconnected(boolean graceful, String reason) {
+            if(!graceful)
 		this.handler.getGame().finish();
 	}
 

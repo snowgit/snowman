@@ -1,10 +1,13 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.input.MouseInput;
+import com.jme.util.Timer;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.end.EndGUI;
+import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
+import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 
 /**
  * <code>EndState</code> extends <code>GameState</code> to define the end game
@@ -17,6 +20,16 @@ public class EndState extends GameState {
 	 * The <code>EndGUI</code> instance.
 	 */
 	private EndGUI gui;
+        /**
+         * Seconds to wait before restarting game
+         */
+        private final int seconds = 10;
+        /**
+         * Timer to keep track of countdown
+         */
+        private final Timer timer = Timer.getTimer();
+        private int lastTime = 0;
+
 
 	/**
 	 * Constructor of <code>LoginState</code>.
@@ -34,6 +47,7 @@ public class EndState extends GameState {
 	@Override
 	protected void initializeState() {
 		this.buildGUIPass();
+                this.timer.reset();
 	}
 	
 	/**
@@ -41,15 +55,23 @@ public class EndState extends GameState {
 	 */
 	private void buildGUIPass() {
 		MouseInput.get().setCursorVisible(true);
-		this.gui = new EndGUI();
+		this.gui = new EndGUI(seconds);
 		this.gui.initialize();
 		this.game.getPassManager().add(this.gui);
 	}
 	
 	@Override
 	protected void updateState(float interpolation) {
-		// TODO Auto-generated method stub
-
+            int newTime = (int)timer.getTimeInSeconds();
+            if(newTime > lastTime) {
+                gui.setCountdown(seconds - newTime);
+                lastTime = newTime;
+                
+                if(seconds - newTime == 0) {
+                    this.setActive(false);
+                    TaskManager.getInstance().createTask(ETask.Authenticate, String.valueOf(System.currentTimeMillis()), "");
+                }
+            }
 	}
 	
 	/**

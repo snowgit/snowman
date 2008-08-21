@@ -54,7 +54,7 @@ public class RemoveMOBTask extends RealTimeTask {
 		if(entity instanceof CharacterEntity) {
 			CharacterEntity character = (CharacterEntity)entity;
 			if(character.isCarrying()) {
-				TaskManager.getInstance().createTask(ETask.Attach, character.getFlag().getID(), 0);
+				TaskManager.getInstance().createTask(ETask.Attach, character.getFlag().getID(), 0, false);
 			}
 		}
 		// Step 3.

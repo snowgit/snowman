@@ -209,12 +209,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     // A player disconnected
     public void removePlayer(SnowmanPlayer player){
         appContext.getDataManager().markForUpdate(this);
-        Integer playerId = new Integer(player.getID());
-        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(playerId);
+        player.dropFlag();
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
         if(playerRef != null) {
             channel.leave(player.getSession());
-            send(null, ServerMessages.createRemoveMOBPkt(playerId));
+            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
             appContext.getDataManager().removeObject(player);
         }
         

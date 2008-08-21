@@ -19,6 +19,10 @@ public enum ETask {
 	 * The task used to reset the login state after login attempt failed.
 	 */
 	ResetLogin(ETaskType.RealTime),
+        /**
+	 * The task used to notify of a login success
+	 */
+	LoginSuccess(ETaskType.RealTime),
 	/**
 	 * The task used to change game state.
 	 */
@@ -42,7 +46,7 @@ public enum ETask {
 	/**
 	 * The task used to update all value associated with mouse position.
 	 */
-	UpdateState(ETaskType.RealTime),
+	UpdateCursorState(ETaskType.RealTime),
 	/**
 	 * The task used to initiate the movement of a snowman.
 	 */

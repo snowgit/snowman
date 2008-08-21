@@ -33,7 +33,7 @@ package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
+import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
@@ -54,7 +54,7 @@ import java.util.Random;
 public class RobotImpl extends SnowmanPlayerImpl {
         
     private final int moveDelay;
-    private final Random random = new Random();
+    private final Random random = new Random(System.currentTimeMillis());
     
     // Player IDs of potential targets
     private ArrayList<Integer> targets = null;
@@ -89,7 +89,6 @@ public class RobotImpl extends SnowmanPlayerImpl {
                 if (flag.getTeamColor() != getTeamColor())
                     theirFlagRef = appContext.getDataManager().createReference(flag);
             }
-            random.setSeed(getID());
         }
         
         if (state == PlayerState.NONE || state == PlayerState.DEAD) {

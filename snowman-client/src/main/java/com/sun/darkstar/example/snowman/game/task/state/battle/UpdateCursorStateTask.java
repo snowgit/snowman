@@ -7,6 +7,7 @@ import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
+import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
@@ -49,7 +50,7 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * @version Creation date: 07-18-2008 11:36 EST
  * @version Modified date: 08-12-2008 11:45 EST
  */
-public class UpdateStateTask extends RealTimeTask {
+public class UpdateCursorStateTask extends RealTimeTask {
 	/**
 	 * The <code>SnowmanEntity</code> instance.
 	 */
@@ -70,8 +71,8 @@ public class UpdateStateTask extends RealTimeTask {
 	 * @param x The new x screen coordinate of the mouse.
 	 * @param y The new y screen coordinate of the mouse.
 	 */
-	public UpdateStateTask(Game game, SnowmanEntity snowman, int x, int y) {
-		super(ETask.UpdateState, game);
+	public UpdateCursorStateTask(Game game, SnowmanEntity snowman, int x, int y) {
+		super(ETask.UpdateCursorState, game);
 		this.snowman = snowman;
 		this.x = x;
 		this.y = y;
@@ -90,7 +91,8 @@ public class UpdateStateTask extends RealTimeTask {
 		World world = this.game.getGameState(EGameState.BattleState).getWorld();
 		Spatial result = collisionManager.getIntersectObject(ray, world, StaticView.class, false);
 		if(result != null) {
-			this.snowman.setState(EState.Idle);
+			this.snowman.setCursorState(ECursorState.TryingToMove);
+                        // TODO Change cursor to moving.
 			return;
 		}
 		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
@@ -98,7 +100,7 @@ public class UpdateStateTask extends RealTimeTask {
 			CharacterView view = (CharacterView)result;
 			if(view.getEntity() == this.snowman || !this.validateTeam(view.getEntity())) return;
 			if(this.validateDeath((CharacterView)result) && this.validateAttackRange(result) && this.validateBlocking(result)) {
-				this.snowman.setState(EState.Targeting);
+				this.snowman.setCursorState(ECursorState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
 				// TODO Change cursor to targeting.
 			}
@@ -108,12 +110,15 @@ public class UpdateStateTask extends RealTimeTask {
 		if(result != null) {
 			FlagView view = (FlagView)result;
 			if(this.validateGrabRange(result) && this.validateTeam(view.getEntity())) {
-				this.snowman.setState(EState.TryingToGrab);
+				this.snowman.setCursorState(ECursorState.TryingToGrab);
 				this.snowman.setTarget(view.getEntity());
 				// TODO Change cursor to grabbing.
 			}
 			return;
 		}
+                
+                this.snowman.setCursorState(ECursorState.Invalid);
+                // TODO Change cursor to invalid
 	}
 
 	/**

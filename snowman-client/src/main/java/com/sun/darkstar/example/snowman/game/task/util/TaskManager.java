@@ -26,11 +26,12 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.MoveSnowballTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RemoveMOBTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.RespawnTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.StartGameTask;
-import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateStateTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateCursorStateTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.ScoreTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.LoginSuccessTask;
 import com.sun.darkstar.example.snowman.interfaces.IRealTimeTask;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -175,7 +176,10 @@ public class TaskManager extends Manager {
                         task = new AuthenticateTask(this.game, (String) args[0], (String) args[1]);
                         break;
                     case ResetLogin:
-                        task = new ResetLoginTask(this.game);
+                        task = new ResetLoginTask(this.game, (String) args[1]);
+                        break;
+                    case LoginSuccess:
+                        task = new LoginSuccessTask(this.game);
                         break;
                     case GameState:
                         if(args.length == 1) {
@@ -193,8 +197,8 @@ public class TaskManager extends Manager {
                     case StartGame:
                         task = new StartGameTask(this.game);
                         break;
-                    case UpdateState:
-                        task = new UpdateStateTask(this.game, (SnowmanEntity) args[0], (Integer) args[1], (Integer) args[2]);
+                    case UpdateCursorState:
+                        task = new UpdateCursorStateTask(this.game, (SnowmanEntity) args[0], (Integer) args[1], (Integer) args[2]);
                         break;
                     case MoveCharacter:
                         if (args.length == 3) {
@@ -232,7 +236,7 @@ public class TaskManager extends Manager {
                         task = new RespawnTask(this.game, (Integer) args[0], (Float) args[1], (Float) args[2], (Boolean) args[3]);
                         break;
                     case Attach:
-                        task = new AttachTask(this.game, (Integer) args[0], (Integer) args[1]);
+                        task = new AttachTask(this.game, (Integer) args[0], (Integer) args[1], (Boolean) args[2]);
                         break;
                     case Remove:
                         task = new RemoveMOBTask(this.game, (Integer) args[0]);
