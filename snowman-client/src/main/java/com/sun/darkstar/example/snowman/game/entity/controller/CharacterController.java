@@ -49,63 +49,55 @@ public class CharacterController extends Controller {
 
 	@Override
 	protected void updateLogic(float interpolation) {
-		if(!this.getEntity().isAlive()) return;
-		switch(this.getEntity().getState()) {
-		case Attacking:
-			if(this.lastState != EState.Attacking) {
-				this.getEntity().setDestination(null);
-				this.entity.resetVelocity();
-				TaskManager.getInstance().createTask(ETask.CreateSnowball, this.getEntity(), this.getEntity().getTarget());
-			}
-//			if(!this.thrown) {// && ((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentHalf()) {
-//				TaskManager.getInstance().createTask(ETask.CreateSnowball, this.getEntity(), this.getEntity().getTarget());
-//				this.thrown = true;
-//			} else
-			if(((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
-				this.getEntity().setState(EState.Idle);
-				ViewManager.getInstance().markForUpdate(this.entity);
-				//this.thrown = false;
-				// Update target scale and speed.
-				ViewManager.getInstance().markForUpdate(this.getEntity().getTarget());
-			}
-			break;
-		case Hit:
-			if(((CharacterView)ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
-				this.getEntity().setState(EState.Idle);
-				ViewManager.getInstance().markForUpdate(this.entity);
-			}
-			break;
-		case Grabbing:
-			this.getEntity().setDestination(null);
-			this.entity.resetVelocity();
-			this.getEntity().setState(EState.Idle);
-			ViewManager.getInstance().markForUpdate(this.entity);
-			break;
-		default:
-			if(!this.getEntity().getVelocity().equals(Vector3f.ZERO)) {
-				if(this.validatePosition()) {
-					this.getEntity().setDestination(null);
-					this.entity.resetVelocity();
-					this.getEntity().setState(EState.Idle);
-					ViewManager.getInstance().markForUpdate(entity);
-				} else {
-					PhysicsManager.getInstance().markForUpdate(this.entity);
-				}
-                                
-                                if(this.getEntity().isCarrying()) {
-                                    tryScore();
-                                }
-			}
-			break;
-		}
-		this.lastState = this.getEntity().getState();
-	}
+            if (!this.getEntity().isAlive()) {
+                return;
+            }
+            switch (this.getEntity().getState()) {
+                case Attacking:
+                    if (((CharacterView) ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
+                        this.getEntity().setState(EState.Idle);
+                        ViewManager.getInstance().markForUpdate(this.entity);
+                        // Update target scale and speed.
+                        ViewManager.getInstance().markForUpdate(this.getEntity().getTarget());
+                    }
+                    break;
+                case Hit:
+                    if (((CharacterView) ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {
+                        this.getEntity().setState(EState.Idle);
+                        ViewManager.getInstance().markForUpdate(this.entity);
+                    }
+                    break;
+                case Grabbing:
+                    this.getEntity().setDestination(null);
+                    this.entity.resetVelocity();
+                    this.getEntity().setState(EState.Idle);
+                    ViewManager.getInstance().markForUpdate(this.entity);
+                    break;
+                default:
+                    if (!this.getEntity().getVelocity().equals(Vector3f.ZERO)) {
+                        if (this.validatePosition()) {
+                            this.getEntity().setDestination(null);
+                            this.entity.resetVelocity();
+                            this.getEntity().setState(EState.Idle);
+                            ViewManager.getInstance().markForUpdate(entity);
+                        } else {
+                            PhysicsManager.getInstance().markForUpdate(this.entity);
+                        }
 
-	/**
-	 * Validate if the current position is within the tolerance range of the destination.
-	 * @return True if the character is considered reached the destination. False otherwise.
-	 */
-	private boolean validatePosition() {
+                        if (this.getEntity().isCarrying()) {
+                            tryScore();
+                        }
+                    }
+                    break;
+            }
+            this.lastState = this.getEntity().getState();
+    }
+
+    /**
+     * Validate if the current position is within the tolerance range of the destination.
+     * @return True if the character is considered reached the destination. False otherwise.
+     */
+    private boolean validatePosition() {
 		CharacterEntity character = ((CharacterEntity)this.entity);
 		if(character.getDestination() == null) return true;
 		try {

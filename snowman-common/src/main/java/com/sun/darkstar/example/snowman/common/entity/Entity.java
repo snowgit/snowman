@@ -57,6 +57,11 @@ public abstract class Entity implements IEntity {
 		}
 		return false;
 	}
+        
+        @Override
+        public int hashCode() {
+            return Integer.valueOf(idNumber).hashCode();
+        }
 
 	@Override
 	public int getID() {
