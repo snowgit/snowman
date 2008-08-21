@@ -10,8 +10,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/lib/jme.jar"/>
 	<classpathentry kind="lib" path="/lib/mina-core-1.1.0.jar"/>
-	<classpathentry kind="lib" path="/lib/sgs-server-0.9.6.1.jar"/>
 	<classpathentry kind="lib" path="/lib/slf4j-api-1.4.0.jar"/>
 	<classpathentry kind="lib" path="/lib/slf4j-jdk14-1.4.0.jar"/>
+	<classpathentry kind="lib" path="/lib/sgs-server-0.9.6.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
