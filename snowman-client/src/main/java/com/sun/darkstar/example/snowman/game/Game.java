@@ -30,6 +30,7 @@ import com.sun.darkstar.example.snowman.game.state.scene.EndState;
 import com.sun.darkstar.example.snowman.game.stats.StatsManager;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import com.sun.darkstar.example.snowman.interfaces.IComponent;
+import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 
 /**
  * <code>Game</code> represents the client end application which maintains
@@ -225,6 +226,9 @@ public class Game extends BaseGame implements IComponent{
 
             // reinit stats as needed
             StatsManager.getInstance().recreateStatsDisplay();
+            
+            // login immediately with the current system time as the login name
+            TaskManager.getInstance().createTask(ETask.Authenticate, String.valueOf(System.currentTimeMillis()), "");
 	}
 	
 	@Override
@@ -319,4 +323,10 @@ public class Game extends BaseGame implements IComponent{
 	public GameState getGameState(EGameState enumn) {
 		return (GameState)this.stateManager.getChild(enumn.toString());
 	}
+        
+        public void deactivateAllGameStates() {
+            for(EGameState s : EGameState.values()) {
+                ((GameState)this.stateManager.getChild(s.toString())).setActive(false);
+            }
+        }
 }

@@ -22,7 +22,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * <code>AttackTask</code> execution logic:
  * 1. Retrieve the attacker and target entity and view based on IDs.
  * 2. Set the delta change to the target and check for death.
- * 3. Set attacker to attacking state.
+ * 3. Stop the attacker, create a snowball, and set attacker to attacking state.
  * 4. Rotate attacker towards the target.
  * 5. Set the target ID to the attacker <code>CharacterEntity</code>
  * 6. Send 'attack' packet to server if attacker is locally controlled.
@@ -90,43 +90,49 @@ public class AttackTask extends RealTimeTask {
 
 	@Override
 	public void execute() {
-		try {
-			// Step 1.
-			CharacterEntity attackerEntity = (CharacterEntity)EntityManager.getInstance().getEntity(this.attackerID);
-			View attacker = (View)ViewManager.getInstance().getView(attackerEntity);
-			CharacterEntity targetEntity = (CharacterEntity)EntityManager.getInstance().getEntity(this.targetID);
-			View target = (View)ViewManager.getInstance().getView(targetEntity);
-			// Step 2.
-			targetEntity.addHP(this.delta);	
-			if(targetEntity.getHP() <= 0) {
-				targetEntity.setState(EState.Death);
-				ViewManager.getInstance().markForUpdate(targetEntity);
-				if(targetEntity instanceof SnowmanEntity) {
-					InputManager.getInstance().getController(targetEntity).setActive(false);
-				}
-				if(targetEntity.isCarrying()) {
-					TaskManager.getInstance().createTask(ETask.Attach, targetEntity.getFlag().getID(), 0, false);
-					targetEntity.setFlag(null);
-				}
-			}
-			if(!this.self) {
-				// Step 3.
-				attackerEntity.setState(EState.Attacking);
-				ViewManager.getInstance().markForUpdate(attackerEntity);
-				// Step 4.
-				Vector3f attackerPosition = attacker.getLocalTranslation().clone();
-				Vector3f targetPosition = target.getLocalTranslation().clone();
-				attacker.getLocalRotation().lookAt(targetPosition.subtract(attackerPosition).normalizeLocal(), Vector3f.UNIT_Y);
-				// Step 5.
-				attackerEntity.setTarget(targetEntity);	
-				// Step 6.
-				if(this.local) this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, attackerPosition.x, attackerPosition.z));
-			}
-		} catch (ObjectNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
+            try {
+                // Step 1.
+                CharacterEntity attackerEntity = (CharacterEntity) EntityManager.getInstance().getEntity(this.attackerID);
+                View attacker = (View) ViewManager.getInstance().getView(attackerEntity);
+                CharacterEntity targetEntity = (CharacterEntity) EntityManager.getInstance().getEntity(this.targetID);
+                View target = (View) ViewManager.getInstance().getView(targetEntity);
+                // Step 2.
+                targetEntity.addHP(this.delta);
+                if (targetEntity.getHP() <= 0) {
+                    targetEntity.setState(EState.Death);
+                    ViewManager.getInstance().markForUpdate(targetEntity);
+                    if (targetEntity instanceof SnowmanEntity) {
+                        InputManager.getInstance().getController(targetEntity).setActive(false);
+                    }
+                    if (targetEntity.isCarrying()) {
+                        TaskManager.getInstance().createTask(ETask.Attach, targetEntity.getFlag().getID(), 0, false);
+                        targetEntity.setFlag(null);
+                    }
+                }
+                
+                if (!this.self) {
+                    // Step 3.
+                    attackerEntity.setDestination(null);
+                    attackerEntity.resetVelocity();
+                    TaskManager.getInstance().createTask(ETask.CreateSnowball, attackerEntity, targetEntity);
+                    attackerEntity.setState(EState.Attacking);
+                    ViewManager.getInstance().markForUpdate(attackerEntity);
+                    // Step 4.
+                    Vector3f attackerPosition = attacker.getLocalTranslation().clone();
+                    Vector3f targetPosition = target.getLocalTranslation().clone();
+                    attacker.getLocalRotation().lookAt(targetPosition.subtract(attackerPosition).normalizeLocal(), Vector3f.UNIT_Y);
+                    // Step 5.
+                    attackerEntity.setTarget(targetEntity);
+                    // Step 6.
+                    if (this.local) {
+                        this.game.getClient().send(ClientMessages.createAttackPkt(this.targetID, attackerPosition.x, attackerPosition.z));
+                    }
+                } 
+            } catch (ObjectNotFoundException e) {
+                e.printStackTrace();
+            }
+    }
+
 	@Override
 	public boolean equals(Object object) {
 		if(super.equals(object)) {

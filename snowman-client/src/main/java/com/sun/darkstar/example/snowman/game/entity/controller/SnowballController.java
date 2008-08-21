@@ -12,6 +12,7 @@ import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 
 /**
  * <code>SnowballController</code> extends <code>Controller</code> to define

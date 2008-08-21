@@ -21,6 +21,10 @@ public class SnowballEntity extends DynamicEntity {
 	 * The <code>Vector3f</code> destination of this snow ball.
 	 */
 	private Vector3f destination;
+        /**
+	 * The target <code>CharacterEntity</code> instance.
+	 */
+	protected CharacterEntity target;
 
 	/**
 	 * Constructor of <code>SnowballEntity</code>.
@@ -38,6 +42,14 @@ public class SnowballEntity extends DynamicEntity {
 	public void setDestination(Vector3f destination) {
 		this.destination = destination;
 	}
+        
+        /**
+	 * Set the current target of this character.
+	 * @param target The target <code>CharacterEntity</code> instance.
+	 */
+	public void setTarget(CharacterEntity target) {
+		this.target = target;
+	}
 	
 	/**
 	 * Retrieve the maximum height the snow ball will reach.
@@ -53,5 +65,13 @@ public class SnowballEntity extends DynamicEntity {
 	 */
 	public Vector3f getDestination() {
 		return this.destination;
+	}
+        
+        /**
+	 * Retrieve the target <code>CharacterEntity</code> instance.
+	 * @return The target <code>CharacterEntity</code> instance.
+	 */
+	public CharacterEntity getTarget() {
+		return this.target;
 	}
 }

@@ -76,6 +76,7 @@ public class CreateSnowballTask extends Task {
 			// Step 4.
 			SnowballEntity snowball = (SnowballEntity)EntityManager.getInstance().createEntity(EEntity.Snowball);
 			snowball.setDestination(targetPosition);
+                        snowball.setTarget(targetEntity);
 			SnowballView snowballView = (SnowballView)ViewManager.getInstance().createView(snowball);
 			// Step 5.
 			snowballView.setLocalTranslation(attackerPosition);
