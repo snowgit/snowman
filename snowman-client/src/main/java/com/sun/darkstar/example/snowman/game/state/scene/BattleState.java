@@ -13,6 +13,11 @@ import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.input.SnowmanCameraHandler;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
+import com.sun.darkstar.example.snowman.game.input.util.InputManager;
+import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
+import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -103,5 +108,21 @@ public class BattleState extends GameState {
         
         public Integer getFlagGoalId(ETeamColor color) {
             return this.flagGoals.get(color);
+        }
+        
+        /**
+         * Remove all objects from the world and reset the battle state
+         * for a new game
+         */
+        public void reset() {
+            if(this.world != null)
+                this.world.getDynamicRoot().detachAllChildren();
+            EntityManager.getInstance().cleanup();
+            ViewManager.getInstance().cleanup();
+            InputManager.getInstance().cleanup();
+            PhysicsManager.getInstance().cleanup();
+            TaskManager.getInstance().cleanup();
+            this.count = 0;
+            this.flagGoals.clear();
         }
 }

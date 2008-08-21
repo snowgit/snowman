@@ -19,6 +19,10 @@ public enum ETask {
 	 * The task used to reset the login state after login attempt failed.
 	 */
 	ResetLogin(ETaskType.RealTime),
+        /**
+	 * The task used to notify of a login success
+	 */
+	LoginSuccess(ETaskType.RealTime),
 	/**
 	 * The task used to change game state.
 	 */

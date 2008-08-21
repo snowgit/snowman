@@ -67,6 +67,10 @@ public class Client extends Component{
 			e.printStackTrace();
 		}
 	}
+        
+        public void logout() {
+            this.connection.logout(false);
+        }
 	
 	public void send(ByteBuffer message) {
 		message.flip();

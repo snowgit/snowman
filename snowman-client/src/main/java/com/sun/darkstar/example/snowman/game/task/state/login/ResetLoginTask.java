@@ -29,19 +29,16 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * @version Modified date: 07-16-2008 11:34 EST
  */
 public class ResetLoginTask extends RealTimeTask {
+    private String reason;
 
-	public ResetLoginTask(Game game) {
-		super(ETask.ResetLogin, game);
-	}
+    public ResetLoginTask(Game game, String reason) {
+        super(ETask.ResetLogin, game);
+        this.reason = reason;
+    }
 
-	@Override
-	public void execute() {
-		final LoginGUI gui = ((LoginState)GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
-		gui.setStatus(gui.getDefaultStatus());
-		gui.setButtonText(gui.getDefaultButton());
-		gui.enableFailedLabel();
-		gui.setUsername("");
-		gui.setPassword("");
-		InputManager.getInstance().setInputActive(true);
-	}
+    @Override
+    public void execute() {
+        final LoginGUI gui = ((LoginState) GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
+        gui.setStatus(gui.getFailedStatus()+" : "+reason);
+    }
 }

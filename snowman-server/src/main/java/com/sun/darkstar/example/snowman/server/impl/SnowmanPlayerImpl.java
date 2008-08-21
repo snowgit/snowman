@@ -70,7 +70,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     protected static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
     
     static long DEATHDELAYMS = 10 * 1000;
-    static float POSITIONTOLERANCESQD = 16.0f;
+    static float POSITIONTOLERANCESQD = 4.0f;
     static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
     static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     

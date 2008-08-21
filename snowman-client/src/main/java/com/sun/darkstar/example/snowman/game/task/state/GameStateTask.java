@@ -5,6 +5,7 @@ import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.state.scene.EndState;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
@@ -60,15 +61,20 @@ public class GameStateTask extends RealTimeTask {
 		GameState state = this.game.getGameState(this.enumn);
 		if(state.isActive()) return;
                 
+                this.game.deactivateAllGameStates();
 		this.game.getPassManager().clearAll();
 		LoginState login = (LoginState)this.game.getGameState(EGameState.LoginState);
-		if(login.isActive()) login.getGUI().getDisplay().removeAllWidgets();
+		if(login.getGUI() != null) login.getGUI().getDisplay().removeAllWidgets();
                 EndState end = (EndState)this.game.getGameState(EGameState.EndState);
-		if(end.isActive()) end.getGUI().getDisplay().removeAllWidgets();
+		if(end.getGUI() != null) end.getGUI().getDisplay().removeAllWidgets();
                 
 		InputManager.getInstance().setInputActive(false);
 		state.initialize();
+                state.setActive(false);
+                
                 if(state instanceof EndState) {
+                    this.game.getClient().logout();
+                    ((BattleState)this.game.getGameState(EGameState.BattleState)).reset();
                     switch(endState) {
                         case RedWin:
                             ((EndState)state).getGUI().setWinner("Red has won!");
@@ -80,8 +86,8 @@ public class GameStateTask extends RealTimeTask {
                             ((EndState)state).getGUI().setWinner("Game is a draw!");
                             break;
                     }
-                            
+                    state.setActive(true);
                 }
-		state.setActive(false);
+
 	}
 }

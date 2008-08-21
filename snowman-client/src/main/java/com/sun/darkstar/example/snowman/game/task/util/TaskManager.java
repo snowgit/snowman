@@ -31,6 +31,7 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.ScoreTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
+import com.sun.darkstar.example.snowman.game.task.state.login.LoginSuccessTask;
 import com.sun.darkstar.example.snowman.interfaces.IRealTimeTask;
 import com.sun.darkstar.example.snowman.interfaces.ITask;
 import com.sun.darkstar.example.snowman.unit.Manager;
@@ -175,7 +176,10 @@ public class TaskManager extends Manager {
                         task = new AuthenticateTask(this.game, (String) args[0], (String) args[1]);
                         break;
                     case ResetLogin:
-                        task = new ResetLoginTask(this.game);
+                        task = new ResetLoginTask(this.game, (String) args[1]);
+                        break;
+                    case LoginSuccess:
+                        task = new LoginSuccessTask(this.game);
                         break;
                     case GameState:
                         if(args.length == 1) {

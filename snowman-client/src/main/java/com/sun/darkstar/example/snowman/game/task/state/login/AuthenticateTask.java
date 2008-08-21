@@ -32,10 +32,6 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  */
 public class AuthenticateTask extends RealTimeTask {
 	/**
-	 * The status text to display.
-	 */
-	private final String status;
-	/**
 	 * The <code>String</code> user name to login with.
 	 */
 	private final String username;
@@ -52,7 +48,6 @@ public class AuthenticateTask extends RealTimeTask {
 	 */
 	public AuthenticateTask(Game game, String username, String password) {
 		super(ETask.Authenticate, game);
-		this.status = "Waiting for server to match you into a game...";
 		this.username = username;
 		this.password = password;
 	}
@@ -60,9 +55,8 @@ public class AuthenticateTask extends RealTimeTask {
 	@Override
 	public void execute() {
 		final LoginGUI gui = ((LoginState)GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
-		gui.setStatus(this.status);
+		gui.setStatus(gui.getDefaultStatus());
 		InputManager.getInstance().setInputActive(false);
-		gui.setButtonText("Please wait...");
 		this.game.getClient().getHandler().authenticate(this.username, this.password);
 		Properties properties = new Properties();
 		properties.setProperty("host", System.getProperty("host", "localhost"));
