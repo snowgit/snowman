@@ -254,7 +254,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public ClientSession getSession(){
-        return sessionRef.get();
+        try {
+            return sessionRef.get();
+        } catch (ObjectNotFoundException disconnected) {
+            return null;
+        }
     }
     
      // IServerProcessor Messages
