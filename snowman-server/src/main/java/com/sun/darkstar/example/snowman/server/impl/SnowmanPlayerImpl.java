@@ -333,6 +333,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                            x, y, POSITIONTOLERANCESQD)) {
             //get the target player and determine its location
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
+            
+            if (target == null) return; // player no longer in game
+            
             Coordinate targetPosition = target.getExpectedPositionAtTime(now);
             
             boolean success = true;
