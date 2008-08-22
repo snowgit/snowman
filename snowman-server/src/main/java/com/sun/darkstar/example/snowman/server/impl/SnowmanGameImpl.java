@@ -81,6 +81,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     private final ManagedReference<Channel> channelRef;
     
     private int numPlayers;
+    private int readyPlayers = 0;
     private int nextPlayerId = PLAYERIDSTART;
     private String gameName;
     /**
@@ -217,6 +218,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                 channel.leave(player.getSession());
             send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
             appContext.getDataManager().removeObject(player);
+            numPlayers--;
         }
         
         // if all real players have gone, end the game
@@ -252,14 +254,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     public void startGameIfReady(){
-        for(ManagedReference<SnowmanPlayer> playerRef : playerRefs.values()){
-            if (playerRef != null){
-                if (!playerRef.get().getReadyToPlay()){
-                    return;
-                }
-            }
-        }
-        send(null,ServerMessages.createStartGamePkt());
+        appContext.getDataManager().markForUpdate(this);
+        readyPlayers++;
+        if(readyPlayers >= playerRefs.size())
+            send(null, ServerMessages.createStartGamePkt());
     }
     
     public Set<Integer> getPlayerIds() {
