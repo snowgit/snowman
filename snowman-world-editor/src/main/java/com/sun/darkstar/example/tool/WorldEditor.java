@@ -1,34 +1,34 @@
 /*
-* Copyright (c) 2008, Sun Microsystems, Inc.
-*
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*
-*     * Redistributions of source code must retain the above copyright
-*       notice, this list of conditions and the following disclaimer.
-*     * Redistributions in binary form must reproduce the above copyright
-*       notice, this list of conditions and the following disclaimer in
-*       the documentation and/or other materials provided with the
-*       distribution.
-*     * Neither the name of Sun Microsystems, Inc. nor the names of its
-*       contributors may be used to endorse or promote products derived
-*       from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/ 
+ * Copyright (c) 2008, Sun Microsystems, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in
+ *       the documentation and/or other materials provided with the
+ *       distribution.
+ *     * Neither the name of Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.sun.darkstar.example.tool;
 
 import java.awt.BorderLayout;
@@ -37,6 +37,9 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -45,6 +48,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,8 +58,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,6 +69,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
@@ -80,13 +89,18 @@ import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
+import com.jme.math.Ray;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.PassNode;
+import com.jme.scene.SharedMesh;
+import com.jme.scene.SharedNode;
 import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
@@ -116,10 +130,12 @@ import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.EditableWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
+import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.worldwizards.saddl.SADDL;
@@ -134,10 +150,8 @@ import com.worldwizards.saddl.Tuple;
  */
 public class WorldEditor extends JFrame {
 
-	/**
-	 * This is the tabbed panel that contains the console output box
-	 */
-	JTabbedPane consolePane;
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * This is the tabbed panel that scene graph display and the assets list
 	 */
@@ -175,10 +189,13 @@ public class WorldEditor extends JFrame {
 	JMonkeyTreeModel treeModel;
 
 	/**
-	 * This is the lit of textures
-	 * 
+	 * This is the list of textures
 	 */
 	PopUpList textures;
+	/**
+	 * This is the list of static props
+	 */
+	JList props;
 	/**
 	 * This is the actual text area that displays the console output
 	 */
@@ -226,28 +243,28 @@ public class WorldEditor extends JFrame {
 	private TerrainView terrainView;
 
 	private TextureLayer selectedLayer;
-	
+
 	private Callable<Void> runFirstAction;
-	
+
 	private ExportDialog dlg;
 
 	private LinkedList<TextureLayer> layers;
-	
+
 	/**
 	 * Holds brush properties
 	 */
-	private Map<String,String> brushProperties = new HashMap<String,String>();
+	private Map<String, String> brushProperties = new HashMap<String, String>();
 
 	/**
-	 * This is the constructor for the world editor. To start it all running
-	 * you instance the WorldEditor using this constructor and call start() on
-	 * the returned instance.
+	 * This is the constructor for the world editor. To start it all running you
+	 * instance the WorldEditor using this constructor and call start() on the
+	 * returned instance.
 	 */
 	public WorldEditor() {
 		this.layers = new LinkedList<TextureLayer>();
 		this.setMinimumSize(new Dimension(1024, 768));
-		Container c = getContentPane();
-		c.setLayout(new BorderLayout());
+		Container contentPane = getContentPane();
+		contentPane.setLayout(new BorderLayout());
 		try {
 			List<Tuple> ui = SADDL.parse(new InputStreamReader(getClass()
 					.getResourceAsStream("res/menubar.sdl")));
@@ -258,53 +275,47 @@ public class WorldEditor extends JFrame {
 			}
 			// for the moment lets do it by hand, someday well make it data
 			// driven
-			EnumButtonBar<ModeEnum> bar = new EnumButtonBar<ModeEnum>(ModeEnum.values());
+			EnumButtonBar<ModeEnum> bar = new EnumButtonBar<ModeEnum>(ModeEnum
+					.values());
 			bar.addListener(new EnumButtonBarListener() {
 
 				@Override
 				public void enumSet(Enum actualEnum) {
-					currentMode = (ModeEnum)actualEnum;
-					if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth) {
+					currentMode = (ModeEnum) actualEnum;
+					if (currentMode == ModeEnum.Raise
+							|| currentMode == ModeEnum.Lower
+							|| currentMode == ModeEnum.Smooth) {
 						brush.setColor(ColorRGBA.red);
-					} else if(currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
+					} else if (currentMode == ModeEnum.Paint
+							|| currentMode == ModeEnum.Erase) {
 						brush.setColor(ColorRGBA.blue);
 					}
 					mouseListener.setMode(currentMode);
 				}
 			});
-			c.add(bar, BorderLayout.NORTH);
+			contentPane.add(bar, BorderLayout.NORTH);
 			viewPanel = new JPanel();
 			viewPanel.setName("View");
 			viewPanel.setLayout(new BorderLayout());
 			viewPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
-			"View"));
-			c.add(viewPanel, BorderLayout.CENTER);
-			consolePane = new JTabbedPane();
-			consolePane.setPreferredSize(new Dimension(800, 100));
-			consolePane.setName("Console Pane");
-			JPanel consolePanel = new JPanel();
-			consolePanel.setLayout(new BorderLayout());
-			consoleOutput = new JTextArea();
-			consolePanel.add(consoleOutput, BorderLayout.CENTER);
-			consolePane.addTab("Console", new JScrollPane(consolePanel));
-			c.add(consolePane, BorderLayout.SOUTH);
+					"View"));
+			contentPane.add(viewPanel, BorderLayout.CENTER);
 			projectPane = new JTabbedPane();
 			treeScrollPane = new JPanel();
 			treeScrollPane.setLayout(new BorderLayout());
 			projectPane.addTab("Scene Graph", treeScrollPane);
-			JPanel texturePanel = new JPanel();
 			textures = new PopUpList(new DefaultListModel());
-			textures.addListSelectionListener(new ListSelectionListener(){
+			textures.addListSelectionListener(new ListSelectionListener() {
 
 				@Override
 				public void valueChanged(ListSelectionEvent e) {
-					selectedLayer = (TextureLayer)textures.getSelectedValue();
-				}});
+					selectedLayer = (TextureLayer) textures.getSelectedValue();
+				}
+			});
 
-			texturePanel.add(new JScrollPane(textures));
 			// add menu items to texture popup menu
 			JMenuItem deleteTexture = new JMenuItem("Delete");
-			deleteTexture.addActionListener(new ActionListener(){
+			deleteTexture.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -312,19 +323,50 @@ public class WorldEditor extends JFrame {
 					TextureManager.releaseTexture(selectedLayer.getColor());
 					terrainView.detachPass(selectedLayer.getPass());
 					terrainView.updateRenderState();
-					DefaultListModel model = (DefaultListModel) textures.getModel();
+					DefaultListModel model = (DefaultListModel) textures
+							.getModel();
 					model.remove(textures.getSelectedIndex());
 					textures.repaint();
-				}});
+				}
+			});
 			textures.addToPopup(deleteTexture);
-			projectPane.addTab("Texture Layers",textures);
-			projectPane.setPreferredSize(new Dimension(200, 400));
-			c.add(projectPane, BorderLayout.WEST);
+			projectPane.addTab("Texture Layers", textures);
+
+			props = new JList(getPropModel());
+			props.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			props.setDragEnabled(true);
+			props.setTransferHandler(new TransferHandler() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public boolean canImport(TransferSupport support) {
+					return false;
+				}
+
+				@Override
+				public int getSourceActions(JComponent c) {
+					return COPY;
+				}
+
+				@Override
+				protected Transferable createTransferable(JComponent c) {
+					super.createTransferable(c);
+					JList list = (JList) c;
+					Object value = list.getSelectedValue();
+					return new StringSelection(value.toString());
+				}
+			});
+			projectPane.addTab("Props", props);
+
+			projectPane.setPreferredSize(new Dimension(280, 400));
+			contentPane.add(projectPane, BorderLayout.WEST);
 			JPanel eastPanel = new JPanel();
 			eastPanel.setLayout(new GridLayout(2, 1));
 			objectAttr = new JPanel();
 			objectAttr.setName("Object Attributes");
-			objectAttr.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Object Attributes"));
+			objectAttr.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
+					"Object Attributes"));
 			objectAttr.setLayout(new BorderLayout());
 			objectAttrTable = new AttributeEditor();
 			objectAttr.add(new JScrollPane(objectAttrTable),
@@ -332,273 +374,349 @@ public class WorldEditor extends JFrame {
 			eastPanel.add(objectAttr);
 			toolAttr = new JPanel();
 			toolAttr.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
-			"Tool Attributes"));
+					"Tool Attributes"));
 			toolAttr.setLayout(new BorderLayout());
 			toolAttrTable = new AttributeEditor();
-			toolAttrTable.addListener(new AttributeEditorListener(){
+			toolAttrTable.addListener(new AttributeEditorListener() {
 				@Override
 				public void attributeChanged(String key, String value) {
-					if(key.equalsIgnoreCase("radius")) {
+					if (key.equalsIgnoreCase("radius")) {
 						brush.setRadius(Float.valueOf(value));
-					} else if(key.equalsIgnoreCase("intensity")) {
+					} else if (key.equalsIgnoreCase("intensity")) {
 						brush.setIntensity(Float.valueOf(value));
 					}
-				}});
+				}
+			});
 			toolAttr.add(new JScrollPane(toolAttrTable), BorderLayout.CENTER);
 			eastPanel.add(toolAttr);
 			eastPanel.setPreferredSize(new Dimension(200, 400));
-			c.add(eastPanel, BorderLayout.EAST);
+			contentPane.add(eastPanel, BorderLayout.EAST);
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			impl = new WorldEditorCanvasImpl(800, 600);
 			set3DCanvas(impl);
 			initProperties();
-			((JKMenuBar) getJMenuBar()).addListener(new WorldEditorMenuListener() {
+			((JKMenuBar) getJMenuBar())
+					.addListener(new WorldEditorMenuListener() {
 
-				@Override
-				public void doAttachTo() {
-				}
+						@Override
+						public void doAttachTo() {
+						}
 
-				@Override
-				public void doCreateDirectionalLight() {
-				}
+						@Override
+						public void doCreateDirectionalLight() {
+						}
 
-				@Override
-				public void doCreateLineParticle() {
-				}
+						@Override
+						public void doCreateLineParticle() {
+						}
 
-				@Override
-				public void doCreatePointLight() {
-				}
+						@Override
+						public void doCreatePointLight() {
+						}
 
-				@Override
-				public void doCreateProjectedWater() {
-				}
+						@Override
+						public void doCreateProjectedWater() {
+						}
 
-				@Override
-				public void doCreateQuadParticle() {
-				}
+						@Override
+						public void doCreateQuadParticle() {
+						}
 
-				@Override
-				public void doCreateQuadWater() {
-				}
+						@Override
+						public void doCreateQuadWater() {
+						}
 
-				@Override
-				public void doCreateSpotLight() {
-				}
+						@Override
+						public void doCreateSpotLight() {
+						}
 
-				@Override
-				public void doCreateTextureLayer() {
-					if(world == null || terrainView == null) return;
-					JFileChooser chooser = new JFileChooser();
-					FileNameExtensionFilter filter = new FileNameExtensionFilter(
-							"Color Map Images", "jpg","bmp","tga");
-					chooser.setFileFilter(filter);
-					chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-					int returnVal = chooser.showOpenDialog(WorldEditor.this);
-					if (returnVal != JFileChooser.APPROVE_OPTION){
-						return;
-					}
-					File colorMap = chooser.getSelectedFile();
-					if (colorMap == null || !colorMap.exists() || !colorMap.isFile()) {
-						JOptionPane.showMessageDialog(WorldEditor.this, "Invalid color map chosen.");
-						return;
-					}
-					filter = new FileNameExtensionFilter(
-							"AlphaMapImage", "tga", "png");
-					chooser.setFileFilter(filter);
-					returnVal = chooser.showOpenDialog(WorldEditor.this);
-					if (returnVal != JFileChooser.APPROVE_OPTION){
-						return;
-					}
-					File alphaMap = chooser.getSelectedFile();
-					if (alphaMap == null || !alphaMap.exists() || !alphaMap.isFile()) {
-						JOptionPane.showMessageDialog(WorldEditor.this, "Invalid alpha map chosen.");
-						return;
-					}
-					DefaultListModel mdl = (DefaultListModel) textures.getModel();
-					float xBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).xExtent;
-					float zBound = ((BoundingBox)terrainView.getTerrainCluster().getWorldBound()).zExtent;
-					TextureLayer layer = new TextureLayer(colorMap,alphaMap, xBound, zBound);
-					layers.add(layer);
-					mdl.add(mdl.size(),layer);
-					terrainView.attachPass(layer.createPass(blend));
-					terrainView.updateRenderState();
-				}
+						@Override
+						public void doCreateTextureLayer() {
+							if (world == null || terrainView == null)
+								return;
+							JFileChooser chooser = new JFileChooser();
+							FileNameExtensionFilter filter = new FileNameExtensionFilter(
+									"Color Map Images", "jpg", "bmp", "tga");
+							chooser.setFileFilter(filter);
+							chooser
+									.setFileSelectionMode(JFileChooser.FILES_ONLY);
+							int returnVal = chooser
+									.showOpenDialog(WorldEditor.this);
+							if (returnVal != JFileChooser.APPROVE_OPTION) {
+								return;
+							}
+							File colorMap = chooser.getSelectedFile();
+							if (colorMap == null || !colorMap.exists()
+									|| !colorMap.isFile()) {
+								JOptionPane.showMessageDialog(WorldEditor.this,
+										"Invalid color map chosen.");
+								return;
+							}
+							filter = new FileNameExtensionFilter(
+									"AlphaMapImage", "tga", "png");
+							chooser.setFileFilter(filter);
+							returnVal = chooser
+									.showOpenDialog(WorldEditor.this);
+							if (returnVal != JFileChooser.APPROVE_OPTION) {
+								return;
+							}
+							File alphaMap = chooser.getSelectedFile();
+							if (alphaMap == null || !alphaMap.exists()
+									|| !alphaMap.isFile()) {
+								JOptionPane.showMessageDialog(WorldEditor.this,
+										"Invalid alpha map chosen.");
+								return;
+							}
+							DefaultListModel mdl = (DefaultListModel) textures
+									.getModel();
+							float xBound = ((BoundingBox) terrainView
+									.getTerrainCluster().getWorldBound()).xExtent;
+							float zBound = ((BoundingBox) terrainView
+									.getTerrainCluster().getWorldBound()).zExtent;
+							TextureLayer layer = new TextureLayer(colorMap,
+									alphaMap, xBound, zBound);
+							layers.add(layer);
+							mdl.add(mdl.size(), layer);
+							terrainView.attachPass(layer.createPass(blend));
+							terrainView.updateRenderState();
+						}
 
-				@Override
-				public void doCreateWorld() {
-//					String[] names = new String[EWorld.values().length];
-//					for (int i = 0; i < names.length; i++) {
-//						names[i] = EWorld.values()[i].name();
-//					}
-//					String selected = (String) JOptionPane.showInputDialog(WorldEditor.this,
-//							"What kind of world",
-//							"Create World",
-//							JOptionPane.PLAIN_MESSAGE, null,
-//							names, names[0]);
-//					if (selected == null)
-//						return;
-//					EWorld selectedEworld = EWorld.valueOf(selected);
-					
-					// Uncomment above if we actually start to use multiple world types.
-					EWorld selectedEworld = EWorld.Battle;
-					world = new EditableWorld(selectedEworld);
-					treeModel.addChild(impl.getRootNode(), world);
-					WorldEditor.this.repaint();
-				}
+						@Override
+						public void doCreateWorld() {
+							// String[] names = new
+							// String[EWorld.values().length];
+							// for (int i = 0; i < names.length; i++) {
+							// names[i] = EWorld.values()[i].name();
+							// }
+							// String selected = (String)
+							// JOptionPane.showInputDialog(WorldEditor.this,
+							// "What kind of world",
+							// "Create World",
+							// JOptionPane.PLAIN_MESSAGE, null,
+							// names, names[0]);
+							// if (selected == null)
+							// return;
+							// EWorld selectedEworld = EWorld.valueOf(selected);
 
-				@Override
-				public void doDettachFromParent() {
-				}
+							// Uncomment above if we actually start to use
+							// multiple world types.
+							EWorld selectedEworld = EWorld.Battle;
+							world = new EditableWorld(selectedEworld);
+							treeModel.addChild(impl.getRootNode(), world);
+							WorldEditor.this.repaint();
+						}
 
-				@Override
-				public void doExit() {
-					dispose();
-				}
+						@Override
+						public void doDettachFromParent() {
+						}
 
-				@Override
-				public void doExportWorld() {
-					dlg = new ExportDialog(WorldEditor.this);
-					if (dlg.showDialog()){
-						runFirstAction = new Callable<Void>() {
-							@Override
-							public Void call() throws Exception {
-									if(dlg.hasFile()) {
-										CloneImportExport cloner = new CloneImportExport();
-										cloner.saveClone(world);
-										EditableWorld cloneWorld = (EditableWorld)cloner.loadClone();
-										World node = (World)cloneWorld.constructFinal();
-										if(!dlg.exportTextures()) {
-											this.stripTexure(node);
-										} else {
-											while(!layers.isEmpty()) {
-												this.exportAlpha(layers.pop());
+						@Override
+						public void doExit() {
+							dispose();
+						}
+
+						@Override
+						public void doExportWorld() {
+							dlg = new ExportDialog(WorldEditor.this);
+							if (dlg.showDialog()) {
+								runFirstAction = new Callable<Void>() {
+									@Override
+									public Void call() throws Exception {
+										if (dlg.hasFile()) {
+											CloneImportExport cloner = new CloneImportExport();
+											cloner.saveClone(world);
+											EditableWorld cloneWorld = (EditableWorld) cloner
+													.loadClone();
+											World node = (World) cloneWorld
+													.constructFinal();
+											if (!dlg.exportTextures()) {
+												this.stripTexure(node);
+											} else {
+												while (!layers.isEmpty()) {
+													this.exportAlpha(layers
+															.pop());
+												}
+											}
+											try {
+												BinaryExporter.getInstance()
+														.save(node,
+																dlg.getFile());
+											} catch (IOException e) {
+												e.printStackTrace();
 											}
 										}
+										return null;
+									}
+
+									private void stripTexure(Node node) {
+										node
+												.clearRenderState(RenderState.RS_TEXTURE);
+										for (int i = 0; i < node.getQuantity(); i++) {
+											Spatial child = node.getChild(i);
+											if (child instanceof PassNode)
+												((PassNode) child).clearAll();
+											else if (child instanceof Node)
+												this.stripTexure((Node) child);
+											else
+												child
+														.clearRenderState(RenderState.RS_TEXTURE);
+										}
+									}
+
+									private void exportAlpha(TextureLayer layer) {
+										String raw = dlg.getFile().getPath();
+										String path = raw.substring(0, raw
+												.lastIndexOf("\\") + 1)
+												+ layer.getAlphaName()
+												+ EDataType.Texture
+														.getExtension();
+										File file = new File(path);
 										try {
-											BinaryExporter.getInstance().save(node, dlg.getFile());
+											file.createNewFile();
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+										try {
+											BinaryExporter
+													.getInstance()
+													.save(
+															layer.getAlpha()
+																	.getImage(),
+															file);
 										} catch (IOException e) {
 											e.printStackTrace();
 										}
 									}
-								return null;
+								};
 							}
-							
-							private void stripTexure(Node node) {
-								node.clearRenderState(RenderState.RS_TEXTURE);
-								for(int i = 0; i < node.getQuantity(); i++) {
-									Spatial child = node.getChild(i);
-									if(child instanceof PassNode) ((PassNode)child).clearAll();
-									else if(child instanceof Node) this.stripTexure((Node)child);
-									else child.clearRenderState(RenderState.RS_TEXTURE);
-								}
-							}
-							
-							private void exportAlpha(TextureLayer layer) {
-								String raw = dlg.getFile().getPath();
-								String path = raw.substring(0, raw.lastIndexOf("\\")+1) + layer.getAlphaName() + EDataType.Texture.getExtension();
-								File file = new File(path);
-								try {file.createNewFile();} catch (IOException e) {e.printStackTrace();}
-								try {
-									BinaryExporter.getInstance().save(layer.getAlpha().getImage(), file);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						};
-					}
-				}
-
-				@Override
-				public void doHelp() {
-				}
-
-				@Override
-				public void doLoad() {
-					// show load dialog
-					final File in = new File("c:/test.wld");
-					// queue up a task...
-					runFirstAction = new Callable<Void>() {
-						@Override
-						public Void call() throws Exception {
-							// in task, load file
-							BinaryImporter imp = new BinaryImporter();
-							Savable result = imp.load(in);
-							// if valid, replace children of rootNode with children of loaded item.
-							if (result instanceof EditableWorld) {
-								world = (EditableWorld)result;
-								treeModel.addChild(impl.getRootNode(), world);
-								terrainView = (TerrainView) world.getChild("Terrain_View");
-								WorldEditor.this.repaint();
-							}
-							WorldEditor.this.repaint();
-							return null;
 						}
-					};
-				}
 
-				@Override
-				public void doSave() {
-					// show save dialog
-					final File out = new File("c:/test.wld");
-					// queue up a task...
-					runFirstAction = new Callable<Void>() {
 						@Override
-						public Void call() throws Exception {
-							// in task, take current root node and export to file.
-							BinaryExporter exp = new BinaryExporter();
-							exp.save(world, out);
-							return null;
+						public void doHelp() {
 						}
-					};
-				}
 
-				@Override
-				public void doMove() {
-				}
+						@Override
+						public void doLoad() {
+							// show load dialog
+							final File in = new File("c:/test.wld");
+							// queue up a task...
+							runFirstAction = new Callable<Void>() {
+								@Override
+								public Void call() throws Exception {
+									// in task, load file
+									BinaryImporter imp = new BinaryImporter();
+									Savable result = imp.load(in);
+									// if valid, replace children of rootNode
+									// with children of loaded item.
+									if (result instanceof SavableWorld) {
+										// Clear out current data.
+										if (world != null) {
+											treeModel.deleteNode(world);
+										}
+										DefaultListModel mdl = (DefaultListModel) textures
+												.getModel();
+										impl.getRootNode().detachAllChildren();
+										layers.clear();
+										mdl.clear();
+										selectedLayer = null;
 
-				@Override
-				public void doNew() {
-				}
+										// Load in our new data.
+										SavableWorld savWorld = (SavableWorld) result;
+										world = savWorld.getWorld();
+										if (world != null) {
+											treeModel.addChild(impl
+													.getRootNode(), world);
+											terrainView = (TerrainView) world
+													.getChild("Terrain_View");
+										}
+										if (savWorld.getLayers() != null) {
+											layers.addAll(savWorld.getLayers());
+											for (TextureLayer layer : layers) {
+												mdl.add(mdl.size(), layer);
+											}
+										}
+									}
+									impl.getRootNode().updateRenderState();
+									WorldEditor.this.repaint();
+									return null;
+								}
+							};
+						}
 
-				@Override
-				public void doRotateX() {
-				}
+						@Override
+						public void doSave() {
+							// show save dialog
+							final File out = new File("c:/test.wld");
+							// queue up a task...
+							runFirstAction = new Callable<Void>() {
+								@Override
+								public Void call() throws Exception {
+									// in task, take current root node and
+									// export to file.
+									BinaryExporter exp = new BinaryExporter();
+									SavableWorld savWorld = new SavableWorld();
+									savWorld
+											.setLayers(new ArrayList<TextureLayer>(
+													layers));
+									for (TextureLayer layer : savWorld
+											.getLayers()) {
+										layer.getAlpha().setStoreTexture(true);
+									}
+									savWorld.setWorld(world);
+									exp.save(savWorld, out);
+									return null;
+								}
+							};
+						}
 
-				@Override
-				public void doRotateY() {
-				}
+						@Override
+						public void doMove() {
+						}
 
-				@Override
-				public void doRotateZ() {
-				}
+						@Override
+						public void doNew() {
+						}
 
-				@Override
-				public void doModelPerspective() {
-				}
+						@Override
+						public void doRotateX() {
+						}
 
-				@Override
-				public void doWorldPerspective() {
-				}
-			});
+						@Override
+						public void doRotateY() {
+						}
+
+						@Override
+						public void doRotateZ() {
+						}
+
+						@Override
+						public void doModelPerspective() {
+						}
+
+						@Override
+						public void doWorldPerspective() {
+						}
+					});
 
 			pack();
 			setSize(800, 600);
 			setVisible(true);
-			// Note, this requires youi to refresh the canvas whenever a change
-			// is
-			// made to re-render it. If you want automatic refresh agt the cost
-			// of
-			// some performance, uncomment this line...
-			// /startAutoRefresh(canvas);
 		} catch (IOException ex) {
 			Logger.getLogger(WorldEditor.class.getName()).log(Level.SEVERE,
 					null, ex);
 		}
 	}
 
+	private ListModel getPropModel() {
+		DefaultListModel propModel = new DefaultListModel();
+		propModel.addElement("Tree");
+		propModel.addElement("House");
+		propModel.addElement("CampFire");
+		return propModel;
+	}
+
 	private void initProperties() {
-		brushProperties.put("Radius","5");
+		brushProperties.put("Radius", "5");
 		brushProperties.put("Intensity", "0.1");
 		toolAttrTable.setAttributes(brushProperties);
 
@@ -620,8 +738,8 @@ public class WorldEditor extends JFrame {
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
 		display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
-		final Canvas comp = (Canvas)display.createCanvas(1024, 768);
-		canvas = comp;
+		final Canvas comp = (Canvas)display.createCanvas(800, 600);
+		this.canvas = comp;
 
 		// add a listener... if window is resized, we can do something about it.
 		comp.addComponentListener(new ComponentAdapter() {
@@ -643,6 +761,88 @@ public class WorldEditor extends JFrame {
 		jmeCanvas.setTargetRate(60);
 
 		viewPanel.add(comp, BorderLayout.CENTER);
+		viewPanel.setTransferHandler(new TransferHandler() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean canImport(TransferSupport support) {
+				// Only support dropped strings
+			    if (!support.isDrop() || !support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+			        return false;
+			    }
+
+			    // check if the source actions (a bitwise-OR of supported actions)
+			    // contains the COPY action
+			    boolean copySupported = (COPY & support.getSourceDropActions()) == COPY;
+			    if (copySupported) {
+			        support.setDropAction(COPY);
+			        return true;
+			    }
+
+			    // COPY is not supported, so reject the transfer
+			    return false;
+			}
+			
+			@Override
+			public boolean importData(TransferHandler.TransferSupport support) {
+		        if (!canImport(support) || getTerrain() == null) {
+		            return false;
+		        }
+
+		        DropLocation dl = support.getDropLocation();
+
+		        // fetch the data and bail if this fails
+		        String data;
+		        try {
+		            data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+		        } catch (Exception e) {
+		            return false;
+		        }
+		        
+		        // Ok now, convert the DL into a pick ray and find the spot on the terrain to place the prop.
+		        Ray ray = DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(dl.getDropPoint().x, dl.getDropPoint().y), true, null);
+		        Vector3f dropLocation = SingletonRegistry.getCollisionManager().getIntersection(ray, getTerrain(), null, false);
+		        if (dropLocation == null) {
+		        	// no place to put it.
+		        	return false;
+		        }
+		        
+		        // Load our prop and place it in the correct location
+		        EEntity enumVal;
+		        try {
+			        enumVal = EEntity.valueOf(data);					
+				} catch (Exception e) {
+					// unhandled data type
+					return false;
+				}
+		        Spatial spat = DataManager.getInstance().getStaticSpatial(enumVal);
+		        Spatial shared = null;
+		        if (spat instanceof Node) {
+		        	shared = new SharedNode(data, (Node)spat);
+		        } else if (spat instanceof TriMesh) {
+		        	shared = new SharedMesh(data, (TriMesh)spat);
+		        } else {
+		        	// not my type... :)
+		        	return false;
+		        }
+		        // ok, now to get the model more on center, first get a reliable bounding volume
+		        shared.setModelBound(new BoundingBox());
+		        shared.updateModelBound();
+		        shared.updateGeometricState(0, true);
+		        // now subtract center and bump up by yExtent to place exactly at middle bottom
+		        dropLocation.subtractLocal(((BoundingBox)shared.getWorldBound()).getCenter());
+		        dropLocation.y += ((BoundingBox)shared.getWorldBound()).yExtent;
+		        shared.setLocalTranslation(dropLocation);
+
+		        // add to our static root.
+		        world.getStaticRoot().attachChild(shared);
+		        world.getStaticRoot().updateRenderState();
+		        treeModel.addChild(world.getStaticRoot(), shared);
+				WorldEditor.this.repaint();
+		        return true;
+		    } 
+		});
 	}
 
 	/**
@@ -692,7 +892,8 @@ public class WorldEditor extends JFrame {
 	 *            The path on the tree to the node that was selected for action
 	 */
 	public void doAddEntity(TreePath path) {
-		if(world == null) return;
+		if (world == null)
+			return;
 		Node node = (Node) path.getLastPathComponent();
 		String[] names = new String[EEntity.values().length];
 		for (int i = 0; i < names.length; i++) {
@@ -705,8 +906,10 @@ public class WorldEditor extends JFrame {
 			return;
 		}
 		EEntity selectedEntity = EEntity.valueOf(selected);
-		if (selectedEntity == null)	return;
-		EditableEntity entity = (EditableEntity) EntityManager.getInstance().createEntity(selectedEntity);
+		if (selectedEntity == null)
+			return;
+		EditableEntity entity = (EditableEntity) EntityManager.getInstance()
+				.createEntity(selectedEntity);
 		if (selectedEntity == EEntity.Terrain) {
 			TerrainDialog dialog = new TerrainDialog(this);
 			if (dialog.wasCanceled()) {
@@ -718,9 +921,10 @@ public class WorldEditor extends JFrame {
 			((TerrainEntity) entity).setDepth((int) d.getHeight());
 			((TerrainEntity) entity).setTrianglesPerMesh(tris);
 		}
-		EditableView view = (EditableView) ViewManager.getInstance().createView(entity);
+		EditableView view = (EditableView) ViewManager.getInstance()
+				.createView(entity);
 		if (selectedEntity == EEntity.Terrain) {
-			this.terrainView = (TerrainView)view;
+			this.terrainView = (TerrainView) view;
 			this.terrainView.getTerrainCluster().setDetailTexture(1, 1);
 		}
 		this.world.attachView(view);
@@ -772,7 +976,7 @@ public class WorldEditor extends JFrame {
 	class WorldEditorCanvasImpl extends SimplePassCanvasImpl {
 
 		private final Logger logger = Logger
-		.getLogger(WorldEditorCanvasImpl.class.getName());
+				.getLogger(WorldEditorCanvasImpl.class.getName());
 		/**
 		 * Handles our mouse/keyboard input.
 		 */
@@ -828,7 +1032,7 @@ public class WorldEditor extends JFrame {
 			FirstPersonHandler firstPersonHandler = new FirstPersonHandler(cam,
 					50, 1);
 			firstPersonHandler.getMouseLookHandler().getMouseLook()
-			.setButtonPressRequired(true);
+					.setButtonPressRequired(true);
 			firstPersonHandler.getMouseLookHandler().setActionSpeed(0.3f);
 			input = firstPersonHandler;
 
@@ -906,7 +1110,8 @@ public class WorldEditor extends JFrame {
 			blend = display.getRenderer().createBlendState();
 			blend.setBlendEnabled(true);
 			blend.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
-			blend.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
+			blend
+					.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
 			blend.setTestEnabled(true);
 			blend.setTestFunction(BlendState.TestFunction.GreaterThan);
 			blend.setEnabled(true);
@@ -914,7 +1119,7 @@ public class WorldEditor extends JFrame {
 
 		@Override
 		public void simpleUpdate() {
-			if(runFirstAction != null) {
+			if (runFirstAction != null) {
 				try {
 					runFirstAction.call();
 				} catch (Exception e) {
@@ -931,7 +1136,8 @@ public class WorldEditor extends JFrame {
 			}
 
 			// Execute updateQueue item
-			GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+			GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE)
+					.execute();
 
 			/** If toggle_pause is a valid command (via key p), change pause. */
 			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
@@ -949,7 +1155,9 @@ public class WorldEditor extends JFrame {
 				rootNode.updateGeometricState(tpf, true);
 			}
 
-			/** If toggle_wire is a valid command (via key T), change wirestates. */
+			/**
+			 * If toggle_wire is a valid command (via key T), change wirestates.
+			 */
 			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
 					"toggle_wire", false)) {
 				wireState.setEnabled(!wireState.isEnabled());
@@ -1027,28 +1235,40 @@ public class WorldEditor extends JFrame {
 		}
 
 		private void updateSculpting() {
-			if(pressed) {
-				if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth) {
+			if (pressed) {
+				if (currentMode == ModeEnum.Raise
+						|| currentMode == ModeEnum.Lower
+						|| currentMode == ModeEnum.Smooth) {
 					ESculpt enumn = ESculpt.valueOf(currentMode.toString());
-					terrainView.getTerrainCluster().sculptCluster(enumn, brush.getWorldBound().getCenter(),
-							brush.getWorldTranslation(), brush.getRadius(), brush.getIntensity());
+					terrainView.getTerrainCluster().sculptCluster(enumn,
+							brush.getWorldBound().getCenter(),
+							brush.getWorldTranslation(), brush.getRadius(),
+							brush.getIntensity());
 				}
 			}
 		}
 
 		private void updateTexturing() {
-			if(pressed && selectedLayer != null && currentMode != null) {
-				switch(currentMode) {
-				case Paint: selectedLayer.modifyAlpha(mouseListener.getIntersection(), brush.getRadius(), brush.getIntensity()); break;
-				case Erase: selectedLayer.modifyAlpha(mouseListener.getIntersection(), brush.getRadius(), -brush.getIntensity()); break;
+			if (pressed && selectedLayer != null && currentMode != null) {
+				switch (currentMode) {
+				case Paint:
+					selectedLayer.modifyAlpha(mouseListener.getIntersection(),
+							brush.getRadius(), brush.getIntensity());
+					break;
+				case Erase:
+					selectedLayer.modifyAlpha(mouseListener.getIntersection(),
+							brush.getRadius(), -brush.getIntensity());
+					break;
 				}
 			}
 		}
 
 		@Override
 		public void simpleRender() {
-			if(currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower || currentMode == ModeEnum.Smooth
-					|| currentMode == ModeEnum.Paint || currentMode == ModeEnum.Erase) {
+			if (currentMode == ModeEnum.Raise || currentMode == ModeEnum.Lower
+					|| currentMode == ModeEnum.Smooth
+					|| currentMode == ModeEnum.Paint
+					|| currentMode == ModeEnum.Erase) {
 				brush.draw(getRenderer());
 			}
 			doDebug(getRenderer());
@@ -1083,34 +1303,6 @@ public class WorldEditor extends JFrame {
 			e.printStackTrace();
 		}
 		new WorldEditor();
-	}
-
-	/**
-	 * This method is used to set a JME canvas update thread. If this is not
-	 * called then the cancas will only update when it is repainted by Swing.
-	 * 
-	 * @param canvas
-	 *            The canvas to update on a tick
-	 */
-	private void startAutoRefresh(final Canvas canvas) {
-		new Thread() {
-
-			{
-				setDaemon(true);
-			}
-
-			public void run() {
-				while (true) {
-					canvas.repaint();
-					try {
-						Thread.sleep(1000 / 30); // 30 fps
-					} catch (InterruptedException ex) {
-						Logger.getLogger(WorldEditor.class.getName()).log(
-								Level.SEVERE, null, ex);
-					}
-				}
-			};
-		}.start();
 	}
 
 	public void setPressed(boolean pressed) {

@@ -32,6 +32,7 @@
 package com.sun.darkstar.example.tool;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 
@@ -44,16 +45,27 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.util.export.InputCapsule;
+import com.jme.util.export.JMEExporter;
+import com.jme.util.export.JMEImporter;
+import com.jme.util.export.OutputCapsule;
+import com.jme.util.export.Savable;
 import com.jme.util.lwjgl.LWJGLTextureUpdater;
 
-public class TextureLayer {
+public class TextureLayer implements Savable {
+	
 	private Texture colorMap;
 	private Texture alphaMap;
 	private String name;
 	private String alphaName;
 	private float dx;
 	private float dz;
-	private PassNodeState pass;
+	private transient PassNodeState pass;
+	
+	/**
+	 * For serialization only.
+	 */
+	public TextureLayer() {}
 	
 	public TextureLayer(File color, File alpha, float xBound, float zBound){
 		try {
@@ -62,7 +74,6 @@ public class TextureLayer {
 			alphaMap = TextureManager.loadTexture(alpha.toURI().toURL(),Texture.MinificationFilter.Trilinear,
 					Texture.MagnificationFilter.Bilinear, 16, true);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		name = color.getName();
@@ -154,4 +165,28 @@ public class TextureLayer {
 	public String getAlphaName() {
 		return this.alphaName;
 	}
+
+    public Class<? extends TextureLayer> getClassTag() {
+        return this.getClass();
+    }
+    
+    public void write(JMEExporter ex) throws IOException {
+    	OutputCapsule cap = ex.getCapsule(this);
+    	cap.write(colorMap, "colorMap", null);
+    	cap.write(alphaMap, "alphaMap", null);
+    	cap.write(name, "name", null);
+    	cap.write(alphaName, "alphaName", null);
+    	cap.write(dx, "dx", 0);
+    	cap.write(dz, "dz", 0);
+    }
+
+    public void read(JMEImporter im) throws IOException {
+    	InputCapsule cap = im.getCapsule(this);
+    	colorMap = (Texture) cap.readSavable("colorMap", null);
+    	alphaMap = (Texture) cap.readSavable("alphaMap", null);
+    	name = cap.readString("name", null);
+    	alphaName = cap.readString("alphaName", null);
+    	dx = cap.readFloat("dx", 0);
+    	dz = cap.readFloat("dz", 0);
+    }
 }

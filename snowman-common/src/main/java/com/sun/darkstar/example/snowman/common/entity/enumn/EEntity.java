@@ -40,18 +40,30 @@ public enum EEntity {
 	 * The blue flag entity.
 	 */
 	FlagBlue(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
-        /**
-         * The red goal area
-         */
-        FlagRedGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
-        /**
-         * The blue goal area
-         */
-        FlagBlueGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+	/**
+	 * The red goal area
+	 */
+	FlagRedGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
+	/**
+	 * The blue goal area
+	 */
+	FlagBlueGoal(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
 	/**
 	 * The snow ball entity.
 	 */
-	Snowball(EEntityType.Dynamic, 0.005f);
+	Snowball(EEntityType.Dynamic, 0.005f),
+	/**
+	 * The red flag entity.
+	 */
+	Tree(EEntityType.Static, Float.POSITIVE_INFINITY),
+	/**
+	 * The red flag entity.
+	 */
+	House(EEntityType.Static, Float.POSITIVE_INFINITY),
+	/**
+	 * The red flag entity.
+	 */
+	CampFire(EEntityType.Static, Float.POSITIVE_INFINITY);
 	
 	/**	
 	 * The <code>EEntityType</code> value.

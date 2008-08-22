@@ -128,11 +128,7 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 
 				@Override
 				public Object call() throws Exception {
-					screencoords.set(event.getX(), editor.getCanvas().getHeight()-event.getY());
-					cam.getWorldCoordinates(screencoords, 1, worldcoords);
-					cameraLocation.set(cam.getLocation());
-					ray.getOrigin().set(cameraLocation);
-					ray.getDirection().set(worldcoords.subtractLocal(cameraLocation).normalizeLocal());
+			        DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(event.getX(),event.getY()), true, ray);
 					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getWorld(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
 					return null;
@@ -151,11 +147,7 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 
 				@Override
 				public Object call() throws Exception {
-					screencoords.set(event.getX(), editor.getCanvas().getHeight()-event.getY());
-					cam.getWorldCoordinates(screencoords, 1, worldcoords);
-					cameraLocation.set(cam.getLocation());
-					ray.getOrigin().set(cameraLocation);
-					ray.getDirection().set(worldcoords.subtractLocal(cameraLocation).normalizeLocal());
+			        DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(event.getX(),event.getY()), true, ray);
 					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getTerrain(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
 					return null;
