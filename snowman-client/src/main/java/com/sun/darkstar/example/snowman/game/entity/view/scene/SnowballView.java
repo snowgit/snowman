@@ -2,6 +2,7 @@ package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Sphere;
+import com.jme.renderer.ColorRGBA;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
@@ -19,6 +20,8 @@ public class SnowballView extends DynamicView {
      * Serial version.
      */
     private static final long serialVersionUID = -370362057381803248L;
+    
+    private Sphere ball;
 
     /**
      * Constructor of <code>SnowballView</code>.
@@ -26,18 +29,15 @@ public class SnowballView extends DynamicView {
      */
     public SnowballView(SnowballEntity entity) {
         super(entity);
-        Sphere ball = new Sphere("Snowball", 32, 32, 0.05f);
+    }
+    
+    public void show() {
+        ball = new Sphere("Snowball", 32, 32, 0.05f);
+        ball.setSolidColor(ColorRGBA.white);
         ball.setModelBound(new BoundingBox());
         ball.updateModelBound();
         this.attachChild(ball);
-        this.buildParticles();
-    }
-
-    /**
-     * Build snow particles follow the snow ball.
-     */
-    private void buildParticles() {
-        // TODO
+        this.updateRenderState();
     }
 
     @Override

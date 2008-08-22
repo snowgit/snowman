@@ -98,6 +98,14 @@ public class AttackTask extends RealTimeTask {
                 View target = (View) ViewManager.getInstance().getView(targetEntity);
                 // Step 2.
                 targetEntity.addHP(this.delta);
+                if(this.delta > 0) {
+                    if (targetEntity.isAlive()) {
+                        targetEntity.setState(EState.Hit);
+                        ViewManager.getInstance().markForUpdate(targetEntity);
+                    }
+                    targetEntity.resetForce();
+                    targetEntity.resetVelocity();
+                }
                 if (targetEntity.getHP() <= 0) {
                     targetEntity.setState(EState.Death);
                     ViewManager.getInstance().markForUpdate(targetEntity);
@@ -138,7 +146,8 @@ public class AttackTask extends RealTimeTask {
 		if(super.equals(object)) {
 			if(object instanceof AttackTask) {
 				AttackTask given = (AttackTask)object;
-				return ((given.attackerID == this.attackerID) && (given.targetID == this.targetID));
+				return ((given.attackerID == this.attackerID) && (given.targetID == this.targetID) &&
+                                        (given.self == this.self));
 			}
 		}
 		return false;

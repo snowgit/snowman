@@ -1,7 +1,9 @@
 package com.sun.darkstar.example.snowman.game.entity.controller;
 
+import com.jme.util.Timer;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
@@ -12,7 +14,6 @@ import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
-import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 
 /**
  * <code>SnowballController</code> extends <code>Controller</code> to define
@@ -32,6 +33,11 @@ public class SnowballController extends Controller {
 	 * The flag indicates if the snow ball has been thrown.
 	 */
 	private boolean thrown;
+        /**
+         * timer so we can delay the throw
+         */
+        private final Timer timer;
+        private final float startTime;
 	
 	/**
 	 * Constructor of <code>SnowballController</code>.
@@ -40,13 +46,20 @@ public class SnowballController extends Controller {
 	public SnowballController(SnowballEntity entity) {
 		super(entity, EInputType.None);
 		this.tolerance = 0.5f;
+                this.timer = Timer.getTimer();
+                this.startTime = timer.getTimeInSeconds();
 	}
 
 	@Override
 	protected void updateLogic(float interpolation) {
 		if(!this.thrown) {
+                    if(timer.getTimeInSeconds() > startTime+0.6f) {
+                        SnowballView view = (SnowballView)ViewManager.getInstance().getView(entity);
+                        view.show();
+                        ViewManager.getInstance().markForUpdate(entity);
 			TaskManager.getInstance().createTask(ETask.MoveSnowball, this.entity);
 			this.thrown = true;
+                    }
 		} else if(!this.validatePosition()) {
 			PhysicsManager.getInstance().markForUpdate(this.entity);
 		} else {
