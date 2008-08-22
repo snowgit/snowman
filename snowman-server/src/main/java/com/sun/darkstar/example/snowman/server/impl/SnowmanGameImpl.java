@@ -79,6 +79,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     private final ManagedReference<Channel> channelRef;
     
     private int numPlayers;
+    private int realPlayers = 0;
+    private int readyPlayers = 0;
     private int nextPlayerId = PLAYERIDSTART;
     private String gameName;
     /**
@@ -200,8 +202,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         player.setGame(this);
         
         //add the real players session to the channel
-        if (player.getSession() != null)
+        if (player.getSession() != null) {
+            realPlayers++;
             channelRef.get().join(player.getSession());
+        }
     }
     
     // A player disconnected
@@ -210,8 +214,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         player.dropFlag();
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
-        if (player.getSession() != null)
+        if (player.getSession() != null) {
+            realPlayers--;
             channel.leave(player.getSession());
+        }
         send(ServerMessages.createRemoveMOBPkt(player.getID()));
         appContext.getDataManager().removeObject(player);
         
@@ -248,14 +254,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     public void startGameIfReady(){
-        for(ManagedReference<SnowmanPlayer> playerRef : playerRefs.values()){
-            if (playerRef != null){
-                if (!playerRef.get().getReadyToPlay()){
-                    return;
-                }
-            }
-        }
-        send(ServerMessages.createStartGamePkt());
+        appContext.getDataManager().markForUpdate(this);
+        readyPlayers++;
+        if(readyPlayers >= realPlayers)
+            send(ServerMessages.createStartGamePkt());
     }
     
     public Set<Integer> getPlayerIds() {

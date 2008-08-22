@@ -91,7 +91,7 @@
 
     <property name="client.jvm.args"
               value="-client
-                     -Xmx384m
+                     -Xmx1024m
                      -Xms32m"/>
                      
     <!-- Removes database, temporary property files, and directories -->
