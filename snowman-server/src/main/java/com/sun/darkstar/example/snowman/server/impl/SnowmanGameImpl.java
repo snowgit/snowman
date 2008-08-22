@@ -213,7 +213,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
         if(playerRef != null) {
-            channel.leave(player.getSession());
+            if (player.getSession() != null)
+                channel.leave(player.getSession());
             send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
             appContext.getDataManager().removeObject(player);
         }

@@ -254,7 +254,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     }
     
     public ClientSession getSession(){
-        return sessionRef.get();
+        try {
+            return sessionRef.get();
+        } catch (ObjectNotFoundException disconnected) {
+            return null;
+        }
     }
     
      // IServerProcessor Messages
@@ -333,6 +337,9 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                            x, y, POSITIONTOLERANCESQD)) {
             //get the target player and determine its location
             SnowmanPlayer target = currentGameRef.get().getPlayer(targetID);
+            
+            if (target == null) return; // player no longer in game
+            
             Coordinate targetPosition = target.getExpectedPositionAtTime(now);
             
             boolean success = true;
