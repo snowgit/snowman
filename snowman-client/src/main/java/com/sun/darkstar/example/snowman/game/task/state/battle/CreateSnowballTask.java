@@ -67,12 +67,7 @@ public class CreateSnowballTask extends Task {
 			Vector3f attackerPosition = attacker.getLocalTranslation().clone();
 			Vector3f targetPosition = target.getLocalTranslation().clone();
 			// Step 3.
-			if(this.targetEntity.isAlive()) {
-				this.targetEntity.setState(EState.Hit);
-				ViewManager.getInstance().markForUpdate(this.targetEntity);
-			}
-			this.targetEntity.resetForce();
-			this.targetEntity.resetVelocity();
+			
 			// Step 4.
 			SnowballEntity snowball = (SnowballEntity)EntityManager.getInstance().createEntity(EEntity.Snowball);
 			snowball.setDestination(targetPosition);
@@ -83,8 +78,8 @@ public class CreateSnowballTask extends Task {
 			Vector3f right = new Vector3f();
 			attacker.getLocalRotation().getRotationColumn(0, right);
 			right.normalizeLocal();
-			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.65f);
-			snowballView.getLocalTranslation().y += ((BoundingBox)attacker.getWorldBound()).yExtent*0.8f;
+			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.75f);
+			snowballView.getLocalTranslation().y += ((BoundingBox)attacker.getWorldBound()).yExtent*1.6f;
 			snowballView.getLocalTranslation().addLocal(right);
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
 			// Step 6.
