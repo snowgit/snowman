@@ -218,7 +218,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                 channel.leave(player.getSession());
             send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
             appContext.getDataManager().removeObject(player);
-            numPlayers--;
         }
         
         // if all real players have gone, end the game
