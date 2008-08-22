@@ -204,7 +204,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     public void returnFlag() {
         if (!isHeld()) {
             setLocation(homeX, homeY);
-            gameRef.get().send(null,
+            gameRef.get().send(
                                ServerMessages.createRespawnPkt(id, x, y));
         }
     }

@@ -44,7 +44,6 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.Channel;
-import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
@@ -53,7 +52,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
 
 /**
@@ -169,9 +167,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         }
     }
     
-    public void send(ClientSession session, ByteBuffer buff){
+    public void send(ByteBuffer buff){
         buff.flip();
-        channelRef.get().send(session, buff);
+        channelRef.get().send(null, buff);
     }
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
@@ -212,12 +210,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         player.dropFlag();
         ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
-        if(playerRef != null) {
-            if (player.getSession() != null)
-                channel.leave(player.getSession());
-            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
-            appContext.getDataManager().removeObject(player);
-        }
+        if (player.getSession() != null)
+            channel.leave(player.getSession());
+        send(ServerMessages.createRemoveMOBPkt(player.getID()));
+        appContext.getDataManager().removeObject(player);
         
         // if all real players have gone, end the game
         if (!channel.hasSessions())
@@ -259,7 +255,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                 }
             }
         }
-        send(null,ServerMessages.createStartGamePkt());
+        send(ServerMessages.createStartGamePkt());
     }
     
     public Set<Integer> getPlayerIds() {
@@ -274,7 +270,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     public void endGame(EEndState endState) {
-        send(null, ServerMessages.createEndGamePkt(endState));
+        send(ServerMessages.createEndGamePkt(endState));
         appContext.getDataManager().removeObject(channelRef.get());
         appContext.getDataManager().removeObject(this);
     }
@@ -299,5 +295,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     public String getName() {
         return gameName;
+    }
+
+    public Channel getChannel() {
+        return channelRef.get();
     }
 }

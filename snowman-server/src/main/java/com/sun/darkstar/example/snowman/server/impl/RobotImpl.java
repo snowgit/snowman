@@ -72,12 +72,12 @@ public class RobotImpl extends SnowmanPlayerImpl {
     }
     
     private void moveRobot() {
-        if (currentGameRef == null) // game over
+        if (gameRef == null) // game over
             return;
         
         if (targets == null) {
             appContext.getDataManager().markForUpdate(this);
-            SnowmanGame game = currentGameRef.get();
+            SnowmanGame game = gameRef.get();
             targets = new ArrayList<Integer>();
             for (int id : game.getPlayerIds()) {
                 if (game.getPlayer(id).getTeamColor() != getTeamColor())
@@ -118,7 +118,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
         
         // else just move towards a target snowman
         } else {
-            SnowmanGame game = currentGameRef.get();
+            SnowmanGame game = gameRef.get();
             
             SnowmanPlayer target =
                     game.getPlayer(targets.get(random.nextInt(targets.size())));
@@ -166,9 +166,6 @@ public class RobotImpl extends SnowmanPlayerImpl {
     
     @Override
     public void send(ByteBuffer buff) {}
-    
-    @Override
-    public void setSession(ClientSession arg0) {}
     
     @Override
     public ClientSession getSession() {

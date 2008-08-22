@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedObjectRemoval;
@@ -53,7 +54,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * @param sess sender of the message
      * @param buff the message itself
      */
-    public void send (ClientSession sess, ByteBuffer buff);
+    public void send(ByteBuffer buff);
     
     /**
      * Send the AddMOB packets to all of the players in the game
@@ -102,5 +103,11 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     public Set<Integer> getPlayerIds();
     
     public String getName();
+    
+    /**
+     * Return the channel for this game
+     * @return the game channel
+     */
+    Channel getChannel();
 
 }
