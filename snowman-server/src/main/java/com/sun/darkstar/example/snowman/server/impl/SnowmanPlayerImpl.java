@@ -44,6 +44,7 @@ import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
+import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
@@ -74,8 +75,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
     static int RESPAWNHP = (int)EStats.SnowmanFullStrength.getValue();
     static int ATTACKHP = (int)EStats.SnowballDamage.getValue();
     
+    // The player's session
     private final ManagedReference<ClientSession> sessionRef;
     
+    // The game's channel
+    private ManagedReference<Channel> channelRef;
+
     /**
      * Player information and overall statistics
      */
@@ -106,7 +111,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                              ClientSession session) {
         this.appContext = appContext;
         this.name = name;
-        sessionRef = appContext.getDataManager().createReference(session);
+        sessionRef = session == null ? null :
+                            appContext.getDataManager().createReference(session);
     } 
     
     protected static enum PlayerState {
@@ -139,6 +145,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         assert game != null;
         appContext.getDataManager().markForUpdate(this);
         gameRef = appContext.getDataManager().createReference(game);
+        channelRef = appContext.getDataManager().createReference(game.getChannel());
     }
     
     public float ranking(){
@@ -241,9 +248,16 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         return this.state != PlayerState.NONE;
     }
     
+    // Send a message to this player
     public void send(ByteBuffer buff){
         buff.flip();
         sessionRef.get().send(buff);
+    }
+    
+    // Send a message to all the players
+    private void sendAll(ByteBuffer buff){
+        buff.flip();
+        channelRef.get().send(null, buff);
     }
     
     public ClientSession getSession(){
@@ -297,17 +311,16 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             this.destY = trimPosition.getY();
             this.state = PlayerState.MOVING;
             
-            gameRef.get().send(
-                   ServerMessages.createMoveMOBPkt(
-                   id, startX, startY, destX, destY));
+            sendAll(ServerMessages.createMoveMOBPkt(id, startX, startY, destX, destY));
         }
         else {
             logger.log(Level.FINE, "move from {0} failed start position check", name);
             
             this.timestamp = now;
             this.setLocation(expectedPosition.getX(), expectedPosition.getY());
-            gameRef.get().send(
-                    ServerMessages.createStopMOBPkt(id, expectedPosition.getX(), expectedPosition.getY()));
+            sendAll(ServerMessages.createStopMOBPkt(id,
+                                                    expectedPosition.getX(),
+                                                    expectedPosition.getY()));
         }
     }
     
@@ -358,12 +371,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             if(success) {
                 //stop the target
                 target.setLocation(targetPosition.getX(), targetPosition.getY());
-                gameRef.get().send(ServerMessages.createAttackedPkt(
-                                          id, targetID, target.hit(ATTACKHP, targetPosition.getX(), targetPosition.getY())));
+                sendAll(ServerMessages.createAttackedPkt(id,
+                                                         targetID,
+                                                         target.hit(ATTACKHP, targetPosition.getX(), targetPosition.getY())));
             }
             else {
-                gameRef.get().send(ServerMessages.createAttackedPkt(
-                                          id, targetID, 0));
+                sendAll(ServerMessages.createAttackedPkt(id, targetID, 0));
             }
         }
         else {
@@ -381,8 +394,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         if(state == PlayerState.DEAD || state == PlayerState.NONE)
             return;
         
-        SnowmanGame game = gameRef.get();
-        SnowmanFlag flag = game.getFlag(flagID);
+        SnowmanFlag flag = gameRef.get().getFlag(flagID);
         
         // Can not get flag if same team or flag is held by another player
         if (flag == null || 
@@ -407,7 +419,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
                 //attach the flag
                 flag.setHeldBy(this);
                 holdingFlagRef = appContext.getDataManager().createReference(flag);
-                game.send(ServerMessages.createAttachObjPkt(flagID, id));
+                sendAll(ServerMessages.createAttachObjPkt(flagID, id));
             }
             else {
                 logger.log(Level.FINER, "get flag from {0} failed radius check", name);
@@ -475,7 +487,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
             hitPoints = RESPAWNHP;
             Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
             setLocation(position.getX(), position.getY());
-            gameRef.get().send(ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
+            sendAll(ServerMessages.createRespawnPkt(id, position.getX(), position.getY()));
         }
     }
     
@@ -543,5 +555,14 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
 
     public ETeamColor getTeamColor() {
         return teamColor;
+    }
+
+    public void removingObject() {
+        if (sessionRef != null)
+            try {
+                appContext.getDataManager().removeObject(sessionRef.get());
+            } catch (ObjectNotFoundException alreadyDisconnected) {}
+            // workaround bug is ClientSessionImpl
+            catch (IllegalStateException workAroundIssue87) {}
     }
 }

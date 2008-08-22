@@ -34,6 +34,7 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedObjectRemoval;
@@ -102,5 +103,11 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     public Set<Integer> getPlayerIds();
     
     public String getName();
+    
+    /**
+     * Return the channel for this game
+     * @return the game channel
+     */
+    Channel getChannel();
 
 }
