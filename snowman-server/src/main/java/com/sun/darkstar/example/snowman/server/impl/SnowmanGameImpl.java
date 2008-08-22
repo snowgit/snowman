@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.logging.Level;
 
 
 /**
@@ -169,9 +168,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         }
     }
     
-    public void send(ClientSession session, ByteBuffer buff){
+    public void send(ByteBuffer buff){
         buff.flip();
-        channelRef.get().send(session, buff);
+        channelRef.get().send(null, buff);
     }
 
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
@@ -215,7 +214,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         if(playerRef != null) {
             if (player.getSession() != null)
                 channel.leave(player.getSession());
-            send(null, ServerMessages.createRemoveMOBPkt(player.getID()));
+            send(ServerMessages.createRemoveMOBPkt(player.getID()));
             appContext.getDataManager().removeObject(player);
         }
         
@@ -259,7 +258,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
                 }
             }
         }
-        send(null,ServerMessages.createStartGamePkt());
+        send(ServerMessages.createStartGamePkt());
     }
     
     public Set<Integer> getPlayerIds() {
@@ -274,7 +273,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     public void endGame(EEndState endState) {
-        send(null, ServerMessages.createEndGamePkt(endState));
+        send(ServerMessages.createEndGamePkt(endState));
         appContext.getDataManager().removeObject(channelRef.get());
         appContext.getDataManager().removeObject(this);
     }

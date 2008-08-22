@@ -105,7 +105,6 @@ public interface SnowmanPlayer extends DynamicEntity
     
     public int getHitPoints();
     
-    public void setSession(ClientSession session);
     public ClientSession getSession();
     
     /**

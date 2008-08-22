@@ -136,7 +136,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
+        currentGame.send(ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -184,7 +184,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createStopMOBPkt(testPlayerId, startX, startY));
+        currentGame.send(ServerMessages.createStopMOBPkt(testPlayerId, startX, startY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -247,7 +247,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
+        currentGame.send(ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -302,7 +302,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createStopMOBPkt(testPlayerId, expX, expY));
+        currentGame.send(ServerMessages.createStopMOBPkt(testPlayerId, expX, expY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -447,7 +447,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
+        currentGame.send(ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, destX, destY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -499,7 +499,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, expX, expY, destX, destY));
+        currentGame.send(ServerMessages.createMoveMOBPkt(testPlayerId, expX, expY, destX, destY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -553,7 +553,7 @@ public class SnowmanPlayerImplTest
         
         //setup expected broadcast messages to the game
         EasyMock.resetToDefault(currentGame);
-        currentGame.send(null, ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, collX, collY));
+        currentGame.send(ServerMessages.createMoveMOBPkt(testPlayerId, newX, newY, collX, collY));
         EasyMock.replay(currentGame);
         
         //make the move
@@ -617,7 +617,7 @@ public class SnowmanPlayerImplTest
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
-        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
+        currentGame.send(ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
         EasyMock.replay(currentGame);
         
         //do the attack
@@ -691,7 +691,7 @@ public class SnowmanPlayerImplTest
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
-        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
+        currentGame.send(ServerMessages.createAttackedPkt(testPlayerId, attackeeId, SnowmanPlayerImpl.ATTACKHP));
         EasyMock.replay(currentGame);
         
         //do the attack
@@ -754,7 +754,7 @@ public class SnowmanPlayerImplTest
         //setup expected broadcast messages to the game and behavior of game
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getPlayer(attackeeId)).andStubReturn(attackee);
-        currentGame.send(null, ServerMessages.createAttackedPkt(testPlayerId, attackeeId, 0));
+        currentGame.send(ServerMessages.createAttackedPkt(testPlayerId, attackeeId, 0));
         EasyMock.replay(currentGame);
         
         //do the attack
@@ -810,7 +810,7 @@ public class SnowmanPlayerImplTest
         //setup expected broadcast messages to the game and game behavior
         EasyMock.resetToDefault(currentGame);
         EasyMock.expect(currentGame.getFlag(flagId)).andStubReturn(flag);
-        currentGame.send(null, ServerMessages.createAttachObjPkt(this.testPlayerId, flagId));
+        currentGame.send(ServerMessages.createAttachObjPkt(this.testPlayerId, flagId));
         EasyMock.replay(currentGame);
         
         //try getting the flag

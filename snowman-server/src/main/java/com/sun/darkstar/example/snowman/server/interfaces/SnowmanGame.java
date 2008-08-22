@@ -53,7 +53,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * @param sess sender of the message
      * @param buff the message itself
      */
-    public void send (ClientSession sess, ByteBuffer buff);
+    public void send(ByteBuffer buff);
     
     /**
      * Send the AddMOB packets to all of the players in the game
