@@ -130,6 +130,7 @@ import com.sun.darkstar.example.snowman.common.entity.view.EditableView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainCluster;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.TerrainView;
 import com.sun.darkstar.example.snowman.common.entity.view.terrain.enumn.ESculpt;
+import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.EditableWorld;
@@ -248,7 +249,7 @@ public class WorldEditor extends JFrame {
 
 	private ExportDialog dlg;
 
-	private LinkedList<TextureLayer> layers;
+	private ArrayList<TextureLayer> layers;
 
 	/**
 	 * Holds brush properties
@@ -261,7 +262,7 @@ public class WorldEditor extends JFrame {
 	 * returned instance.
 	 */
 	public WorldEditor() {
-		this.layers = new LinkedList<TextureLayer>();
+		this.layers = new ArrayList<TextureLayer>();
 		this.setMinimumSize(new Dimension(1024, 768));
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
@@ -532,9 +533,10 @@ public class WorldEditor extends JFrame {
 											if (!dlg.exportTextures()) {
 												this.stripTexure(node);
 											} else {
-												while (!layers.isEmpty()) {
+												for (int i = 0; i < layers
+														.size(); i++) {
 													this.exportAlpha(layers
-															.pop());
+															.get(i));
 												}
 											}
 											try {
@@ -603,6 +605,9 @@ public class WorldEditor extends JFrame {
 							runFirstAction = new Callable<Void>() {
 								@Override
 								public Void call() throws Exception {
+									// setup datamanager - giving us a good
+									// resource locator, etc.
+									DataManager.getInstance();
 									// in task, load file
 									BinaryImporter imp = new BinaryImporter();
 									Savable result = imp.load(in);
@@ -737,8 +742,9 @@ public class WorldEditor extends JFrame {
 		display.setMinDepthBits(24);
 		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
-		display.registerCanvasConstructor("AWT", LWJGLAWTCanvasConstructor.class);
-		final Canvas comp = (Canvas)display.createCanvas(800, 600);
+		display.registerCanvasConstructor("AWT",
+				LWJGLAWTCanvasConstructor.class);
+		final Canvas comp = (Canvas) display.createCanvas(800, 600);
 		this.canvas = comp;
 
 		// add a listener... if window is resized, we can do something about it.
@@ -768,80 +774,94 @@ public class WorldEditor extends JFrame {
 			@Override
 			public boolean canImport(TransferSupport support) {
 				// Only support dropped strings
-			    if (!support.isDrop() || !support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-			        return false;
-			    }
+				if (!support.isDrop()
+						|| !support
+								.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+					return false;
+				}
 
-			    // check if the source actions (a bitwise-OR of supported actions)
-			    // contains the COPY action
-			    boolean copySupported = (COPY & support.getSourceDropActions()) == COPY;
-			    if (copySupported) {
-			        support.setDropAction(COPY);
-			        return true;
-			    }
+				// check if the source actions (a bitwise-OR of supported
+				// actions)
+				// contains the COPY action
+				boolean copySupported = (COPY & support.getSourceDropActions()) == COPY;
+				if (copySupported) {
+					support.setDropAction(COPY);
+					return true;
+				}
 
-			    // COPY is not supported, so reject the transfer
-			    return false;
+				// COPY is not supported, so reject the transfer
+				return false;
 			}
-			
+
 			@Override
 			public boolean importData(TransferHandler.TransferSupport support) {
-		        if (!canImport(support) || getTerrain() == null) {
-		            return false;
-		        }
+				if (!canImport(support) || getTerrain() == null) {
+					return false;
+				}
 
-		        DropLocation dl = support.getDropLocation();
+				DropLocation dl = support.getDropLocation();
 
-		        // fetch the data and bail if this fails
-		        String data;
-		        try {
-		            data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
-		        } catch (Exception e) {
-		            return false;
-		        }
-		        
-		        // Ok now, convert the DL into a pick ray and find the spot on the terrain to place the prop.
-		        Ray ray = DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(dl.getDropPoint().x, dl.getDropPoint().y), true, null);
-		        Vector3f dropLocation = SingletonRegistry.getCollisionManager().getIntersection(ray, getTerrain(), null, false);
-		        if (dropLocation == null) {
-		        	// no place to put it.
-		        	return false;
-		        }
-		        
-		        // Load our prop and place it in the correct location
-		        EEntity enumVal;
-		        try {
-			        enumVal = EEntity.valueOf(data);					
+				// fetch the data and bail if this fails
+				String data;
+				try {
+					data = (String) support.getTransferable().getTransferData(
+							DataFlavor.stringFlavor);
+				} catch (Exception e) {
+					return false;
+				}
+				
+				// Ok now, convert the DL into a pick ray and find the spot on
+				// the terrain to place the prop.
+				Ray ray = DisplaySystem.getDisplaySystem().getPickRay(
+						new Vector2f(dl.getDropPoint().x, dl.getDropPoint().y),
+						true, null);
+				final Vector3f dropLocation = SingletonRegistry.getCollisionManager()
+						.getIntersection(ray, getTerrain(), null, false);
+				if (dropLocation == null) {
+					// no place to put it.
+					return false;
+				}
+
+				// Load our prop and place it in the correct location
+				final EEntity enumVal;
+				try {
+					enumVal = EEntity.valueOf(data);
 				} catch (Exception e) {
 					// unhandled data type
 					return false;
 				}
-		        Spatial spat = DataManager.getInstance().getStaticSpatial(enumVal);
-		        Spatial shared = null;
-		        if (spat instanceof Node) {
-		        	shared = new SharedNode(data, (Node)spat);
-		        } else if (spat instanceof TriMesh) {
-		        	shared = new SharedMesh(data, (TriMesh)spat);
-		        } else {
-		        	// not my type... :)
-		        	return false;
-		        }
-		        // ok, now to get the model more on center, first get a reliable bounding volume
-		        shared.setModelBound(new BoundingBox());
-		        shared.updateModelBound();
-		        shared.updateGeometricState(0, true);
-		        // now subtract center and bump up by yExtent to place exactly at middle bottom
-		        dropLocation.subtractLocal(((BoundingBox)shared.getWorldBound()).getCenter());
-		        dropLocation.y += ((BoundingBox)shared.getWorldBound()).yExtent;
-		        shared.setLocalTranslation(dropLocation);
 
-		        // add to our static root.
-		        world.getStaticRoot().attachChild(shared);
-		        world.getStaticRoot().updateRenderState();
-		        treeModel.addChild(world.getStaticRoot(), shared);
-				WorldEditor.this.repaint();
-		        return true;
-		    } 
+				Callable<Void> exe = new Callable<Void>() {
+					@Override
+					public Void call() throws Exception {
+						// add to our static root.
+						IEntity entity = EntityManager.getInstance().createEntity(
+								enumVal);
+						
+						EditableView view = (EditableView) ViewManager.getInstance()
+								.createView(entity);
+						// ok, now to get the model more on center, first get a reliable
+						// bounding volume
+						view.setModelBound(new BoundingBox());
+						view.updateModelBound();
+						view.updateGeometricState(0, true);
+						// now subtract center and bump up by yExtent to place exactly
+						// at middle bottom
+						dropLocation.subtractLocal(((BoundingBox) view
+								.getWorldBound()).getCenter());
+						dropLocation.y += ((BoundingBox) view.getWorldBound()).yExtent;
+						view.setLocalTranslation(dropLocation);
+						view.updateGeometricState(0, true);
+						world.attachView(view);
+						world.getStaticRoot().updateRenderState();
+						WorldEditor.this.repaint();
+						return null;
+					}
+				};
+				GameTaskQueueManager.getManager().render(exe);
+
+				return true;
+			}
 		});
 	}
 
@@ -929,19 +949,6 @@ public class WorldEditor extends JFrame {
 		}
 		this.world.attachView(view);
 		treeModel.addChild(node, view);
-		repaint();
-	}
-
-	/**
-	 * This method is called by the add placeable selection on the pop up menu.
-	 * 
-	 * @param path
-	 *            The path on the tree to the node that was selected for action
-	 */
-	public void doAddPlaceable(TreePath path) {
-
-		Node node = (Node) path.getLastPathComponent();
-		// load and add palceable to tree here
 		repaint();
 	}
 

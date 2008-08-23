@@ -30,13 +30,13 @@ import java.util.ArrayList;
 public interface IEditableWorld extends IAbstractWorld, IEditable {
 
 	/**
-	 * Attach the given edtiable view to this editable world.
+	 * Attach the given editable view to this editable world.
 	 * @param view The <code>IEditableView</code> to be attached.
 	 */
 	public void attachView(IEditableView view);
 	
 	/**
-	 * Detach the given edtiable view from this editable world.
+	 * Detach the given editable view from this editable world.
 	 * @param view The <code>IEditableView</code> to be detached.
 	 */
 	public void detachView(IEditableView view);

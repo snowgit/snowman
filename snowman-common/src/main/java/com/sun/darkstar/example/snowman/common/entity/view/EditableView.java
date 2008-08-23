@@ -1,6 +1,8 @@
 package com.sun.darkstar.example.snowman.common.entity.view;
 
+import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
+import com.jme.scene.SharedNode;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableEntity;
@@ -42,9 +44,16 @@ public class EditableView extends View implements IEditableView {
 	}
 	
 	@Override
-	public void attachSpatial(Spatial mesh) {
-		SharedMesh shared = new SharedMesh((TriMesh)mesh);
-		this.attachChild(shared);
+	public void attachSpatial(Spatial spatial) {
+		if (spatial instanceof TriMesh) {
+			SharedMesh shared = new SharedMesh((TriMesh)spatial);
+			this.attachChild(shared);
+		} else if (spatial instanceof Node) {
+			SharedNode shared = new SharedNode((Node)spatial);
+			this.attachChild(shared);
+		} else {
+			throw new IllegalArgumentException("Illegal Spatial type: "+spatial.getClass().getName());
+		}
 	}
 	
 	/**

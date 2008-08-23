@@ -55,15 +55,15 @@ public enum EEntity {
 	/**
 	 * The red flag entity.
 	 */
-	Tree(EEntityType.Static, Float.POSITIVE_INFINITY),
+	Tree(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
 	 * The red flag entity.
 	 */
-	House(EEntityType.Static, Float.POSITIVE_INFINITY),
+	House(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
 	 * The red flag entity.
 	 */
-	CampFire(EEntityType.Static, Float.POSITIVE_INFINITY);
+	CampFire(EEntityType.Editable, Float.POSITIVE_INFINITY);
 	
 	/**	
 	 * The <code>EEntityType</code> value.

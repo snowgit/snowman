@@ -43,7 +43,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
 /**
- * This class extends JTable to create a very sepcific editor for Maps
+ * This class extends JTable to create a very specific editor for Maps
  * 
  * @author Jeffrey Kesselman
  */

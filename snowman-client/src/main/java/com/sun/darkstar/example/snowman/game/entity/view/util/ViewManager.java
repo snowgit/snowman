@@ -157,12 +157,26 @@ public class ViewManager extends Manager {
 			view = new FlagView((IDynamicEntity)entity);
 			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
 			break;
-                    case FlagBlueGoal:
-                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagBlueGoal);
-                        break;
-                    case FlagRedGoal:
-                        view = new FlagGoalView((IDynamicEntity)entity, EStats.GoalRadius.getValue(), EEntity.FlagRedGoal);
-                        break;
+        case FlagBlueGoal:
+			view = new FlagGoalView((IDynamicEntity) entity, EStats.GoalRadius
+					.getValue(), EEntity.FlagBlueGoal);
+			break;
+		case FlagRedGoal:
+			view = new FlagGoalView((IDynamicEntity) entity, EStats.GoalRadius
+					.getValue(), EEntity.FlagRedGoal);
+			break;
+		case House:
+			view = new EditableView((IEditableEntity)entity);
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
+			break;
+		case CampFire:
+			view = new EditableView((IEditableEntity)entity);
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
+			break;
+		case Tree:
+			view = new EditableView((IEditableEntity)entity);
+			view.attachSpatial(DataManager.getInstance().getStaticSpatial(entity.getEnumn()));
+			break;
 		default:
 			switch(entity.getType()) {
 			case Static:
