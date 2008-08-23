@@ -65,7 +65,7 @@ class SimulatedPlayer implements SimpleClientListener {
     static final Logger logger =
             Logger.getLogger(SimulatedPlayer.class.getName());
     
-    static private final Random random = new Random();
+    static private final Random random = new Random(System.currentTimeMillis());
     
     static enum PLAYERSTATE {
         LoggingIn,  // Initial state, waiting for login
