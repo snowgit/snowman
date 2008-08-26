@@ -7,6 +7,8 @@ import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.sgs.client.ClientChannel;
 import com.sun.sgs.client.ClientChannelListener;
 import com.sun.sgs.client.simple.SimpleClientListener;
@@ -56,8 +58,7 @@ public class MessageListener implements SimpleClientListener, ClientChannelListe
 
 	@Override
 	public void disconnected(boolean graceful, String reason) {
-            if(!graceful)
-		this.handler.getGame().finish();
+            ((BattleState)this.handler.getGame().getGameState(EGameState.BattleState)).reset();
 	}
 
 	@Override

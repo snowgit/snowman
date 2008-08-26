@@ -73,8 +73,6 @@ public class GameStateTask extends RealTimeTask {
                 state.setActive(false);
                 
                 if(state instanceof EndState) {
-                    this.game.getClient().logout();
-                    ((BattleState)this.game.getGameState(EGameState.BattleState)).reset();
                     switch(endState) {
                         case RedWin:
                             ((EndState)state).getGUI().setWinner("Red has won!");

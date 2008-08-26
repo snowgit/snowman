@@ -46,6 +46,8 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.Task;
+import com.sun.sgs.app.ObjectNotFoundException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -71,6 +73,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     public static final String CHANPREFIX = "_GAMECHAN_";
     
     private static final int PLAYERIDSTART = 1;
+    private static final int CLEANUPDELAYMS = 5*1000;
     
     /**
      * A reference to a channel that is used to send game packets to
@@ -273,8 +276,30 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     public void endGame(EEndState endState) {
         send(ServerMessages.createEndGamePkt(endState));
-        appContext.getDataManager().removeObject(channelRef.get());
+        appContext.getTaskManager().scheduleTask(
+                new EndGameTask(appContext.getDataManager().createReference((SnowmanGame) this)),
+                CLEANUPDELAYMS);
+    }
+    
+    public void cleanup() {
+        Channel c = getChannel();
+        c.leaveAll();
+        appContext.getDataManager().removeObject(c);
         appContext.getDataManager().removeObject(this);
+    }
+    
+    static private class EndGameTask implements Task, Serializable {
+        final ManagedReference<SnowmanGame> gameRef;
+        
+        EndGameTask(ManagedReference<SnowmanGame> gameRef) {
+            this.gameRef = gameRef;
+        }
+
+        public void run() throws Exception {
+            try {
+                gameRef.get().cleanup();
+            } catch (ObjectNotFoundException gameDone) {}
+        }
     }
     
     public void removingObject() {
