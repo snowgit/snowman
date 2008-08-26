@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.HashMap;
 
 import com.jme.image.Image;
-import com.jme.image.Texture;
 import com.jme.scene.Spatial;
 import com.jme.util.ImageLoader;
 import com.jme.util.TextureManager;
@@ -26,7 +25,6 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.data.enumn.EAnimation;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
 import com.sun.darkstar.example.snowman.data.enumn.ESystemData;
-import com.sun.darkstar.example.snowman.data.enumn.ETexture;
 import com.sun.darkstar.example.snowman.game.entity.influence.util.InfluenceManager;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
@@ -68,10 +66,6 @@ public class DataManager extends Manager {
 	 */
 	private final HashMap<EEntity, ModelNode> characterPool;
 	/**
-	 * The <code>Texture</code> asset pool.
-	 */
-	private final HashMap<ETexture, Texture> texturePool;
-	/**
 	 * The <code>ClassLoader</code> instance.
 	 */
 	private final ClassLoader loader;
@@ -84,7 +78,6 @@ public class DataManager extends Manager {
 		this.animationPool = new HashMap<EAnimation, JointAnimation>();
 		this.spatialPool = new HashMap<EEntity, Spatial>();
 		this.characterPool = new HashMap<EEntity, ModelNode>();
-		this.texturePool = new HashMap<ETexture, Texture>();
 		this.loader = this.getClass().getClassLoader();
 		this.setupLocator();
 	}
@@ -172,22 +165,6 @@ public class DataManager extends Manager {
 	}
 
 	/**
-	 * Retrieve the cached texture resource with given texture enumeration.
-	 * @param enumn The <code>ETexture</code> enumeration.
-	 * @return The cached <code>Texture</code> with given enumeration.
-	 */
-	public Texture getTexture(ETexture enumn) {
-		Texture texture = this.texturePool.get(enumn);
-		if(texture == null) {
-			URL url = this.loader.getResource(EDataType.Texture.toPath(enumn.toString()));
-			texture = TextureManager.loadTexture(url, Texture.MinificationFilter.Trilinear, Texture.MagnificationFilter.Bilinear, 16, true);
-			// Maintain a reference copy for future changes and fast retrieving.
-			this.texturePool.put(enumn, texture);
-		}
-		return texture;
-	}
-
-	/**
 	 * Retrieve a world resource and register the information it maintains with
 	 * all the managers. The world resource is not cached or cloned.
 	 * @param enumn The <code>EWorld</code> enumeration.
@@ -232,7 +209,6 @@ public class DataManager extends Manager {
 		this.animationPool.clear();
 		this.spatialPool.clear();
 		this.characterPool.clear();
-		this.texturePool.clear();
 		TextureManager.clearCache();
 	}
 }
