@@ -110,8 +110,14 @@ class JMonkeyTreeModel implements TreeModel {
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
-        return ((DefaultMutableTreeNode) parent).getIndex(
-                (DefaultMutableTreeNode) child);
+    	if (parent instanceof DefaultMutableTreeNode && child instanceof DefaultMutableTreeNode) {
+	        return ((DefaultMutableTreeNode) parent).getIndex(
+	                (DefaultMutableTreeNode) child);
+    	} else if (parent instanceof Node && child instanceof Spatial) {
+    		return ((Node)parent).getChildIndex((Spatial)child);
+    	} else {
+    		return -1;
+    	}
     }
 
     @Override

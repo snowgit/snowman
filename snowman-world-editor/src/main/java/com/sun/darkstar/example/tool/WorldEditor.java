@@ -79,6 +79,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -173,7 +175,6 @@ public class WorldEditor extends JFrame {
 	 * These are the actual attribute editors. They are specialized JTables that
 	 * accept and edit a Map.
 	 */
-	AttributeEditor objectAttrTable;
 	AttributeEditor toolAttrTable;
 	/**
 	 * This is the wrapper for the Scene Graph display that allows it to scroll.
@@ -228,7 +229,7 @@ public class WorldEditor extends JFrame {
 	 * Enum for button bar
 	 */
 	enum ModeEnum {
-		Select, Move, Raise, Lower, Smooth, Paint, Erase
+		Select, Raise, Lower, Smooth, Paint, Erase
 	}
 
 	private ModeEnum currentMode;
@@ -255,6 +256,8 @@ public class WorldEditor extends JFrame {
 	 * Holds brush properties
 	 */
 	private Map<String, String> brushProperties = new HashMap<String, String>();
+
+	private PopUpTree tree;
 
 	/**
 	 * This is the constructor for the world editor. To start it all running you
@@ -369,9 +372,6 @@ public class WorldEditor extends JFrame {
 			objectAttr.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
 					"Object Attributes"));
 			objectAttr.setLayout(new BorderLayout());
-			objectAttrTable = new AttributeEditor();
-			objectAttr.add(new JScrollPane(objectAttrTable),
-					BorderLayout.CENTER);
 			eastPanel.add(objectAttr);
 			toolAttr = new JPanel();
 			toolAttr.setBorder(new TitledBorder(new LineBorder(Color.BLACK),
@@ -875,7 +875,7 @@ public class WorldEditor extends JFrame {
 	 */
 	public void setCurrentSceneGraphTree(Node root) {
 		treeModel = new JMonkeyTreeModel(root);
-		final PopUpTree tree = new PopUpTree(treeModel);
+		tree = new PopUpTree(treeModel);
 		// final JTree tree = new JTree(new DefaultMutableTreeNode());
 		tree.setEditable(true);
 		tree.getSelectionModel().setSelectionMode(
@@ -899,6 +899,27 @@ public class WorldEditor extends JFrame {
 		});
 		tree.addToPopup(delete);
 		tree.setOpaque(true);
+		
+		// XXX: Add a selection listener that will update the props panel with a Spatial editor panel for the selection Spatial.
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				objectAttr.removeAll();
+				try {
+					TreePath path = e.getNewLeadSelectionPath();
+					if (path == null) return;
+					
+					Object sel = path.getLastPathComponent();
+					if (!(sel instanceof Spatial)) return;
+					
+					Spatial spat = (Spatial)sel;
+					objectAttr.add(new SpatialEditPanel(spat), BorderLayout.CENTER);
+					objectAttr.revalidate();
+				} finally {
+					WorldEditor.this.repaint();
+				}
+			}
+		});
 
 		treeScrollPane.removeAll();
 		treeScrollPane.add(new JScrollPane(tree), BorderLayout.CENTER);
@@ -1334,5 +1355,17 @@ public class WorldEditor extends JFrame {
 
 	public boolean isPressed() {
 		return this.pressed;
+	}
+
+	public void setSelected(Spatial spat) {
+		ArrayList<Spatial> pathList = new ArrayList<Spatial>();
+		pathList.add(spat);
+		while (spat.getParent() != null) {
+			pathList.add(0, spat.getParent());
+			spat = spat.getParent();
+		}
+		TreePath path = new TreePath(pathList.toArray());
+		tree.setSelectionPath(path);
+		tree.scrollPathToVisible(path);
 	}
 }

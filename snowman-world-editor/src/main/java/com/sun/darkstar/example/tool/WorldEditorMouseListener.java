@@ -37,10 +37,13 @@ import java.util.concurrent.Callable;
 
 import javax.swing.event.MouseInputAdapter;
 
+import com.jme.intersection.TrianglePickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
+import com.jme.scene.Geometry;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
@@ -48,23 +51,17 @@ import com.sun.darkstar.example.tool.WorldEditor.ModeEnum;
 
 public class WorldEditorMouseListener extends MouseInputAdapter {
 
-	private final Vector2f screencoords;
-	private final Vector3f worldcoords;
-	private final Vector3f cameraLocation;
-	private final Camera cam;
 	private final Ray ray;
 	private final Vector3f intersection;
 	private final WorldEditor editor;
-	private ModeEnum mode;
+	private ModeEnum mode = ModeEnum.Select;
+	private TrianglePickResults picks = new TrianglePickResults();
 
 	public WorldEditorMouseListener(WorldEditor editor) {
-		this.screencoords = new Vector2f();
-		this.worldcoords = new Vector3f();
-		this.cameraLocation = new Vector3f();
-		this.cam = DisplaySystem.getDisplaySystem().getRenderer().getCamera();
 		this.ray = new Ray();
 		this.intersection = new Vector3f();
 		this.editor = editor;
+		picks.setCheckDistance(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -95,6 +92,37 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 					return null;
 				}
 			
+			});
+		}
+		if (this.mode == ModeEnum.Select) {
+			// do selection. Set tree node selected.
+			final MouseEvent event = e; 
+			GameTaskQueueManager.getManager().update(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					DisplaySystem.getDisplaySystem()
+							.getPickRay(
+									new Vector2f(event.getX(), event.getY()),
+									true, ray);
+					picks.clear();
+					editor.getWorld().findPick(ray, picks);
+					if (picks.getNumber() != 0) {
+						Spatial spat = picks.getPickData(0).getTargetMesh();
+
+						// Walk up until we grab the one right under the static
+						// root.
+						while (spat != null
+								&& !editor.getWorld().getStaticRoot().equals(
+										spat.getParent())) {
+							spat = spat.getParent();
+						}
+						if (spat != null) {
+							editor.setSelected(spat);
+						}
+					}
+					return null;
+				}
 			});
 		}
 	}
@@ -140,13 +168,13 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 	
 	@SuppressWarnings("unchecked")
 	public void mouseDragged(MouseEvent e){
+		final MouseEvent event = e; 
 		if(this.mode == ModeEnum.Raise || this.mode == ModeEnum.Lower || this.mode == ModeEnum.Smooth
 				 || this.mode == ModeEnum.Paint || this.mode == ModeEnum.Erase) {
-			final MouseEvent event = e; 
-			GameTaskQueueManager.getManager().update(new Callable(){
+			GameTaskQueueManager.getManager().update(new Callable<Void>(){
 
 				@Override
-				public Object call() throws Exception {
+				public Void call() throws Exception {
 			        DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(event.getX(),event.getY()), true, ray);
 					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getTerrain(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
@@ -154,8 +182,6 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 				}
 
 			});
-		} else if(this.mode == ModeEnum.Move) {
-			// TODO move objects.
 		}
 	}
 
