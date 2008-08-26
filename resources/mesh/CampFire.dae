@@ -200,7 +200,7 @@ dereferenceXRefs=1;cameraXFov=0;cameraYFov=1</comments>
     <effect id="lambert1-fx">
       <profile_COMMON>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color>0 0 0 1</color>
             </emission>
@@ -216,7 +216,7 @@ dereferenceXRefs=1;cameraXFov=0;cameraYFov=1</comments>
             <transparency>
               <float>1</float>
             </transparency>
-          </lambert>
+          </phong>
           <extra>
             <technique profile="FCOLLADA"/>
           </extra>
