@@ -32,18 +32,19 @@
 
 package com.sun.darkstar.example.snowman.server.service;
 
-import com.sun.sgs.kernel.ComponentRegistry;
-import com.sun.sgs.service.TransactionProxy;
-import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
-import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
-import com.sun.darkstar.example.snowman.common.util.Coordinate;
-import com.sun.darkstar.example.snowman.server.impl.SnowmanMapInfo;
-import com.jme.scene.Spatial;
-import com.jme.math.Vector3f;
-import com.jme.system.dummy.DummySystemProvider;
-import com.jme.system.DisplaySystem;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
+import com.jme.system.DisplaySystem;
+import com.jme.system.dummy.DummySystemProvider;
+import com.sun.darkstar.example.snowman.common.util.Coordinate;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+import com.sun.darkstar.example.snowman.server.impl.SnowmanMapInfo;
+import com.sun.sgs.kernel.ComponentRegistry;
+import com.sun.sgs.service.TransactionProxy;
 
 
 /**

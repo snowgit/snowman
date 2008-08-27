@@ -5,9 +5,8 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
-import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
-import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.common.util.CollisionManager;
@@ -178,7 +177,7 @@ public class UpdateCursorStateTask extends RealTimeTask {
 		Vector3f start = snowman.getLocalTranslation();
 		Vector3f end = target.getLocalTranslation();
 		World world = this.game.getGameState(EGameState.BattleState).getWorld();
-		return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world.getTerrainRoot()) || SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world.getStaticRoot());
+		return SingletonRegistry.getCollisionManager().validate(start.x, start.z, end.x, end.z, world.getStaticRoot());
 	}
 
 	/**

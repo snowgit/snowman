@@ -5,30 +5,14 @@ MenuBar
         Save=doSave
         Export World=doExportWorld 
         Exit=doExit
-    Edit
-        Attach to=doAttachTo
-        Detach from parent=doDettachFromParent
-        Move=doMove
-        Rotate
-            Around X axis=doRotateX
-            Around Y axis=doRotateY
-            Around Z axis=doRotateZ
     Create
-        Light
-            Point Light=doCreatePointLight
-            Spot Light=doCreateSpotLight
-            Directional Light=doCreateDirectionalLight
-        Particle
-            Quad Particle=doCreateQuadParticle
-            Line Particle=doCreateLineParticle
-        Water
-            Projected Water=doCreateProjectedWater
-            Quad Water=doCreateQuadWater
-        TextureLayer=doCreateTextureLayer 
         World=doCreateWorld   
-    Perspective 
-        World=doWorldPerspective
-        Model=doModelPerspective
+        Terrain=doCreateTerrain	
+        TextureLayer=doCreateTextureLayer 
+    Delete
+        Selected Entity=doDeleteSelected
+        Terrain=doDeleteTerrain	
+        Selected TextureLayer=doDeleteTextureLayer
 MainPanel
     Layout:
         class=java.awt.BorderLayout
@@ -39,12 +23,6 @@ MainPanel
                    javax.swing.border.LineBorder
             Position:
                 cardinal=CENTER
-        JTabbedPane
-            Name=ConsolePane
-            Tabs
-                Console
-            Position:
-                cardinal=SOUTH    
         JTabbedPane
             Name=ProjectPane
             Tabs

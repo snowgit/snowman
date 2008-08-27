@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.jme.input.KeyBindingManager;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
 import com.jmex.model.collada.ColladaImporter;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
 
@@ -20,7 +24,7 @@ public class ColladaExporter extends Exporter {
 	/**
 	 * The source model file name without extension.
 	 */
-	private final String fileName = "SnowGlobe";
+	private final String fileName = "Tree";
 	/**
 	 * The mesh object to be exported.
 	 */
@@ -49,7 +53,8 @@ public class ColladaExporter extends Exporter {
 			e1.printStackTrace();
 		}
 		this.node = ColladaImporter.getModel();
-		this.node.setLocalScale(.1f);  // Our Collada files were done in 100:1 scale
+		setFullAmbient(this.node);
+		this.node.setLocalScale(.01f);  // Our Collada files were done in 100:1 scale
 		this.node.updateRenderState();
 		this.rootNode.attachChild(this.node);
 	}
@@ -60,4 +65,20 @@ public class ColladaExporter extends Exporter {
 			this.export(this.fileName + EDataType.StaticMesh.getExtension(), this.node);
 		}
 	}
+	
+
+	private void setFullAmbient(Spatial spat) {
+		if (spat.getRenderState(RenderState.RS_MATERIAL) != null) {
+			MaterialState ms = (MaterialState)spat.getRenderState(RenderState.RS_MATERIAL);
+			ms.setAmbient(ColorRGBA.white.clone());
+		}
+		if (spat instanceof Node) {
+			Node node = (Node)spat;
+			for (int i = 0; i < node.getQuantity(); i++) {
+				Spatial child = node.getChild(i);
+				this.setFullAmbient(child);
+			}
+		}
+	}
+
 }

@@ -23,7 +23,7 @@ public class ExportDialog extends JDialog{
 	private File file;
 	private boolean hasFile;
 	
-	public ExportDialog(Frame parent){
+	public ExportDialog(final WorldEditor parent){
 		super(parent,"Export");
 		setModal(true);
 		setLayout(new BorderLayout());
@@ -66,7 +66,9 @@ public class ExportDialog extends JDialog{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser("Pick a file");
+				chooser.setCurrentDirectory(parent.lastDirectory);
 				int retval = chooser.showSaveDialog(ExportDialog.this);
+				parent.lastDirectory = chooser.getCurrentDirectory();
 				if (retval == JFileChooser.APPROVE_OPTION){
 					if(chooser.getSelectedFile() != null) {
 						hasFile = true;

@@ -81,69 +81,13 @@ public class MenuTest extends JFrame {
 			}
 
 			@Override
-			public void doAttachTo() {
-				System.out.print("doAttachTo");
+			public void doCreateWorld() {
+				System.out.print("doCreateWorld");
 			}
 
 			@Override
-			public void doDettachFromParent() {
-				System.out.print("doDettachFromParent");
-			}
-
-			@Override
-			public void doMove() {
-				System.out.print("doMove");
-				;
-			}
-
-			@Override
-			public void doRotateX() {
-				System.out.print("doRoateX");
-			}
-
-			@Override
-			public void doRotateY() {
-				System.out.print("doRotateY");
-			}
-
-			@Override
-			public void doRotateZ() {
-				System.out.print("doRotateZ");
-			}
-
-			@Override
-			public void doCreatePointLight() {
-				System.out.print("doCreatePointLight");
-			}
-
-			@Override
-			public void doCreateSpotLight() {
-				System.out.print("doCreateSpotLight");
-			}
-
-			@Override
-			public void doCreateDirectionalLight() {
-				System.out.print("doCreateDirectionalLight");
-			}
-
-			@Override
-			public void doCreateQuadParticle() {
-				System.out.print("doCreateQuadParticle");
-			}
-
-			@Override
-			public void doCreateLineParticle() {
-				System.out.print("doCreateLineParticle");
-			}
-
-			@Override
-			public void doCreateProjectedWater() {
-				System.out.print("doCreateProjectedWater");
-			}
-
-			@Override
-			public void doCreateQuadWater() {
-				System.out.print("doCreateQuadWater");
+			public void doCreateTerrain() {
+				System.out.print("doCreateTerrain");
 			}
 
 			@Override
@@ -152,23 +96,18 @@ public class MenuTest extends JFrame {
 			}
 
 			@Override
-			public void doWorldPerspective() {
-				System.out.print("doWorldPerspective");
+			public void doDeleteTerrain() {
+				System.out.print("doDeleteTerrain");
 			}
 
 			@Override
-			public void doModelPerspective() {
-				System.out.print("doModelPerspective");
+			public void doDeleteTextureLayer() {
+				System.out.print("doDeleteTextureLayer");
 			}
 
 			@Override
-			public void doHelp() {
-				System.out.print("doHelp");
-			}
-
-			@Override
-			public void doCreateWorld() {
-				System.out.print("doCreateWorld");
+			public void doDeleteSelected() {
+				System.out.print("doDeleteSelected");
 			}
 
 		});

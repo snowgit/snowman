@@ -39,9 +39,9 @@ public class SnowmmanMouseLook extends MouseInputAction {
         
 		// Hold and reset cursor position
         if (!looking && btn2) {
-        	MouseInput.get().setCursorVisible(false);
             cursorX = MouseInput.get().getXAbsolute();
             cursorY = MouseInput.get().getYAbsolute();
+        	MouseInput.get().setCursorVisible(false);
             looking = true;
         } else if (looking && !btn2) {
         	MouseInput.get().setCursorVisible(true);

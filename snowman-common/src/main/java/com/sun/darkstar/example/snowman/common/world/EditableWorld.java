@@ -7,8 +7,6 @@ import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-
-import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableWorld;
 import com.sun.darkstar.example.snowman.common.interfaces.IFinal;
@@ -67,8 +65,8 @@ public class EditableWorld extends AbstractWorld implements IEditableWorld {
 	public void attachView(IEditableView view) {
 		if(this.views.contains(view) || view == null) return;
 		this.views.add(view);
-		if(view.getEntity().getEnumn() == EEntity.Terrain) view.attachTo(this.terrainRoot);
-		else view.attachTo(this.staticRoot);
+
+		view.attachTo(this.staticRoot);
 	}
 
 	@Override
