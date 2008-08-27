@@ -120,7 +120,6 @@ public class Game extends BaseGame implements IComponent{
 
 	@Override
 	public void initialize() {
-		this.setConfigShowMode(ConfigShowMode.AlwaysShow, (URL)null); // TODO
 	}
 
 	@Override
