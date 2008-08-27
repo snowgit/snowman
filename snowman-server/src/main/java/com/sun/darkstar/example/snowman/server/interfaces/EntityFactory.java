@@ -47,6 +47,9 @@ public interface EntityFactory
     public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
                                              ClientSession session);
     
+    public SnowmanPlayer createRobotPlayer(String name,
+                                           int delay);
+    
     public SnowmanFlag createSnowmanFlag(SnowmanGame game,
                                          ETeamColor teamColor,
                                          Coordinate flagHome,

@@ -54,81 +54,9 @@ import org.easymock.EasyMock;
  */
 public class SnowmanPlayerListenerTest 
 {
-    @Before
-    public void initializeContext()
+    @Test
+    public void dummy()
     {
-        MockAppContext.create();
-    }
-    
-    @After
-    public void takeDownContext()
-    {
-        SnowmanAppContextFactory.setAppContext(null);
-    }
 
-      
-    /**
-     * Verify that when a player disconnects while still in the Matchmaker,
-     * it is removed from the Matchmaker
-     */
-    @Test
-    public void testDisconnectedInMatchmaker()
-    {
-        //setup the dummy playerListener
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
-        SnowmanPlayer dummySP = EasyMock.createNiceMock(SnowmanPlayer.class);
-        Matchmaker dummyMM = EasyMock.createMock(Matchmaker.class);
-        SnowmanPlayerListener dummyPlayer = new SnowmanPlayerListener(appContext,
-                                                                      dummySP,
-                                                                      dummyMM);
-        
-        //setup the dummy matchmaker
-        dummyMM.removeWaitingPlayer(dummySP);
-        EasyMock.replay(dummyMM);
-        
-        //setup the dummy player
-        EasyMock.expect(dummySP.getGame()).andReturn(null);
-        EasyMock.replay(dummySP);
-        
-        //disconnect the player
-        dummyPlayer.disconnected(true);
-        
-        //verify removal
-        EasyMock.verify(dummyMM);
-    }
-    
-    /**
-     * Verify that when a player disconnects while in a Game
-     * it is removed from the Matchmaker and the Game
-     */
-    @Test
-    public void testDisconnectedInGame()
-    {
-        //setup the dummy playerListener
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
-        SnowmanPlayer dummySP = EasyMock.createNiceMock(SnowmanPlayer.class);
-        Matchmaker dummyMM = EasyMock.createMock(Matchmaker.class);
-        SnowmanPlayerListener dummyPlayer = new SnowmanPlayerListener(appContext,
-                                                                      dummySP,
-                                                                      dummyMM);
-        
-        //setup the dummy matchmaker
-        dummyMM.removeWaitingPlayer(dummySP);
-        EasyMock.replay(dummyMM);
-        
-        //setup the dummy player
-        SnowmanGame dummyGame = EasyMock.createMock(SnowmanGame.class);
-        dummyGame.removePlayer(dummySP);
-        EasyMock.expect(dummySP.getGame()).andReturn(dummyGame).anyTimes();
-        dummySP.setGame(null);
-        EasyMock.replay(dummySP);
-        EasyMock.replay(dummyGame);
-        
-        //disconnect the player
-        dummyPlayer.disconnected(true);
-        
-        //verify removal
-        EasyMock.verify(dummyMM);
-        EasyMock.verify(dummyGame);
     }
 }

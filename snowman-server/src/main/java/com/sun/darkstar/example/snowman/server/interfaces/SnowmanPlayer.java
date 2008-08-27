@@ -107,6 +107,7 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     public int getHitPoints();
     
     public ClientSession getSession();
+    public boolean isServerSide();
     
     /**
      * Send a message to the player

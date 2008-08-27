@@ -56,6 +56,13 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
     {
         return new SnowmanPlayerImpl(context, session.getName(), session);
     }
+    
+    public SnowmanPlayer createRobotPlayer(String name,
+                                           int delay)
+    {
+        return new RobotImpl(name, delay);
+    }
+    
     public SnowmanFlag createSnowmanFlag(SnowmanGame game,
                                          ETeamColor teamColor,
                                          Coordinate flagHome,

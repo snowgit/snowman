@@ -57,15 +57,14 @@ public class SnowmanPlayerListener implements Serializable,
     private static Logger logger = Logger.getLogger(SnowmanPlayerListener.class.getName());
     public static final long serialVersionUID = 1L;
     
+    private final SnowmanAppContext appContext;
     private final ManagedReference<SnowmanPlayer> playerRef;
-    private final ManagedReference<Matchmaker> matchmakerRef;
     
     protected SnowmanPlayerListener(SnowmanAppContext appContext,
-                                    SnowmanPlayer player,
-                                    Matchmaker matchmaker)
+                                    SnowmanPlayer player)
     {
-        playerRef = appContext.getDataManager().createReference(player);
-        matchmakerRef = appContext.getDataManager().createReference(matchmaker);
+        this.appContext = appContext;
+        this.playerRef = appContext.getDataManager().createReference(player);
     }
     
     public void receivedMessage(ByteBuffer arg0) {
@@ -84,12 +83,12 @@ public class SnowmanPlayerListener implements Serializable,
 
             if (player.getGame() != null)
                 player.getGame().removePlayer(player);
-            else
-                matchmakerRef.get().removeWaitingPlayer(player);
+
+            appContext.getDataManager().removeObject(player);
         } catch (ObjectNotFoundException alreadyDisconnected) {}
     }
     
-    public SnowmanPlayer getSnowmanPlayer() {
-        return playerRef.get();
+    public ManagedReference<SnowmanPlayer> getSnowmanPlayerRef() {
+        return playerRef;
     }
 }
