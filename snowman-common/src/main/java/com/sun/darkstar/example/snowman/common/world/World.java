@@ -3,17 +3,18 @@ package com.sun.darkstar.example.snowman.common.world;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.jme.scene.Spatial;
 import com.jme.util.export.InputCapsule;
 import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
-import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditable;
 import com.sun.darkstar.example.snowman.common.interfaces.IEditableView;
 import com.sun.darkstar.example.snowman.common.interfaces.IStaticView;
 import com.sun.darkstar.example.snowman.common.interfaces.IWorld;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
+
 /**
  * <code>World</code> extends {@link jME} <code>Node</code> and implements
  * <code>IWorld</code> to define the actual data structure of a world in game.
@@ -61,11 +62,16 @@ public class World extends AbstractWorld implements IWorld {
 			for(IEditableView v : given.getViews()) {
 				StaticView view = (StaticView)v.constructFinal();
 				this.views.add(view);
+				if (v instanceof Spatial) {
+					Spatial spat = (Spatial)v;
+					view.setLocalRotation(spat.getLocalRotation());
+					view.setLocalScale(spat.getLocalScale());
+					view.setLocalTranslation(spat.getLocalTranslation());
+				}
 			}
-			// TODO Do quad-tree optimization here.
+
 			for(IStaticView view : this.views) {
-				if(view.getEntity().getEnumn() == EEntity.Terrain) view.attachTo(terrainRoot);
-				else view.attachTo(this.staticRoot);
+				view.attachTo(this.staticRoot);
 			}
 		}
 	}
