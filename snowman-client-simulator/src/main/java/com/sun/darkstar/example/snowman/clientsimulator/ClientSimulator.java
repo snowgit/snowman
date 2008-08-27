@@ -234,7 +234,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                     Properties properties = new Properties();
                     properties.setProperty("host", serverHost);
                     properties.setProperty("port", serverPort);
-                    properties.setProperty("name", hostname + "_" + buildNumber + "_Robot" + userId++);
+                    properties.setProperty("name", hostname + "_" + buildNumber + "_Sim" + userId++);
                     try {
                         SimulatedPlayer player =
                                 new SimulatedPlayer(properties, moveDelay);
