@@ -41,8 +41,6 @@ import com.jme.intersection.TrianglePickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.Geometry;
-import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
@@ -101,6 +99,7 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 
 				@Override
 				public Void call() throws Exception {
+					editor.setSelectedSpatial(null);
 					DisplaySystem.getDisplaySystem()
 							.getPickRay(
 									new Vector2f(event.getX(), event.getY()),
@@ -147,17 +146,16 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void mouseMoved(MouseEvent e){
 		if(this.mode == ModeEnum.Raise || this.mode == ModeEnum.Lower || this.mode == ModeEnum.Smooth
 				 || this.mode == ModeEnum.Paint || this.mode == ModeEnum.Erase) {
 			final MouseEvent event = e; 
-			GameTaskQueueManager.getManager().update(new Callable(){
+			GameTaskQueueManager.getManager().update(new Callable<Void>(){
 
 				@Override
-				public Object call() throws Exception {
+				public Void call() throws Exception {
 			        DisplaySystem.getDisplaySystem().getPickRay(new Vector2f(event.getX(),event.getY()), true, ray);
-					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getWorld(), intersection, true);
+					SingletonRegistry.getCollisionManager().getIntersection(ray, editor.getTerrain(), intersection, true);
 					editor.getBrush().setLocalTranslation(intersection);
 					return null;
 				}
@@ -166,7 +164,6 @@ public class WorldEditorMouseListener extends MouseInputAdapter {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void mouseDragged(MouseEvent e){
 		final MouseEvent event = e; 
 		if(this.mode == ModeEnum.Raise || this.mode == ModeEnum.Lower || this.mode == ModeEnum.Smooth

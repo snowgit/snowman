@@ -45,6 +45,7 @@ public class SavableWorld implements Savable {
 
 	private EditableWorld world = null;
 	private ArrayList<TextureLayer> layers = null;
+	private int idcount = 0;
 
     public EditableWorld getWorld() {
 		return world;
@@ -62,6 +63,14 @@ public class SavableWorld implements Savable {
 		this.layers = layers;
 	}
 
+	public int getIdcount() {
+		return idcount;
+	}
+
+	public void setIdcount(int idcount) {
+		this.idcount = idcount;
+	}
+
 	public Class<? extends SavableWorld> getClassTag() {
         return this.getClass();
     }
@@ -70,6 +79,7 @@ public class SavableWorld implements Savable {
     	OutputCapsule cap = ex.getCapsule(this);
     	cap.write(world, "world", null);
     	cap.writeSavableArrayList(layers, "layers", null);
+    	cap.write(idcount, "idcount", 0);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,5 +87,6 @@ public class SavableWorld implements Savable {
     	InputCapsule cap = im.getCapsule(this);
     	world = (EditableWorld) cap.readSavable("world", null);
     	layers = cap.readSavableArrayList("layers", null);
+    	idcount = cap.readInt("idcount", 0);
     }
 }
