@@ -83,6 +83,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     public void startGameIfReady();
     
     void endGame(EEndState endState);
+    public void cleanup();
     
     /**
      * Return the flag from the game with the given id

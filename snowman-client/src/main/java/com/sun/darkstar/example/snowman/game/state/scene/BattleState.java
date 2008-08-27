@@ -139,6 +139,7 @@ public class BattleState extends GameState {
             PhysicsManager.getInstance().cleanup();
             TaskManager.getInstance().cleanup();
             this.count = 0;
+            this.game.getClient().getHandler().initialize();
             this.flagGoals.clear();
         }
 }

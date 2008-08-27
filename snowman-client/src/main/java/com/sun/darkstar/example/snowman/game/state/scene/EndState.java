@@ -48,6 +48,7 @@ public class EndState extends GameState {
 	protected void initializeState() {
 		this.buildGUIPass();
                 this.timer.reset();
+                this.lastTime = 0;
 	}
 	
 	/**
