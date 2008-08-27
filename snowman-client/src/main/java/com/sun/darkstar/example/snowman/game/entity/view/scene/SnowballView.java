@@ -1,7 +1,11 @@
 package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.MaterialState.ColorMaterial;
+import com.jme.system.DisplaySystem;
 import com.jme.renderer.ColorRGBA;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
@@ -34,8 +38,11 @@ public class SnowballView extends DynamicView {
     public void show() {
         ball = new Sphere("Snowball", 32, 32, 0.05f);
         ball.setSolidColor(ColorRGBA.white);
-        ball.setModelBound(new BoundingBox());
+        ball.setModelBound(new BoundingSphere());
         ball.updateModelBound();
+        MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+        ms.setColorMaterial(ColorMaterial.AmbientAndDiffuse);
+        ball.setRenderState(ms);
         this.attachChild(ball);
         this.updateRenderState();
     }
