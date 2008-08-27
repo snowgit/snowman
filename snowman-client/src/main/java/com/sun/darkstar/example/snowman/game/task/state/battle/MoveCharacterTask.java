@@ -160,7 +160,7 @@ public class MoveCharacterTask extends RealTimeTask {
 				Spatial view = (Spatial)ViewManager.getInstance().getView(this.character);
 				Vector3f local = view.getLocalTranslation().clone();
 				this.game.getClient().send(ClientMessages.createMoveMePkt(local.x, local.z, click.x, click.z));
-				return collisionManager.getDestination(local.x, local.z, click.x, click.z, world.getTerrainRoot());
+				return collisionManager.getDestination(local.x, local.z, click.x, click.z, world.getStaticRoot());
 			} catch (ObjectNotFoundException e) {
 				e.printStackTrace();
 				return null;

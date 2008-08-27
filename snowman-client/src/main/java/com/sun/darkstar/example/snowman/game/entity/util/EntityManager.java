@@ -163,4 +163,11 @@ public class EntityManager extends Manager {
 		this.entities.clear();
 		this.idcount = 0;
 	}
+	
+	public void setCount(final int count) {
+		this.idcount = count;
+	}
+	public int getCount() {
+		return idcount;
+	}
 }
