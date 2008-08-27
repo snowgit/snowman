@@ -29,7 +29,6 @@ public class ReadyTask extends RealTimeTask {
 
 	@Override
 	public void execute() {
-            System.out.println("Processing READY");
 		BattleState state = (BattleState)this.game.getGameState(EGameState.BattleState);
 		if(state.getCount() == this.game.getClient().getHandler().getExpected()) {
 			this.game.getClient().send(ClientMessages.createReadyPkt());
