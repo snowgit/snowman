@@ -43,6 +43,7 @@ import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
@@ -221,12 +222,18 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             realPlayers--;
             channel.leave(player.getSession());
         }
-        send(ServerMessages.createRemoveMOBPkt(player.getID()));
-        appContext.getDataManager().removeObject(player);
         
         // if all real players have gone, end the game
         if (!channel.hasSessions())
             endGame(EEndState.Draw);
+        else {
+            send(ServerMessages.createRemoveMOBPkt(player.getID()));
+        
+            // Attempt to remove the player later, so that the RemoveMOB message
+            // is sent ASAP
+            appContext.getTaskManager().scheduleTask(
+                    new ObjectRemovalTask(appContext.getDataManager().createReference(player)));
+        }
     }
     
     public void sendMapInfo(){
@@ -276,35 +283,37 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     
     public void endGame(EEndState endState) {
         send(ServerMessages.createEndGamePkt(endState));
+        
+        // Attempt to clean up the game objects, including the channel, later
+        // so that the EndGame message is sent ASAP
         appContext.getTaskManager().scheduleTask(
-                new EndGameTask(appContext.getDataManager().createReference((SnowmanGame) this)),
+                new ObjectRemovalTask(appContext.getDataManager().createReference(this)),
                 CLEANUPDELAYMS);
     }
-    
-    public void cleanup() {
-        Channel c = getChannel();
-        c.leaveAll();
-        appContext.getDataManager().removeObject(c);
-        appContext.getDataManager().removeObject(this);
-    }
-    
-    static private class EndGameTask implements Task, Serializable {
-        final ManagedReference<SnowmanGame> gameRef;
+  
+    static private class ObjectRemovalTask implements Task, Serializable {
+        final ManagedReference ref;
         
-        EndGameTask(ManagedReference<SnowmanGame> gameRef) {
-            this.gameRef = gameRef;
+        ObjectRemovalTask(ManagedReference ref) {
+            this.ref = ref;
         }
 
         public void run() throws Exception {
             try {
-                gameRef.get().cleanup();
-            } catch (ObjectNotFoundException gameDone) {}
+                AppContext.getDataManager().removeObject(ref.get());
+            } catch (ObjectNotFoundException alreadyRemoved) {}
         }
     }
     
     public void removingObject() {
+        Channel c = getChannel();
+        c.leaveAll();
+        appContext.getDataManager().removeObject(c);
+        
         for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
-            appContext.getDataManager().removeObject(ref.get());
+            try {
+                appContext.getDataManager().removeObject(ref.get());
+            } catch (ObjectNotFoundException alreadyRemoved) {}
         }
             
         for (ManagedReference<SnowmanFlag> ref : flagRefs.values()) {
