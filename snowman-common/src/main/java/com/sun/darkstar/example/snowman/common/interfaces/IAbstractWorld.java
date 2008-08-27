@@ -32,13 +32,7 @@ public interface IAbstractWorld extends Savable {
 	 * @return The static entity root <code>Node</code>.
 	 */
 	public Node getStaticRoot();
-	
-	/**
-	 * Retrieve the root node of terrain entity.
-	 * @return The terrain entity root <code>Node</code>.
-	 */
-	public Node getTerrainRoot();
-	
+
 	/**
 	 * Retrieve the root node of all dynamic entities.
 	 * @return The dynamic entity root <code>Node</code>.

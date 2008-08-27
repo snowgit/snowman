@@ -40,8 +40,10 @@ import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.PassNodeState;
 import com.jme.scene.state.BlendState;
+import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
@@ -100,6 +102,10 @@ public class TextureLayer implements Savable {
 		this.alphaMap.setCombineFuncAlpha(Texture.CombinerFunctionAlpha.Replace);
 		ts.setTexture(this.alphaMap, ts.getNumberOfSetTextures());
 		this.pass.setPassState(blend);
+		MaterialState matState = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+		matState.setAmbient(ColorRGBA.white);
+		matState.setDiffuse(ColorRGBA.white);
+		this.pass.setPassState(matState);
 		return this.pass;
 	}
 	

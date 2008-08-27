@@ -1,8 +1,13 @@
 package com.sun.darkstar.example.snowman.game.state.scene;
 
 import com.jme.bounding.BoundingBox;
+import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Spatial.LightCombineMode;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
@@ -61,6 +66,17 @@ public class BattleState extends GameState {
 	@Override
 	protected void initializeWorld() {
 		this.world = (World)DataManager.getInstance().getWorld(EWorld.Battle);
+		/** Attach the light to a lightState and the lightState to rootNode. */
+		DirectionalLight light1 = new DirectionalLight();
+		light1.setDiffuse(ColorRGBA.white.clone());
+		light1.setAmbient(new ColorRGBA(.4f,.4f,.4f,1));
+		light1.setEnabled(true);
+		light1.setDirection(new Vector3f(-.15f, -1, 0).normalizeLocal());
+		LightState lightState = DisplaySystem.getDisplaySystem().getRenderer().createLightState();
+		lightState.setEnabled(true);
+		lightState.attach(light1);
+		rootNode.setRenderState(lightState);
+		rootNode.updateRenderState();
 	}
 
 	@Override
@@ -123,6 +139,7 @@ public class BattleState extends GameState {
             PhysicsManager.getInstance().cleanup();
             TaskManager.getInstance().cleanup();
             this.count = 0;
+            this.game.getClient().getHandler().initialize();
             this.flagGoals.clear();
         }
 }

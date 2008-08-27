@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.jme.input.KeyBindingManager;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
 import com.model.md5.ModelNode;
 import com.model.md5.importer.MD5Importer;
 import com.sun.darkstar.example.snowman.data.enumn.EDataType;
@@ -20,7 +25,7 @@ public class ModelNodeExporter extends Exporter {
 	/**
 	 * The source model file name without extension.
 	 */
-	private final String fileName = "SnowManBlue";
+	private final String fileName = "SnowManRed";
 	/**
 	 * The <code>ModelNode</code> to be exported.
 	 */
@@ -50,9 +55,30 @@ public class ModelNodeExporter extends Exporter {
 			e.printStackTrace();
 		}
 		this.model = MD5Importer.getInstance().getModelNode();
+		MaterialState ms = display.getRenderer().createMaterialState();
+		ms.setAmbient(ColorRGBA.white);
+		ms.setDiffuse(ColorRGBA.white);
+		this.model.setRenderState(ms);
+		setFullAmbient(this.model);
+		this.model.updateRenderState();
 		this.model.setLocalScale(0.01f);
 		this.rootNode.attachChild(this.model);
 		MD5Importer.getInstance().cleanup();
+	}
+	
+
+	private void setFullAmbient(Spatial spat) {
+		if (spat.getRenderState(RenderState.RS_MATERIAL) != null) {
+			MaterialState ms = (MaterialState)spat.getRenderState(RenderState.RS_MATERIAL);
+			ms.setAmbient(ColorRGBA.white.clone());
+		}
+		if (spat instanceof Node) {
+			Node node = (Node)spat;
+			for (int i = 0; i < node.getQuantity(); i++) {
+				Spatial child = node.getChild(i);
+				this.setFullAmbient(child);
+			}
+		}
 	}
 	
 	@Override

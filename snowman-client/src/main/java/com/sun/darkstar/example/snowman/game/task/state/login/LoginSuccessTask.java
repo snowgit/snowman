@@ -2,7 +2,6 @@ package com.sun.darkstar.example.snowman.game.task.state.login;
 
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.game.Game;
-import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
 import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;

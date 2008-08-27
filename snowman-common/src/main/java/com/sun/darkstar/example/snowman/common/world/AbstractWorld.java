@@ -32,10 +32,6 @@ public abstract class AbstractWorld extends Node implements IAbstractWorld {
 	 */
 	protected Node staticRoot;
 	/**
-	 * The root node of the terrain.
-	 */
-	protected Node terrainRoot;
-	/**
 	 * The root node of dynamic entities.
 	 */
 	protected Node dynamicRoot;
@@ -53,20 +49,14 @@ public abstract class AbstractWorld extends Node implements IAbstractWorld {
 		super(enumn.toString());
 		this.enumn = enumn;
 		this.staticRoot = new Node("StaticRoot");
-		this.terrainRoot = new Node("TerrainRoot");
 		this.dynamicRoot = new Node("DynamicRoot");
 		this.attachChild(this.staticRoot);
-		this.attachChild(this.terrainRoot);
 		this.attachChild(this.dynamicRoot);
 	}
 
 	@Override
 	public Node getStaticRoot() {
 		return this.staticRoot;
-	}
-	
-	public Node getTerrainRoot() {
-		return this.terrainRoot;
 	}
 
 	@Override
@@ -85,7 +75,6 @@ public abstract class AbstractWorld extends Node implements IAbstractWorld {
 		OutputCapsule oc = ex.getCapsule(this);
 		oc.write(this.enumn.toString(), "Enumeration", null);
 		oc.write(this.staticRoot, "StaticRoot", null);
-		oc.write(this.terrainRoot, "TerrainRoot", null);
 		oc.write(this.dynamicRoot, "DynamicRoot", null);
 	}
 
@@ -96,7 +85,6 @@ public abstract class AbstractWorld extends Node implements IAbstractWorld {
 		this.enumn = EWorld.valueOf(ic.readString("Enumeration", null));
 		this.setName("World"+this.enumn.toString());
 		this.staticRoot = (Node) ic.readSavable("StaticRoot", null);
-		this.terrainRoot = (Node) ic.readSavable("TerrainRoot", null);
 		this.dynamicRoot = (Node) ic.readSavable("DynamicRoot", null);
 	}
 }

@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="/lib/jme-terrain.jar"/>
 	<classpathentry kind="lib" path="/lib/jme.jar"/>
 	<classpathentry kind="lib" path="/lib/SADDL.jar"/>
+	<classpathentry kind="lib" path="/lib/jme-editors.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
