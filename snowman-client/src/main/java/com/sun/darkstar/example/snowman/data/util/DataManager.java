@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import com.jme.image.Image;
 import com.jme.scene.Spatial;
+import com.jme.scene.Spatial.LightCombineMode;
 import com.jme.util.ImageLoader;
 import com.jme.util.TextureManager;
 import com.jme.util.export.Savable;
@@ -150,6 +151,8 @@ public class DataManager extends Manager {
 		ModelNode character = this.characterPool.get(enumn);
 		if(character == null) {
 			character = (ModelNode)this.getResource(EDataType.DynamicMesh.toPath(enumn.toString()));
+			character.setLightCombineMode(LightCombineMode.Off);
+			character.updateRenderState();
 			this.characterPool.put(enumn, character);
 		}
 		return character.clone();
