@@ -38,8 +38,6 @@ import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
-import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
@@ -170,12 +168,12 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
      * @param player the player to add to the game
      */
     public void addWaitingPlayer(SnowmanPlayer player) {
-        appContext.getDataManager().markForUpdate(this);
         int idx = getNullIdx();
         if (idx == -1) {
             logger.severe("Error: tried to add player to full wait quwue");
             return;
         }
+        appContext.getDataManager().markForUpdate(this);
         waiting[idx] = appContext.getDataManager().createReference(player);
         if (getNullIdx() == -1) { // full queue
             appContext.getTaskManager().scheduleTask(
@@ -193,11 +191,11 @@ public class MatchmakerImpl implements Matchmaker, Serializable {
      * @param player the player to remove from the game
      */
     public void removeWaitingPlayer(SnowmanPlayer player) {
-        appContext.getDataManager().markForUpdate(this);
         ManagedReference<SnowmanPlayer> playerRef =
                 appContext.getDataManager().createReference(player);
         for (int i = 0; i < waiting.length; i++) {
             if ((waiting[i] != null) && (waiting[i].equals(playerRef))) {
+                appContext.getDataManager().markForUpdate(this);
                 waiting[i] = null;
                 return;
             }

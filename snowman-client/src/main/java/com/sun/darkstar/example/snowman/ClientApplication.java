@@ -1,5 +1,8 @@
 package com.sun.darkstar.example.snowman;
 
+import java.net.URL;
+
+import com.jme.app.AbstractGame.ConfigShowMode;
 import com.sun.darkstar.example.snowman.client.Client;
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.exception.MissingComponentException;
@@ -24,6 +27,12 @@ public class ClientApplication {
 		ClientHandler handler = new ClientHandler();
 		Client client = new Client();
 		Game game = new Game();
+		if (System.getProperty("snowman.config.noshow") == null) {
+			game.setConfigShowMode(ConfigShowMode.AlwaysShow, (URL)null);
+		} else {
+			game.setConfigShowMode(ConfigShowMode.NeverShow);
+		}
+
 		// Establish component connections.
 		handler.connect(game);
 		client.connect(handler);
