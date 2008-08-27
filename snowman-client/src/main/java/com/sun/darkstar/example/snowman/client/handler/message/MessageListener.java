@@ -58,7 +58,10 @@ public class MessageListener implements SimpleClientListener, ClientChannelListe
 
 	@Override
 	public void disconnected(boolean graceful, String reason) {
-            ((BattleState)this.handler.getGame().getGameState(EGameState.BattleState)).reset();
+            if(graceful)
+                ((BattleState) this.handler.getGame().getGameState(EGameState.BattleState)).reset();
+            else
+                this.handler.getGame().finish();
 	}
 
 	@Override

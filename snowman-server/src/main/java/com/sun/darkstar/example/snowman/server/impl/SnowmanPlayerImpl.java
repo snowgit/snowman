@@ -268,6 +268,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         }
     }
     
+    public boolean isServerSide() {
+        return false;
+    }
+    
      // IServerProcessor Messages
 
     public void ready() {

@@ -55,8 +55,11 @@ public class RobotImpl extends SnowmanPlayerImpl {
     private final int moveDelay;
     private final Random random = new Random(System.currentTimeMillis());
     
-    // Player IDs of potential targets
-    private ArrayList<Integer> targets = null;
+    // Player and flag IDs of potential targets
+    private ArrayList<Integer> potentialTargets = null;
+    private ArrayList<Integer> potentialFlagTargets = null;
+    
+    // reference to opponent flag
     private ManagedReference<SnowmanFlag> theirFlagRef = null;
     
     public RobotImpl(String name, int delay) {
@@ -75,30 +78,37 @@ public class RobotImpl extends SnowmanPlayerImpl {
         if (gameRef == null) // game over
             return;
         
-        if (targets == null) {
+        // setup list of potential targets
+        // don't distinguish between teams for simplicity
+        // an attack on a team member will do nothing
+        if (potentialTargets == null || potentialFlagTargets == null) {
             appContext.getDataManager().markForUpdate(this);
             SnowmanGame game = gameRef.get();
-            targets = new ArrayList<Integer>();
-            for (int id : game.getPlayerIds()) {
-                if (game.getPlayer(id).getTeamColor() != getTeamColor())
-                    targets.add(id);
-            }
-            for (int id : game.getFLagIds()) {
-                SnowmanFlag flag = game.getFlag(id);
-                if (flag.getTeamColor() != getTeamColor())
-                    theirFlagRef = appContext.getDataManager().createReference(flag);
-            }
+            potentialTargets = new ArrayList<Integer>();
+            potentialTargets.addAll(game.getPlayerIds());
+            
+            potentialFlagTargets = new ArrayList<Integer>();
+            potentialFlagTargets.addAll(game.getFLagIds());
         }
         
         if (state == PlayerState.NONE || state == PlayerState.DEAD) {
             scheduleMove(moveDelay * 4);
             return;
         }
+        
         long now = System.currentTimeMillis();
         Coordinate currentPos = getExpectedPositionAtTime(now);
         
+        // If we don't have a flag ref, guess
+        if (theirFlagRef == null) {
+            SnowmanFlag flag = gameRef.get().getFlag(
+                    potentialFlagTargets.get(random.nextInt(potentialFlagTargets.size())));
+            if(flag.getTeamColor() == this.getTeamColor()) {
+                theirFlagRef = appContext.getDataManager().createReference(flag);
+            }
+        
         // If holding the flag, try to score
-        if (holdingFlagRef != null) {
+        } else if (holdingFlagRef != null) {
             if (!score(now, currentPos.getX(), currentPos.getY()))
                 moveMe(now,
                        currentPos.getX(), currentPos.getY(),
@@ -121,7 +131,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
             SnowmanGame game = gameRef.get();
             
             SnowmanPlayer target =
-                    game.getPlayer(targets.get(random.nextInt(targets.size())));
+                    game.getPlayer(potentialTargets.get(random.nextInt(potentialTargets.size())));
             
             // If a target is available, move towards it. Attack if it's
             // within range
@@ -170,5 +180,10 @@ public class RobotImpl extends SnowmanPlayerImpl {
     @Override
     public ClientSession getSession() {
         return null;
+    }
+    
+    @Override
+    public boolean isServerSide() {
+        return true;
     }
 }

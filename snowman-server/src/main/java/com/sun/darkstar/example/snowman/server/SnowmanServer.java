@@ -32,21 +32,26 @@
 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
+import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import com.sun.darkstar.example.snowman.server.impl.MatchmakerImpl;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
+import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
+import com.sun.darkstar.example.snowman.server.tasks.MatchmakerTask;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ManagedReference;
+import com.sun.sgs.app.util.ScalableDeque;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Deque;
+import java.math.BigInteger;
 
 /**
  * This class is the app listener for Project Snowman
@@ -56,26 +61,79 @@ import java.util.logging.Logger;
 public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     public static long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
+    
+    private static final int NUMDEQUES = 10;
+    
+    private static final String PLAYERS_PER_GAME_PROP = "numPlayersPerGame";
+    private static final int DEFAULT_PLAYERS_PER_GAME = 2;
+    
+    private static final String ROBOTS_PER_GAME_PROP = "numRobotsPerGame";
+    private static final int DEFAULT_ROBOTS_PER_GAME = 2;
+    
+    private static final String ROBOT_DELAY_PROP = "robotDelay";
+    private static final int DEFAULT_ROBOT_DELAY = 2000;
 
-    private ManagedReference<Matchmaker> matchMakerRef;
+    private int numPlayersPerGame;
+    private int numRobotsPerGame;
+    private int robotDelay;
+
+    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
+    private GameFactory gameFactory;
     private EntityFactory entityFactory;
     private SnowmanAppContext appContext;
     
+    @SuppressWarnings("unchecked")
     public void initialize(Properties arg0) {
         this.appContext = SnowmanAppContextFactory.getAppContext();
+        this.gameFactory = new GameFactoryImpl();
         this.entityFactory = new EntityFactoryImpl();
-        Matchmaker matchMaker = new MatchmakerImpl(appContext);
-        matchMakerRef = appContext.getDataManager().createReference(matchMaker);
+        this.waitingDeques = new ManagedReference[NUMDEQUES];
+        for(int i = 0; i < waitingDeques.length; i++) {
+            Deque<ManagedReference<SnowmanPlayer>> deque = new ScalableDeque<ManagedReference<SnowmanPlayer>>();
+            waitingDeques[i] = appContext.getDataManager().createReference(deque);
+        }
+        
+        this.config();
+        appContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
+                                                                    numRobotsPerGame,
+                                                                    robotDelay,
+                                                                    gameFactory,
+                                                                    entityFactory,
+                                                                    appContext,
+                                                                    waitingDeques));
+    }
+    
+    private void config() {
+        numPlayersPerGame = Integer.getInteger(PLAYERS_PER_GAME_PROP,
+                                               DEFAULT_PLAYERS_PER_GAME);
+        if (numPlayersPerGame <= 0)
+            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + " must be > 0");
+        logger.log(Level.CONFIG,
+                   "Number of players required to start a game set to {0}",
+                   numPlayersPerGame);
+        numRobotsPerGame = Integer.getInteger(ROBOTS_PER_GAME_PROP,
+                                              DEFAULT_ROBOTS_PER_GAME);
+        if (numRobotsPerGame < 0)
+            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0"); 
+        robotDelay = Integer.getInteger(ROBOT_DELAY_PROP,
+                                        DEFAULT_ROBOT_DELAY);
+        if (robotDelay < 0)
+            throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
+        logger.log(Level.CONFIG,
+                   "Number of robots per game: {0}, with delay of {1} milliseconds",
+                   new Object[] {numRobotsPerGame, robotDelay});
     }
 
-    public ClientSessionListener loggedIn(ClientSession arg0) {
+    public ClientSessionListener loggedIn(ClientSession session) {
         if (logger.isLoggable(Level.FINE))
-            logger.log(Level.FINE, "Player {0} logged in", arg0.getName());
+            logger.log(Level.FINE, "Player {0} logged in", session.getName());
         SnowmanPlayerListener player =
                 new SnowmanPlayerListener(appContext,
-                                          entityFactory.createSnowmanPlayer(appContext, arg0),
-                                          matchMakerRef.get());
-        matchMakerRef.get().addWaitingPlayer(player.getSnowmanPlayer());
+                                          entityFactory.createSnowmanPlayer(appContext, session));
+        BigInteger id = player.getSnowmanPlayerRef().getId();
+        BigInteger index = id.mod(BigInteger.valueOf((long)NUMDEQUES));
+        
+        waitingDeques[index.intValue()].get().add(player.getSnowmanPlayerRef());
         return player;
     }
 }

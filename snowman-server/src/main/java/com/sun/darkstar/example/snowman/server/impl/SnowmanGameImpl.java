@@ -49,6 +49,7 @@ import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.Task;
 import com.sun.sgs.app.ObjectNotFoundException;
+import com.sun.sgs.app.util.ScalableHashMap;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -95,6 +96,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
      * Map of player IDs to players that are part of this game
      */
     private final Map<Integer, ManagedReference<SnowmanPlayer>>  playerRefs;
+    
     private final SnowmanAppContext appContext;
     private final EntityFactory entityFactory;
     
@@ -228,15 +230,17 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
             endGame(EEndState.Draw);
         else {
             send(ServerMessages.createRemoveMOBPkt(player.getID()));
-        
-            // Attempt to remove the player later, so that the RemoveMOB message
-            // is sent ASAP
-            appContext.getTaskManager().scheduleTask(
-                    new ObjectRemovalTask(appContext.getDataManager().createReference(player)));
         }
     }
     
     public void sendMapInfo(){
+        for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
+            SnowmanPlayer player = ref.get();
+            if (player.getSession() != null) {
+                player.send(ServerMessages.createNewGamePkt(player.getID(),
+                                                            "default_map"));
+            }
+        }
         for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
@@ -310,9 +314,14 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
         c.leaveAll();
         appContext.getDataManager().removeObject(c);
         
+        //only remove server side robots
+        //player listener is responsible for cleaning up client
+        //connected players
         for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
             try {
-                appContext.getDataManager().removeObject(ref.get());
+                SnowmanPlayer p = ref.get();
+                if(p.isServerSide())
+                    appContext.getDataManager().removeObject(p);
             } catch (ObjectNotFoundException alreadyRemoved) {}
         }
             
