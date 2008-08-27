@@ -38,7 +38,6 @@ import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedReference;
-import com.sun.sgs.app.ManagedObject;
 import com.sun.sgs.app.ObjectNotFoundException;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
@@ -52,14 +51,14 @@ import java.util.logging.Logger;
  * 
  * @author Owen Kellett
  */
-public class SnowmanPlayerListener implements ManagedObject, Serializable,
-        ClientSessionListener
+public class SnowmanPlayerListener implements Serializable,
+                                              ClientSessionListener
 {
     private static Logger logger = Logger.getLogger(SnowmanPlayerListener.class.getName());
     public static final long serialVersionUID = 1L;
     
     private final ManagedReference<SnowmanPlayer> playerRef;
-    private ManagedReference<Matchmaker> matchmakerRef;
+    private final ManagedReference<Matchmaker> matchmakerRef;
     
     protected SnowmanPlayerListener(SnowmanAppContext appContext,
                                     SnowmanPlayer player,
@@ -76,24 +75,18 @@ public class SnowmanPlayerListener implements ManagedObject, Serializable,
     }
 
     public void disconnected(boolean arg0) {
-        SnowmanPlayer player;
         try {
-            player = playerRef.get();
-        } catch (ObjectNotFoundException ex) {
-            return;
-        }
+            SnowmanPlayer player = playerRef.get();
         
-        if (logger.isLoggable(Level.FINE))
-            logger.log(Level.FINE,
-                       "Player {0} logged out", player.getName());
-        
-        if (matchmakerRef!=null){
-            matchmakerRef.get().removeWaitingPlayer(player);
-            matchmakerRef = null;
-        }
-        if (player.getGame() != null) {
-            player.getGame().removePlayer(player);
-        }
+            if (logger.isLoggable(Level.FINE))
+                logger.log(Level.FINE,
+                           "Player {0} logged out", player.getName());
+
+            if (player.getGame() != null)
+                player.getGame().removePlayer(player);
+            else
+                matchmakerRef.get().removeWaitingPlayer(player);
+        } catch (ObjectNotFoundException alreadyDisconnected) {}
     }
     
     public SnowmanPlayer getSnowmanPlayer() {
