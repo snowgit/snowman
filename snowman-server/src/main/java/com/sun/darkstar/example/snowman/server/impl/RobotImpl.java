@@ -135,12 +135,13 @@ public class RobotImpl extends SnowmanPlayerImpl {
         } else {
             SnowmanGame game = gameRef.get();
             
-            Integer targetId = random.nextInt(potentialTargets.size());
+            int targetIndex = random.nextInt(potentialTargets.size());
             SnowmanPlayer target =
-                    game.getPlayer(potentialTargets.get(targetId));
-            // don't attack friendly snowmen
-            if(target.getTeamColor() == this.getTeamColor()) {
-                potentialTargets.remove(targetId);
+                    game.getPlayer(potentialTargets.get(targetIndex));
+            
+            // don't attack friendly snowmen or snowmen no longer around
+            if((target != null) && (target.getTeamColor() == this.getTeamColor())) {
+                potentialTargets.remove(targetIndex);
                 target = null;
             }
             
