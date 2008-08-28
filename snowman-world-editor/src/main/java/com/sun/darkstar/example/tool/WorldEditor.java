@@ -268,6 +268,7 @@ public class WorldEditor extends JFrame {
 	 * instance the WorldEditor using this constructor and call start() on the
 	 * returned instance.
 	 */
+	@SuppressWarnings("unchecked")
 	public WorldEditor() {
 		this.layers = new ArrayList<TextureLayer>();
 		this.setMinimumSize(new Dimension(1024, 768));
@@ -608,7 +609,6 @@ public class WorldEditor extends JFrame {
 						@Override
 						public void doSave() {
 							// show save dialog
-							// show load dialog
 							JFileChooser chooser = new JFileChooser("Save World");
 							chooser.setCurrentDirectory(lastDirectory);
 							chooser.setApproveButtonText("Save");
@@ -776,7 +776,6 @@ public class WorldEditor extends JFrame {
 		// make the canvas:
 		display = DisplaySystem.getDisplaySystem("lwjgl");
 		display.setMinDepthBits(24);
-		display.setMinStencilBits(8);
 		display.setMinAlphaBits(8);
 		display.registerCanvasConstructor("AWT",
 				LWJGLAWTCanvasConstructor.class);
@@ -794,6 +793,8 @@ public class WorldEditor extends JFrame {
 		KeyListener kl = (KeyListener) KeyInput.get();
 		comp.addKeyListener(kl);
 		AWTMouseInput.setup(comp, false);
+		// turn off relative mouse
+		((AWTMouseInput)AWTMouseInput.get()).setRelativeDelta(null);
 
 		// Important! Here is where we add the guts to the panel:
 
@@ -1069,12 +1070,13 @@ public class WorldEditor extends JFrame {
 		public void simpleSetup() {
 			setCurrentSceneGraphTree(getRootNode());
 			/** Create a basic input controller. */
-			FirstPersonHandler firstPersonHandler = new FirstPersonHandler(cam,
+			FirstPersonHandler fph = new FirstPersonHandler(cam,
 					50, 1);
-			firstPersonHandler.getMouseLookHandler().getMouseLook()
+			fph.getMouseLookHandler().getMouseLook()
 					.setButtonPressRequired(true);
-			firstPersonHandler.getMouseLookHandler().setActionSpeed(0.3f);
-			input = firstPersonHandler;
+			fph.getMouseLookHandler().setActionSpeed(0.6f);
+
+			input = fph;
 
 			/** Get a high resolution timer for FPS updates. */
 			timer = Timer.getTimer();
