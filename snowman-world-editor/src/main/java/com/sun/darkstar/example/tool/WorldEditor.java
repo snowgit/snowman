@@ -544,7 +544,18 @@ public class WorldEditor extends JFrame {
 						@Override
 						public void doLoad() {
 							// show load dialog
-							final File in = new File("c:/test.wld");
+							JFileChooser chooser = new JFileChooser("Load World");
+							chooser.setCurrentDirectory(lastDirectory);
+							chooser.setApproveButtonText("Load");
+							FileNameExtensionFilter filter = new FileNameExtensionFilter(
+									"Editor World Files", "ewd");
+							chooser.setFileFilter(filter);
+							int retval = chooser.showOpenDialog(WorldEditor.this);
+							lastDirectory = chooser.getCurrentDirectory();
+							if (retval != JFileChooser.APPROVE_OPTION) {
+								return;
+							}
+							final File in = chooser.getSelectedFile();
 							// queue up a task...
 							runFirstAction = new Callable<Void>() {
 								@Override
@@ -597,7 +608,23 @@ public class WorldEditor extends JFrame {
 						@Override
 						public void doSave() {
 							// show save dialog
-							final File out = new File("c:/test.wld");
+							// show load dialog
+							JFileChooser chooser = new JFileChooser("Save World");
+							chooser.setCurrentDirectory(lastDirectory);
+							chooser.setApproveButtonText("Save");
+							FileNameExtensionFilter filter = new FileNameExtensionFilter(
+									"Editor World Files", "ewd");
+							chooser.setFileFilter(filter);
+							int retval = chooser.showSaveDialog(WorldEditor.this);
+							lastDirectory = chooser.getCurrentDirectory();
+							if (retval != JFileChooser.APPROVE_OPTION) {
+								return;
+							}
+							File f = chooser.getSelectedFile();
+							if (f.getName().indexOf(".") < 0) {
+								f = new File(f.getParentFile(), f.getName()+".ewd");
+							}
+							final File out = f;
 							// queue up a task...
 							runFirstAction = new Callable<Void>() {
 								@Override
