@@ -117,6 +117,7 @@ public class MoveCharacterTask extends RealTimeTask {
 
 	@Override
 	public void execute() {
+		if (this.character == null) return;
 		try {
 			this.character.resetVelocity();
 			this.character.resetForce();
@@ -142,7 +143,7 @@ public class MoveCharacterTask extends RealTimeTask {
 				this.character.setState(EState.Moving);
 				ViewManager.getInstance().markForUpdate(this.character);
 			}
-		} catch (ObjectNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -175,7 +176,10 @@ public class MoveCharacterTask extends RealTimeTask {
 		if(super.equals(object)) {
 			if(object instanceof MoveCharacterTask) {
 				MoveCharacterTask given = (MoveCharacterTask)object;
-				return given.character.equals(this.character);
+				if (given.character != null)
+					return given.character.equals(this.character);
+				else
+					return this.character == null;
 			}
 		}
 		return false;
