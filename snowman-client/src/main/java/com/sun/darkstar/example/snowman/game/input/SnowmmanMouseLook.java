@@ -5,6 +5,8 @@ import com.jme.input.Mouse;
 import com.jme.input.MouseInput;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
+import com.sun.darkstar.example.snowman.ClientApplication;
+import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
 
 /**
  * Handles mouse interaction for the snowman camera system.
@@ -45,6 +47,7 @@ public class SnowmmanMouseLook extends MouseInputAction {
             looking = true;
         } else if (looking && !btn2) {
         	MouseInput.get().setCursorVisible(true);
+			MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.TryingToMove.getIconLocation()));
         	MouseInput.get().setCursorPosition(cursorX, cursorY);
             looking = false;
         }

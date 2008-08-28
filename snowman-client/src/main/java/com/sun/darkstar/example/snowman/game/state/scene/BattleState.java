@@ -16,12 +16,15 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
+import com.jme.input.MouseInput;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import com.sun.darkstar.example.snowman.ClientApplication;
+import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 import com.sun.darkstar.example.snowman.common.world.World;
@@ -104,6 +107,7 @@ public class BattleState extends GameState {
 
 	@Override
 	protected void initializeState() {
+		MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.TryingToMove.getIconLocation()));
 	}
 
 	@Override
@@ -189,7 +193,7 @@ public class BattleState extends GameState {
 		this.environment.connect(this.effects);
 		this.environment.connect(this.astronomy);
 		this.environment.connect(this.weather);
-		this.environment.setCurrentTime("8.00");
+		this.environment.setCurrentTime("17.30");
 		this.environment.applyToScene(this.rootNode);
 	}
 

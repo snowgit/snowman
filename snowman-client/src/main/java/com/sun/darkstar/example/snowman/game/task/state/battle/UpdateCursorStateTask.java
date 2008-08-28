@@ -1,10 +1,12 @@
 package com.sun.darkstar.example.snowman.game.task.state.battle;
 
+import com.jme.input.MouseInput;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.ClientApplication;
 import com.sun.darkstar.example.snowman.common.entity.enumn.ECursorState;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.StaticView;
@@ -91,7 +93,7 @@ public class UpdateCursorStateTask extends RealTimeTask {
 		Spatial result = collisionManager.getIntersectObject(ray, world, StaticView.class, false);
 		if(result != null) {
 			this.snowman.setCursorState(ECursorState.TryingToMove);
-                        // TODO Change cursor to moving.
+			MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.TryingToMove.getIconLocation()));
 			return;
 		}
 		result = collisionManager.getIntersectObject(ray, world, CharacterView.class, false);
@@ -101,7 +103,7 @@ public class UpdateCursorStateTask extends RealTimeTask {
 			if(this.validateDeath((CharacterView)result) && this.validateAttackRange(result) && this.validateBlocking(result)) {
 				this.snowman.setCursorState(ECursorState.Targeting);
 				this.snowman.setTarget((CharacterEntity)view.getEntity());
-				// TODO Change cursor to targeting.
+				MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.Targeting.getIconLocation()));
 			}
 			return;
 		}
@@ -111,13 +113,13 @@ public class UpdateCursorStateTask extends RealTimeTask {
 			if(this.validateGrabRange(result) && this.validateTeam(view.getEntity())) {
 				this.snowman.setCursorState(ECursorState.TryingToGrab);
 				this.snowman.setTarget(view.getEntity());
-				// TODO Change cursor to grabbing.
+				MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.TryingToGrab.getIconLocation()));
 			}
 			return;
 		}
                 
-                this.snowman.setCursorState(ECursorState.Invalid);
-                // TODO Change cursor to invalid
+        this.snowman.setCursorState(ECursorState.Invalid);
+		MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.Invalid.getIconLocation()));
 	}
 
 	/**
