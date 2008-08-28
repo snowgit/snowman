@@ -13,6 +13,8 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.pass.BasicPassManager;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.NanoTimer;
 import com.jme.util.Timer;
 import com.jmex.game.state.GameStateManager;
@@ -239,7 +241,9 @@ public class Game extends BaseGame implements IComponent{
         /** update stats, if enabled. */
         StatsManager.getInstance().updateStats(interpolation);
 
-        //Update view manager.
+		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+
+		//Update view manager.
         this.viewManager.update(this.interpolation);
         // Update input manager.
 		this.inputManager.update(this.interpolation);
@@ -268,6 +272,8 @@ public class Game extends BaseGame implements IComponent{
 	@Override
 	protected void render(float unused) {
 		this.display.getRenderer().clearBuffers();
+		GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
+
 		// Render all render passes.
 		this.passManager.renderPasses(this.display.getRenderer());
         
