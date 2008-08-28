@@ -27,7 +27,7 @@ public enum EStats {
         /**
          * The backoff distance on a collision
          */
-        BackoffDistance(0.25f),
+        BackoffDistance(0.50f),
 	/**
 	 * The grabbing range.
 	 */
