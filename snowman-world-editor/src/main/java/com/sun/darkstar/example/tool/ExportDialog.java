@@ -55,10 +55,12 @@ public class ExportDialog extends JDialog{
 		add(jpanel,BorderLayout.SOUTH);
 		jpanel = new JPanel();
 		jpanel.setLayout(new BorderLayout());
-		jpanel.add(new JLabel("File: "),BorderLayout.WEST);
+		jpanel.add(new JLabel("Export As: "),BorderLayout.WEST);
 		fileNameField = new JTextField();
+		fileNameField.setEditable(false);
+		fileNameField.setColumns(15);
 		jpanel.add(fileNameField,BorderLayout.CENTER);
-		JButton browseButton = new JButton("Browse");
+		JButton browseButton = new JButton("Choose File");
 		jpanel.add(browseButton,BorderLayout.EAST);
 		add(jpanel,BorderLayout.NORTH);
 		browseButton.addActionListener(new ActionListener(){
@@ -79,7 +81,6 @@ public class ExportDialog extends JDialog{
 				
 			}});
 		pack();
-		setSize(200,100);
 		setLocation(new Point(parent.getWidth()/2,parent.getHeight()/2));
 	}
 	
