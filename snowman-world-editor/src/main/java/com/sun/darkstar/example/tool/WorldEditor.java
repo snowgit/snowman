@@ -1068,6 +1068,9 @@ public class WorldEditor extends JFrame {
 
 		@Override
 		public void simpleSetup() {
+			getCamera().getLocation().set(15,30,90);
+			getCamera().lookAt(new Vector3f(15, 0, 30), Vector3f.UNIT_Y.clone());
+			
 			setCurrentSceneGraphTree(getRootNode());
 			/** Create a basic input controller. */
 			FirstPersonHandler fph = new FirstPersonHandler(cam,
