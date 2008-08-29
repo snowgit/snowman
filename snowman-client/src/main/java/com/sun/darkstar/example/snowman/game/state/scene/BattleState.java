@@ -95,8 +95,8 @@ public class BattleState extends GameState {
 				// initialize our environment code
 		        buildEnvironment();
 		        // kill the ambient on the sun/moon
-				astronomy.getAstronomyLight().getLightList().get(0).setAmbient(ColorRGBA.black.clone());
-				astronomy.getAstronomyLight().getLightList().get(1).setAmbient(ColorRGBA.black.clone());
+				astronomy.getAstronomyLight().getLightList().get(0).setAmbient(new ColorRGBA(.1f, .1f, .1f, 1));
+				astronomy.getAstronomyLight().getLightList().get(1).setAmbient(new ColorRGBA(.1f, .1f, .1f, 1));
 		        // start snowing
 		        environment.setWeather(EWeather.Snow, world);
 				return null;
@@ -203,9 +203,9 @@ public class BattleState extends GameState {
 	}
 
 	private void buildSkyComponent() {
-		this.sky.setUseSphere(true);
+		this.sky.setUseSphere(false);
 		this.sky.setSkyRadius(75);
-		this.sky.setRotationCycle(60);
+		this.sky.setRotationCycle(120);
 		this.sky.setTexture(ESkyPart.DaySky, this.loadTexture("DaySky.jpg"));
 		this.sky
 				.setTexture(ESkyPart.NightSky, this.loadTexture("NightSky.jpg"));
