@@ -892,6 +892,7 @@ public class WorldEditor extends JFrame {
 						dropLocation.y += ((BoundingBox) view.getWorldBound()).yExtent;
 						view.setLocalTranslation(dropLocation);
 						view.updateGeometricState(0, true);
+						treeModel.addChild(world.getStaticRoot(), view);
 						world.attachView(view);
 						world.getStaticRoot().updateRenderState();
 						WorldEditor.this.repaint();
