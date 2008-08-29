@@ -5,6 +5,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.MaterialState.ColorMaterial;
+import com.jme.scene.state.MaterialState.MaterialFace;
 import com.jme.system.DisplaySystem;
 import com.jme.renderer.ColorRGBA;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
@@ -37,11 +38,13 @@ public class SnowballView extends DynamicView {
     
     public void show() {
         ball = new Sphere("Snowball", 32, 32, 0.05f);
-        ball.setSolidColor(ColorRGBA.white);
+        ball.setSolidColor(ColorRGBA.white.clone());
         ball.setModelBound(new BoundingSphere());
         ball.updateModelBound();
         MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         ms.setColorMaterial(ColorMaterial.AmbientAndDiffuse);
+        ms.setEmissive(ColorRGBA.lightGray.clone());
+        ms.setMaterialFace(MaterialFace.FrontAndBack);
         ball.setRenderState(ms);
         this.attachChild(ball);
         this.updateRenderState();
