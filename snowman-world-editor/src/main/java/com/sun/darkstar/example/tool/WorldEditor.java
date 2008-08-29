@@ -100,7 +100,6 @@ import com.jme.renderer.pass.RenderPass;
 import com.jme.scene.Node;
 import com.jme.scene.PassNode;
 import com.jme.scene.Spatial;
-import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -120,7 +119,6 @@ import com.jme.util.export.binary.BinaryExporter;
 import com.jme.util.export.binary.BinaryImporter;
 import com.jme.util.geom.Debugger;
 import com.jme.util.stat.StatCollector;
-import com.jme.util.stat.graph.DefColorFadeController;
 import com.jmex.awt.input.AWTMouseInput;
 import com.jmex.awt.lwjgl.LWJGLAWTCanvasConstructor;
 import com.sun.darkstar.example.snowman.common.entity.EditableEntity;
@@ -1038,8 +1036,6 @@ public class WorldEditor extends JFrame {
 		 */
 		protected boolean pause;
 
-		private Quad lineGraph, labGraph;
-
 		public WorldEditorCanvasImpl(int width, int height) {
 			super(width, height);
 			System.setProperty("jme.stats", "set");
@@ -1091,12 +1087,6 @@ public class WorldEditor extends JFrame {
 				className = className.substring(className.lastIndexOf('.') + 1);
 			display.setTitle(className);
 
-			/** Assign key P to action "toggle_pause". */
-			KeyBindingManager.getKeyBindingManager().set("toggle_pause",
-					KeyInput.KEY_P);
-			/** Assign key ADD to action "step". */
-			KeyBindingManager.getKeyBindingManager().set("step",
-					KeyInput.KEY_ADD);
 			/** Assign key T to action "toggle_wire". */
 			KeyBindingManager.getKeyBindingManager().set("toggle_wire",
 					KeyInput.KEY_T);
@@ -1117,8 +1107,6 @@ public class WorldEditor extends JFrame {
 					KeyInput.KEY_R);
 			KeyBindingManager.getKeyBindingManager().set("screen_shot",
 					KeyInput.KEY_F1);
-			KeyBindingManager.getKeyBindingManager().set("toggle_stats",
-					KeyInput.KEY_F4);
 
 			wireState = display.getRenderer().createWireframeState();
 			wireState.setEnabled(false);
@@ -1181,22 +1169,6 @@ public class WorldEditor extends JFrame {
 			GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE)
 					.execute();
 
-			/** If toggle_pause is a valid command (via key p), change pause. */
-			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-					"toggle_pause", false)) {
-				pause = !pause;
-			}
-
-			/**
-			 * If step is a valid command (via key ADD), update scenegraph one
-			 * unit.
-			 */
-			if (KeyBindingManager.getKeyBindingManager().isValidCommand("step",
-					true)) {
-				simpleUpdate();
-				rootNode.updateGeometricState(tpf, true);
-			}
-
 			/**
 			 * If toggle_wire is a valid command (via key T), change wirestates.
 			 */
@@ -1218,28 +1190,6 @@ public class WorldEditor extends JFrame {
 			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
 					"toggle_bounds", false)) {
 				showBounds = !showBounds;
-			}
-
-			/** If toggle_depth is a valid command (via key F3), change depth. */
-			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-					"toggle_depth", false)) {
-				showDepth = !showDepth;
-			}
-
-			if (Debug.stats) {
-				/** handle toggle_stats command (key F4) */
-				if (KeyBindingManager.getKeyBindingManager().isValidCommand(
-						"toggle_stats", false)) {
-					showGraphs = !showGraphs;
-					Debug.updateGraphs = showGraphs;
-					labGraph.clearControllers();
-					lineGraph.clearControllers();
-					labGraph.addController(new DefColorFadeController(labGraph,
-							showGraphs ? .6f : 0f, showGraphs ? .5f : -.5f));
-					lineGraph.addController(new DefColorFadeController(
-							lineGraph, showGraphs ? .6f : 0f, showGraphs ? .5f
-									: -.5f));
-				}
 			}
 
 			if (KeyBindingManager.getKeyBindingManager().isValidCommand(
