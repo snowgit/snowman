@@ -122,6 +122,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     
     private final String serverHost;
     private final String serverPort;
+    private final String connectTimeout;
     private final int moveDelay;
     private final int newClientDelay;
     private final int buildNumber;
@@ -139,7 +140,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     /**
      * Create and display the client simulator slider.
      */
-    ClientSimulator() {
+    ClientSimulator() throws Exception {
         super("Client Simulator Controls");
         
         try {
@@ -150,8 +151,11 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         serverHost = System.getProperty("host", "localhost");
         serverPort = System.getProperty("port", "3000");
-        logger.log(Level.CONFIG, "Clients to use server at {0}:{1}",
-                   new Object[] {serverHost, serverPort});
+        int timeout = Integer.getInteger("connectTimeout", 5000);
+        if (timeout < 0) throw new Exception("connectTimeout can not be negative");
+        connectTimeout = Integer.toString(timeout);
+        logger.log(Level.CONFIG, "Clients to use server at {0}:{1} with timeout of {2}",
+                   new Object[] {serverHost, serverPort, connectTimeout});
                 
         moveDelay = Integer.getInteger("moveDelay", 2000);
         logger.log(Level.CONFIG, "Move delay set to {0} milliseconds", moveDelay);
@@ -234,6 +238,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                     Properties properties = new Properties();
                     properties.setProperty("host", serverHost);
                     properties.setProperty("port", serverPort);
+                    properties.setProperty("connectTimeout", connectTimeout);
                     properties.setProperty("name", hostname + "_" + buildNumber + "_Sim" + userId++);
                     try {
                         SimulatedPlayer player =
@@ -360,7 +365,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
      * @param args no arguments supported. See class description for
      * the list of properties supported.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new ClientSimulator();
     }
 }

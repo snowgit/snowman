@@ -34,7 +34,6 @@ package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
 import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedReference;
