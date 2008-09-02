@@ -88,6 +88,10 @@ public class BattleState extends GameState {
 	@Override
 	protected void initializeWorld() {
 		this.world = (World) DataManager.getInstance().getWorld(EWorld.Battle);
+		this.world.setModelBound(new BoundingBox());
+		this.world.updateModelBound();
+		this.world.updateWorldBound();
+		
 
 		Callable<Void> exe = new Callable<Void>() {
 			@Override

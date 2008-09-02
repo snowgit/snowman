@@ -147,12 +147,12 @@ public class AddMOBTask extends RealTimeTask {
                 ((View) view).getLocalTranslation().x = this.x;
                 ((View) view).getLocalTranslation().z = this.z;
 
-                if (state.getRootNode().getWorldBound() == null) {
-                    state.getRootNode().updateGeometricState(0, true);
+                if (state.getWorld().getWorldBound() == null) {
+                    state.getWorld().updateGeometricState(0, true);
                 }
 
-                if (state.getRootNode().getWorldBound() != null) {
-                    Vector3f center = state.getRootNode().getWorldBound().getCenter();
+                if (state.getWorld().getWorldBound() != null) {
+                    Vector3f center = state.getWorld().getWorldBound().getCenter();
                     if (center != null) {
                         // have view look towards center
                         Vector3f direction = center.subtract(this.x, 0, this.z);
