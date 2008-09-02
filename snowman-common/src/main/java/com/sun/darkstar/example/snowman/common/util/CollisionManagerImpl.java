@@ -177,7 +177,7 @@ public class CollisionManagerImpl implements CollisionManager
             
             if(originalDistance > newDistance - EStats.BackoffDistance.getValue()) {
                 //we are either trying to go through a hit point
-                //or get to close to one
+                //or got too close to one
                 direction.multLocal(EStats.BackoffDistance.getValue());
                 Vector3f newDestination = hitPoint.subtractLocal(direction);
                 spatial.worldToLocal(newDestination, newDestination);
