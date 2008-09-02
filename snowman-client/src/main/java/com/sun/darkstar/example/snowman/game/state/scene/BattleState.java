@@ -235,12 +235,12 @@ public class BattleState extends GameState {
 		this.astronomy.setSunTexture(this.loadTexture("Sun.png"));
 		this.astronomy.setMoonTexture(this.loadTexture("Moon.png"));
 		Texture[] textures = new Texture[6];
-		textures[0] = this.loadTexture("stars01.png");
-		textures[1] = this.loadTexture("stars02.png");
-		textures[2] = this.loadTexture("stars03.png");
-		textures[3] = this.loadTexture("stars04.png");
-		textures[4] = this.loadTexture("stars05.png");
-		textures[5] = this.loadTexture("stars06.png");
+		textures[0] = this.loadTexture("Stars01.png");
+		textures[1] = this.loadTexture("Stars02.png");
+		textures[2] = this.loadTexture("Stars03.png");
+		textures[3] = this.loadTexture("Stars04.png");
+		textures[4] = this.loadTexture("Stars05.png");
+		textures[5] = this.loadTexture("Stars06.png");
 		this.astronomy.setStarTextures(textures);
 	}
 
