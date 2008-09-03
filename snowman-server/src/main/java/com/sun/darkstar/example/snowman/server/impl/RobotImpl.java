@@ -51,13 +51,13 @@ import java.util.Random;
  * @author kbt
  */
 public class RobotImpl extends SnowmanPlayerImpl {
+    private static final long serialVersionUID = 1L;
         
     private final int moveDelay;
     private final Random random;
     
-    // Player and flag IDs of potential targets
+    // Player IDs of potential targets
     private ArrayList<Integer> potentialTargets = null;
-    private ArrayList<Integer> potentialFlagTargets = null;
     
     // reference to opponent flag
     private ManagedReference<SnowmanFlag> theirFlagRef = null;
@@ -72,53 +72,64 @@ public class RobotImpl extends SnowmanPlayerImpl {
     private void scheduleMove(int delay) {
         appContext.getTaskManager().scheduleTask(
                 new MoveTask(appContext.getDataManager().createReference((RobotImpl)this)),
-                                delay + random.nextInt(100));
+                             delay + random.nextInt(500));
     }
     
     private void moveRobot() {
         if (gameRef == null) // game over
             return;
         
-        // setup list of potential targets
-        // don't distinguish between teams for simplicity
-        // an attack on a team member will do nothing
-        if (potentialTargets == null || potentialFlagTargets == null) {
-            appContext.getDataManager().markForUpdate(this);
-            SnowmanGame game = gameRef.get();
-            potentialTargets = new ArrayList<Integer>();
-            potentialTargets.addAll(game.getPlayerIds());
-            
-            potentialFlagTargets = new ArrayList<Integer>();
-            potentialFlagTargets.addAll(game.getFLagIds());
-        }
-        
         if (state == PlayerState.NONE || state == PlayerState.DEAD) {
             scheduleMove(moveDelay * 4);
             return;
         }
         
+        // setup list of potential targets
+        // grab all players for now, teammates will be removed later
+        if (potentialTargets == null) {
+            appContext.getDataManager().markForUpdate(this);
+            SnowmanGame game = gameRef.get();
+            potentialTargets = new ArrayList<Integer>();
+            potentialTargets.addAll(game.getPlayerIds());
+            
+            ArrayList<Integer> potentialFlagTargets = new ArrayList<Integer>();
+            potentialFlagTargets.addAll(game.getFLagIds());
+            
+            // find a target flag to go after
+            while (theirFlagRef == null) {
+                assert potentialFlagTargets.size() > 0;
+                Integer targetId = random.nextInt(potentialFlagTargets.size());
+                SnowmanFlag flag = gameRef.get().getFlag(
+                        potentialFlagTargets.get(targetId));
+                if(flag.getTeamColor() != this.getTeamColor()) {
+                    theirFlagRef = appContext.getDataManager().createReference(flag);
+                }
+                else {
+                    potentialFlagTargets.remove(targetId);
+                }
+            }
+        }
+                
         long now = System.currentTimeMillis();
         Coordinate currentPos = getExpectedPositionAtTime(now);
         
-        // If we don't have a flag ref, guess
-        if (theirFlagRef == null) {
-            Integer targetId = random.nextInt(potentialFlagTargets.size());
-            SnowmanFlag flag = gameRef.get().getFlag(
-                    potentialFlagTargets.get(targetId));
-            if(flag.getTeamColor() != this.getTeamColor()) {
-                theirFlagRef = appContext.getDataManager().createReference(flag);
-            }
-            else {
-                potentialFlagTargets.remove(targetId);
-            }
-        
         // If holding the flag, try to score
-        } else if (holdingFlagRef != null) {
-            if (!score(now, currentPos.getX(), currentPos.getY()))
+        if (holdingFlagRef != null) {
+            if (score(now, currentPos.getX(), currentPos.getY()))
+                return; // game over
+                  
+            // every once in a while, move randomly so that we don't
+            // get stuck behind an object
+            if (random.nextBoolean() || random.nextBoolean())
                 moveMe(now,
                        currentPos.getX(), currentPos.getY(),
                        theirFlagRef.get().getGoalX() + 5 * (random.nextFloat() - 0.5f),
                        theirFlagRef.get().getGoalY() + 5 * (random.nextFloat() - 0.5f));
+            else
+                moveMe(now,
+                       currentPos.getX(), currentPos.getY(),
+                       currentPos.getX() + 10 * (random.nextFloat() - 0.5f),
+                       currentPos.getY() + 10 * (random.nextFloat() - 0.5f));
             
         // randomly go after the flag
         } else if (random.nextBoolean() && !theirFlagRef.get().isHeld()) {
@@ -170,6 +181,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
     }
     
     static private class MoveTask implements Task, Serializable {
+        private static final long serialVersionUID = 1L;
         final ManagedReference<RobotImpl> robotRef;
         
         MoveTask(ManagedReference<RobotImpl> robotRef) {

@@ -411,11 +411,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
         if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
                            x, y, POSITIONTOLERANCESQD)) {
-            appContext.getDataManager().markForUpdate(this);
 
             //verify that the player is in range of the flag
             if(checkTolerance(x, y, flag.getX(), flag.getY(),
-                               EStats.GrabRange.getValue()*EStats.GrabRange.getValue())) {
+                              EStats.GrabRange.getValue()*EStats.GrabRange.getValue())) {
+                appContext.getDataManager().markForUpdate(this);
+
                 //perform implicit stop
                 this.timestamp = now;
                 this.setLocation(x, y);
