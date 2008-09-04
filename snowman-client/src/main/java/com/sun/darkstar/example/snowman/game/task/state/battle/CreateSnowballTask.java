@@ -4,6 +4,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
+import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
@@ -78,8 +79,14 @@ public class CreateSnowballTask extends Task {
 			attacker.getLocalRotation().getRotationColumn(0, right);
 			right.normalizeLocal();
 			right.multLocal(((BoundingBox)attacker.getWorldBound()).xExtent*-0.75f);
-			snowballView.getLocalTranslation().y += ((BoundingBox)attacker.getWorldBound()).yExtent*1.6f;
-			snowballView.getLocalTranslation().addLocal(right);
+                        if(Vector3f.isValidVector(right)) {
+                            snowballView.getLocalTranslation().y += ((BoundingBox) attacker.getWorldBound()).yExtent * 1.6f;
+                            snowballView.getLocalTranslation().addLocal(right);
+                        }
+                        else {
+                            //workaround for NaN issue with world bounds
+                            snowballView.getLocalTranslation().y += EStats.SnowmanHeight.getValue();
+                        }
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
 			// Step 6.
 			IController controller = InputManager.getInstance().getController(snowball);
