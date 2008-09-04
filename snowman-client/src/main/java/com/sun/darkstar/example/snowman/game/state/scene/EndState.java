@@ -71,7 +71,6 @@ public class EndState extends GameState {
                 if(seconds - newTime == 0) {
                     this.setActive(false);
                     this.game.getClient().logout();
-                    TaskManager.getInstance().createTask(ETask.Authenticate, String.valueOf(System.currentTimeMillis()), "");
                 }
             }
 	}
