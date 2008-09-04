@@ -50,14 +50,19 @@ public class GameWorldManagerImpl implements GameWorldManager {
         this.backingService = backingService;
     }
     
+    // The following methods are synchronized to avoid problems with the
+    // jme code not being thread-safe. This will single-thread all tasks
+    // that do collision detection... so a more perminant solution needs
+    // to be found.
+    
     /** {@inheritDoc} */
-    public Coordinate trimPath(Coordinate start, 
+    public synchronized Coordinate trimPath(Coordinate start, 
                                Coordinate end) {
         return backingService.trimPath(start, end);
     }
 
     /** {@inheritDoc} */
-    public boolean validThrow(Coordinate start,
+    public synchronized boolean validThrow(Coordinate start,
                               Coordinate end) {
         return backingService.validThrow(start, end);
     }
