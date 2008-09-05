@@ -164,13 +164,15 @@ public class RobotImpl extends SnowmanPlayerImpl {
                 float dx = currentPos.getX() - targetPos.getX();
                 float dy = currentPos.getY() - targetPos.getY();
                 float range = HPConverter.getInstance().convertRange(hitPoints);
-                if (((dx * dx) + (dy * dy)) < (range * range)) {
+                if (((dx * dx) + (dy * dy)) < (range * range) &&
+                        random.nextBoolean()) {
                     attack(now, target.getID(), currentPos.getX(), currentPos.getY());
+                } else {
+                    moveMe(now,
+                           currentPos.getX(), currentPos.getY(),
+                           targetPos.getX() + 10 * (random.nextFloat() - 0.5f),
+                           targetPos.getY() + 10 * (random.nextFloat() - 0.5f));
                 }
-                moveMe(now,
-                       currentPos.getX(), currentPos.getY(),
-                       targetPos.getX() + 10 * (random.nextFloat() - 0.5f),
-                       targetPos.getY() + 10 * (random.nextFloat() - 0.5f));
             } else
                 moveMe(now,
                        currentPos.getX(), currentPos.getY(),
