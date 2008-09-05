@@ -56,7 +56,7 @@ public class LoginGUI extends GUIPass {
         this.labelStatus.getAppearance().setFont(FontFactory.renderStandardFont(awtFont, true, Alphabet.getDefaultAlphabet()));
         this.labelStatus.setSizeToMinSize();
         this.labelStatus.setHeight(60);
-        this.labelStatus.setXY(this.display.getWidth() / 2 - this.labelStatus.getWidth() / 2, this.display.getHeight() / 4);
+        this.labelStatus.setXY(this.display.getWidth() / 2 - this.labelStatus.getWidth() / 2, this.display.getHeight() / 6);
         this.labelStatus.getAppearance().setTextColor(Color.WHITE);
         this.display.addWidget(this.labelStatus);
     }
@@ -64,7 +64,7 @@ public class LoginGUI extends GUIPass {
     private void positionLabel(Label label) {
         label.setSizeToMinSize();
         label.setHeight(60);
-        label.setXY(this.display.getWidth() / 2 - label.getWidth() / 2, this.display.getHeight() / 4);
+        label.setXY(this.display.getWidth() / 2 - label.getWidth() / 2, this.display.getHeight() / 6);
     }
 
     /**
