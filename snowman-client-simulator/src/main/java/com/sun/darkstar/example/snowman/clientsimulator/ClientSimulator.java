@@ -32,6 +32,7 @@
 
 package com.sun.darkstar.example.snowman.clientsimulator;
 
+import com.sun.darkstar.example.snowman.clientsimulator.SimulatedPlayer.PLAYERSTATE;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -44,6 +45,7 @@ import java.util.Queue;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -125,6 +127,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     private final String connectTimeout;
     private final int moveDelay;
     private final int newClientDelay;
+    private final int minWaiting;
     private final int buildNumber;
     
     private final JSlider usersSlider;
@@ -141,7 +144,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
      * Create and display the client simulator slider.
      */
     ClientSimulator() throws Exception {
-        super("Client Simulator Controls");
+        super("Player Simulator Controls");
         
         try {
             hostname = InetAddress.getLocalHost().getHostName();
@@ -154,7 +157,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         int timeout = Integer.getInteger("connectTimeout", 5000);
         if (timeout < 0) throw new Exception("connectTimeout can not be negative");
         connectTimeout = Integer.toString(timeout);
-        logger.log(Level.CONFIG, "Clients to use server at {0}:{1} with timeout of {2}",
+        logger.log(Level.CONFIG, "Players to use server at {0}:{1} with timeout of {2}",
                    new Object[] {serverHost, serverPort, connectTimeout});
                 
         moveDelay = Integer.getInteger("moveDelay", 2000);
@@ -162,11 +165,15 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         newClientDelay = Integer.getInteger("newClientDelay", 175);
         logger.log(Level.CONFIG,
-                   "New client delay set to {0} milliseconds", newClientDelay);
+                   "New player delay set to {0} milliseconds", newClientDelay);
 
         final int maxClients = Integer.getInteger("maxClients", 100);
-        logger.log(Level.CONFIG, "Max number of clients set to {0}", maxClients);
+        logger.log(Level.CONFIG, "Max number of players set to {0}", maxClients);
         
+        minWaiting = Integer.getInteger("minWaiting", 0);
+        if (minWaiting != 0)
+                    logger.log(Level.CONFIG, "Min number of waiting players set to {0}", minWaiting);
+
         buildNumber = Integer.getInteger("buildNumber", 0);
         logger.log(Level.CONFIG,
                    "Build Number set to {0}", buildNumber);
@@ -176,8 +183,8 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new GridLayout(2,1,5,5));
-        textPanel.add(new JLabel("Target Number of Clients:"));
-        textPanel.add(new JLabel("Actual Number of Clients:"));
+        textPanel.add(new JLabel("Target Number of Players:"));
+        textPanel.add(new JLabel("Actual Number of Players:"));
         
         JPanel progressPanel = new JPanel();
         progressPanel.setLayout(new GridLayout(2,1,5,5));
@@ -233,42 +240,51 @@ public class ClientSimulator extends JFrame implements ChangeListener {
             int userId = 0;
 
             while (true) {
+                publish(players.size());
 
                 if (usersSlider.getValue() > players.size()) {
-                    Properties properties = new Properties();
-                    properties.setProperty("host", serverHost);
-                    properties.setProperty("port", serverPort);
-                    properties.setProperty("connectTimeout", connectTimeout);
-                    properties.setProperty("name", hostname + "_" + buildNumber + "_Sim" + userId++);
-                    try {
-                        SimulatedPlayer player =
-                                new SimulatedPlayer(properties, moveDelay);
-                        players.add(player);
-                    } catch (Exception ex) {
-                        logger.log(Level.SEVERE,
-                                   "Exception creating simulated player",
-                                   ex);
-                    }
-                    publish(players.size());
-                    pause(); // avoid storm
+                    
+                    if (minWaiting != 0) {
+                        int waiting = 0;
+                        for (SimulatedPlayer player : players) {
+                            if (player.isWaiting())
+                                waiting++;
+                        }
+                        if (waiting < minWaiting)
+                            addPlayer(userId++);
+                        else
+                            block(1000L);
+                    } else
+                        addPlayer(userId++);
                 } else if (usersSlider.getValue() < players.size()) {
                     SimulatedPlayer p = players.peek();
                     if (p != null) {
                         p.quit();
                         players.poll();
-                        publish(players.size());
                         pause(); // avoid storm
                     }
                 } else {
-                    lock.lock();
-                    try {
-                        change.await();
-                    } catch (InterruptedException ignore) {
-                    } finally {
-                        lock.unlock();
-                    }
+                    block(Long.MAX_VALUE);
                 }
             }
+        }
+        
+        private void addPlayer(int id) {
+            Properties properties = new Properties();
+            properties.setProperty("host", serverHost);
+            properties.setProperty("port", serverPort);
+            properties.setProperty("connectTimeout", connectTimeout);
+            properties.setProperty("name", hostname + "_" + buildNumber + "_Sim" + id);
+            try {
+                SimulatedPlayer player =
+                        new SimulatedPlayer(properties, moveDelay);
+                players.add(player);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE,
+                           "Exception creating simulated player",
+                           ex);
+            }
+            pause(); // avoid storm
         }
         
         @Override
@@ -276,6 +292,16 @@ public class ClientSimulator extends JFrame implements ChangeListener {
             Integer size = chunks.get(chunks.size()-1);
             usersBar.setValue(size);
             userRealCount.setText(size.toString());
+        }
+        
+        private void block(long timeout) {
+            lock.lock();
+            try {
+                change.await(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ignore) {
+            } finally {
+                lock.unlock();
+            }
         }
         
         void wakeUp() {
@@ -302,7 +328,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                 Iterator<SimulatedPlayer> iter = players.iterator();
                 while (iter.hasNext()) {
                     try {
-                        if (iter.next().move() == SimulatedPlayer.PLAYERSTATE.Quit) {
+                        if (iter.next().move() == PLAYERSTATE.Quit) {
                             iter.remove();
                             changeThread.wakeUp();
                         }
@@ -313,9 +339,14 @@ public class ClientSimulator extends JFrame implements ChangeListener {
                         changeThread.wakeUp();
                     }
                     try {
-                        sleep(50);
+                        sleep(50L);
                     } catch (InterruptedException ignore) {}
                 }
+                // If there are no players, keep from spinning
+                if (players.size() == 0)
+                    try {
+                        sleep(500L);
+                    } catch (InterruptedException ignore) {}
             }
         }
     }
