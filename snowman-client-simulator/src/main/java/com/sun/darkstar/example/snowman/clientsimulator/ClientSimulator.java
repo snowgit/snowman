@@ -109,6 +109,34 @@ import javax.swing.SwingWorker;
  * <dd style="padding-top: .5em"> 
  * Specifies the delay, in milliseconds, between new client
  * creation. This delay also applies to client destruction.<p>
+ * 
+ * <dt> <i>Property:</i> <code><b>
+ *	minWaiting
+ *	</b></code><br>
+ *	<i>Default:</i> 0<br>
+ *
+ * <dd style="padding-top: .5em">
+ * Specifies the number of players needed to be waiting. If no player is
+ * waiting a new player is added until maxClients is reached. Players are only
+ * added if no player is waiting.
+ * 
+ * <dt> <i>Property:</i> <code><b>
+ *	numPlayersPerGame
+ *	</b></code><br>
+ *	<i>Default:</i> 2<br>
+ *
+ * <dd style="padding-top: .5em"> 
+ * Specifies the number of players required to start a game. This is only used
+ * in calculating the Total Number of Players field displayed on the control planel.
+ * 
+ * <dt> <i>Property:</i> <code><b>
+ *	numRobotsPerGame
+ *	</b></code><br>
+ *	<i>Default:</i> 2<br>
+ *
+ * <dd style="padding-top: .5em"> 
+ * Specifies the number of robots created for each game. This is only used
+ * in calculating the Total Number of Robots field displayed on the control planel.
  * </dl> <p>
  * 
  * @author Jeffrey Kesselman
@@ -128,12 +156,16 @@ public class ClientSimulator extends JFrame implements ChangeListener {
     private final int moveDelay;
     private final int newClientDelay;
     private final int minWaiting;
+    private final int numPlayersPerGame;
+    private final int numRobotsPerGame;
     private final int buildNumber;
     
     private final JSlider usersSlider;
     private final JLabel userCount;
     private final JProgressBar usersBar;
     private final JLabel userRealCount;
+    private final JLabel gameCount;
+    private final JLabel botCount;
     
     private final Queue<SimulatedPlayer> players =
             new ConcurrentLinkedQueue<SimulatedPlayer>();
@@ -172,22 +204,28 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         
         minWaiting = Integer.getInteger("minWaiting", 0);
         if (minWaiting != 0)
-                    logger.log(Level.CONFIG, "Min number of waiting players set to {0}", minWaiting);
+            logger.log(Level.CONFIG,
+                       "Min number of waiting players set to {0}", minWaiting);
 
+        numPlayersPerGame = Integer.getInteger("numPlayersPerGame", 2);
+        numRobotsPerGame = Integer.getInteger("numRobotsPerGame", 2);
+        
         buildNumber = Integer.getInteger("buildNumber", 0);
         logger.log(Level.CONFIG,
                    "Build Number set to {0}", buildNumber);
         
         Container c = getContentPane();
-        c.setLayout(new BorderLayout(5,5));
+        c.setLayout(new BorderLayout(5,4));
         
         JPanel textPanel = new JPanel();
-        textPanel.setLayout(new GridLayout(2,1,5,5));
+        textPanel.setLayout(new GridLayout(4,1,5,4));
         textPanel.add(new JLabel("Target Number of Players:"));
         textPanel.add(new JLabel("Actual Number of Players:"));
-        
+        textPanel.add(new JLabel("Total Number of Games:"));
+        textPanel.add(new JLabel("Total Number of Bots:"));
+      
         JPanel progressPanel = new JPanel();
-        progressPanel.setLayout(new GridLayout(2,1,5,5));
+        progressPanel.setLayout(new GridLayout(4,1,5,4));
         usersSlider = new JSlider(0, maxClients);
         usersSlider.setValue(0);
         usersSlider.addChangeListener(this);
@@ -195,14 +233,18 @@ public class ClientSimulator extends JFrame implements ChangeListener {
         usersBar.setValue(0);
         progressPanel.add(usersSlider);
         progressPanel.add(usersBar);
-        
+        gameCount = new JLabel("0");
+        progressPanel.add(gameCount);
+        botCount = new JLabel("0");
+        progressPanel.add(botCount);
+  
         JPanel labelPanel = new JPanel();
-        labelPanel.setLayout(new GridLayout(2,1,5,5));
+        labelPanel.setLayout(new GridLayout(4,1,5,4));
         userCount = new JLabel("0");
         userRealCount = new JLabel("0");
         labelPanel.add(userCount);
         labelPanel.add(userRealCount);
-        
+
         JTextArea profilePanel = new JTextArea(5, 20);
         
         c.add(textPanel, BorderLayout.WEST);
@@ -240,6 +282,9 @@ public class ClientSimulator extends JFrame implements ChangeListener {
             int userId = 0;
 
             while (true) {
+                int numGames = players.size() / numPlayersPerGame;
+                gameCount.setText(Integer.toString(numGames));
+                botCount.setText(Integer.toString(numGames * numRobotsPerGame));
                 publish(players.size());
 
                 if (usersSlider.getValue() > players.size()) {
