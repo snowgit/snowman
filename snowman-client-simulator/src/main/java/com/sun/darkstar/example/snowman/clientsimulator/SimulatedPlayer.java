@@ -461,6 +461,11 @@ class SimulatedPlayer implements SimpleClientListener {
             return false;
     }
     
+    synchronized boolean isWaiting() {
+        return state == PLAYERSTATE.LoggingIn ||
+               state == PLAYERSTATE.Paused;
+    }
+    
     /**
      * Quit the game. The player will logout from the server and will no
      * longer be able to move, i.e {@code move} will become a no-op.
