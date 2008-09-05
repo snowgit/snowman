@@ -23,6 +23,7 @@
     <!-- Configurable app properties -->
     <property name="maxClients" value="1000"/>
     <property name="newClientDelay" value="100"/>
+    <property name="minWaiting" value="0"/>
     <property name="connectTimeout" value="10000"/>
     <property name="moveDelay" value="5000"/>
     <property name="numPlayersPerGame" value="2"/>
@@ -190,7 +191,7 @@
         <buildnumber/>
         <java jar="${snowman-client-simulator.jar}"
               fork="true">
-            <jvmarg line="${client.jvm.args} -DconnectTimeout=${connectTimeout} -DmaxClients=${maxClients} -DmoveDelay=${moveDelay} -DnewClientDelay=${newClientDelay} -Dhost=${server.host} -Dport=${server.port} -DbuildNumber=${build.number}"/>
+            <jvmarg line="${client.jvm.args} -DconnectTimeout=${connectTimeout} -DmaxClients=${maxClients} -DmoveDelay=${moveDelay} -DnewClientDelay=${newClientDelay} -DminWaiting=${minWaiting} -DnumPlayersPerGame=${numPlayersPerGame} -DnumRobotsPerGame=${numRobotsPerGame} -Dhost=${server.host} -Dport=${server.port} -DbuildNumber=${build.number}"/>
             <sysproperty key="reliable" file="true"/>
             <sysproperty key="java.util.logging.config.file" file="${props.dir}/sim-logging.properties"/>
         </java>

@@ -53,17 +53,21 @@ public enum EEntity {
 	 */
 	Snowball(EEntityType.Dynamic, 0.005f),
 	/**
-	 * The red flag entity.
+	 * The tree entity.
 	 */
 	Tree(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
-	 * The red flag entity.
+	 * The house entity.
 	 */
 	House(EEntityType.Editable, Float.POSITIVE_INFINITY),
 	/**
-	 * The red flag entity.
+	 * The camp fire entity.
 	 */
-	CampFire(EEntityType.Editable, Float.POSITIVE_INFINITY);
+	CampFire(EEntityType.Editable, Float.POSITIVE_INFINITY),
+	/**
+	 * The snow globe entity.
+	 */
+	SnowGlobe(EEntityType.Editable, Float.POSITIVE_INFINITY);
 	
 	/**	
 	 * The <code>EEntityType</code> value.
