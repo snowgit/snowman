@@ -12,6 +12,7 @@ import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballTrailEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowmanEntity;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
@@ -113,6 +114,7 @@ public class EntityManager extends Manager {
 		case SnowmanLocalBlue: entity = new SnowmanEntity(enumn, id); break;
 		case SnowmanDistributedBlue: entity = new CharacterEntity(enumn, id); break;
 		case Snowball: entity = new SnowballEntity(id); break;
+                    case SnowballTrail: entity = new SnowballTrailEntity(id); break;
 		default:
 			switch(enumn.getType()) {
 			case Static: entity = new StaticEntity(enumn, id); break;

@@ -49,6 +49,10 @@ public class SnowballView extends DynamicView {
         this.attachChild(ball);
         this.updateRenderState();
     }
+    
+    public Sphere getBall() {
+        return ball;
+    }
 
     @Override
     public void update(float interpolation) {

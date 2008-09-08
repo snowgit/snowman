@@ -17,10 +17,12 @@ import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballTrailEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagGoalView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.FlagView;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballTrailView;
 import com.sun.darkstar.example.snowman.interfaces.IDynamicView;
 import com.sun.darkstar.example.snowman.unit.Manager;
 import com.sun.darkstar.example.snowman.unit.enumn.EManager;
@@ -146,6 +148,9 @@ public class ViewManager extends Manager {
 			break;
 		case Snowball:
 			view = new SnowballView((SnowballEntity)entity);
+			break;
+                    case SnowballTrail:
+			view = new SnowballTrailView((SnowballTrailEntity)entity);
 			break;
 		case FlagBlue:
 			view = new FlagView((IDynamicEntity)entity);

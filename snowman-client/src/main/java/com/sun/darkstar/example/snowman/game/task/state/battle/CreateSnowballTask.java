@@ -9,8 +9,10 @@ import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballTrailEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballTrailView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
@@ -68,12 +70,12 @@ public class CreateSnowballTask extends Task {
 			Vector3f targetPosition = target.getLocalTranslation().clone();
 			// Step 3.
 			
-			// Step 4.
+			// Step 4. create the snowball
 			SnowballEntity snowball = (SnowballEntity)EntityManager.getInstance().createEntity(EEntity.Snowball);
 			snowball.setDestination(targetPosition);
                         snowball.setTarget(targetEntity);
 			SnowballView snowballView = (SnowballView)ViewManager.getInstance().createView(snowball);
-			// Step 5.
+			// Step 5. position the snowball
 			snowballView.setLocalTranslation(attackerPosition);
 			Vector3f right = new Vector3f();
 			attacker.getLocalRotation().getRotationColumn(0, right);
@@ -87,12 +89,22 @@ public class CreateSnowballTask extends Task {
                             //workaround for NaN issue with world bounds
                             snowballView.getLocalTranslation().y += EStats.SnowmanHeight.getValue();
                         }
+                        
+                        //create the snowball trail
+                        SnowballTrailEntity snowballTrail = (SnowballTrailEntity)EntityManager.getInstance().createEntity(EEntity.SnowballTrail);
+                        snowball.setTrail(snowballTrail);
+                        SnowballTrailView snowballTrailView = (SnowballTrailView)ViewManager.getInstance().createView(snowballTrail);
+                        
+                        //attach the views
 			this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballView);
-			// Step 6.
+                        this.game.getGameState(EGameState.BattleState).getWorld().attachChild(snowballTrailView);
+                        
+			// Step 6. setup the snowball controller
 			IController controller = InputManager.getInstance().getController(snowball);
 			controller.setActive(true);
 			// Step 7.
 			snowballView.updateRenderState();
+                        snowballTrailView.updateRenderState();
 		} catch (ObjectNotFoundException e) {
 			e.printStackTrace();
 		}
