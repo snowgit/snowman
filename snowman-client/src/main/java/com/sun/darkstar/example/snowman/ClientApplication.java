@@ -30,7 +30,7 @@ public class ClientApplication {
 		if (System.getProperty("snowman.config.noshow") == null) {
 			game.setConfigShowMode(ConfigShowMode.AlwaysShow, (URL)null);
 		} else {
-			game.setConfigShowMode(ConfigShowMode.NeverShow);
+			game.setConfigShowMode(ConfigShowMode.ShowIfNoConfig, (URL)null);
 		}
 
 		// Establish component connections.
