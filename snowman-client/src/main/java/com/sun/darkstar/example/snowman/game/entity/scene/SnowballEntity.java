@@ -25,6 +25,10 @@ public class SnowballEntity extends DynamicEntity {
 	 * The target <code>CharacterEntity</code> instance.
 	 */
 	protected CharacterEntity target;
+        /**
+         * The trail of this snowball
+         */
+        protected SnowballTrailEntity trail;
 
 	/**
 	 * Constructor of <code>SnowballEntity</code>.
@@ -50,6 +54,14 @@ public class SnowballEntity extends DynamicEntity {
 	public void setTarget(CharacterEntity target) {
 		this.target = target;
 	}
+        
+        /**
+	 * Set the current trail of this snowball.
+	 * @param trail The trail <code>SnowballTrailEntity</code> instance
+	 */
+	public void setTrail(SnowballTrailEntity trail) {
+		this.trail = trail;
+	}
 	
 	/**
 	 * Retrieve the maximum height the snow ball will reach.
@@ -73,5 +85,13 @@ public class SnowballEntity extends DynamicEntity {
 	 */
 	public CharacterEntity getTarget() {
 		return this.target;
+	}
+        
+        /**
+	 * Retrieve the trail <code>SnowballTrailEntity</code> instance.
+	 * @return The trail <code>SnowballTrailEntity</code> instance.
+	 */
+	public SnowballTrailEntity getTrail() {
+		return this.trail;
 	}
 }

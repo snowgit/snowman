@@ -52,6 +52,10 @@ public enum EEntity {
 	 * The snow ball entity.
 	 */
 	Snowball(EEntityType.Dynamic, 0.005f),
+        /**
+         * The snow ball trail
+         */
+        SnowballTrail(EEntityType.Dynamic, Float.POSITIVE_INFINITY),
 	/**
 	 * The tree entity.
 	 */

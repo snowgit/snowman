@@ -4,8 +4,10 @@ import com.jme.util.Timer;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.SnowballTrailView;
 import com.sun.darkstar.example.snowman.exception.ObjectNotFoundException;
 import com.sun.darkstar.example.snowman.game.entity.scene.SnowballEntity;
+import com.sun.darkstar.example.snowman.game.entity.scene.SnowballTrailEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.Controller;
@@ -55,16 +57,23 @@ public class SnowballController extends Controller {
 		if(!this.thrown) {
                     if(timer.getTimeInSeconds() > startTime+0.6f) {
                         SnowballView view = (SnowballView)ViewManager.getInstance().getView(entity);
+                        SnowballTrailView trailView = (SnowballTrailView) ViewManager.getInstance().getView(((SnowballEntity)entity).getTrail());
                         view.show();
+                        trailView.show(view.getBall());
                         ViewManager.getInstance().markForUpdate(entity);
 			TaskManager.getInstance().createTask(ETask.MoveSnowball, this.entity);
 			this.thrown = true;
                     }
 		} else if(!this.validatePosition()) {
 			PhysicsManager.getInstance().markForUpdate(this.entity);
+                        ViewManager.getInstance().markForUpdate(((SnowballEntity)entity).getTrail());
 		} else {
 			EntityManager.getInstance().removeEntity(this.entity.getID());
 			ViewManager.getInstance().removeView(this.entity);
+                        
+                        EntityManager.getInstance().removeEntity(((SnowballEntity)entity).getTrail().getID());
+			ViewManager.getInstance().removeView(((SnowballEntity)entity).getTrail());
+                        
 			InputManager.getInstance().removeController((IDynamicEntity)this.entity);
 		} 
 	}
