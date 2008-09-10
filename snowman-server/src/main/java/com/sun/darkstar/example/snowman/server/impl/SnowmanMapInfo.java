@@ -49,7 +49,7 @@ public class SnowmanMapInfo
     private static final Random generator = new Random();
     private static final float SPAWNMULTIPLIER = 2.0f;
     private static final float SPAWNTEAMWIDTH = 10.0f;
-    private static final float FLAGMULTIPLIER = 2.0f;
+    private static final float FLAGMULTIPLIER = 3.0f;
     
     /**
      * Retrieve the x,y dimensions of the map with the given name.
@@ -85,17 +85,16 @@ public class SnowmanMapInfo
         float xAxisMid = dimensions[0]/2.0f;
         float yAxisMid = dimensions[1]/2.0f;
         
-        //set the team coordinate to be either near the top left or 
-        //the bottom right depending on the team
-        float xOffset = xAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
+        //set the team coordinate to be either near the top or 
+        //the bottom depending on the team
         float yOffset = yAxisMid / SPAWNMULTIPLIER * (SPAWNMULTIPLIER - 1);
         Coordinate teamCoordinate = new Coordinate(xAxisMid, yAxisMid);
         switch(team) {
             case Red:
-                teamCoordinate = new Coordinate(xAxisMid + xOffset, yAxisMid + yOffset);
+                teamCoordinate = new Coordinate(xAxisMid, yAxisMid + yOffset);
                 break;
             case Blue:
-                teamCoordinate = new Coordinate(xAxisMid - xOffset, yAxisMid - yOffset);
+                teamCoordinate = new Coordinate(xAxisMid, yAxisMid - yOffset);
                 break;
         }
         
@@ -132,15 +131,14 @@ public class SnowmanMapInfo
         float xAxisMid = dimensions[0]/2.0f;
         float yAxisMid = dimensions[1]/2.0f;
         
-        float xOffset = xAxisMid / FLAGMULTIPLIER * (FLAGMULTIPLIER - 1);
         float yOffset = yAxisMid / FLAGMULTIPLIER * (FLAGMULTIPLIER - 1);
         Coordinate coordinate = new Coordinate(xAxisMid, yAxisMid);
         switch(team) {
             case Red:
-                coordinate = new Coordinate(xAxisMid - xOffset, yAxisMid + yOffset);
+                coordinate = new Coordinate(xAxisMid, yAxisMid + yOffset);
                 break;
             case Blue:
-                coordinate = new Coordinate(xAxisMid + xOffset, yAxisMid - yOffset);
+                coordinate = new Coordinate(xAxisMid, yAxisMid - yOffset);
                 break;
         }
         
