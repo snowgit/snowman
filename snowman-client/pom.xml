@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.projectdarkstar.example.projectsnowman</groupId>
     <artifactId>projectsnowman</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>snowman-client</artifactId>
@@ -44,10 +44,59 @@
     <dependency>
       <groupId>com.projectdarkstar.example.projectsnowman</groupId>
       <artifactId>snowman-common</artifactId>
+      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
       <artifactId>jme</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-audio</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-collada</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-effects</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-font</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-gamestates</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-scene</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-terrain</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+      <artifactId>lwjgl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+      <artifactId>lwjgl_util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.jorbis</groupId>
+      <artifactId>jorbis</artifactId>
     </dependency>
     <dependency>
       <groupId>com.projectdarkstar.ext.fenggui</groupId>
@@ -66,7 +115,7 @@
 
   <build>
     <plugins>
-      <!-- The jwjgl binary package must be retrieved and unpacked
+      <!-- The lwjgl binary package must be retrieved and unpacked
 	   Before the test phase so that they are available during
 	   runtime of the application-->
       <plugin>
