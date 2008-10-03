@@ -107,6 +107,36 @@
       <properties>
 	<run.phase>process-test-resources</run.phase>
       </properties>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      
+	      <!-- Generate the properties file to be used during execution -->
+	      <execution>
+		<id>generate-properties</id>
+		<phase>generate-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <concat destfile="${run.properties}" fixlastline="yes">
+		      com.sun.sgs.app.name=ProjectSnowman
+		      com.sun.sgs.app.root=${project.build.directory}
+		      com.sun.sgs.node.type=coreServerNode
+		      com.sun.sgs.impl.service.transport.udp.port=1234
+		      com.sun.sgs.impl.service.data.store.db.environment.class=${run.bdb.env}
+		      com.sun.sgs.impl.service.data.store.DataStoreImpl.directory=${datastore.dir}
+		    </concat>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
 
     <!-- Multi node core server -->
@@ -115,6 +145,40 @@
       <properties>
 	<run.phase>process-test-resources</run.phase>
       </properties>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      
+	      <!-- Generate the properties file to be used during execution -->
+	      <execution>
+		<id>generate-properties</id>
+		<phase>generate-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <concat destfile="${run.properties}" fixlastline="yes">
+		      <header filtering="no" trimleading="yes">
+			com.sun.sgs.app.name=ProjectSnowman
+			com.sun.sgs.app.root=${project.build.directory}
+			com.sun.sgs.app.port=${server.port}
+			com.sun.sgs.node.type=appNode
+			com.sun.sgs.server.host=${server.host}
+			//
+		      </header>
+		      <fileset file="${run.properties.darkstar}"/>
+		      <fileset file="${run.properties.server}"/>
+		    </concat>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
 
     <!-- Disable the deletion of the datastore
