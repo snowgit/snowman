@@ -62,6 +62,21 @@
 
   <build>
     <plugins>
+
+      <!-- Make the jar executable, referencing all of its dependencies -->
+      <plugin>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+	      <addClasspath>true</addClasspath>
+	      <classpathPrefix>lib/</classpathPrefix>
+	      <mainClass>com.sun.darkstar.example.tool.WorldEditor</mainClass>
+	    </manifest>
+	  </archive>
+	</configuration>
+      </plugin>
+
       <!-- The jwjgl binary package must be retrieved and unpacked
 	   Before the test phase so that they are available during
 	   runtime of the application-->

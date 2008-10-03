@@ -39,6 +39,25 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+
+      <!-- Make the jar executable, referencing all of its dependencies -->
+      <plugin>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+	      <addClasspath>true</addClasspath>
+	      <classpathPrefix>lib/</classpathPrefix>
+	      <mainClass>com.sun.darkstar.example.snowman.clientsimulator.ClientSimulator</mainClass>
+	    </manifest>
+	  </archive>
+	</configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 
 
   <profiles>
