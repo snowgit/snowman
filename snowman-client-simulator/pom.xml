@@ -40,4 +40,77 @@
   </dependencies>
 
 
+
+  <profiles>
+
+    <!-- The run-sim profile enables the antrun plugin
+	 to run the application in the process-test-resources
+	 phase of the lifecycle
+	 In order to run, use the following command:
+	 mvn process-test-resources -Prun-sim -->
+    <profile>
+      <id>run-sim</id>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      <execution>
+		<id>run-sim</id>
+		<phase>process-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <java classname="com.sun.darkstar.example.snowman.clientsimulator.ClientSimulator"
+			  fork="true">
+		      <jvmarg line="${run.jvm.args}"/>
+		      <sysproperty key="java.util.logging.config.file"
+				   file="${run.logging}"/>
+
+		      <sysproperty key="reliable" value="true"/>
+		      <sysproperty key="connectTimeout" value="${connectTimeout}"/>
+		      <sysproperty key="maxClients" value="${maxClients}"/>
+		      <sysproperty key="moveDelay" value="${moveDelay}"/>
+		      <sysproperty key="newClientDelay" value="${newClientDelay}"/>
+		      <sysproperty key="minWaiting" value="${minWaiting}"/>
+		      <sysproperty key="numPlayersPerGame" value="${numPlayersPerGame}"/>
+		      <sysproperty key="numRobotsPerGame" value="${numRobotsPerGame}"/>
+		      <sysproperty key="host" value="${server.host}"/>
+		      <sysproperty key="port" value="${server.port}"/>
+		      <classpath>
+			<path refid="maven.test.classpath"/>
+		      </classpath>
+		    </java>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+  <properties>
+    <run.jvm.args></run.jvm.args>
+    <run.logging>
+      ${basedir}/src/test/properties/logging.properties
+    </run.logging>
+    
+    <server.host>localhost</server.host>
+    <server.port>3000</server.port>
+    
+    <connectTimeout></connectTimeout>
+    <maxClients></maxClients>
+    <moveDelay></moveDelay>
+    <newClientDelay></newClientDelay>
+    <minWaiting></minWaiting>
+    <numPlayersPerGame></numPlayersPerGame>
+    <numRobotsPerGame></numRobotsPerGame>
+  </properties>
+
+
 </project>
