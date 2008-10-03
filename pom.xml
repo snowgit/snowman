@@ -195,7 +195,7 @@
     <repository>
       <id>easymock.repository</id>
       <name>Easymock Repository</name>
-      <url>http://www.easymock.org/maven/repository</url>
+      <url>http://easymock.org/maven/repository</url>
       <layout>default</layout>
     </repository>
   </repositories>

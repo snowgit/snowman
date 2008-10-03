@@ -155,6 +155,100 @@
 
   <profiles>
 
+    <!-- Automatically activated profiles based on platform
+	 These profiles are used to automatically determine
+	 which platform we are running on and therefore
+	 which lwjgl native library directory to use -->
+    <profile>
+      <id>lwjgl-macosx-x86</id>
+      <properties>
+	<lwjgl.lib.dir>mac</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>mac</family>
+	  <arch>i386</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-macosx-x86_64</id>
+      <properties>
+	<lwjgl.lib.dir>mac</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>mac</family>
+	  <arch>x86_64</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-solaris-x86</id>
+      <properties>
+	<lwjgl.lib.dir>solaris</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>SunOS</name>
+	  <arch>x86</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>lwjgl-linux-x86</id>
+      <properties>
+	<lwjgl.lib.dir>linux</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>i386</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>lwjgl-linux-x86_64</id>
+      <properties>
+	<lwjgl.lib.dir>linux64</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>x86_64</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-linux-amd64</id>
+      <properties>
+	<lwjgl.lib.dir>linux64</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>amd64</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>win32-x86</id>
+      <properties>
+	<lwjgl.lib.dir>win</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>windows</family>
+	</os>
+      </activation>
+    </profile>
+
 
     <!-- The test-run profile enables the antrun plugin
 	 to run the application in the process-test-resources
@@ -178,9 +272,9 @@
 		  <tasks>
 		    <java classname="com.sun.darkstar.example.snowman.ClientApplication"
 			  fork="true">
-		      <jvmarg line="${run.jvm.args}"/>
+		      <jvmarg line="${run.jvm.args} -Dreliable=false -Dhost=${server.host} -Dport=${server.port} -Dsnowman.config.noshow=true"/>
 		      <sysproperty key="java.library.path" 
-				   file="${project.build.directory}/lwjgl-binaries/native/linux"/>
+				   file="${project.build.directory}/lwjgl-binaries/${lwjgl.lib.dir}"/>
 		      <classpath>
 			<path refid="maven.test.classpath"/>
 		      </classpath>
@@ -198,6 +292,9 @@
 
   <properties>
     <run.jvm.args></run.jvm.args>
+    
+    <server.host>localhost</server.host>
+    <server.port>3000</server.port>
   </properties>
 
 
