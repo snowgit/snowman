@@ -204,20 +204,20 @@
   </build>
 
   <properties>
-    <run.jvm.args>-Xmx1g</run.jvm.args>
+    <run.jvm.args>-Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRation=1</run.jvm.args>
     <run.jvm.args.profile></run.jvm.args.profile>
 
     <run.logging>
-      ${basedir}/src/test/properties/logging.properties
+      ${basedir}/src/main/properties/logging.properties
     </run.logging>
     <run.properties.single>
-      src/test/properties/SnowmanSingle.properties
+      src/main/properties/SnowmanSingle.properties
     </run.properties.single>
     <run.properties.multi.core>
-      src/test/properties/SnowmanCore.properties
+      src/main/properties/SnowmanCore.properties
     </run.properties.multi.core>
     <run.properties.multi.app>
-      src/test/properties/SnowmanApp.properties
+      src/main/properties/SnowmanApp.properties
     </run.properties.multi.app>
 
     <datastore.dir>${project.build.directory}/dsdb</datastore.dir>
