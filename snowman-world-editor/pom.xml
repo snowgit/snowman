@@ -84,24 +84,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+	  <!-- enable the lwjgl-binaries unpack -->
           <execution>
             <id>unpack-lwjgl-binaries</id>
-	    <goals>
-	      <goal>unpack</goal>
-            </goals>
-            <configuration>
-	      <artifactItems>
-                <artifactItem>
-                  <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
-                  <artifactId>lwjgl-binaries</artifactId>
-		  <type>zip</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>
-		    ${project.build.directory}/
-		  </outputDirectory>
-                </artifactItem>
-	      </artifactItems>
-            </configuration>
           </execution>
 
 	  <!-- Unbind the bdb-binaries unpack -->

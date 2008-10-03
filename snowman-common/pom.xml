@@ -36,5 +36,27 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+
+      <!-- Disable unpacking the binaries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-lwjgl-binaries</id>
+	    <phase></phase>
+          </execution>
+	  <execution>
+	    <id>unpack-bdb-binaries</id>
+	    <phase></phase>
+	  </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
 
 </project>
