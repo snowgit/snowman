@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.projectdarkstar.example.projectsnowman</groupId>
     <artifactId>projectsnowman</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>snowman-common</artifactId>
@@ -30,7 +30,33 @@
       <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
       <artifactId>jme</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-terrain</artifactId>
+    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Disable unpacking the binaries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-lwjgl-binaries</id>
+	    <phase></phase>
+          </execution>
+	  <execution>
+	    <id>unpack-bdb-binaries</id>
+	    <phase></phase>
+	  </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
 
 
 </project>

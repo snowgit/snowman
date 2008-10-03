@@ -7,7 +7,7 @@
   <parent>
     <groupId>com.projectdarkstar.example.projectsnowman</groupId>
     <artifactId>projectsnowman</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>snowman-server</artifactId>
@@ -35,6 +35,11 @@
     <dependency>
       <groupId>com.projectdarkstar.example.projectsnowman</groupId>
       <artifactId>snowman-common</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme</artifactId>
     </dependency>
 
     <dependency>
@@ -53,31 +58,127 @@
        i.e. mvn process-test-resources -Psingle-node-server -->
   <profiles>
 
+    <!-- Single node profile -->
     <profile>
       <id>single-node-server</id>
       <properties>
 	<run.phase>process-test-resources</run.phase>
-	<run.properties>${run.properties.single}</run.properties>
       </properties>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      
+	      <!-- Generate the properties file to be used during execution -->
+	      <execution>
+		<id>generate-properties</id>
+		<phase>generate-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <concat destfile="${run.properties}" fixlastline="yes">
+		      <header filtering="no" trimleading="yes">
+			com.sun.sgs.app.name=ProjectSnowman
+			com.sun.sgs.app.root=${project.build.directory}
+			com.sun.sgs.app.port=${server.port}
+			com.sun.sgs.impl.service.transport.udp.port=1234
+			com.sun.sgs.impl.service.data.store.db.environment.class=${run.bdb.env}
+			com.sun.sgs.impl.service.data.store.DataStoreImpl.directory=${datastore.dir}
+			//
+		      </header>
+		      <fileset file="${run.properties.darkstar}"/>
+		      <fileset file="${run.properties.server}"/>
+		    </concat>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
 
+    <!-- Multi node app server -->
     <profile>
       <id>multi-node-server-core</id>
       <properties>
 	<run.phase>process-test-resources</run.phase>
-	<run.properties>${run.properties.multi.core}</run.properties>
       </properties>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      
+	      <!-- Generate the properties file to be used during execution -->
+	      <execution>
+		<id>generate-properties</id>
+		<phase>generate-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <concat destfile="${run.properties}" fixlastline="yes">
+		      com.sun.sgs.app.name=ProjectSnowman
+		      com.sun.sgs.app.root=${project.build.directory}
+		      com.sun.sgs.node.type=coreServerNode
+		      com.sun.sgs.impl.service.transport.udp.port=1234
+		      com.sun.sgs.impl.service.data.store.db.environment.class=${run.bdb.env}
+		      com.sun.sgs.impl.service.data.store.DataStoreImpl.directory=${datastore.dir}
+		    </concat>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
 
-    <!-- Remember to set the com.sun.sgs.server.host property to the
-	 host running the core server if it is running on a different
-	 host -->
+    <!-- Multi node core server -->
     <profile>
       <id>multi-node-server-app</id>
       <properties>
 	<run.phase>process-test-resources</run.phase>
-	<run.properties>${run.properties.multi.app}</run.properties>
       </properties>
+      <build>
+	<plugins>
+	  <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+	    <executions>
+	      
+	      <!-- Generate the properties file to be used during execution -->
+	      <execution>
+		<id>generate-properties</id>
+		<phase>generate-test-resources</phase>
+		<goals>
+		  <goal>run</goal>
+		</goals>
+		<configuration>
+		  <tasks>
+		    <concat destfile="${run.properties}" fixlastline="yes">
+		      <header filtering="no" trimleading="yes">
+			com.sun.sgs.app.name=ProjectSnowman
+			com.sun.sgs.app.root=${project.build.directory}
+			com.sun.sgs.app.port=${server.port}
+			com.sun.sgs.node.type=appNode
+			com.sun.sgs.server.host=${server.host}
+			//
+		      </header>
+		      <fileset file="${run.properties.darkstar}"/>
+		      <fileset file="${run.properties.server}"/>
+		    </concat>
+		  </tasks>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
     </profile>
 
     <!-- Disable the deletion of the datastore
@@ -106,6 +207,20 @@
 
   <build>
     <plugins>
+
+      <!-- Make the jar executable, referencing all of its dependencies -->
+      <plugin>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+	      <addClasspath>true</addClasspath>
+	      <classpathPrefix>lib/</classpathPrefix>
+	      <mainClass>com.sun.sgs.impl.kernel.Kernel</mainClass>
+	    </manifest>
+	  </archive>
+	</configuration>
+      </plugin>
 
       <!-- The berkeleydb binary package must be retrieved and unpacked
 	   Before the test phase so that they are available during
@@ -171,18 +286,12 @@
 	      <tasks>
 		<java classname="com.sun.sgs.impl.kernel.Kernel"
 		      fork="true">
-		  <jvmarg line="${run.jvm.args}"/>
+		  <jvmarg line="${run.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame} -DnumRobotsPerGame=${numRobotsPerGame} -DrobotDelay=${robotDelay}"/>
 		  <jvmarg line="${run.jvm.args.profile}"/>
 		  <sysproperty key="java.library.path" 
 			       file="${run.javapath}"/>
 		  <sysproperty key="java.util.logging.config.file"
 			       file="${run.logging}"/>
-		  <sysproperty key="com.sun.sgs.impl.service.data.store.db.environment.class"
-			       value="${run.bdb.env}"/>
-		  <sysproperty key="com.sun.sgs.impl.service.data.store.DataStoreImpl.directory"
-			       value="${datastore.dir}"/>
-		  <sysproperty key="com.sun.sgs.server.host"
-			       value="${com.sun.sgs.server.host}"/>
 		  <classpath>
 		    <path refid="maven.test.classpath"/>
 		  </classpath>
@@ -199,24 +308,28 @@
   </build>
 
   <properties>
-    <run.jvm.args>-Xmx1g</run.jvm.args>
+    <run.jvm.args>-Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRatio=1</run.jvm.args>
     <run.jvm.args.profile></run.jvm.args.profile>
 
     <run.logging>
       ${basedir}/src/test/properties/logging.properties
     </run.logging>
-    <run.properties.single>
-      src/test/properties/SnowmanSingle.properties
-    </run.properties.single>
-    <run.properties.multi.core>
-      src/test/properties/SnowmanCore.properties
-    </run.properties.multi.core>
-    <run.properties.multi.app>
-      src/test/properties/SnowmanApp.properties
-    </run.properties.multi.app>
+    <run.properties.darkstar>
+      ${basedir}/src/test/properties/darkstar-server.properties
+    </run.properties.darkstar>
+    <run.properties.server>
+      ${basedir}/src/test/properties/snowman-server.properties
+    </run.properties.server>
 
+    <run.properties>${project.build.directory}/server.properties</run.properties>
     <datastore.dir>${project.build.directory}/dsdb</datastore.dir>
-    <com.sun.sgs.server.host>localhost</com.sun.sgs.server.host>
+    <server.host>localhost</server.host>
+    <server.port>3000</server.port>
+
+    <!-- Snowman game properties -->
+    <numPlayersPerGame></numPlayersPerGame>
+    <numRobotsPerGame></numRobotsPerGame>
+    <robotDelay></robotDelay>
 
   </properties>
 

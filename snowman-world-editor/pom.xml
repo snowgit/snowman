@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.projectdarkstar.example.projectsnowman</groupId>
     <artifactId>projectsnowman</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>snowman-world-editor</artifactId>
@@ -33,8 +33,25 @@
     <dependency>
       <groupId>com.projectdarkstar.example.projectsnowman</groupId>
       <artifactId>snowman-client</artifactId>
+      <version>${version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-awt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-editors</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
+      <artifactId>jme-terrain</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.projectdarkstar.ext.jeffpk</groupId>
       <artifactId>saddl</artifactId>
@@ -45,6 +62,21 @@
 
   <build>
     <plugins>
+
+      <!-- Make the jar executable, referencing all of its dependencies -->
+      <plugin>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+	      <addClasspath>true</addClasspath>
+	      <classpathPrefix>lib/</classpathPrefix>
+	      <mainClass>com.sun.darkstar.example.tool.WorldEditor</mainClass>
+	    </manifest>
+	  </archive>
+	</configuration>
+      </plugin>
+
       <!-- The jwjgl binary package must be retrieved and unpacked
 	   Before the test phase so that they are available during
 	   runtime of the application-->
@@ -52,24 +84,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+	  <!-- enable the lwjgl-binaries unpack -->
           <execution>
             <id>unpack-lwjgl-binaries</id>
-	    <goals>
-	      <goal>unpack</goal>
-            </goals>
-            <configuration>
-	      <artifactItems>
-                <artifactItem>
-                  <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
-                  <artifactId>lwjgl-binaries</artifactId>
-		  <type>zip</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>
-		    ${project.build.directory}/
-		  </outputDirectory>
-                </artifactItem>
-	      </artifactItems>
-            </configuration>
           </execution>
 
 	  <!-- Unbind the bdb-binaries unpack -->
@@ -85,6 +102,99 @@
 
   <profiles>
 
+    <!-- Automatically activated profiles based on platform
+	 These profiles are used to automatically determine
+	 which platform we are running on and therefore
+	 which lwjgl native library directory to use -->
+    <profile>
+      <id>lwjgl-macosx-x86</id>
+      <properties>
+	<lwjgl.lib.dir>mac</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>mac</family>
+	  <arch>i386</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-macosx-x86_64</id>
+      <properties>
+	<lwjgl.lib.dir>mac</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>mac</family>
+	  <arch>x86_64</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-solaris-x86</id>
+      <properties>
+	<lwjgl.lib.dir>solaris</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>SunOS</name>
+	  <arch>x86</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>lwjgl-linux-x86</id>
+      <properties>
+	<lwjgl.lib.dir>linux</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>i386</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>lwjgl-linux-x86_64</id>
+      <properties>
+	<lwjgl.lib.dir>linux64</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>x86_64</arch>
+	</os>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>lwjgl-linux-amd64</id>
+      <properties>
+	<lwjgl.lib.dir>linux64</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <name>Linux</name>
+	  <arch>amd64</arch>
+	</os>
+      </activation>
+    </profile>
+    
+    <profile>
+      <id>win32-x86</id>
+      <properties>
+	<lwjgl.lib.dir>win</lwjgl.lib.dir>
+      </properties>
+      <activation>
+	<os>
+	  <family>windows</family>
+	</os>
+      </activation>
+    </profile>
 
     <!-- The test-run profile enables the antrun plugin
 	 to run the application in the process-test-resources
@@ -110,7 +220,7 @@
 			  fork="true">
 		      <jvmarg line="${run.jvm.args}"/>
 		      <sysproperty key="java.library.path" 
-				   file="${project.build.directory}/lwjgl-binaries/native/linux"/>
+				   file="${project.build.directory}/lwjgl-binaries/${lwjgl.lib.dir}"/>
 		      <classpath>
 			<path refid="maven.test.classpath"/>
 		      </classpath>
