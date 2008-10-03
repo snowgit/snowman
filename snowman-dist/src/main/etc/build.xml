@@ -11,10 +11,10 @@
     <property name="ant.java.version" value="1.6"/>
 
     <!-- Executable jar locations -->
-    <property name="snowman-server.jar" value="snowman-server/SnowmanServer.jar"/>
-    <property name="snowman-client.jar" value="snowman-client/SnowmanClient.jar"/>
-    <property name="snowman-client-simulator.jar" value="snowman-client-simulator/SnowmanClientSimulator.jar"/>
-    <property name="snowman-world-editor.jar" value="snowman-world-editor/SnowmanWorldEditor.jar"/>
+    <property name="snowman-server.jar" value="snowman-server.jar"/>
+    <property name="snowman-client.jar" value="snowman-client.jar"/>
+    <property name="snowman-client-simulator.jar" value="snowman-client-simulator.jar"/>
+    <property name="snowman-world-editor.jar" value="snowman-world-editor.jar"/>
 
     <!-- Snowman/Darkstar server host and port -->
     <property name="server.host" value="localhost"/>
@@ -33,45 +33,91 @@
     <!-- Darkstar core server host -->
     <property name="core.host" value="localhost"/>
 
-    <!-- Runtime platform for DB native libraries -->
-    <condition property="platform" value="macosx-x86">
-    <and>
-      <os family="mac"/>
-      <or>
-        <os arch="x86_64"/>
-        <os arch="i386"/>
-      </or>
-    </and>
+    <!-- Runtime platform for BDB native libraries -->
+    <condition property="bdb" value="macosx-x86">
+      <and>
+	<os family="mac"/>
+	<or>
+          <os arch="x86_64"/>
+          <os arch="i386"/>
+	</or>
+      </and>
     </condition>
-    <condition property="platform" value="solaris-x86">
-    <and>
-      <os name="SunOS"/>
-      <os arch="x86"/>
-    </and>
+    <condition property="bdb" value="solaris-x86">
+      <and>
+	<os name="SunOS"/>
+	<os arch="x86"/>
+      </and>
     </condition>
-    <condition property="platform" value="solaris-sparc">
-    <and>
-      <os name="SunOS"/>
-      <os arch="sparc"/>
-    </and>
+    <condition property="bdb" value="solaris-sparc">
+      <and>
+	<os name="SunOS"/>
+	<os arch="sparc"/>
+      </and>
     </condition>
-    <condition property="platform" value="linux-x86">
-    <and>
-      <os name="Linux"/>
-      <os arch="i386"/>
-    </and>
+    <condition property="bdb" value="linux-x86">
+      <and>
+	<os name="Linux"/>
+	<os arch="i386"/>
+      </and>
     </condition>
-    <condition property="platform" value="win32-x86">
-    <and>
-      <os family="Windows"/>
-    </and>
+    <condition property="bdb" value="linux-x86_64">
+      <and>
+	<os name="Linux"/>
+	<or>
+	  <os arch="x86_64"/>
+	  <os arch="amd64"/>
+	</or>
+      </and>
+    </condition>
+    <condition property="bdb" value="win32-x86">
+      <and>
+	<os family="Windows"/>
+      </and>
     </condition>
 
+    <!-- Runtime platform for LWJGL native libraries -->
+    <condition property="lwjgl" value="macosx">
+      <and>
+	<os family="mac"/>
+	<or>
+          <os arch="x86_64"/>
+          <os arch="i386"/>
+	</or>
+      </and>
+    </condition>
+    <condition property="lwjgl" value="solaris">
+      <and>
+	<os name="SunOS"/>
+	<os arch="x86"/>
+      </and>
+    </condition>
+    <condition property="lwjgl" value="linux">
+      <and>
+	<os name="Linux"/>
+	<os arch="i386"/>
+      </and>
+    </condition>
+    <condition property="lwjgl" value="linux64">
+      <and>
+	<os name="Linux"/>
+	<or>
+	  <os arch="x86_64"/>
+	  <os arch="amd64"/>
+	</or>
+      </and>
+    </condition>
+    <condition property="lwjgl" value="win32-x86">
+      <and>
+	<os family="Windows"/>
+      </and>
+    </condition>
+    
     <!-- File/directory locations -->
     <property name="lib.dir" location="natives"/>
-    <property name="db.lib.dir" location="${lib.dir}/bdb-4.5.20"/>
-    <property name="db.library.path" location="${db.lib.dir}/${platform}" />
-    <property name="lwjgl.library.path" location="${lib.dir}/lwjgl/${platform}" />
+    <property name="db.lib.dir" location="${lib.dir}/bdb"/>
+    <property name="db.library.path" location="${db.lib.dir}/${bdb}" />
+    <property name="lwjgl.library.path" location="${lib.dir}/lwjgl-binaries/${lwjgl}" />
     <property name="tmp.dir" location="tmp"/>
     <property name="app.dir" location="${tmp.dir}/snowman"/>
     <property name="props.dir" location="properties"/>

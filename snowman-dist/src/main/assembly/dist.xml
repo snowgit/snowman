@@ -47,7 +47,7 @@
 	 DLL -->
     <fileSet>
       <directory>${project.build.directory}/bdb-${bdb.version}</directory>
-      <outputDirectory>natives/bdb</outputDirectory>
+      <outputDirectory>snowman-dist/natives/bdb</outputDirectory>
       <excludes>
 	<exclude>win32-x86/libdb_java45.dll</exclude>
       </excludes>
@@ -67,7 +67,7 @@
     <!-- Include all of the LWJGL binaries -->
     <fileSet>
       <directory>${project.build.directory}/lwjgl-binaries</directory>
-      <outputDirectory>natives/lwjgl-binaries</outputDirectory>
+      <outputDirectory>snowman-dist/natives/lwjgl-binaries</outputDirectory>
     </fileSet>
 
 
