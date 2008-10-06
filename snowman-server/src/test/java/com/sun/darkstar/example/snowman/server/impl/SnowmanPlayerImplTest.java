@@ -998,8 +998,8 @@ public class SnowmanPlayerImplTest
         float xValue = xField.getFloat(player);
         float yValue = yField.getFloat(player);
         
-        Assert.assertEquals(xValue, x);
-        Assert.assertEquals(yValue, y);
+        Assert.assertEquals(xValue, x, 0);
+        Assert.assertEquals(yValue, y, 0);
     }
     
     /**
@@ -1016,8 +1016,8 @@ public class SnowmanPlayerImplTest
         float xValue = xField.getFloat(player);
         float yValue = yField.getFloat(player);
         
-        Assert.assertEquals(xValue, x);
-        Assert.assertEquals(yValue, y);
+        Assert.assertEquals(xValue, x, 0);
+        Assert.assertEquals(yValue, y, 0);
     }
     
     private void setup(SnowmanPlayerImpl player,

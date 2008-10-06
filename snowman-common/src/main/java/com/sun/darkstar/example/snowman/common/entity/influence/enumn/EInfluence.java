@@ -13,15 +13,11 @@ public enum EInfluence {
 	 * <code>Burn</code> influence damages the target, reduces the
 	 * size of the target and increases the motion of the target including
 	 * both animation speed and movement speed.
-	 * @param damage The reduction in HP.
-	 * @param reduceScale The reduction percentage in scale.
-	 * @param increase The percentage increase in motion.
 	 */
 	Burned,
 	/**
 	 * <code>Slippery</code> influence slows down the target in movement
 	 * speed.
-	 * @param percentage The reduction percentage in movement speed.
 	 */
-	Slippery,
+	Slippery
 }

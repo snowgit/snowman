@@ -252,7 +252,7 @@ public class TaskManager extends Manager {
 	/**
 	 * Submit the given task to the <code>TaskManager</code> for later execution.
 	 * However, there is no guarantee that the given task will be enqueued.
-	 * @see <code>RealTimeTask</code> for 'equal' determination details.
+	 * 
 	 * @param task The <code>ITask</code> to be submitted.
 	 * @return True if the task is successfully submitted.
 	 */

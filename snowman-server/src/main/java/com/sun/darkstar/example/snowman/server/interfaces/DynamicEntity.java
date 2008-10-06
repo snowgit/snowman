@@ -50,7 +50,7 @@ public interface DynamicEntity extends ManagedObject
     
     /**
      * This method gets the id
-     * @returns the entity's ID
+     * @return the entity's ID
      */
     
     public int getID();
@@ -64,15 +64,13 @@ public interface DynamicEntity extends ManagedObject
     
     /**
      * Get the X coordinate of the entity in the world at the given time
-     * @param time
-     * @return
+     * @return the X coordinate of the entity
      */
     public float getX();
     
     /**
      * Get the Y coordinate of the entity in the world at the given time
-     * @param time
-     * @return
+     * @return the Y coordinate of the entity
      */
     public float getY();
 

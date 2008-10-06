@@ -10,7 +10,7 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 /**
  * <code>KeyInputConverter</code> extends <code>InputConverter</code> and
  * implements <code>KeyInputListener</code> to define the utility class which
- * converts {@link jME} key inputs into {@link FengGUI} events for the GUI
+ * converts jME key inputs into FengGUI events for the GUI
  * systems to process.
  * 
  * @author Yi Wang (Neakor)

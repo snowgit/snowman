@@ -110,7 +110,7 @@ public class TerrainCluster extends Node {
 	 * @param boundCenter The <code>Vector3f</code> of brush bounding center.
 	 * @param worldcoords The <code>Vector3f</code> of brush world coordinates.
 	 * @param radius The float radius of the brush.
-	 * @param intensity The float intensity of the brush.
+	 * @param intentisy The float intensity of the brush.
 	 */
 	public void sculptCluster(ESculpt enumn, Vector3f boundCenter, Vector3f worldcoords, float radius, float intentisy) {
 		this.tempMeshes.clear();

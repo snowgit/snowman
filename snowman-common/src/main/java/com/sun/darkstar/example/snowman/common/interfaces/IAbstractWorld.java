@@ -12,7 +12,7 @@ import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
  * is defined by its unique <code>EWorld</code> enumeration.
  * <p>
  * <code>IAbstractWorld</code> extends <code>Savable</code> which allows it
- * to be exported into a {@link jME} binary format that can be imported later
+ * to be exported into a jME binary format that can be imported later
  * on for either editing purpose or at game run time.
  * 
  * @author Yi Wang (Neakor)

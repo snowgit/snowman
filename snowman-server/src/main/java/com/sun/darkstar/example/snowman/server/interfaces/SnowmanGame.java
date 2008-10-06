@@ -51,7 +51,6 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
 {
     /**
      * Send a message to all players in the game on the game's Channel
-     * @param sess sender of the message
      * @param buff the message itself
      */
     public void send(ByteBuffer buff);
@@ -87,7 +86,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     /**
      * Return the flag from the game with the given id
      * @param id
-     * @return
+     * @return the flag with the given id
      */
     public SnowmanFlag getFlag(int id);
 
@@ -96,7 +95,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     /**
      * Return the player from the game with the given id
      * @param id
-     * @return
+     * @return the player with the given id
      */
     public SnowmanPlayer getPlayer(int id);
     

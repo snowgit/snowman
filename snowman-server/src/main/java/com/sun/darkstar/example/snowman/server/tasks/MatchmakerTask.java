@@ -53,8 +53,8 @@ import java.util.Iterator;
  * 
  * During each execution of the task, each individual deque will be
  * polled at most once.  The polled players will be added to a local
- * list of waiting players.  If the local list fills up, a {@link LaunchGameTask}
- * will be scheduled, the local list will be emptied,
+ * list of waiting players.  If the local list fills up, a game
+ * will be started, the local list will be emptied,
  * and the matchmaker will be rescheduled.
  * If local list does not fill up,
  * the task is rescheduled to fill it.

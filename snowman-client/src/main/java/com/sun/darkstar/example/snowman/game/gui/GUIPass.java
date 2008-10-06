@@ -13,7 +13,7 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 
 /**
- * <code>GUIPass</code> renders {@link FengGUI} widgets in its own separate
+ * <code>GUIPass</code> renders FengGUI widgets in its own separate
  * <code>RenderPass</code> to enhance performance and scene graph management.
  * <p>
  * <code>GUIPass</code> has to be added to a <code>BasicPassManager</code>
@@ -25,7 +25,7 @@ import com.sun.darkstar.example.snowman.game.input.util.InputManager;
  * method to create all GUI widgets and add them to the <code>Display</code>.
  * <p>
  * <code>GUIPass</code> automatically invokes <code>IInputConverter</code> to
- * set the {@link FengGUI} <code>Display</code> instance for input conversion.
+ * set the FengGUI <code>Display</code> instance for input conversion.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-21-2008 17:14 EST
@@ -37,7 +37,7 @@ public abstract class GUIPass extends Pass {
 	 */
 	private static final long serialVersionUID = -284580225155562862L;
 	/**
-	 * The {@link FengGUI} <code>Display</code> instance.
+	 * The FengGUI <code>Display</code> instance.
 	 */
 	protected final Display display;
 	/**
@@ -80,8 +80,8 @@ public abstract class GUIPass extends Pass {
 	}
 	
 	/**
-	 * Retrieve the {@link FengGUI} <code>Display</code> instance.
-	 * @return The {@link FengGUI} <code>Display</code> instance.
+	 * Retrieve the FengGU} <code>Display</code> instance.
+	 * @return The FengGUI <code>Display</code> instance.
 	 */
 	public Display getDisplay() {
 		return this.display;

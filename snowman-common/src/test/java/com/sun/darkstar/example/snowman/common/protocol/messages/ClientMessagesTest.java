@@ -56,10 +56,10 @@ public class ClientMessagesTest extends AbstractTestMessages
         float endx = movePacket.getFloat();
         float endy = movePacket.getFloat();
         
-        Assert.assertEquals(1.0f, startx);
-        Assert.assertEquals(2.0f, starty);
-        Assert.assertEquals(3.0f, endx);
-        Assert.assertEquals(4.0f, endy);
+        Assert.assertEquals(1.0f, startx, 0);
+        Assert.assertEquals(2.0f, starty, 0);
+        Assert.assertEquals(3.0f, endx, 0);
+        Assert.assertEquals(4.0f, endy, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(movePacket.hasRemaining());
@@ -76,8 +76,8 @@ public class ClientMessagesTest extends AbstractTestMessages
         float y = attackPacket.getFloat();
         
         Assert.assertEquals(5, id);
-        Assert.assertEquals(1.0f, x);
-        Assert.assertEquals(2.0f, y);
+        Assert.assertEquals(1.0f, x, 0);
+        Assert.assertEquals(2.0f, y, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(attackPacket.hasRemaining());
@@ -94,8 +94,8 @@ public class ClientMessagesTest extends AbstractTestMessages
         float y = getFlagPacket.getFloat();
         
         Assert.assertEquals(10, id);
-        Assert.assertEquals(1.0f, x);
-        Assert.assertEquals(2.0f, y);
+        Assert.assertEquals(1.0f, x, 0);
+        Assert.assertEquals(2.0f, y, 0);
 
         //ensure we are at the end of the buffer
         Assert.assertFalse(getFlagPacket.hasRemaining());
@@ -110,8 +110,8 @@ public class ClientMessagesTest extends AbstractTestMessages
         float x = packet.getFloat();
         float y = packet.getFloat();
         
-        Assert.assertEquals(1.0f, x);
-        Assert.assertEquals(2.0f, y);
+        Assert.assertEquals(1.0f, x, 0);
+        Assert.assertEquals(2.0f, y, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

@@ -6,15 +6,15 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 
 /**
  * <code>IInputConverter</code> defines the interface for converters that
- * converts {@link jME} input events to {@link FengGUI} events.
+ * converts jME input events to FengGUI events.
  * <p>
  * <code>IInputConverter</code> only converts the input events to the set
- * {@link FengGUI} <code>Display</code> instance. It maintains a reference
+ * FengGUI <code>Display</code> instance. It maintains a reference
  * to the <code>Display</code> instance that should receive the converted
- * {@link FengGUI} events.
+ * FengGUI events.
  * <p>
  * <code>IInputConverter</code> can be disabled manually to stop the conversion
- * from {@link jME} input events to {@link FengGUI} events. This method can
+ * from jME input events to FengGUI events. This method can
  * be used to disable all the current displaying GUI.
  * 
  * @author Yi Wang (Neakor)
@@ -25,7 +25,7 @@ public interface IInputConverter {
 
 	/**
 	 * Set the display instance that should receive the converted events.
-	 * @param display The {@link FengGUI} <code>Display</code> instance.
+	 * @param display The FengGUI <code>Display</code> instance.
 	 */
 	public void setDisplay(Display display);
 	

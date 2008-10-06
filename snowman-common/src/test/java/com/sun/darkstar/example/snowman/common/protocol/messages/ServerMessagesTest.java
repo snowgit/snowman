@@ -105,8 +105,8 @@ public class ServerMessagesTest extends AbstractTestMessages
         ETeamColor team = ETeamColor.values()[packet.getInt()];
         
         Assert.assertEquals(id, 10);
-        Assert.assertEquals(x, 1.0f);
-        Assert.assertEquals(y, 2.0f);
+        Assert.assertEquals(x, 1.0f, 0);
+        Assert.assertEquals(y, 2.0f, 0);
         Assert.assertEquals(type, EMOBType.SNOWMAN);
         Assert.assertEquals(team, ETeamColor.Red);
         
@@ -141,10 +141,10 @@ public class ServerMessagesTest extends AbstractTestMessages
         float endy = packet.getFloat();
 
         Assert.assertEquals(id, 10);
-        Assert.assertEquals(startx, 1.0f);
-        Assert.assertEquals(starty, 2.0f);
-        Assert.assertEquals(endx, 3.0f);
-        Assert.assertEquals(endy, 4.0f);
+        Assert.assertEquals(startx, 1.0f, 0);
+        Assert.assertEquals(starty, 2.0f, 0);
+        Assert.assertEquals(endx, 3.0f, 0);
+        Assert.assertEquals(endy, 4.0f, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
@@ -161,8 +161,8 @@ public class ServerMessagesTest extends AbstractTestMessages
         float y = packet.getFloat();
 
         Assert.assertEquals(id, 10);
-        Assert.assertEquals(x, 1.0f);
-        Assert.assertEquals(y, 2.0f);
+        Assert.assertEquals(x, 1.0f, 0);
+        Assert.assertEquals(y, 2.0f, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
@@ -213,8 +213,8 @@ public class ServerMessagesTest extends AbstractTestMessages
         float y = packet.getFloat();
 
         Assert.assertEquals(id, 10);
-        Assert.assertEquals(x, 1.0f);
-        Assert.assertEquals(y, 2.0f);
+        Assert.assertEquals(x, 1.0f, 0);
+        Assert.assertEquals(y, 2.0f, 0);
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

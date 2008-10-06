@@ -152,6 +152,19 @@
 
     <plugins>
 
+      <!-- Tweak configuration for running unit tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+	<version>${surefire.version}</version>
+        <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+
+
       <!-- Always attach a sources jar where applicable -->
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>

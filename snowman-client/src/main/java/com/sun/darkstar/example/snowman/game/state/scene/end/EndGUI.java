@@ -10,7 +10,7 @@ import com.sun.darkstar.example.snowman.game.gui.GUIPass;
 /**
  * <code>EndGUI</code> extends <code>GUIPass</code> to define the user
  * interface for the end scene. It initializes and maintains all the
- * {@link FengGUI} widgets.
+ * FengGUI widgets.
  * 
  * @author Owen Kellett
  */

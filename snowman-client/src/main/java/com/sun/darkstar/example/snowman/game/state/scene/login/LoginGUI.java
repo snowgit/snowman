@@ -10,7 +10,7 @@ import com.sun.darkstar.example.snowman.game.gui.GUIPass;
 /**
  * <code>LoginGUI</code> extends <code>GUIPass</code> to define the user
  * interface for the login scene. It initializes and maintains all the
- * {@link FengGUI} widgets.
+ * FengGUI widgets.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-09-2008 15:43 EST

@@ -170,7 +170,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer, Serializable,
      * destination.
      * 
      * @param time
-     * @return
+     * @return the position of the player at the given time
      */
     public Coordinate getExpectedPositionAtTime(long time) {
         float currentX = startX;

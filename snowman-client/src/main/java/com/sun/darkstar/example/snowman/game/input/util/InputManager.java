@@ -182,7 +182,7 @@ public final class InputManager extends Manager {
 	
 	/**
 	 * Retrieve the entity controller with given enumeration.
-	 * @param enumn The <code>IDynamicEntity</code> that is being controlled.
+	 * @param entity The <code>IDynamicEntity</code> that is being controlled.
 	 * @return The <code>IController</code> that controls the given entity.
 	 */
 	public IController getController(IDynamicEntity entity) {
