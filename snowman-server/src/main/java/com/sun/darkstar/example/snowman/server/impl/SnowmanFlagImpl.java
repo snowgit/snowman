@@ -103,10 +103,10 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * The constructor for a flag
      * 
+     * @param game The game that this flag is a part of
      * @param teamColor The color of the team that owns the flag
-     * @param flagGoalX the X coordinate of the centroid of the winning circle
-     * @param flagGoalY the Y coordinate of the centroid of the winning circle
-     * @param flagGoalRadius the radius of the winning circle
+     * @param flagHome flag's start position
+     * @param flagGoal the goal location of the flag
      */
     public SnowmanFlagImpl(SnowmanGame game,
                            ETeamColor teamColor,
@@ -144,7 +144,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * Ths returns the current X coordof the flag. Can only be called when
      * not being held.
-     * @return
+     * @return the X coordinate of the flag
      */
     public float getX() {
         assert heldByRef == null;
@@ -155,7 +155,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * Ths returns the current Y coordof the flag. Can only be called when
      * not being held.
-     * @return
+     * @return the Y coordinate of the flag
      */
     public float getY() {
         assert heldByRef == null;
@@ -216,7 +216,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * This method sets the Flag ID.  A flag's ID must be unique among flags in
      * a game but may not be unique among all the objects in the game.
-     * @returns the flag's ID
+     * @return the flag's ID
      */
     public int getID(){
         return id;

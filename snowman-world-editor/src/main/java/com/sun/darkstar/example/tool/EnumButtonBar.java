@@ -42,6 +42,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+@SuppressWarnings("unchecked")
 public class EnumButtonBar<K extends Enum<K>> extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;

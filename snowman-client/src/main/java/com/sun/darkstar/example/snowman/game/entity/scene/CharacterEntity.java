@@ -80,7 +80,7 @@ public class CharacterEntity extends DynamicEntity {
         
         /**
 	 * Set the current cursor state of the snowman.
-	 * @param state The <code>ECursorState</code> enumeration.
+	 * @param cursorState The <code>ECursorState</code> enumeration.
 	 */
 	public void setCursorState(ECursorState cursorState) {
 		this.cursorState = cursorState;

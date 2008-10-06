@@ -46,7 +46,6 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.After;
-import org.easymock.EasyMock;
 
 /**
  *
@@ -121,7 +120,7 @@ public class CollisionManagerTest {
      * @param result result node to expect
      * @param iterate whether or not to iterate through all collided objects
      */
-    private void testGetIntersectObject(Class reference, Spatial result, boolean iterate) {
+    private void testGetIntersectObject(Class<? extends Spatial> reference, Spatial result, boolean iterate) {
         //create the ray that goes through all objects
         Vector3f origin = new Vector3f(0f,0f,0f);
         Vector3f destination = new Vector3f(0f,0f,100f);

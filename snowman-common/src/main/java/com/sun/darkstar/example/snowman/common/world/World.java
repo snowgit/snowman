@@ -16,7 +16,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IWorld;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 
 /**
- * <code>World</code> extends {@link jME} <code>Node</code> and implements
+ * <code>World</code> extends jME <code>Node</code> and implements
  * <code>IWorld</code> to define the actual data structure of a world in game.
  * <p>
  * <code>World</code> should only be created based on <code>EditableWorld</code>

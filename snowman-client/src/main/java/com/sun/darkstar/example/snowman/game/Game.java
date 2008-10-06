@@ -323,7 +323,7 @@ public class Game extends BaseGame implements IComponent{
 	/**
 	 * Retrieve the game state with given enumeration.
 	 * @param enumn The <code>EGameState</code> enumeration.
-	 * @return
+	 * @return the GameState of the given type
 	 */
 	public GameState getGameState(EGameState enumn) {
 		return (GameState)this.stateManager.getChild(enumn.toString());

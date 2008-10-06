@@ -20,7 +20,7 @@ import com.jme.util.export.Savable;
  * if and only if they represent the same <code>IEntity</code>.
  * <p>
  * <code>IView</code> extends <code>Savable</code> interface so it can be
- * directly saved into a {@link jME} binary format which can then be imported
+ * directly saved into a jME binary format which can then be imported
  * later on at game run time.
  * 
  * @author Yi Wang (Neakor)
@@ -31,7 +31,7 @@ public interface IView extends Savable {
 
 	/**
 	 * Attach the given mesh to this view.
-	 * @param mesh The <code>Spatial</code> to be attached.
+	 * @param child The <code>Spatial</code> to be attached.
 	 */
 	public void attachSpatial(Spatial child);
 	

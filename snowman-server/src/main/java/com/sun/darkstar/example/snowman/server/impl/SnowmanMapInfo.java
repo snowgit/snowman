@@ -75,7 +75,7 @@ public class SnowmanMapInfo
      * @param team team to retrieve a spawn point for
      * @param player player'th player on the team (starting with 1)
      * @param teamPlayers number of players on the team
-     * @return
+     * @return a spawn position for the player
      */
     public static Coordinate getSpawnPosition(String map,
                                               ETeamColor team,
@@ -115,7 +115,7 @@ public class SnowmanMapInfo
      * 
      * @param map name of the map
      * @param team team to retrieve a spawn point for
-     * @return
+     * @return a respawn position for the player
      */
     public static Coordinate getRespawnPosition(String map,
                                                 ETeamColor team) {

@@ -122,8 +122,8 @@ public class GameWorldServiceImplTest
         Coordinate realDestination = service.trimPath(new Coordinate(startx, starty),
                                                       new Coordinate(endx, endy));
         
-        Assert.assertEquals(realDestination.getX(), realEndx);
-        Assert.assertEquals(realDestination.getY(), realEndy);
+        Assert.assertEquals(realDestination.getX(), realEndx, 0);
+        Assert.assertEquals(realDestination.getY(), realEndy, 0);
     }
     
     /**

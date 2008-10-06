@@ -9,7 +9,7 @@ import com.sun.darkstar.example.snowman.game.input.enumn.EInputConverter;
 /**
  * <code>MouseInputConverter</code> extends <code>InputConverter</code> and
  * implements <code>MouseInputListener</code> to define the utility class which
- * converts {@link jME} mouse inputs into {@link FengGUI} events for the GUI
+ * converts jME mouse inputs into FengGUI events for the GUI
  * systems to process.
  * 
  * @author Yi Wang (Neakor)

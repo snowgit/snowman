@@ -13,7 +13,7 @@ import com.sun.darkstar.example.snowman.common.interfaces.IFinal;
 import com.sun.darkstar.example.snowman.common.util.enumn.EWorld;
 
 /**
- * <code>EditableWorld</code> extends {@link jME} <code>Node</code> and
+ * <code>EditableWorld</code> extends jME <code>Node</code> and
  * implements <code>IEditableWorld</code> define the data structure of world
  * during the world editing stages.
  * <p>

@@ -7,8 +7,8 @@ import com.sun.darkstar.example.snowman.interfaces.IInputConverter;
 
 /**
  * <code>InputConverter</code> implements <code>IInputConverter</code> to
- * define the basic abstraction of an converter that converts {@link jME}
- * input events into {@link FengGUI} events.
+ * define the basic abstraction of an converter that converts jME
+ * input events into FengGUI events.
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 07-11-2008 16:53 EST
@@ -20,7 +20,7 @@ public abstract class InputConverter implements IInputConverter {
 	 */
 	protected final EInputConverter enumn;
 	/**
-	 * The {@link FengGUI }<code>Display</code> instance.
+	 * The FengGUI <code>Display</code> instance.
 	 */
 	protected Display display;
 	/**

@@ -17,7 +17,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity.EEntityType;
  * exactly the same integer ID number.
  * <p>
  * <code>IEntity</code> extends <code>Savable</code> interface so it can be
- * directly saved into a {@link jME} binary format which can then be imported
+ * directly saved into a jME binary format which can then be imported
  * later on at game run time.
  * 
  * @author Yi Wang (Neakor)

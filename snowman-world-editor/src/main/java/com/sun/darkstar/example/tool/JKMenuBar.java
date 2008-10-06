@@ -57,7 +57,7 @@ import javax.swing.JMenuItem;
  *          Item=methodToCall
  * @author Jeffrey Kesselman
  */
-
+@SuppressWarnings("unchecked")
 public class JKMenuBar extends JMenuBar {
     List listeners = new ArrayList();
 

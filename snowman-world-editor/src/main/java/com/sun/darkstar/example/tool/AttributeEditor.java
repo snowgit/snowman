@@ -51,7 +51,7 @@ public class AttributeEditor extends JTable {
 	List<AttributeEditorListener> listeners = new ArrayList<AttributeEditorListener>();
 	public AttributeEditor() {
 		super();
-		setAttributes(new HashMap());
+		setAttributes(new HashMap<String, String>());
 		setColumnModel(new AEColumnModel());
 		setCellSelectionEnabled(true);
 	}
@@ -61,7 +61,7 @@ public class AttributeEditor extends JTable {
 	 * 
 	 * @param map
 	 */
-	public void setAttributes(Map map) {
+	public void setAttributes(Map<String, String> map) {
 		setModel(new MapModel(map));
 		
 	}
@@ -77,9 +77,9 @@ public class AttributeEditor extends JTable {
 	}
 
 	class MapModel extends AbstractTableModel {
-		Map map;
+		Map<String, String> map;
 
-		public MapModel(Map map) {
+		public MapModel(Map<String, String> map) {
 			this.map = map;
 		}
 
@@ -109,7 +109,7 @@ public class AttributeEditor extends JTable {
 			if (columnIndex == 1) {
 				String tag = (String) ((Entry) map.entrySet().toArray()[rowIndex])
 						.getKey();
-				map.put(tag, value);
+				map.put(tag, (String)value);
 				AttributeEditor.this.fireAttributeChanged(tag,(String)value);
 			}
 		}

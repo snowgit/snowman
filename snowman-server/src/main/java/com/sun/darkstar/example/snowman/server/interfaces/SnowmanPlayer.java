@@ -49,7 +49,7 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
 {
     /**
      * Get the name of the player
-     * @return
+     * @return the name of the player
      */
     public String getName();
 
@@ -63,7 +63,7 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     /**
      * Get the expected position of the player at the given time
      * @param time
-     * @return
+     * @return the position of the player at the given time
      */
     public Coordinate getExpectedPositionAtTime(long time);
 
@@ -116,7 +116,7 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     public void send(ByteBuffer buff);
     /**
      * Get the protocol processor that processes messages for this player
-     * @return
+     * @return the processor used to process incoming messages for the player
      */
     public IServerProcessor getProcessor();
 }

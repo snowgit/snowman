@@ -15,7 +15,7 @@ import com.sun.darkstar.example.snowman.common.entity.influence.enumn.EInfluence
  * <code>IDynamicEntity</code>.
  * <p>
  * <code>IInfluence</code> extends <code>Savable</code> interface so it can be
- * directly saved into a {@link jME} binary format which can then be imported
+ * directly saved into a jME binary format which can then be imported
  * later on at game run time.
  * 
  * @author Yi Wang (Neakor)
