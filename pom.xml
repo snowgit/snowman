@@ -19,6 +19,12 @@
   <description>
     Parent POM for the Project Snowman example.
   </description>
+  <url>https://project-snowman.dev.java.net</url>
+  <scm>
+    <connection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/trunk</connection>
+    <developerConnection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/trunk</developerConnection>
+    <url>https://project-snowman.dev.java.net/source/browse/project-snowman/trunk</url>
+  </scm>
 
   <modules>
     <module>snowman-common</module>
