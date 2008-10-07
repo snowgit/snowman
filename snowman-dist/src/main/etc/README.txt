@@ -13,6 +13,8 @@ run-server      Runs the application server in multi-node mode.
 
 run-core        Runs the core services in multi-node mode.
 
+run-editor	Runs the world editor
+
 PROPERTIES
 
 property name:  server.host
@@ -81,3 +83,12 @@ To run a multi-node server and a client on three nodes using BDB Java edition:
     on node3
 
     ant -Dserver.host=node2 run-client
+
+To run the client simulator connecting to localhost
+
+    ant run-sim
+
+To run the world editor
+
+    ant run-editor
+

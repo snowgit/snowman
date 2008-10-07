@@ -10,7 +10,6 @@
     <dependencySet>
       <excludes>
 	<exclude>com.projectdarkstar.example.projectsnowman:snowman-server:jar</exclude>
-	<exclude>com.projectdarkstar.example.projectsnowman:snowman-client:jar</exclude>
 	<exclude>com.projectdarkstar.example.projectsnowman:snowman-client-simulator:jar</exclude>
 	<exclude>com.projectdarkstar.example.projectsnowman:snowman-world-editor:jar</exclude>
 	<exclude>*:zip</exclude>

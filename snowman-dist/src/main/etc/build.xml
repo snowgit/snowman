@@ -254,10 +254,6 @@
 	port=${server.port}
       </concat>
 
-      <antcall target="-run-client"/>
-    </target>
-
-    <target name="-run-client">
       <antcall target="-run-client-raw"/>
     </target>
 
@@ -272,7 +268,15 @@
         <arg file="${app.properties}"/>
       </java>
 
-      <!-- loop back around -->
-      <antcall target="-run-client"/>
+    </target>
+
+    <!-- Runs the world editor -->
+    <target name="run-editor"
+	    description="Runs the world editor">
+      <java jar="${snowman-world-editor.jar}"
+	    fork="true"
+	    failonerror="true">
+	<sysproperty key="java.library.path" file="${lwjgl.library.path}"/>
+      </java>
     </target>
 </project>
