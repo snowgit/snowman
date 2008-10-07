@@ -15,15 +15,15 @@
   <artifactId>projectsnowman</artifactId>
   <name>Project Snowman</name>
   <packaging>pom</packaging>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <description>
     Parent POM for the Project Snowman example.
   </description>
   <url>https://project-snowman.dev.java.net</url>
   <scm>
-    <connection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/tags/0.1</connection>
-    <developerConnection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/tags/0.1</developerConnection>
-    <url>https://project-snowman.dev.java.net/source/browse/project-snowman/tags/0.1</url>
+    <connection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/trunk</connection>
+    <developerConnection>scm:svn:https://project-snowman.dev.java.net/svn/project-snowman/trunk</developerConnection>
+    <url>https://project-snowman.dev.java.net/source/browse/project-snowman/trunk</url>
   </scm>
 
   <modules>
