@@ -168,7 +168,8 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * @param player the snowman who holds the flag, or null
      */
     public void setHeldBy(SnowmanPlayer player){
-        assert player == null;
+        assert player != null;
+        assert heldByRef == null;
         
         AppContext.getDataManager().markForUpdate(this);
         heldByRef = AppContext.getDataManager().createReference(player);
