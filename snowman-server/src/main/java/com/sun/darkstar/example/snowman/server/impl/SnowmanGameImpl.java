@@ -262,9 +262,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
     }
     
     private void multiSend(ByteBuffer buff){
-    	 for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
-    		 ref.get().send(buff);
-    	 }
+        for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
+            // send() will do a flip() on the buffer, so send a wrapped buffer
+            ref.get().send(buff.asReadOnlyBuffer());
+        }
     }
     
     public void startGameIfReady(){
