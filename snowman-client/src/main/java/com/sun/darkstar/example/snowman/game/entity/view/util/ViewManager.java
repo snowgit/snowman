@@ -128,7 +128,7 @@ public class ViewManager extends Manager {
 	 */
 	public void update(float interpolation) {
 		while(!this.dirty.isEmpty()) {
-			this.dirty.pop().update(interpolation);
+			this.dirty.poll().update(interpolation);
 		}
 	}
 

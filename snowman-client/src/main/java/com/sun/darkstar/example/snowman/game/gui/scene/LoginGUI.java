@@ -29,7 +29,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.sun.darkstar.example.snowman.game.state.scene.login;
+package com.sun.darkstar.example.snowman.game.gui.scene;
 
 import org.fenggui.Label;
 import org.fenggui.util.Alphabet;

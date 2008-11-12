@@ -35,10 +35,10 @@ import java.util.Properties;
 
 import com.jmex.game.state.GameStateManager;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.gui.scene.LoginGUI;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
 import com.sun.darkstar.example.snowman.game.state.scene.LoginState;
-import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 

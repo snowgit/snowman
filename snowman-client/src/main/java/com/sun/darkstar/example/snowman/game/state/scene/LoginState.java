@@ -43,9 +43,9 @@ import com.jme.system.DisplaySystem;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.gui.scene.LoginGUI;
 import com.sun.darkstar.example.snowman.game.state.GameState;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
-import com.sun.darkstar.example.snowman.game.state.scene.login.LoginGUI;
 
 /**
  * <code>LoginState</code> extends <code>GameState</code> to define the login

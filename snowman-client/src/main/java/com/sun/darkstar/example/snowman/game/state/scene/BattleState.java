@@ -47,6 +47,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
+import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -64,7 +65,9 @@ import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
+import com.sun.darkstar.example.snowman.game.gui.scene.ChatGUI;
 import com.sun.darkstar.example.snowman.game.input.SnowmanCameraHandler;
+import com.sun.darkstar.example.snowman.game.input.gui.ChatKeyHandler;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.physics.util.PhysicsManager;
 import com.sun.darkstar.example.snowman.game.state.GameState;
@@ -105,6 +108,11 @@ public class BattleState extends GameState {
 	private EffectComponent effects;
 	private AstronomyComponent astronomy;
 	private WeatherComponent weather;
+	
+	/**
+	 * The <code>BattleGUI</code> instance.
+	 */
+	private ChatGUI gui;
 
 	/**
 	 * Constructor of <code>BattleState</code>.
@@ -143,6 +151,7 @@ public class BattleState extends GameState {
 	@Override
 	protected void initializeState() {
 		MouseInput.get().setHardwareCursor(ClientApplication.class.getClassLoader().getResource(ECursorState.TryingToMove.getIconLocation()));
+		this.buildGUI();
 	}
 
 	@Override
@@ -213,6 +222,13 @@ public class BattleState extends GameState {
 		this.flagGoals.clear();
 	}
 
+	private void buildGUI() {
+		this.gui = new ChatGUI();
+		this.gui.initialize();
+		this.game.getPassManager().add(this.gui);
+		KeyInput.get().addListener(new ChatKeyHandler(this.gui));
+	}
+	
 	private void buildEnvironment() {
 		this.environment = new Environment();
 		this.sky = new SkyComponent();
@@ -289,5 +305,9 @@ public class BattleState extends GameState {
 						+ name);
 		return TextureManager.loadTexture(url, MinificationFilter.Trilinear,
 				MagnificationFilter.Bilinear);
+	}
+	
+	public ChatGUI getGUI() {
+		return this.gui;
 	}
 }

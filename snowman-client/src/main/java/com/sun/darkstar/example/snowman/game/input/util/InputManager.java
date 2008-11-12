@@ -128,7 +128,7 @@ public final class InputManager extends Manager {
 	 */
 	public void update(float interpolation) {
 		while(!this.removed.isEmpty()) {
-			IDynamicEntity entity = this.removed.pop();
+			IDynamicEntity entity = this.removed.poll();
 			Object result = this.controllers.remove(entity);
 			if(result == null) this.logger.fine("Controller of: " + entity.toString() + " does not exist.");
 			else this.logger.fine("Removed controller of entity: " + entity.toString());
