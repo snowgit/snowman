@@ -145,7 +145,7 @@ public class ChatGUI extends GUIPass {
 		}
 		// Create the text styles.
 		this.outputStyles = new TextStyle[this.channels.length];
-		this.outputStyles[0] = new TextStyle(FontFactory.renderStandardFont(new java.awt.Font("Verdana", java.awt.Font.PLAIN, 12)), Color.WHITE);
+		this.outputStyles[0] = new TextStyle(FontFactory.renderStandardFont(new java.awt.Font("Verdana", java.awt.Font.BOLD, 12)), Color.WHITE);
 		// Return the default channel container.
 		return this.outputContainers[0];
 	}

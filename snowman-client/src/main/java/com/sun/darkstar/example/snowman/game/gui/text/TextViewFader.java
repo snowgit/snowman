@@ -83,7 +83,7 @@ public class TextViewFader extends Thread{
 				}
 			}
 			// Fading out texts.
-			float alpha = this.view.getRuns().get(0).getColor().getAlpha();
+			float alpha = this.view.getRuns().peek().getColor().getAlpha();
 			final float change = 20.0f/3000.0f;
 			while(alpha > 0 && cycled == 1000 && this.fading) {
 				try {Thread.sleep(20);} catch (InterruptedException e) {e.printStackTrace();}
@@ -114,9 +114,9 @@ public class TextViewFader extends Thread{
 	 */
 	private void setTextAlpha(float alpha) {
 		Color color = null;
-		for(int i = 0; i < this.view.getRuns().size(); i++) {
-			color = this.view.getRuns().get(i).getColor();
-			this.view.getRuns().get(i).setTextColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+		for(TextRun run : this.view.getRuns()) {
+			color = run.getColor();
+			run.setTextColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
 		}
 	}
 }

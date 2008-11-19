@@ -226,7 +226,7 @@ public class BattleState extends GameState {
 		this.gui = new ChatGUI();
 		this.gui.initialize();
 		this.game.getPassManager().add(this.gui);
-		KeyInput.get().addListener(new ChatKeyHandler(this.gui));
+		KeyInput.get().addListener(new ChatKeyHandler(this.gui, this.game.getClient()));
 	}
 	
 	private void buildEnvironment() {

@@ -31,12 +31,15 @@
  */
 package com.sun.darkstar.example.snowman.client.handler.message;
 
+import java.nio.ByteBuffer;
+
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.processor.IClientProcessor;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
 
@@ -129,5 +132,32 @@ public class MessageProcessor implements IClientProcessor {
 	@Override
 	public void respawn(int objectID, float x, float y) {
 		TaskManager.getInstance().createTask(ETask.Respawn, objectID, x, y, (objectID == this.myID));
+	}
+	
+	@Override
+	public void chatMessage(ByteBuffer packet) {
+		// Read out channel.
+		byte[] channelBytes = new byte[packet.getInt()];
+		packet.get(channelBytes);
+		String channel = new String(channelBytes);
+		// Read out message.
+		byte[] messageBytes = new byte[packet.getInt()];
+		packet.get(messageBytes);
+		String message = new String(messageBytes);
+		// Read out source.
+		int id = packet.getInt();
+		String source = String.valueOf(id);
+		// Append message if it is no my self.
+		if(this.myID != id) {
+			((BattleState)this.handler.getGame().getGameState(EGameState.BattleState)).getGUI().appendChatMessage(channel, source, message);
+		}
+	}
+
+	/**
+	 * Retrieve the ID number of this client. 
+	 * @return The <code>Integer</code> ID number.
+	 */
+	public int getID() {
+		return this.myID;
 	}
 }

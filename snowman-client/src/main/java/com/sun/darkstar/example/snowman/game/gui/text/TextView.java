@@ -2,6 +2,7 @@ package com.sun.darkstar.example.snowman.game.gui.text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.fenggui.FengGUI;
 import org.fenggui.ITextWidget;
@@ -58,9 +59,9 @@ public class TextView extends ObservableWidget implements ITextWidget{
 	 */
 	private TextStyle defaulStyle;
 	/**
-	 * The array list of texts.
+	 * The <code>ConcurrentLinkedQueue</code> of <code>TextRun</code>.
 	 */
-	private ArrayList<TextRun> runs;
+	private ConcurrentLinkedQueue<TextRun> runs;
 	/**
 	 * The text fader object.
 	 */
@@ -77,7 +78,7 @@ public class TextView extends ObservableWidget implements ITextWidget{
 		this.textChangedHook = new ArrayList<ITextChangedListener>();
 		this.appearance = new TextViewAppearance(this);
 		this.defaulStyle = new TextStyle(this.appearance.getFont(), this.appearance.getTextColor());
-		this.runs = new ArrayList<TextRun>();
+		this.runs = new ConcurrentLinkedQueue<TextRun>();
 		this.fader = new TextViewFader(this);
 		FengGUI.getTheme().setUp(this);
 	}
@@ -362,9 +363,9 @@ public class TextView extends ObservableWidget implements ITextWidget{
 	
 	/**
 	 * Retrieve the text runs.
-	 * @return The <code>ArrayList</code> of <code>TextRun</code>.
+	 * @return The <code>ConcurrentLinkedQueue</code> of <code>TextRun</code>.
 	 */
-	public ArrayList<TextRun> getRuns() {
+	public ConcurrentLinkedQueue<TextRun> getRuns() {
 		return this.runs;
 	}
 
