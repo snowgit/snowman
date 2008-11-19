@@ -39,13 +39,13 @@ package com.sun.darkstar.example.snowman.common.protocol.enumn;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @version Creation date: 05-29-08 12:15 EST
- * @version Modified date: 05-29-08 12:16 EST
+ * @version Modified date: 11-19-08 10:40 EST
  */
 public enum EOPCODE {
     /**
      * Client to server opcodes.
      */
-    MOVEME, ATTACK, GETFLAG, SCORE,
+    MOVEME, ATTACK, GETFLAG, SCORE, CHAT,
     /**
      * Server to client opcodes.
      */

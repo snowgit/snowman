@@ -118,4 +118,21 @@ public class ClientMessages extends Messages
         buffer.putFloat(y);
         return buffer;
     }
+    
+    /**
+     * Create a chat message packet with given values.
+     * @param channel The <code>String</code> channel value.
+     * @param message The <code>String</code> message to be displayed.
+     * @return The <code>ByteBUffer</code> 'chat message' packet.
+     */
+    public static ByteBuffer createChatPkt(String channel, String message) {
+    	byte[] bytes = new byte[1 + 8 + channel.length() + 8 + message.length()];
+    	ByteBuffer buffer = ByteBuffer.wrap(bytes);
+    	buffer.put((byte) EOPCODE.CHAT.ordinal());
+    	buffer.putInt(channel.length());
+    	buffer.put(channel.getBytes());
+    	buffer.putInt(message.length());
+    	buffer.put(message.getBytes());
+    	return buffer;
+    }
 }

@@ -254,6 +254,10 @@ public class MessageHandlerImpl implements MessageHandler
                 logger.log(Level.FINEST, "Processing {0} packet", code);
                 processor.ready();
                 break;
+            case CHAT:
+            	this.logger.log(Level.FINEST, "Processing {0} packet", code);
+            	processor.chatMessage(packet);
+            	break;
             default:
                 this.logger.warning("Unsupported OPCODE: " + code.toString());
         }
