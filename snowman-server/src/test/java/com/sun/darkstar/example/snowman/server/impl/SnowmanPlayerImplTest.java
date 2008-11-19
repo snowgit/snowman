@@ -87,7 +87,7 @@ public class SnowmanPlayerImplTest
         session = EasyMock.createNiceMock(ClientSession.class);
         currentGame = EasyMock.createNiceMock(SnowmanGame.class);
         gameChannel = EasyMock.createNiceMock(Channel.class);
-        EasyMock.expect(currentGame.getChannel()).andStubReturn(gameChannel);
+        EasyMock.expect(currentGame.getGameChannel()).andStubReturn(gameChannel);
         EasyMock.replay(gameChannel);
         EasyMock.replay(session);
         EasyMock.replay(currentGame);

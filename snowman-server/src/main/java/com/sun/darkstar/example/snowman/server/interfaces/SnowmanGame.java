@@ -46,6 +46,7 @@ import java.util.Set;
  * for a game
  * 
  * @author Owen Kellett
+ * @author Yi Wang (Neakor)
  */
 public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
 {
@@ -107,6 +108,11 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * Return the channel for this game
      * @return the game channel
      */
-    Channel getChannel();
+    Channel getGameChannel();
 
+    /**
+     * Retrieve the chat channel of the game.
+     * @return The chat <code>Channel</code> instance.
+     */
+    public Channel getChatChannel();
 }
