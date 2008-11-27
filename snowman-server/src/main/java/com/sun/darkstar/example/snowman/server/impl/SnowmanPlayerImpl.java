@@ -583,16 +583,8 @@ IServerProcessor
 	}
 
 	@Override
-	public void chatMessage(ByteBuffer packet) {
-		// Read out channel.
-		byte[] channelBytes = new byte[packet.getInt()];
-		packet.get(channelBytes);
-		String channel = new String(channelBytes);
-		// Read out message.
-		byte[] messageBytes = new byte[packet.getInt()];
-		packet.get(messageBytes);
-		String message = new String(messageBytes);
-		// Create new packet with ID>
+	public void chatMessage(String channel, String message) {
+		// Create new packet with ID.
 		ByteBuffer newPacket = ServerMessages.createChatPkt(channel, message, this.id);
 		newPacket.flip();
 		this.chatChannel.get().send(null, newPacket);
