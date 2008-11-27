@@ -47,7 +47,7 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @version Creation date: 05-29-08 11:23 EST
- * @version Modified date: 06-03-08 10:59 EST
+ * @version Modified date: 11-26-08 21:08 EST
  */
 public interface IClientProcessor extends IProtocolProcessor {
 	
@@ -127,4 +127,13 @@ public interface IClientProcessor extends IProtocolProcessor {
      * @param y The y coordinate of the respawn position
      */
     public void respawn(int objectID, float x, float y);// RealTime.
+    
+    /**
+     * Display the chat message on given channel with given source.
+     * @param channel The <code>String</code> channel to display on.
+     * @param source The <code>String</code> source of the message.
+     * @param message The <code>String</code> actual message.
+     * @param id The <code>Integer</code> ID of the sender.
+     */
+    public void chatMessage(String channel, String source, String message, int id);
 }

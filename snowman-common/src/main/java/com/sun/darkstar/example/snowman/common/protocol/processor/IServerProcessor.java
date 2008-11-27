@@ -44,7 +44,7 @@ package com.sun.darkstar.example.snowman.common.protocol.processor;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @version Creation date: 05-29-08 11:44 EST
- * @version Modified date: 06-03-08 10:58 EST
+ * @version Modified date: 11-26-08 21:14 EST
  */
 public interface IServerProcessor extends IProtocolProcessor {
 
@@ -151,4 +151,11 @@ public interface IServerProcessor extends IProtocolProcessor {
      * @param y The y coordinate of the client position
      */
     public void score(float x, float y);
+    
+    /**
+     * Broadcast the chat message with inserted source name.
+     * @param channel The <code>String</code> channel value.
+     * @param message The <code>String</code> actual chat message.
+     */
+    public void chatMessage(String channel, String message);
 }

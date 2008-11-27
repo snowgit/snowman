@@ -32,8 +32,6 @@
 
 package com.sun.darkstar.example.snowman.common.protocol.processor;
 
-import java.nio.ByteBuffer;
-
 /**
  * <code>IProtocolProcessor</code> defines a common parent interface for both
  * <code>IClientProcessor</code> and <code>IServerProcessor</code>.
@@ -42,7 +40,7 @@ import java.nio.ByteBuffer;
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @version Creation date: 05-29-08 12:05 EST
- * @version Modified date: 11-19-08 10:52 EST
+ * @version Modified date: 11-26-08 21:06 EST
  */
 public interface IProtocolProcessor {
     
@@ -66,12 +64,4 @@ public interface IProtocolProcessor {
      * </p>
      */
     public void ready();
-    
-    /**
-     * Process the give chat message. The client should display the information
-     * in the message. The server should insert the source ID and broadcast the
-     * modified message in the chat channel.
-     * @param packet The <code>ByteBuffer</code> packet.
-     */
-    public void chatMessage(ByteBuffer packet);
 }
