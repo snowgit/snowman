@@ -31,8 +31,6 @@
  */
 package com.sun.darkstar.example.snowman.client.handler.message;
 
-import java.nio.ByteBuffer;
-
 import com.sun.darkstar.example.snowman.client.handler.ClientHandler;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
@@ -56,7 +54,7 @@ import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
  * 
  * @author Yi Wang (Neakor)
  * @version Creation date: 05-27-2008 11:57 EST
- * @version Modified date: 08-11-2008 16:56 EST
+ * @version Modified date: 11-26-2008 21:10 EST
  */
 public class MessageProcessor implements IClientProcessor {
 	/**
@@ -135,18 +133,7 @@ public class MessageProcessor implements IClientProcessor {
 	}
 	
 	@Override
-	public void chatMessage(ByteBuffer packet) {
-		// Read out channel.
-		byte[] channelBytes = new byte[packet.getInt()];
-		packet.get(channelBytes);
-		String channel = new String(channelBytes);
-		// Read out message.
-		byte[] messageBytes = new byte[packet.getInt()];
-		packet.get(messageBytes);
-		String message = new String(messageBytes);
-		// Read out source.
-		int id = packet.getInt();
-		String source = String.valueOf(id);
+	public void chatMessage(String channel, String source, String message, int id) {
 		// Append message if it is no my self.
 		if(this.myID != id) {
 			((BattleState)this.handler.getGame().getGameState(EGameState.BattleState)).getGUI().appendChatMessage(channel, source, message);
