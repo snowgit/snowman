@@ -159,9 +159,9 @@ class SimulatedPlayer implements SimpleClientListener {
      * </dl> <p>
      * 
      * @param props properties to configure this player
-     * @param moveDelay the minimun delay, in milliseconds, between move messages
+     * @param moveDelay the minimum delay, in milliseconds, between move messages
      * @throws java.lang.Exception if a required property is missing or an
-     * an error occurs communiticating with the server.
+     * an error occurs communicating with the server.
      */
     public SimulatedPlayer(Properties props, int moveDelay) throws Exception {
         this.moveDelay = moveDelay;
@@ -323,6 +323,12 @@ class SimulatedPlayer implements SimpleClientListener {
             } else
                 logger.log(Level.FINEST, "Message to {0}: Respawn MOB {1} at {2},{3}",
                        new Object[] {name, objectID, x, y});
+        }
+
+        public void chatMessage(String channel, String source, String message, int id) {
+            if (logger.isLoggable(Level.FINEST))
+                    logger.log(Level.FINEST, "received chat from {0}: {1}",
+                               new Object[] {source, message});
         }
     }
     
