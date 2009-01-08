@@ -476,15 +476,12 @@ class SimulatedPlayer implements SimpleClientListener {
      * Quit the game. The player will logout from the server and will no
      * longer be able to move, i.e {@code move} will become a no-op.
      */
-    synchronized void quit() {
-        logger.log(Level.FINE, "Player: {0} quit", name);
-        if ((state == PLAYERSTATE.Playing) ||
-            (state == PLAYERSTATE.Paused)) {
+    void quit() {
+        if (setState(PLAYERSTATE.Quit)) {
             try {
                 simpleClient.logout(false);
             } catch (Exception ignore) {}
         }
-        state = PLAYERSTATE.Quit;
     }
     
     private void send(ByteBuffer buff) throws IOException {
