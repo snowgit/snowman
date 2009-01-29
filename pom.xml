@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.projectdarkstar</groupId>
     <artifactId>sgs</artifactId>
-    <version>7</version>
+    <version>12</version>
   </parent>
 
   <groupId>com.projectdarkstar.example.projectsnowman</groupId>
@@ -37,6 +37,32 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+	<groupId>com.projectdarkstar.server</groupId>
+	<artifactId>sgs-server</artifactId>
+	<version>${sgs-server.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.server</groupId>
+	<artifactId>sgs-server-api</artifactId>
+	<scope>provided</scope>
+	<version>${sgs-server.version}</version>
+      </dependency>
+
+      <dependency>
+	<groupId>com.projectdarkstar.client</groupId>
+	<artifactId>sgs-client</artifactId>
+	<scope>runtime</scope>
+	<version>${sgs-client.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>com.projectdarkstar.client</groupId>
+	<artifactId>sgs-client-api</artifactId>
+	<scope>provided</scope>
+	<version>${sgs-client.version}</version>
+      </dependency>
+
+
       <dependency>
 	<groupId>com.projectdarkstar.ext.com.jmonkeyengine</groupId>
 	<artifactId>jme</artifactId>
@@ -151,6 +177,12 @@
 	<version>${easymock.version}</version>
 	<scope>test</scope>
       </dependency>
+      <dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>${junit.version}</version>
+	<scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -193,42 +225,46 @@
 	</executions>
       </plugin>
 
-      <!-- The lwjgl binary package must be retrieved and unpacked
-	   Before the test phase so that they are available during
-	   runtime of the application.  To enable this dependency,
-	   activate the unpack-lwjgl-binaries execution id in the
-	   child POM -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-lwjgl-binaries</id>
-	    <goals>
-	      <goal>unpack</goal>
-            </goals>
-            <configuration>
-	      <artifactItems>
-                <artifactItem>
-                  <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
-                  <artifactId>lwjgl-binaries</artifactId>
-		  <type>zip</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>
-		    ${project.build.directory}/
-		  </outputDirectory>
-                </artifactItem>
-	      </artifactItems>
-            </configuration>
-          </execution>
-	</executions>
-      </plugin>
-
     </plugins>
 
+    <pluginManagement>
+      <plugins>
+
+	<!-- The lwjgl binary package must be retrieved and unpacked
+	     Before the test phase so that they are available during
+	     runtime of the application.  To enable this dependency,
+	     activate the unpack-lwjgl-binaries execution id in the
+	     child POM -->
+	<plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>unpack-lwjgl-binaries</id>
+	      <goals>
+		<goal>unpack</goal>
+              </goals>
+              <configuration>
+		<artifactItems>
+                  <artifactItem>
+                    <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
+                    <artifactId>lwjgl-binaries</artifactId>
+		    <type>zip</type>
+                    <overWrite>false</overWrite>
+                    <outputDirectory>
+		      ${project.build.directory}/
+		    </outputDirectory>
+                  </artifactItem>
+		</artifactItems>
+              </configuration>
+            </execution>
+	  </executions>
+	</plugin>
+	
+      </plugins>
+    </pluginManagement>
+
   </build>
-
-
 
   <repositories>
     <repository>
@@ -243,17 +279,20 @@
       <url>https://games-darkstar.dev.java.net/nonav/snapshots</url>
       <layout>default</layout>
     </repository>
-    <repository>
-      <id>easymock.repository</id>
-      <name>Easymock Repository</name>
-      <url>http://easymock.org/maven/repository</url>
-      <layout>default</layout>
-    </repository>
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>java.net</id>
+      <name>java.net Maven2 Repository</name>
+      <url>http://download.java.net/maven/2/</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
-    <sgs.version>0.9.7.1</sgs.version>
-    <sgs-shared.version>1.0</sgs-shared.version>
+    <sgs-server.version>0.9.8</sgs-server.version>
+    <sgs-client.version>0.9.8</sgs-client.version>
     <jme.version>2.0-SNAPSHOT</jme.version>
     <fenggui.version>1.0-SNAPSHOT</fenggui.version>
     <environmentsystem.version>1.1</environmentsystem.version>
