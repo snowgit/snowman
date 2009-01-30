@@ -141,12 +141,6 @@
           <execution>
             <id>unpack-lwjgl-binaries</id>
           </execution>
-
-	  <!-- Unbind the bdb-binaries unpack -->
-	  <execution>
-	    <id>unpack-bdb-binaries</id>
-	    <phase></phase>
-	  </execution>
         </executions>
       </plugin>
     </plugins>
@@ -272,9 +266,13 @@
 		  <tasks>
 		    <java classname="com.sun.darkstar.example.snowman.ClientApplication"
 			  fork="true">
-		      <jvmarg line="${run.jvm.args} -Dreliable=false -Dhost=${server.host} -Dport=${server.port} -Dsnowman.config.noshow=true"/>
+		      <jvmarg line="${jvm.args} ${jvm.args.extra}"/>
+		      <sysproperty key="reliable" value="false"/>
+		      <sysproperty key="host" value="${server.host}"/>
+		      <sysproperty key="port" value="${server.port}"/>
+		      <sysproperty key="snowman.config.noshow" value="true"/>
 		      <sysproperty key="java.util.logging.config.file"
-				   file="${run.logging}"/>
+				   file="${logging.properties}"/>
 		      <sysproperty key="java.library.path" 
 				   file="${project.build.directory}/lwjgl-binaries/${lwjgl.lib.dir}"/>
 		      <classpath>
@@ -293,10 +291,9 @@
   </profiles>
 
   <properties>
-    <run.jvm.args>-Xmx1024m -Xms32m</run.jvm.args>
-    <run.logging>
-      ${basedir}/src/test/properties/logging.properties
-    </run.logging>
+    <jvm.args>-Xmx1024m -Xms32m</jvm.args>
+    <jvm.args.extra></jvm.args.extra>
+    <logging.properties>${basedir}/src/test/properties/logging.properties</logging.properties>
     
     <server.host>localhost</server.host>
     <server.port>3000</server.port>

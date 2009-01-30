@@ -43,6 +43,7 @@
       <groupId>com.projectdarkstar.ext.berkeleydb</groupId>
       <artifactId>db-binaries</artifactId>
       <type>zip</type>
+      <version>4.5.20</version>
     </dependency>
     <dependency>
       <groupId>com.projectdarkstar.ext.org.lwjgl</groupId>
