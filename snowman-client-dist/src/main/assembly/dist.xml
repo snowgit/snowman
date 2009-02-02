@@ -1,0 +1,53 @@
+<assembly>
+  <includeBaseDirectory>true</includeBaseDirectory>
+  <formats>
+    <format>zip</format>
+  </formats>
+  
+  <dependencySets>
+
+    <!-- Include the common transitive dependencies -->
+    <dependencySet>
+      <excludes>
+	<exclude>com.projectdarkstar.example.projectsnowman:snowman-client-simulator:jar</exclude>
+	<exclude>com.projectdarkstar.example.projectsnowman:snowman-world-editor:jar</exclude>
+	<exclude>*:zip</exclude>
+      </excludes>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+
+    <!-- Include the main artifacts -->
+    <dependencySet>
+      <includes>
+	<include>com.projectdarkstar.example.projectsnowman:snowman-client:jar</include>
+	<include>com.projectdarkstar.example.projectsnowman:snowman-client-simulator:jar</include>
+	<include>com.projectdarkstar.example.projectsnowman:snowman-world-editor:jar</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+    </dependencySet>
+
+  </dependencySets>
+
+
+
+  <fileSets>
+    <!-- Include the build and README files -->
+    <fileSet>
+      <directory>src/main/etc</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+
+    <!-- Include all of the LWJGL binaries -->
+    <fileSet>
+      <directory>${project.build.directory}/lwjgl-binaries</directory>
+      <outputDirectory>lib/natives</outputDirectory>
+    </fileSet>
+
+
+  </fileSets>
+
+
+</assembly>

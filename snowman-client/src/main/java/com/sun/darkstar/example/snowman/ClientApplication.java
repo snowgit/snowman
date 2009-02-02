@@ -32,6 +32,7 @@
 package com.sun.darkstar.example.snowman;
 
 import java.net.URL;
+import java.io.File;
 
 import com.jme.app.AbstractGame.ConfigShowMode;
 import com.sun.darkstar.example.snowman.client.Client;
@@ -49,32 +50,68 @@ import com.sun.darkstar.example.snowman.game.Game;
  */
 public class ClientApplication {
 
-	/**
-	 * Main entry point of client program.
-	 * @param args Nothing needs to be passed in.
-	 */
-	public static void main(String[] args) {
-		// Construct components.
-		ClientHandler handler = new ClientHandler();
-		Client client = new Client();
-		Game game = new Game();
-		if (System.getProperty("snowman.config.noshow") == null) {
-			game.setConfigShowMode(ConfigShowMode.AlwaysShow, (URL)null);
-		} else {
-			game.setConfigShowMode(ConfigShowMode.ShowIfNoConfig, (URL)null);
-		}
+    /**
+     * Main entry point of client program.
+     * @param args Nothing needs to be passed in.
+     */
+    public static void main(String[] args) throws Exception {
+        setLibraryPath();
+        
+        // Construct components.
+        ClientHandler handler = new ClientHandler();
+        Client client = new Client();
+        Game game = new Game();
+        game.setConfigShowMode(ConfigShowMode.ShowIfNoConfig, (URL) null);
 
-		// Establish component connections.
-		handler.connect(game);
-		client.connect(handler);
-		game.connect(client);
-		// Initialize components.
-		try {
-			handler.activate();
-			client.activate();
-			game.activate();
-		} catch (MissingComponentException e) {
-			e.printStackTrace();
-		}
-	}
+        // Establish component connections.
+        handler.connect(game);
+        client.connect(handler);
+        game.connect(client);
+        // Initialize components.
+        try {
+            handler.activate();
+            client.activate();
+            game.activate();
+        } catch (MissingComponentException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private static void setLibraryPath() throws Exception {
+        if (System.getProperty("org.lwjgl.librarypath") == null) {
+            URL jarLocation = ClientApplication.class.
+                    getProtectionDomain().getCodeSource().getLocation();
+            File jarFile = new File(jarLocation.toURI());
+            File jarDirectory = jarFile.getParentFile();
+            
+            String name = System.getProperty("os.name");
+            String arch = System.getProperty("os.arch");
+
+            String nativeDir = "";
+            if ("Linux".equals(name) && "i386".equals(arch)) {
+                nativeDir = "linux";
+            } else if ("Linux".equals(name) &&
+                    ("x86_64".equals(arch) || "amd64".equals(arch))) {
+                nativeDir = "linux64";
+            } else if ("Mac OS X".equals(name) &&
+                    ("i386".equals(arch) || "x86_64".equals(arch))) {
+                nativeDir = "macosx";
+            } else if ("SunOS".equals(name) && "x86".equals(arch)) {
+                nativeDir = "solaris";
+            } else if (name != null && name.startsWith("Windows")) {
+                nativeDir = "win32";
+            } else {
+                throw new IllegalStateException("Unsupported platform: \n" +
+                                                "Name    : " + name + "\n" +
+                                                "Arch    : " + arch);
+            }
+            
+            File nativesDirectory = new File(jarDirectory, 
+                                             "lib" + File.separator + 
+                                             "natives" + File.separator + 
+                                             nativeDir);
+            System.setProperty("org.lwjgl.librarypath", 
+                               nativesDirectory.getAbsolutePath());
+        }
+    }
 }

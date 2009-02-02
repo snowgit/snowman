@@ -56,22 +56,6 @@
 	</configuration>
       </plugin>
 
-      <!-- Disable unpacking the binaries -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-lwjgl-binaries</id>
-	    <phase></phase>
-          </execution>
-	  <execution>
-	    <id>unpack-bdb-binaries</id>
-	    <phase></phase>
-	  </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
 
@@ -100,9 +84,9 @@
 		  <tasks>
 		    <java classname="com.sun.darkstar.example.snowman.clientsimulator.ClientSimulator"
 			  fork="true">
-		      <jvmarg line="${run.jvm.args}"/>
+		      <jvmarg line="${jvm.args} ${jvm.args.extra}"/>
 		      <sysproperty key="java.util.logging.config.file"
-				   file="${run.logging}"/>
+				   file="${logging.properties}"/>
 
 		      <sysproperty key="reliable" value="true"/>
 		      <sysproperty key="connectTimeout" value="${connectTimeout}"/>
@@ -130,10 +114,9 @@
   </profiles>
 
   <properties>
-    <run.jvm.args></run.jvm.args>
-    <run.logging>
-      ${basedir}/src/test/properties/logging.properties
-    </run.logging>
+    <jvm.args></jvm.args>
+    <jvm.args.extra></jvm.args.extra>
+    <logging.properties>${basedir}/src/test/properties/logging.properties</logging.properties>
     
     <server.host>localhost</server.host>
     <server.port>3000</server.port>

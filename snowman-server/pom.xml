@@ -18,16 +18,6 @@
   </description>
 
   <dependencies>
-    <!-- Compile time dependencies -->
-
-    <!-- Runtime dependencies -->
-    <dependency>
-      <groupId>com.projectdarkstar.ext.berkeleydb</groupId>
-      <artifactId>db-binaries</artifactId>
-      <type>zip</type>
-    </dependency>
-
-    <!-- Compile and Runtime dependencies -->
     <dependency>
       <groupId>com.projectdarkstar.server</groupId>
       <artifactId>sgs-server</artifactId>
@@ -52,285 +42,146 @@
     </dependency>
   </dependencies>
 
-  <!-- Profiles setup to execute the server
-       Enabling these profiles will bind the antrun test-run execution
-       to the process-test-resources phase
-       i.e. mvn process-test-resources -Psingle-node-server -->
+
+   <!-- 
+	The profiles below are used to launch the server with
+	various different configurations.  For example, the default
+	will use the sgs-maven-plugin to launch the server in single
+	node mode using bdb :
+	
+	mvn verify -Prun-server
+	
+	There are also explicit profiles to specify the db type, and the node
+	type that can be matched up:
+	
+	mvn verify -Prun-server,je,multi-node-server-core
+	
+	Additionally, the jvm.args, and jvm.args.extra properties can be
+	overridden to send command line arguments to the resulting server:
+	
+	mvn verify -Prun-server -Djvm.args.extra="-Dcom.sun.sgs.app.name=NewName"
+	
+	When running multiple app nodes on the same machine, the shutdown.port
+	property must be different for each app node.  The app.port must also
+	be different:
+	
+	mvn verify -Prun-server,multi-node-server-app -Dshutdown.port=1137 -Dapp.port=3000
+	mvn verify -Prun-server,multi-node-server-app -Dshutdown.port=1136 -Dapp.port=3001
+	...
+    -->
   <profiles>
 
-    <!-- Single node profile -->
+    <profile>
+      <id>run-server</id>
+      
+      <build>
+	<plugins>
+
+	  <!-- Configure deployment and bootup of server -->
+	  <plugin>
+	    <groupId>com.projectdarkstar.maven.plugin</groupId>
+	    <artifactId>sgs-maven-plugin</artifactId>
+	    <version>1.0-alpha-3</version>
+	    <executions>
+	      <execution>
+		<id>sgs-run</id>
+		<phase>integration-test</phase>
+		<goals>
+		  <goal>install</goal>
+                  <goal>configure</goal>
+                  <goal>deploy</goal>
+		  <goal>deploy-dependencies</goal>
+		  <goal>boot</goal>
+		</goals>
+              </execution>
+	    </executions>
+	    <configuration>
+	      <version>${sgs-server.version}</version>
+	      <sgsHome>${project.build.directory}/sgs-server-dist-${sgs-server.version}</sgsHome>
+              <sgsBoot>${project.build.directory}/test-classes/darkstar-server.boot</sgsBoot>
+	      <sgsServer>${project.build.directory}/test-classes/darkstar-server.properties</sgsServer>
+	      <sgsLogging>${logging.properties}</sgsLogging>
+	      <files>
+		<file>${project.artifact.file}</file>
+	      </files>
+	      <excludeArtifactIds>
+		<excludeArtifactId>sgs-server</excludeArtifactId>
+	      </excludeArtifactIds>
+	    </configuration>
+	  </plugin>
+	  
+	</plugins>
+      </build>
+    </profile>
+
+
+    <profile>
+      <id>db</id>
+      <properties>
+	<db.type>db</db.type>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>je</id>
+      <properties>
+	<db.type>je</db.type>
+      </properties>
+    </profile>
+
     <profile>
       <id>single-node-server</id>
       <properties>
-	<run.phase>process-test-resources</run.phase>
+	<node.type>singleNode</node.type>
       </properties>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-	    <executions>
-	      
-	      <!-- Generate the properties file to be used during execution -->
-	      <execution>
-		<id>generate-properties</id>
-		<phase>generate-test-resources</phase>
-		<goals>
-		  <goal>run</goal>
-		</goals>
-		<configuration>
-		  <tasks>
-		    <concat destfile="${run.properties}" fixlastline="yes">
-		      <header filtering="no" trimleading="yes">
-			com.sun.sgs.app.name=ProjectSnowman
-			com.sun.sgs.app.root=${project.build.directory}
-			com.sun.sgs.app.port=${server.port}
-			com.sun.sgs.impl.service.transport.udp.port=1234
-			com.sun.sgs.impl.service.data.store.db.environment.class=${run.bdb.env}
-			com.sun.sgs.impl.service.data.store.DataStoreImpl.directory=${datastore.dir}
-			//
-		      </header>
-		      <fileset file="${run.properties.darkstar}"/>
-		      <fileset file="${run.properties.server}"/>
-		    </concat>
-		  </tasks>
-		</configuration>
-	      </execution>
-	    </executions>
-	  </plugin>
-	</plugins>
-      </build>
     </profile>
 
-    <!-- Multi node app server -->
     <profile>
       <id>multi-node-server-core</id>
       <properties>
-	<run.phase>process-test-resources</run.phase>
+	<node.type>coreServerNode</node.type>
       </properties>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-	    <executions>
-	      
-	      <!-- Generate the properties file to be used during execution -->
-	      <execution>
-		<id>generate-properties</id>
-		<phase>generate-test-resources</phase>
-		<goals>
-		  <goal>run</goal>
-		</goals>
-		<configuration>
-		  <tasks>
-		    <concat destfile="${run.properties}" fixlastline="yes">
-		      com.sun.sgs.app.name=ProjectSnowman
-		      com.sun.sgs.app.root=${project.build.directory}
-		      com.sun.sgs.node.type=coreServerNode
-		      com.sun.sgs.impl.service.transport.udp.port=1234
-		      com.sun.sgs.impl.service.data.store.db.environment.class=${run.bdb.env}
-		      com.sun.sgs.impl.service.data.store.DataStoreImpl.directory=${datastore.dir}
-		    </concat>
-		  </tasks>
-		</configuration>
-	      </execution>
-	    </executions>
-	  </plugin>
-	</plugins>
-      </build>
     </profile>
 
-    <!-- Multi node core server -->
     <profile>
       <id>multi-node-server-app</id>
       <properties>
-	<run.phase>process-test-resources</run.phase>
+	<node.type>appNode</node.type>
+	<shutdown.port>1137</shutdown.port>
+	<app.port>3000</app.port>
       </properties>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-	    <executions>
-	      
-	      <!-- Generate the properties file to be used during execution -->
-	      <execution>
-		<id>generate-properties</id>
-		<phase>generate-test-resources</phase>
-		<goals>
-		  <goal>run</goal>
-		</goals>
-		<configuration>
-		  <tasks>
-		    <concat destfile="${run.properties}" fixlastline="yes">
-		      <header filtering="no" trimleading="yes">
-			com.sun.sgs.app.name=ProjectSnowman
-			com.sun.sgs.app.root=${project.build.directory}
-			com.sun.sgs.app.port=${server.port}
-			com.sun.sgs.node.type=appNode
-			com.sun.sgs.server.host=${server.host}
-			//
-		      </header>
-		      <fileset file="${run.properties.darkstar}"/>
-		      <fileset file="${run.properties.server}"/>
-		    </concat>
-		  </tasks>
-		</configuration>
-	      </execution>
-	    </executions>
-	  </plugin>
-	</plugins>
-      </build>
-    </profile>
-
-    <!-- Disable the deletion of the datastore
-	 by unbinding it from the lifecycle.
-	 Enabling this profile will keep the datastore from a previous
-	 execution if it exists.  example:
-	 mvn process-test-resources -Psingle-node-server,retain-datastore -->
-    <profile>
-      <id>retain-datastore</id>
-      <build>
-	<plugins>
-	  <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-	    <executions>
-	      <execution>
-		<id>clean-datastore</id>
-		<phase></phase>
-	      </execution>
-	    </executions>
-	  </plugin>
-	</plugins>
-      </build>
     </profile>
 
   </profiles>
 
   <build>
     <plugins>
-
-      <!-- Make the jar executable, referencing all of its dependencies -->
-      <plugin>
-	<artifactId>maven-jar-plugin</artifactId>
-	<configuration>
-	  <archive>
-	    <manifest>
-	      <addClasspath>true</addClasspath>
-	      <classpathPrefix>lib/</classpathPrefix>
-	      <mainClass>com.sun.sgs.impl.kernel.Kernel</mainClass>
-	    </manifest>
-	  </archive>
-	</configuration>
+      <!-- Use version 2.3 of the resources plugin 
+	   to pickup a needed filtering bugfix -->
+      <plugin>                
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.3</version>
       </plugin>
-
-      <!-- The berkeleydb binary package must be retrieved and unpacked
-	   Before the test phase so that they are available during
-	   runtime of the unit tests and other executions-->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-bdb-binaries</id>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-	<executions>
-
-	  <!-- Cleans out the directories used to run the app
-	       Runs during the validate phase -->
-	  <execution>
-	    <id>clean-datastore</id>
-	    <phase>generate-test-resources</phase>
-	    <goals>
-              <goal>run</goal>
-            </goals>
-	    <configuration>
-              <tasks>
-		<delete dir="${datastore.dir}"/>
-              </tasks>
-            </configuration>
-	  </execution>
-
-	  <!-- Builds the directories necessary for running the app
-	       with the antrun configuration.  Runs in the
-	       generate-test-resources phase -->
-          <execution>
-            <id>make-datastore</id>
-            <phase>generate-test-resources</phase>
-	    <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <mkdir dir="${datastore.dir}"/>
-              </tasks>
-            </configuration>
-          </execution>
-
-	  <!-- The test-run profile execution of the antrun plugin
-	       is configured to run the application
-	       In order to bind it to a lifecycle phase and 
-	       provide the appropriate logging parameter, enable
-	       one of the profiles above.  example:
-	       mvn process-test-resources -Psingle-node-server -->
-	  <execution>
-	    <id>test-run</id>
-	    <phase>${run.phase}</phase>
-	    <goals>
-	      <goal>run</goal>
-	    </goals>
-	    <configuration>
-	      <tasks>
-		<java classname="com.sun.sgs.impl.kernel.Kernel"
-		      fork="true">
-		  <jvmarg line="${run.jvm.args} -DnumPlayersPerGame=${numPlayersPerGame} -DnumRobotsPerGame=${numRobotsPerGame} -DrobotDelay=${robotDelay}"/>
-		  <jvmarg line="${run.jvm.args.profile}"/>
-		  <sysproperty key="java.library.path" 
-			       file="${run.javapath}"/>
-		  <sysproperty key="java.util.logging.config.file"
-			       file="${run.logging}"/>
-		  <classpath>
-		    <path refid="maven.test.classpath"/>
-		  </classpath>
-		  <arg value="${run.properties}"/>
-		</java>
-	      </tasks>
-	    </configuration>
-	  </execution>
-	  
-        </executions>
-      </plugin>
-
     </plugins>
+
+    <!-- Enable filtering of the properties files -->
+    <testResources>
+      <testResource>
+	<directory>src/test/properties</directory>
+	<filtering>true</filtering>
+      </testResource>
+    </testResources>
   </build>
 
   <properties>
-    <run.jvm.args>-Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRatio=1</run.jvm.args>
-    <run.jvm.args.profile></run.jvm.args.profile>
+    <jvm.args>-Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRatio=1</jvm.args>
+    <jvm.args.extra></jvm.args.extra>
+    <logging.properties>${basedir}/src/test/properties/logging.properties</logging.properties>
 
-    <run.logging>
-      ${basedir}/src/test/properties/logging.properties
-    </run.logging>
-    <run.properties.darkstar>
-      ${basedir}/src/test/properties/darkstar-server.properties
-    </run.properties.darkstar>
-    <run.properties.server>
-      ${basedir}/src/test/properties/snowman-server.properties
-    </run.properties.server>
-
-    <run.properties>${project.build.directory}/server.properties</run.properties>
-    <datastore.dir>${project.build.directory}/dsdb</datastore.dir>
-    <server.host>localhost</server.host>
-    <server.port>3000</server.port>
-
-    <!-- Snowman game properties -->
-    <numPlayersPerGame></numPlayersPerGame>
-    <numRobotsPerGame></numRobotsPerGame>
-    <robotDelay></robotDelay>
-
+    <node.type>singleNode</node.type>
+    <db.type>db</db.type>
+    <shutdown.port>1138</shutdown.port>
+    <app.port>3000</app.port>
   </properties>
 
 </project>
