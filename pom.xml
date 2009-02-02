@@ -34,7 +34,6 @@
     <module>snowman-world-editor</module>
     <module>snowman-server-dist</module>
     <module>snowman-client-dist</module>
-    <module>snowman-dist</module>
   </modules>
 
   <dependencyManagement>
