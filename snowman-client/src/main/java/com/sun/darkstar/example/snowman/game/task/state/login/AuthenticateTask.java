@@ -90,8 +90,8 @@ public class AuthenticateTask extends RealTimeTask {
 		InputManager.getInstance().setInputActive(false);
 		this.game.getClient().getHandler().authenticate(this.username, this.password);
 		Properties properties = new Properties();
-		properties.setProperty("host", System.getProperty("host", "localhost"));
-		properties.setProperty("port", System.getProperty("port", "3000"));
+		properties.setProperty("host", System.getProperty("server.host", "localhost"));
+		properties.setProperty("port", System.getProperty("server.port", "3000"));
 		this.game.getClient().login(properties);
 	}
 }

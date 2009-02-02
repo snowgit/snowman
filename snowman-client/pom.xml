@@ -268,12 +268,11 @@
 			  fork="true">
 		      <jvmarg line="${jvm.args} ${jvm.args.extra}"/>
 		      <sysproperty key="reliable" value="false"/>
-		      <sysproperty key="host" value="${server.host}"/>
-		      <sysproperty key="port" value="${server.port}"/>
-		      <sysproperty key="snowman.config.noshow" value="true"/>
+		      <sysproperty key="server.host" value="${server.host}"/>
+		      <sysproperty key="server.port" value="${server.port}"/>
 		      <sysproperty key="java.util.logging.config.file"
 				   file="${logging.properties}"/>
-		      <sysproperty key="java.library.path" 
+		      <sysproperty key="org.lwjgl.librarypath" 
 				   file="${project.build.directory}/lwjgl-binaries/${lwjgl.lib.dir}"/>
 		      <classpath>
 			<path refid="maven.test.classpath"/>
