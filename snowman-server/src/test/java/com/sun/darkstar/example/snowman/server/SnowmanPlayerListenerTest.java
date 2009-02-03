@@ -32,20 +32,7 @@
 
 package com.sun.darkstar.example.snowman.server;
 
-import com.sun.darkstar.example.snowman.server.context.MockAppContext;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.interfaces.Matchmaker;
-import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
-import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import com.sun.sgs.app.DataManager;
-import com.sun.sgs.app.ClientSession;
 import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Assert;
-import org.easymock.EasyMock;
 
 /**
  * Test the SnowmanPlayerListener

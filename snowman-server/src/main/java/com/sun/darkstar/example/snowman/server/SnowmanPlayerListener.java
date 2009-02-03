@@ -34,10 +34,10 @@ package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
+import com.sun.sgs.app.AppContext;
 import java.nio.ByteBuffer;
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -56,14 +56,11 @@ public class SnowmanPlayerListener implements Serializable,
     private static Logger logger = Logger.getLogger(SnowmanPlayerListener.class.getName());
     public static final long serialVersionUID = 1L;
     
-    private final SnowmanAppContext appContext;
     private final ManagedReference<SnowmanPlayer> playerRef;
     
-    protected SnowmanPlayerListener(SnowmanAppContext appContext,
-                                    SnowmanPlayer player)
+    protected SnowmanPlayerListener(SnowmanPlayer player)
     {
-        this.appContext = appContext;
-        this.playerRef = appContext.getDataManager().createReference(player);
+        this.playerRef = AppContext.getDataManager().createReference(player);
     }
     
     public void receivedMessage(ByteBuffer arg0) {
@@ -83,7 +80,7 @@ public class SnowmanPlayerListener implements Serializable,
             if (player.getGame() != null)
                 player.getGame().removePlayer(player);
 
-            appContext.getDataManager().removeObject(player);
+            AppContext.getDataManager().removeObject(player);
         } catch (ObjectNotFoundException alreadyDisconnected) {}
     }
     

@@ -32,7 +32,6 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
@@ -49,10 +48,9 @@ public class GameFactoryImpl implements GameFactory, Serializable
     
     public SnowmanGame createSnowmanGame(String gameName,
                                          int numPlayers,
-                                         SnowmanAppContext appContext,
                                          EntityFactory entityFactory)
     {
-        return new SnowmanGameImpl(gameName, numPlayers, appContext, entityFactory);
+        return new SnowmanGameImpl(gameName, numPlayers, entityFactory);
     }
 
 }

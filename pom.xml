@@ -184,6 +184,12 @@
 	<version>${junit.version}</version>
 	<scope>test</scope>
       </dependency>
+      <dependency>
+	<groupId>net.java.dev</groupId>
+	<artifactId>mocksgs</artifactId>
+	<version>${mocksgs.version}</version>
+	<scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -302,6 +308,7 @@
     <lwjgl.version>2.0rc2</lwjgl.version>
     <jorbis.version>0.0.17</jorbis.version>
     <easymock.version>2.4</easymock.version>
+    <mocksgs.version>1.0.2</mocksgs.version>
   </properties>
 
 </project>

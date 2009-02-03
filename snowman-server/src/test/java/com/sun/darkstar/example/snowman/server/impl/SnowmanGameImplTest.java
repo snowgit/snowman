@@ -32,28 +32,24 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
-import com.sun.darkstar.example.snowman.server.context.MockAppContext;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ChannelManager;
 import com.sun.sgs.app.Delivery;
 import com.sun.sgs.app.ClientSession;
+import com.sun.sgs.internal.InternalContext;
+import net.java.dev.mocksgs.MockSGS;
+import net.java.dev.mocksgs.MockManagerLocator;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.easymock.EasyMock;
-import java.nio.ByteBuffer;
 
 /**
  *
@@ -68,10 +64,11 @@ public class SnowmanGameImplTest
     public void initializeContext()
     {
         //create the context
-        MockAppContext.create();
+        MockSGS.init();
+
         //update the behavior of the ChannelManager
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
-        ChannelManager channelManager = appContext.getChannelManager();
+        ChannelManager channelManager = EasyMock.createMock(ChannelManager.class);
+        ((MockManagerLocator)InternalContext.getManagerLocator()).setChannelManager(channelManager);
         gameChannel = EasyMock.createNiceMock(Channel.class);
         EasyMock.expect(channelManager.createChannel(SnowmanGameImpl.CHANPREFIX+gameName, null, Delivery.RELIABLE)).andStubReturn(gameChannel);
         EasyMock.replay(channelManager);
@@ -81,7 +78,7 @@ public class SnowmanGameImplTest
     @After
     public void takeDownContext()
     {
-        SnowmanAppContextFactory.setAppContext(null);
+        MockSGS.reset();
     }
     
     /**
@@ -102,13 +99,12 @@ public class SnowmanGameImplTest
         EasyMock.replay(dummyEntityFactory);
         
         //create the player
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
         ClientSession session = EasyMock.createNiceMock(ClientSession.class);
         SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
         ETeamColor color = ETeamColor.Red;
         
         //create the game
-        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, dummyEntityFactory);
         
         //record information that should be set on the player
         dummyPlayer.setID(1);
@@ -151,7 +147,6 @@ public class SnowmanGameImplTest
         EasyMock.replay(dummyEntityFactory);
         
         //create the player
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
         ClientSession session = EasyMock.createNiceMock(ClientSession.class);
         SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
         ETeamColor color = ETeamColor.Red;
@@ -162,7 +157,7 @@ public class SnowmanGameImplTest
         ETeamColor color2 = ETeamColor.Blue;
         
         //create the game
-        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, dummyEntityFactory);
         
         //record information that should be set on the player1
         dummyPlayer.setID(1);
@@ -214,14 +209,13 @@ public class SnowmanGameImplTest
         EasyMock.replay(dummyEntityFactory);
         
         //create the players
-        SnowmanAppContext appContext = SnowmanAppContextFactory.getAppContext();
         SnowmanPlayer dummyPlayer = EasyMock.createMock(SnowmanPlayer.class);
         SnowmanPlayer dummyPlayer2 = EasyMock.createMock(SnowmanPlayer.class);
         SnowmanPlayer dummyPlayer3 = EasyMock.createMock(SnowmanPlayer.class);
         ETeamColor color = ETeamColor.Red;
         
         //create the game
-        SnowmanGame game = new SnowmanGameImpl(gameName, 4, appContext, dummyEntityFactory);
+        SnowmanGame game = new SnowmanGameImpl(gameName, 4, dummyEntityFactory);
         
         //add the players
         game.addPlayer(dummyPlayer, color);

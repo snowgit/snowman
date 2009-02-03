@@ -35,7 +35,6 @@ package com.sun.darkstar.example.snowman.server.impl;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
@@ -51,10 +50,9 @@ public class EntityFactoryImpl implements EntityFactory, Serializable
 {
     public static long serialVersionUID = 1L;
     
-    public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
-                                             ClientSession session)
+    public SnowmanPlayer createSnowmanPlayer(ClientSession session)
     {
-        return new SnowmanPlayerImpl(context, session.getName(), session);
+        return new SnowmanPlayerImpl(session.getName(), session);
     }
     
     public SnowmanPlayer createRobotPlayer(String name,

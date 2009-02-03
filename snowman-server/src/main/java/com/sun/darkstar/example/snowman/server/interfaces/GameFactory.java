@@ -32,7 +32,6 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 
 /**
  * Factory to create games.
@@ -43,7 +42,6 @@ public interface GameFactory
 {
     public SnowmanGame createSnowmanGame(String gameName,
                                          int numPlayers,
-                                         SnowmanAppContext appContext,
                                          EntityFactory entityFactory);
 
 }

@@ -37,9 +37,8 @@ import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
 import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.tasks.MatchmakerTask;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
@@ -80,26 +79,23 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
     private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
-    private SnowmanAppContext appContext;
     
     @SuppressWarnings("unchecked")
     public void initialize(Properties arg0) {
-        this.appContext = SnowmanAppContextFactory.getAppContext();
         this.gameFactory = new GameFactoryImpl();
         this.entityFactory = new EntityFactoryImpl();
         this.waitingDeques = new ManagedReference[NUMDEQUES];
         for(int i = 0; i < waitingDeques.length; i++) {
             Deque<ManagedReference<SnowmanPlayer>> deque = new ScalableDeque<ManagedReference<SnowmanPlayer>>();
-            waitingDeques[i] = appContext.getDataManager().createReference(deque);
+            waitingDeques[i] = AppContext.getDataManager().createReference(deque);
         }
         
         this.config();
-        appContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
+        AppContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
                                                                     numRobotsPerGame,
                                                                     robotDelay,
                                                                     gameFactory,
                                                                     entityFactory,
-                                                                    appContext,
                                                                     waitingDeques));
     }
     
@@ -128,8 +124,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener{
         if (logger.isLoggable(Level.FINE))
             logger.log(Level.FINE, "Player {0} logged in", session.getName());
         SnowmanPlayerListener player =
-                new SnowmanPlayerListener(appContext,
-                                          entityFactory.createSnowmanPlayer(appContext, session));
+                new SnowmanPlayerListener(entityFactory.createSnowmanPlayer(session));
         BigInteger id = player.getSnowmanPlayerRef().getId();
         BigInteger index = id.mod(BigInteger.valueOf((long)NUMDEQUES));
         

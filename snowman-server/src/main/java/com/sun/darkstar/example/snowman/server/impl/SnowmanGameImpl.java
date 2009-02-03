@@ -37,7 +37,6 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.exceptions.SnowmanFullException;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
@@ -97,7 +96,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	 */
 	private final Map<Integer, ManagedReference<SnowmanPlayer>>  playerRefs;
 
-	private final SnowmanAppContext appContext;
 	private final EntityFactory entityFactory;
 
 	/**
@@ -111,7 +109,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 	public SnowmanGameImpl(String gameName,
 			int numPlayers,
-			SnowmanAppContext appContext,
 			EntityFactory entityFactory)
 	{
 		this.gameName = gameName;
@@ -121,10 +118,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 		this.flagRefs = new HashMap< Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
 		this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
 
-		this.appContext = appContext;
 		this.entityFactory = entityFactory;
-		this.channelRef = appContext.getDataManager().createReference(
-				appContext.getChannelManager().createChannel(
+		this.channelRef = AppContext.getDataManager().createReference(
+                        AppContext.getChannelManager().createChannel(
 						CHANPREFIX+gameName, null, Delivery.RELIABLE));
 		initFlags();
 	}
@@ -169,7 +165,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 						flagGoal);
 			flag.setLocation(flagStart.getX(), flagStart.getY());
 			ManagedReference<SnowmanFlag> ref =
-				appContext.getDataManager().createReference(flag);
+				AppContext.getDataManager().createReference(flag);
 			flagRefs.put(flag.getID(), ref);
 		}
 	}
@@ -180,7 +176,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	}
 
 	public void addPlayer(SnowmanPlayer player, ETeamColor color) {
-		appContext.getDataManager().markForUpdate(this);
+		AppContext.getDataManager().markForUpdate(this);
 		//ensure we are not going over the limit
 		if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
 			throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
@@ -189,7 +185,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 		//get a reference to the player and add to the list
 		ManagedReference<SnowmanPlayer> playerRef = 
-			appContext.getDataManager().createReference(player);
+			AppContext.getDataManager().createReference(player);
 		Integer playerId = new Integer(nextPlayerId++);
 		playerRefs.put(playerId, playerRef);
 
@@ -215,7 +211,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 	// A player disconnected
 	public void removePlayer(SnowmanPlayer player){
-		appContext.getDataManager().markForUpdate(this);
+		AppContext.getDataManager().markForUpdate(this);
 		player.dropFlag();
 		ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
 		Channel channel = channelRef.get();
@@ -269,7 +265,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	}
 
 	public void startGameIfReady(){
-		appContext.getDataManager().markForUpdate(this);
+		AppContext.getDataManager().markForUpdate(this);
 		readyPlayers++;
 		if(readyPlayers >= realPlayers)
 			send(ServerMessages.createStartGamePkt());
@@ -291,8 +287,8 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 		// Attempt to clean up the game objects, including the channel, later
 		// so that the EndGame message is sent ASAP
-		appContext.getTaskManager().scheduleTask(
-				new ObjectRemovalTask(appContext.getDataManager().createReference(this)),
+		AppContext.getTaskManager().scheduleTask(
+				new ObjectRemovalTask(AppContext.getDataManager().createReference(this)),
 				CLEANUPDELAYMS);
 	}
 
@@ -313,7 +309,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	public void removingObject() {
 		Channel c = getGameChannel();
 		c.leaveAll();
-		appContext.getDataManager().removeObject(c);
+		AppContext.getDataManager().removeObject(c);
 
 		//only remove server side robots
 		//player listener is responsible for cleaning up client
@@ -322,12 +318,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 			try {
 				SnowmanPlayer p = ref.get();
 				if(p.isServerSide())
-					appContext.getDataManager().removeObject(p);
+					AppContext.getDataManager().removeObject(p);
 			} catch (ObjectNotFoundException alreadyRemoved) {}
 		}
 
 		for (ManagedReference<SnowmanFlag> ref : flagRefs.values()) {
-			appContext.getDataManager().removeObject(ref.get());
+			AppContext.getDataManager().removeObject(ref.get());
 		}
 	}
 
