@@ -226,7 +226,7 @@ class SimulatedPlayer implements SimpleClientListener {
         }
 
         @Override
-        public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
+        public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team, String mobName) {
             if (objectID == id) {
                 logger.log(Level.FINE, "Updating {0} start and end XY to {1},{2}",
                            new Object[] {name, x, y});
@@ -325,10 +325,10 @@ class SimulatedPlayer implements SimpleClientListener {
                        new Object[] {name, objectID, x, y});
         }
 
-        public void chatMessage(String channel, String source, String message, int id) {
+        public void chatMessage(int sourceID, String message) {
             if (logger.isLoggable(Level.FINEST))
                     logger.log(Level.FINEST, "received chat from {0}: {1}",
-                               new Object[] {source, message});
+                               new Object[] {sourceID, message});
         }
     }
     
