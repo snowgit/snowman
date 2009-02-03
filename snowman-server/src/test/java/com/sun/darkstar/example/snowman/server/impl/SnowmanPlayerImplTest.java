@@ -32,9 +32,6 @@
 
 package com.sun.darkstar.example.snowman.server.impl;
 
-import com.sun.darkstar.example.snowman.server.context.MockAppContext;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
@@ -45,8 +42,12 @@ import com.sun.darkstar.example.snowman.common.physics.enumn.EForce;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
+import com.sun.sgs.internal.InternalContext;
+import net.java.dev.mocksgs.MockSGS;
+import net.java.dev.mocksgs.MockManagerLocator;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
@@ -67,7 +68,6 @@ public class SnowmanPlayerImplTest
     private SnowmanGame currentGame;
     private Channel gameChannel;
     private ClientSession session;
-    private SnowmanAppContext appContext;
     private GameWorldManager gameWorldManager;
     
     private int attackeeId = 2;
@@ -79,11 +79,12 @@ public class SnowmanPlayerImplTest
     public void initializeContextAndPlayer()
     {
         //create the context
-        MockAppContext.create();
+        MockSGS.init();
+        MockManagerLocator locator = (MockManagerLocator)InternalContext.getManagerLocator();
+        gameWorldManager = EasyMock.createMock(GameWorldManager.class);
+        locator.addMockManager(gameWorldManager);
         
         //setup the player
-        appContext = SnowmanAppContextFactory.getAppContext();
-        gameWorldManager = appContext.getManager(GameWorldManager.class);
         session = EasyMock.createNiceMock(ClientSession.class);
         currentGame = EasyMock.createNiceMock(SnowmanGame.class);
         gameChannel = EasyMock.createNiceMock(Channel.class);
@@ -92,7 +93,7 @@ public class SnowmanPlayerImplTest
         EasyMock.replay(session);
         EasyMock.replay(currentGame);
         
-        testPlayer = new SnowmanPlayerImpl(appContext, "name", session);
+        testPlayer = new SnowmanPlayerImpl("name", session);
         testPlayer.setGame(currentGame);
         testPlayer.setID(testPlayerId);
         testPlayer.setTeamColor(testPlayerColor);
@@ -101,7 +102,7 @@ public class SnowmanPlayerImplTest
     @After
     public void takeDownContext()
     {
-        SnowmanAppContextFactory.setAppContext(null);
+        MockSGS.reset();
     }
     
     /**
@@ -904,7 +905,7 @@ public class SnowmanPlayerImplTest
         attackeeSession = EasyMock.createNiceMock(ClientSession.class);
         EasyMock.replay(attackeeSession);
         
-        attackee = new SnowmanPlayerImpl(appContext, "name", session);
+        attackee = new SnowmanPlayerImpl("name", session);
         attackee.setGame(currentGame);
         attackee.setID(attackeeId);
         attackee.setTeamColor(attackeeColor);
@@ -926,7 +927,7 @@ public class SnowmanPlayerImplTest
             throws Exception {
         Field flagField = SnowmanPlayerImpl.class.getDeclaredField("holdingFlagRef");
         flagField.setAccessible(true);
-        flagField.set(player, appContext.getDataManager().createReference(flag));
+        flagField.set(player, AppContext.getDataManager().createReference(flag));
     }
     
     /**

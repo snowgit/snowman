@@ -33,10 +33,10 @@ package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContextFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanFlag;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
@@ -51,6 +51,7 @@ import java.util.Random;
  * @author kbt
  */
 public class RobotImpl extends SnowmanPlayerImpl {
+
     private static final long serialVersionUID = 1L;
         
     private final int moveDelay;
@@ -63,19 +64,20 @@ public class RobotImpl extends SnowmanPlayerImpl {
     private ManagedReference<SnowmanFlag> theirFlagRef = null;
     
     public RobotImpl(String name, int delay) {
-        super(SnowmanAppContextFactory.getAppContext(), name, null);
+        super(name, null);
         moveDelay = delay;
         random = new Random(name.hashCode());
         scheduleMove(10000);// TODO need to find out when the game starts
     }
     
     private void scheduleMove(int delay) {
-        appContext.getTaskManager().scheduleTask(
-                new MoveTask(appContext.getDataManager().createReference((RobotImpl)this)),
+        AppContext.getTaskManager().scheduleTask(
+                new MoveTask(AppContext.getDataManager().createReference((RobotImpl)this)),
                              delay + random.nextInt(500));
     }
     
     private void moveRobot() {
+
         if (gameRef == null) // game over
             return;
         
@@ -87,7 +89,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
         // setup list of potential targets
         // grab all players for now, teammates will be removed later
         if (potentialTargets == null) {
-            appContext.getDataManager().markForUpdate(this);
+            AppContext.getDataManager().markForUpdate(this);
             SnowmanGame game = gameRef.get();
             potentialTargets = new ArrayList<Integer>();
             potentialTargets.addAll(game.getPlayerIds());
@@ -102,7 +104,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
                 SnowmanFlag flag = gameRef.get().getFlag(
                         potentialFlagTargets.get(targetId));
                 if(flag.getTeamColor() != this.getTeamColor()) {
-                    theirFlagRef = appContext.getDataManager().createReference(flag);
+                    theirFlagRef = AppContext.getDataManager().createReference(flag);
                 }
                 else {
                     potentialFlagTargets.remove(targetId);

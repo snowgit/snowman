@@ -32,7 +32,6 @@
 
 package com.sun.darkstar.example.snowman.server.interfaces;
 
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.ClientSession;
@@ -44,8 +43,7 @@ import com.sun.sgs.app.ClientSession;
  */
 public interface EntityFactory 
 {
-    public SnowmanPlayer createSnowmanPlayer(SnowmanAppContext context,
-                                             ClientSession session);
+    public SnowmanPlayer createSnowmanPlayer(ClientSession session);
     
     public SnowmanPlayer createRobotPlayer(String name,
                                            int delay);

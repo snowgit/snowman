@@ -36,8 +36,8 @@ import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Task;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
@@ -73,7 +73,6 @@ public class MatchmakerTask implements Task, Serializable
     
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
-    private SnowmanAppContext appContext;
     
     private List<ManagedReference<SnowmanPlayer>> waitingPlayers;
     private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
@@ -83,7 +82,6 @@ public class MatchmakerTask implements Task, Serializable
                           int robotDelay,
                           GameFactory gameFactory,
                           EntityFactory entityFactory,
-                          SnowmanAppContext appContext,
                           ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques) {
         this.numPlayersPerGame = numPlayersPerGame;
         this.numRobotsPerGame = numRobotsPerGame;
@@ -91,7 +89,6 @@ public class MatchmakerTask implements Task, Serializable
         
         this.gameFactory = gameFactory;
         this.entityFactory = entityFactory;
-        this.appContext = appContext;
         
         this.waitingPlayers = new ArrayList<ManagedReference<SnowmanPlayer>>();
         this.waitingDeques = waitingDeques;
@@ -115,9 +112,9 @@ public class MatchmakerTask implements Task, Serializable
         // schedule a delay for the next polling cycle
         // otherwise, schedule the next cycle to occur immediately
         if(playersFound)
-            appContext.getTaskManager().scheduleTask(this);
+            AppContext.getTaskManager().scheduleTask(this);
         else
-            appContext.getTaskManager().scheduleTask(this, POLLINGINTERVAL);
+            AppContext.getTaskManager().scheduleTask(this, POLLINGINTERVAL);
     }
     
     private void startGame() {
@@ -138,7 +135,6 @@ public class MatchmakerTask implements Task, Serializable
         String gameName = NAME_PREFIX + (gameCount++);
         SnowmanGame game = gameFactory.createSnowmanGame(gameName,
                                                          numPlayersPerGame + numRobotsPerGame,
-                                                         appContext,
                                                          entityFactory);
         ETeamColor color = ETeamColor.values()[0];
         for(Iterator<ManagedReference<SnowmanPlayer>> ip = waitingPlayers.iterator(); ip.hasNext(); ) {

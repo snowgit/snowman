@@ -42,8 +42,8 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
 import com.sun.darkstar.example.snowman.common.util.HPConverter;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.darkstar.example.snowman.common.util.enumn.EStats;
-import com.sun.darkstar.example.snowman.server.context.SnowmanAppContext;
 import com.sun.darkstar.example.snowman.server.service.GameWorldManager;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Channel;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
@@ -96,14 +96,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     protected ManagedReference<SnowmanFlag> holdingFlagRef;
     protected PlayerState state = PlayerState.NONE;
     protected int hitPoints = RESPAWNHP;
-    protected SnowmanAppContext appContext;
 
-    public SnowmanPlayerImpl(SnowmanAppContext appContext,
-                             String name,
+    public SnowmanPlayerImpl(String name,
                              ClientSession session) {
-        this.appContext = appContext;
         this.name = name;
-        sessionRef = session == null ? null : appContext.getDataManager().createReference(session);
+        sessionRef = session == null ? null : AppContext.getDataManager().createReference(session);
     }
 
     protected static enum PlayerState {
@@ -128,15 +125,15 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     }
 
     public void setTeamColor(ETeamColor color) {
-        appContext.getDataManager().markForUpdate(this);
+        AppContext.getDataManager().markForUpdate(this);
         teamColor = color;
     }
 
     public void setGame(SnowmanGame game) {
         assert game != null;
-        appContext.getDataManager().markForUpdate(this);
-        gameRef = appContext.getDataManager().createReference(game);
-        channelRef = appContext.getDataManager().createReference(game.getGameChannel());
+        AppContext.getDataManager().markForUpdate(this);
+        gameRef = AppContext.getDataManager().createReference(game);
+        channelRef = AppContext.getDataManager().createReference(game.getGameChannel());
     }
 
     public float ranking() {
@@ -227,7 +224,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     }
 
     public void setReadyToPlay(boolean readyToPlay) {
-        appContext.getDataManager().markForUpdate(this);
+        AppContext.getDataManager().markForUpdate(this);
 
         if (readyToPlay) {
             this.state = PlayerState.STOPPED;
@@ -286,7 +283,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         if (state == PlayerState.DEAD || state == PlayerState.NONE) {
             return;
         }
-        appContext.getDataManager().markForUpdate(this);
+        AppContext.getDataManager().markForUpdate(this);
 
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
@@ -295,7 +292,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
                            startx, starty,
                            POSITIONTOLERANCESQD)) {
             //collision detection
-            Coordinate trimPosition = appContext.getManager(GameWorldManager.class).
+            Coordinate trimPosition = AppContext.getManager(GameWorldManager.class).
                     trimPath(new Coordinate(startx, starty),
                              new Coordinate(endx, endy));
 
@@ -328,7 +325,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         if (state == PlayerState.DEAD || state == PlayerState.NONE) {
             return;
         }
-        appContext.getDataManager().markForUpdate(this);
+        AppContext.getDataManager().markForUpdate(this);
 
         //verify that the start location is valid
         Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
@@ -354,7 +351,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
             }
 
             //collision detection
-            if (!appContext.getManager(GameWorldManager.class).validThrow(new Coordinate(x, y),
+            if (!AppContext.getManager(GameWorldManager.class).validThrow(new Coordinate(x, y),
                                                                           targetPosition)) {
                 logger.log(Level.FINE, "attack from {0} detected a collision", name);
                 success = false;
@@ -405,7 +402,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
             //verify that the player is in range of the flag
             if (checkTolerance(x, y, flag.getX(), flag.getY(),
                                EStats.GrabRange.getValue() * EStats.GrabRange.getValue())) {
-                appContext.getDataManager().markForUpdate(this);
+                AppContext.getDataManager().markForUpdate(this);
 
                 //perform implicit stop
                 this.timestamp = now;
@@ -413,7 +410,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
                 //attach the flag
                 flag.setHeldBy(this);
-                holdingFlagRef = appContext.getDataManager().createReference(flag);
+                holdingFlagRef = AppContext.getDataManager().createReference(flag);
                 sendAll(ServerMessages.createAttachObjPkt(flagID, id));
             } else {
                 logger.log(Level.FINER, "get flag from {0} failed radius check", name);
@@ -471,7 +468,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     // respawn
     public void respawn() {
         if (gameRef != null) {
-            appContext.getDataManager().markForUpdate(this);
+            AppContext.getDataManager().markForUpdate(this);
             hitPoints = RESPAWNHP;
             Coordinate position = SnowmanMapInfo.getRespawnPosition(SnowmanMapInfo.DEFAULT, this.getTeamColor());
             setLocation(position.getX(), position.getY());
@@ -481,7 +478,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
     public int hit(int hp, float attackX, float attackY) {
         if (hitPoints > 0) { // not already dead
-            appContext.getDataManager().markForUpdate(this);
+            AppContext.getDataManager().markForUpdate(this);
 
             hitPoints -= hp;
             if (hitPoints <= 0) { // newly dead
@@ -494,8 +491,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
                 state = PlayerState.DEAD;
 
                 // schedule respawn
-                appContext.getTaskManager().scheduleTask(
-                        new RespawnTask(appContext.getDataManager().createReference((SnowmanPlayer) this)),
+                AppContext.getTaskManager().scheduleTask(
+                        new RespawnTask(AppContext.getDataManager().createReference((SnowmanPlayer) this)),
                         DEATHDELAYMS);
             }
         }
@@ -554,7 +551,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     public void removingObject() {
         if (sessionRef != null) {
             try {
-                appContext.getDataManager().removeObject(sessionRef.get());
+                AppContext.getDataManager().removeObject(sessionRef.get());
             } catch (ObjectNotFoundException alreadyDisconnected) {
             } // workaround bug is ClientSessionImpl
             catch (IllegalStateException workAroundIssue87) {
