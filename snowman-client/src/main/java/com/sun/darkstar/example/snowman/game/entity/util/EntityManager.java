@@ -124,7 +124,7 @@ public class EntityManager extends Manager {
 	public IEntity createEntity(EEntity enumn) {
 		this.idcount--;
 		// This exception should never be thrown.
-		try {return this.createEntity(enumn, this.idcount);} catch (DuplicatedIDException e) {return null;}
+		try {return this.createEntity(enumn, this.idcount, "unknown");} catch (DuplicatedIDException e) {return null;}
 	}
 	
 	/**
@@ -134,16 +134,16 @@ public class EntityManager extends Manager {
 	 * @return The newly created <code>IEntity</code>.
 	 * @throws DuplicatedIDException If the given ID number is already in use.
 	 */
-	public IEntity createEntity(EEntity enumn, int id) throws DuplicatedIDException {
+	public IEntity createEntity(EEntity enumn, int id, String name) throws DuplicatedIDException {
 		if(this.entities.containsKey(Integer.valueOf(id))) throw new DuplicatedIDException(id);
 		if(enumn == EEntity.Terrain) id = 0;
 		IEntity entity = null;
 		switch(enumn) {
 		case Terrain: entity = new TerrainEntity(id); break;
-		case SnowmanLocalRed: entity = new SnowmanEntity(enumn, id); break;
-		case SnowmanDistributedRed: entity = new CharacterEntity(enumn, id); break;
-		case SnowmanLocalBlue: entity = new SnowmanEntity(enumn, id); break;
-		case SnowmanDistributedBlue: entity = new CharacterEntity(enumn, id); break;
+		case SnowmanLocalRed: entity = new SnowmanEntity(enumn, id, name); break;
+		case SnowmanDistributedRed: entity = new CharacterEntity(enumn, id, name); break;
+		case SnowmanLocalBlue: entity = new SnowmanEntity(enumn, id, name); break;
+		case SnowmanDistributedBlue: entity = new CharacterEntity(enumn, id, name); break;
 		case Snowball: entity = new SnowballEntity(id); break;
                     case SnowballTrail: entity = new SnowballTrailEntity(id); break;
 		default:

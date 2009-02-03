@@ -666,7 +666,7 @@ public class WorldEditor extends JFrame {
 							try {
 								entity = (EditableEntity) EntityManager
 										.getInstance().createEntity(
-												EEntity.Terrain, 0);
+												EEntity.Terrain, 0, "");
 							} catch (DuplicatedIDException e) {
 								e.printStackTrace();
 								return;

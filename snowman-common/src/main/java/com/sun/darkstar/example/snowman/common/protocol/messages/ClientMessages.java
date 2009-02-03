@@ -55,7 +55,7 @@ public class ClientMessages extends Messages
      * @return The <code>ByteBuffer</code> "move me" packet.
      */
     public static ByteBuffer createMoveMePkt(float x, float y, float endx, float endy) {
-        byte[] bytes = new byte[1 + 8 + 16];
+        byte[] bytes = new byte[1 + 16];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEME.ordinal());
         buffer.putFloat(x);
@@ -74,7 +74,7 @@ public class ClientMessages extends Messages
      * @return The <code>ByteBuffer</code> "attack" packet.
      */
     public static ByteBuffer createAttackPkt(int targetID, float x, float y) {
-        byte[] bytes = new byte[1 + 8 + 12];
+        byte[] bytes = new byte[1 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACK.ordinal());
         buffer.putInt(targetID);
@@ -93,7 +93,7 @@ public class ClientMessages extends Messages
      * @return The <code>ByteBuffer</code> "get flag" packet.
      */
     public static ByteBuffer createGetFlagPkt(int flagID, float x, float y) {
-        byte[] bytes = new byte[1 + 8 + 4];
+        byte[] bytes = new byte[1 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.GETFLAG.ordinal());
         buffer.putInt(flagID);
@@ -111,7 +111,7 @@ public class ClientMessages extends Messages
      * @return The <code>ByteBuffer</code> "place flag" packet
      */
     public static ByteBuffer createScorePkt(float x, float y) {
-        byte[] bytes = new byte[1 + 8 + 8];
+        byte[] bytes = new byte[1 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.SCORE.ordinal());
         buffer.putFloat(x);
@@ -121,16 +121,13 @@ public class ClientMessages extends Messages
     
     /**
      * Create a chat message packet with given values.
-     * @param channel The <code>String</code> channel value.
      * @param message The <code>String</code> message to be displayed.
      * @return The <code>ByteBUffer</code> 'chat message' packet.
      */
-    public static ByteBuffer createChatPkt(String channel, String message) {
-    	byte[] bytes = new byte[1 + 8 + channel.length() + 8 + message.length()];
+    public static ByteBuffer createChatPkt(String message) {
+    	byte[] bytes = new byte[1 + 4 + message.length()];
     	ByteBuffer buffer = ByteBuffer.wrap(bytes);
     	buffer.put((byte) EOPCODE.CHAT.ordinal());
-    	buffer.putInt(channel.length());
-    	buffer.put(channel.getBytes());
     	buffer.putInt(message.length());
     	buffer.put(message.getBytes());
     	return buffer;

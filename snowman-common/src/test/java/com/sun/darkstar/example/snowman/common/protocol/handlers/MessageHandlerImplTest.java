@@ -175,10 +175,10 @@ public class MessageHandlerImplTest
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
         packet.flip();
         // record expected processor calls
-        mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red);
+        mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseClientPacket(packet, mockProcessor);
@@ -411,7 +411,7 @@ public class MessageHandlerImplTest
         Assert.assertFalse(packet.hasRemaining());
     }
     
-     /**
+    /**
      * Test that the proper processor methods are called when
      * packets are sent to the ClientProtocol
      */
@@ -429,6 +429,55 @@ public class MessageHandlerImplTest
         EasyMock.replay(mockProcessor);        
         // send it to the parser
         parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseServerChat() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ClientMessages.createChatPkt("message");
+        packet.flip();
+        // record expected processor calls
+        mockProcessor.chatMessage("message");
+        EasyMock.replay(mockProcessor);
+        
+        // send it to the parser
+        parser.parseServerPacket(packet, mockProcessor);
+        //verify
+        EasyMock.verify(mockProcessor);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    /**
+     * Test that the proper processor methods are called when
+     * packets are sent to the ClientProtocol
+     */
+    @Test
+    public void parseClientChat() {
+        MessageHandlerImpl parser = new MessageHandlerImpl();
+        IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
+
+        // generate packet
+        ByteBuffer packet = ServerMessages.createChatPkt(10, "message");
+        packet.flip();
+        // record expected processor calls
+        mockProcessor.chatMessage(10, "message");
+        EasyMock.replay(mockProcessor);        
+        // send it to the parser
+        parser.parseClientPacket(packet, mockProcessor);
         //verify
         EasyMock.verify(mockProcessor);
         

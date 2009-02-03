@@ -82,10 +82,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	 * all the players in this game session
 	 */
 	private final ManagedReference<Channel> channelRef;
-	/**
-	 * The <code>ManagedReference</code> of the chat <code>Channel</code>.
-	 */
-	private final ManagedReference<Channel> chatChannel;
 
 	private int numPlayers;
 	private int realPlayers = 0;
@@ -130,10 +126,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 		this.channelRef = appContext.getDataManager().createReference(
 				appContext.getChannelManager().createChannel(
 						CHANPREFIX+gameName, null, Delivery.RELIABLE));
-		this.chatChannel = appContext.getDataManager().createReference(
-				appContext.getChannelManager().createChannel(
-						"ChatChannel"+gameName, null, Delivery.RELIABLE));
-
 		initFlags();
 	}
 
@@ -218,7 +210,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 		if (player.getSession() != null) {
 			realPlayers++;
 			channelRef.get().join(player.getSession());
-			this.chatChannel.get().join(player.getSession());
 		}
 	}
 
@@ -253,18 +244,19 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 			SnowmanPlayer player = ref.get();
 			multiSend(ServerMessages.createAddMOBPkt(
 					player.getID(), player.getX(), player.getY(), 
-					EMOBType.SNOWMAN, player.getTeamColor()));
+					EMOBType.SNOWMAN, player.getTeamColor(), player.getName()));
 		}
 		for(ManagedReference<SnowmanFlag> flagRef : flagRefs.values()){
 			SnowmanFlag flag = flagRef.get();
 			multiSend(ServerMessages.createAddMOBPkt(
-					flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor()));
+					flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor(),
+                                        flag.getTeamColor().toString()+"Flag"));
 
 			//TODO - encode goal color in the flag
 			//currently the add mob should swap the goal colors so that it is more intuitive for the players
 			multiSend(ServerMessages.createAddMOBPkt(
 					flag.getID()+flagRefs.size(), flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL, 
-					flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red));
+					flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
 		}
 		multiSend(ServerMessages.createReadyPkt());
 	}
@@ -353,10 +345,5 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 	public Channel getGameChannel() {
 		return channelRef.get();
-	}
-
-	@Override
-	public Channel getChatChannel() {
-		return this.chatChannel.get();
 	}
 }

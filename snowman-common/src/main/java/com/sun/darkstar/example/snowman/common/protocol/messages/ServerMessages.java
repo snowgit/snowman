@@ -58,7 +58,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "new game" packet.
      */
     public static ByteBuffer createNewGamePkt(int myID, String mapname) {
-        byte[] bytes = new byte[1 + 8 + 8 + mapname.length()];
+        byte[] bytes = new byte[1 + 4 + 4 + mapname.length()];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.NEWGAME.ordinal());
         buffer.putInt(myID);
@@ -72,7 +72,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "start game" packet.
      */
     public static ByteBuffer createStartGamePkt() {
-        byte[] bytes = new byte[1 + 8];
+        byte[] bytes = new byte[1];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STARTGAME.ordinal());
         return buffer;
@@ -85,7 +85,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "end game" packet.
      */
     public static ByteBuffer createEndGamePkt(EEndState state) {
-        byte[] bytes = new byte[1 + 8 + 4];
+        byte[] bytes = new byte[1 + 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ENDGAME.ordinal());
         buffer.putInt(state.ordinal());
@@ -103,8 +103,8 @@ public class ServerMessages extends Messages
      * @param team The <code>TeamColor</code> of object.
      * @return The <code>ByteBuffer</code> "add MOB" packet.
      */
-    public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType, ETeamColor team) {
-        byte[] bytes = new byte[1 + 8 + 16];
+    public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType, ETeamColor team, String mobName) {
+        byte[] bytes = new byte[1 + 20 + 4 + mobName.length()];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ADDMOB.ordinal());
         buffer.putInt(targetID);
@@ -112,6 +112,8 @@ public class ServerMessages extends Messages
         buffer.putFloat(y);
         buffer.putInt(mobType.ordinal());
         buffer.putInt(team.ordinal());
+        buffer.putInt(mobName.length());
+        buffer.put(mobName.getBytes());
         return buffer;
     }
     
@@ -122,7 +124,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "remove MOB" packet.
      */
     public static ByteBuffer createRemoveMOBPkt(int targetID) {
-        byte[] bytes = new byte[1 + 8 + 4];
+        byte[] bytes = new byte[1 + 4];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.REMOVEMOB.ordinal());
         buffer.putInt(targetID);
@@ -140,7 +142,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "move MOB" packet.
      */
     public static ByteBuffer createMoveMOBPkt(int targetID, float startx, float starty, float endx, float endy) {
-        byte[] bytes = new byte[1 + 8 + 28];
+        byte[] bytes = new byte[1 + 20];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEMOB.ordinal());
         buffer.putInt(targetID);
@@ -160,7 +162,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "move MOB" packet.
      */
     public static ByteBuffer createStopMOBPkt(int targetID, float x, float y) {
-        byte[] bytes = new byte[1 + 8 + 12];
+        byte[] bytes = new byte[1 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STOPMOB.ordinal());
         buffer.putInt(targetID);
@@ -177,7 +179,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "attach object" packet.
      */
     public static ByteBuffer createAttachObjPkt(int sourceID, int targetID) {
-        byte[] bytes = new byte[1 + 8 + 8];
+        byte[] bytes = new byte[1 + 8];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACHOBJ.ordinal());
         buffer.putInt(sourceID);
@@ -194,7 +196,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "attacked" packet.
      */
     public static ByteBuffer createAttackedPkt(int sourceID, int targetID, int hp) {
-        byte[] bytes = new byte[1 + 8 + 8];
+        byte[] bytes = new byte[1 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ATTACKED.ordinal());
         buffer.putInt(sourceID);
@@ -212,7 +214,7 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "respawn" packet.
      */
     public static ByteBuffer createRespawnPkt(int objectID, float x, float y) {
-        byte[] bytes = new byte[1 + 8 + 8];
+        byte[] bytes = new byte[1 + 12];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.RESPAWN.ordinal());
         buffer.putInt(objectID);
@@ -223,20 +225,17 @@ public class ServerMessages extends Messages
     
     /**
      * Create a chat message packet with given values.
-     * @param channel The <code>String</code> channel value.
+     * @param sourceID The <code>Integer</code> source ID.
      * @param message The <code>String</code> message to be displayed.
-     * @param id The <code>Integer</code> source ID.
-     * @return The <code>ByteBUffer</code> 'chat message' packet.
+     * @return The <code>ByteBuffer</code> 'chat message' packet.
      */
-    public static ByteBuffer createChatPkt(String channel, String message, int id) {
-    	byte[] bytes = new byte[1 + 8 + channel.length() + 8 + message.length() + 8];
+    public static ByteBuffer createChatPkt(int sourceID, String message) {
+    	byte[] bytes = new byte[1 + 4 + 4 + message.length()];
     	ByteBuffer buffer = ByteBuffer.wrap(bytes);
     	buffer.put((byte) EOPCODE.CHAT.ordinal());
-    	buffer.putInt(channel.length());
-    	buffer.put(channel.getBytes());
+        buffer.putInt(sourceID);
     	buffer.putInt(message.length());
     	buffer.put(message.getBytes());
-    	buffer.putInt(id);
     	return buffer;
     }
 }

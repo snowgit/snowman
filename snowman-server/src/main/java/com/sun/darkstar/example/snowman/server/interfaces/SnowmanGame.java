@@ -109,10 +109,4 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * @return the game channel
      */
     Channel getGameChannel();
-
-    /**
-     * Retrieve the chat channel of the game.
-     * @return The chat <code>Channel</code> instance.
-     */
-    public Channel getChatChannel();
 }

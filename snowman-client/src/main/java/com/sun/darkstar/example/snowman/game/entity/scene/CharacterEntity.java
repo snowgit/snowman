@@ -48,6 +48,10 @@ import com.sun.darkstar.example.snowman.game.entity.DynamicEntity;
  * @version Modified date: 08-06-2008 11:18 EST
  */
 public class CharacterEntity extends DynamicEntity {
+    /**
+     * The name of the snowman
+     */
+    protected String name;
 	/**
 	 * The current HP of the snowman.
 	 */
@@ -78,8 +82,9 @@ public class CharacterEntity extends DynamicEntity {
 	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @param id The ID number of this snowman.
 	 */
-	public CharacterEntity(EEntity enumn, int id) {
+	public CharacterEntity(EEntity enumn, int id, String name) {
 		super(enumn, id);
+                this.name = name;
 		this.hp = SingletonRegistry.getHPConverter().getMaxHP();
 		this.state = EState.Idle;
                 this.cursorState = ECursorState.Invalid;
@@ -204,4 +209,8 @@ public class CharacterEntity extends DynamicEntity {
 	public boolean isCarrying() {
 		return (this.flag != null);
 	}
+        
+        public String getName() {
+            return name;
+        }
 }

@@ -94,7 +94,7 @@ public class ServerMessagesTest extends AbstractTestMessages
     
     @Test
     public void testCreateAddMOBPkt() {
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red);
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
         packet.flip();
         checkOpcode(packet, EOPCODE.ADDMOB);
         
@@ -103,12 +103,18 @@ public class ServerMessagesTest extends AbstractTestMessages
         float y = packet.getFloat();
         EMOBType type = EMOBType.values()[packet.getInt()];
         ETeamColor team = ETeamColor.values()[packet.getInt()];
+        int length = packet.getInt();
+        byte[] mobNameBytes = new byte[length];
+        packet.get(mobNameBytes);
+        String mobName = new String(mobNameBytes);
         
         Assert.assertEquals(id, 10);
         Assert.assertEquals(x, 1.0f, 0);
         Assert.assertEquals(y, 2.0f, 0);
         Assert.assertEquals(type, EMOBType.SNOWMAN);
         Assert.assertEquals(team, ETeamColor.Red);
+        Assert.assertEquals(length, "name".length());
+        Assert.assertEquals(mobName, "name");
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
@@ -215,6 +221,26 @@ public class ServerMessagesTest extends AbstractTestMessages
         Assert.assertEquals(id, 10);
         Assert.assertEquals(x, 1.0f, 0);
         Assert.assertEquals(y, 2.0f, 0);
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
+    @Test
+    public void testCreateChatPkt() {
+        ByteBuffer packet = ServerMessages.createChatPkt(10, "message");
+        packet.flip();
+        checkOpcode(packet, EOPCODE.CHAT);
+        
+        int id = packet.getInt();
+        int length = packet.getInt();
+        byte[] messageBytes = new byte[length];
+        packet.get(messageBytes);
+        String messageString = new String(messageBytes);
+
+        Assert.assertEquals(id, 10);
+        Assert.assertEquals(length, "message".length());
+        Assert.assertEquals(messageString, "message");
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());

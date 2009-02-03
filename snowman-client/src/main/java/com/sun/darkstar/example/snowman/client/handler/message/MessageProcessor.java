@@ -96,9 +96,9 @@ public class MessageProcessor implements IClientProcessor {
 	}
 
 	@Override
-	public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team) {
+	public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team, String mobName) {
 		this.handler.incrementExpected();
-		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, team, x, y, (objectID == this.myID));
+		TaskManager.getInstance().createTask(ETask.AddMOB, objectID, objType, team, x, y, mobName, (objectID == this.myID));
 	}
 
 	@Override
@@ -133,11 +133,10 @@ public class MessageProcessor implements IClientProcessor {
 	}
 	
 	@Override
-	public void chatMessage(String channel, String source, String message, int id) {
-		// Append message if it is no my self.
-		if(this.myID != id) {
-			((BattleState)this.handler.getGame().getGameState(EGameState.BattleState)).getGUI().appendChatMessage(channel, source, message);
-		}
+	public void chatMessage(int sourceID, String message) {
+            if(sourceID != this.myID) {
+                TaskManager.getInstance().createTask(ETask.Chat, sourceID, message, false);
+            }
 	}
 
 	/**
