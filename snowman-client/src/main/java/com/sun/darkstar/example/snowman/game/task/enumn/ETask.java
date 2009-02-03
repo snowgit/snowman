@@ -113,7 +113,11 @@ public enum ETask {
         /**
          * The task used to score a win
          */
-        Score(ETaskType.RealTime);
+        Score(ETaskType.RealTime),
+        /**
+         * The task used to process a chat message
+         */
+        Chat(ETaskType.RealTime);
 	
 	/**
 	 * The <code>ETaskType</code> enumeration.

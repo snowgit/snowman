@@ -244,18 +244,19 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 			SnowmanPlayer player = ref.get();
 			multiSend(ServerMessages.createAddMOBPkt(
 					player.getID(), player.getX(), player.getY(), 
-					EMOBType.SNOWMAN, player.getTeamColor()));
+					EMOBType.SNOWMAN, player.getTeamColor(), player.getName()));
 		}
 		for(ManagedReference<SnowmanFlag> flagRef : flagRefs.values()){
 			SnowmanFlag flag = flagRef.get();
 			multiSend(ServerMessages.createAddMOBPkt(
-					flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor()));
+					flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor(),
+                                        flag.getTeamColor().toString()+"Flag"));
 
 			//TODO - encode goal color in the flag
 			//currently the add mob should swap the goal colors so that it is more intuitive for the players
 			multiSend(ServerMessages.createAddMOBPkt(
 					flag.getID()+flagRefs.size(), flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL, 
-					flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red));
+					flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
 		}
 		multiSend(ServerMessages.createReadyPkt());
 	}

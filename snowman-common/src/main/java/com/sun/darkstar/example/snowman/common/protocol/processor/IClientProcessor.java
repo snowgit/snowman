@@ -76,8 +76,9 @@ public interface IClientProcessor extends IProtocolProcessor {
      * @param y The y coordinate of the position.
      * @param objType The <code>MOBType</code> of the newly added MOB.
      * @param team The <code>TeamColor</code> of the newly added MOB.
+     * @param mobName The name of the newly added MOB
      */
-    public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team);// Certified.
+    public void addMOB(int objectID, float x, float y, EMOBType objType, ETeamColor team, String mobName);// Certified.
 
     /**
      * Move the MOB with given ID from given starting position towards given ending position.

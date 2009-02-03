@@ -98,6 +98,8 @@ public class AddMOBTask extends RealTimeTask {
 	 * The z coordinate of the initial position.
 	 */
 	private final float z;
+        
+        private String mobName;
 	
 	/**
 	 * Constructor of <code>AddMOBTask</code>.
@@ -109,13 +111,14 @@ public class AddMOBTask extends RealTimeTask {
 	 * @param z The z coordinate of the initial position.
 	 * @param local The flag indicates if this mob is controlled locally.
 	 */
-	public AddMOBTask(Game game, int id, EMOBType enumn, ETeamColor color, float x, float z, boolean local) {
+	public AddMOBTask(Game game, int id, EMOBType enumn, ETeamColor color, float x, float z, String mobName, boolean local) {
 		super(ETask.AddMOB, game);
 		this.id = id;
 		this.enumn = enumn;
 		this.color = color;
 		this.x = x;
 		this.z = z;
+                this.mobName = mobName;
 		this.local = local;
 	}
 
@@ -173,7 +176,7 @@ public class AddMOBTask extends RealTimeTask {
         {
             try {
                 BattleState state = ((BattleState) this.game.getGameState(EGameState.BattleState));
-                IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id);
+                IEntity entity = EntityManager.getInstance().createEntity(enumn, this.id, mobName);
                 IView view = ViewManager.getInstance().createView(entity);
                 ((View) view).getLocalTranslation().x = this.x;
                 ((View) view).getLocalTranslation().z = this.z;

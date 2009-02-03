@@ -112,13 +112,17 @@ public class MessageHandlerImpl implements MessageHandler
                 float addY = packet.getFloat();
                 EMOBType addType = EMOBType.values()[packet.getInt()];
                 ETeamColor addColor = ETeamColor.values()[packet.getInt()];
-                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}", 
-                           new Object[]{code, addId, addX, addY, addType, addColor});
+                byte[] mobNameBytes = new byte[packet.getInt()];
+                packet.get(mobNameBytes);
+                String mobName = new String(mobNameBytes);
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}, {3}, {4}, {5}, {6}", 
+                           new Object[]{code, addId, addX, addY, addType, addColor, mobNameBytes});
                 unit.addMOB(addId,
                             addX,
                             addY,
                             addType,
-                            addColor);
+                            addColor,
+                            mobName);
                 break;
             case REMOVEMOB:
                 int removeId = packet.getInt();
@@ -182,6 +186,8 @@ public class MessageHandlerImpl implements MessageHandler
                 byte[] messageBytes = new byte[packet.getInt()];
                 packet.get(messageBytes);
                 String message = new String(messageBytes);
+                logger.log(Level.FINEST, "Processing {0} packet : {1}, {2}",
+                           new Object[]{code, sourceID, message});
                 unit.chatMessage(sourceID,
                                  message);
             	break;
@@ -246,6 +252,8 @@ public class MessageHandlerImpl implements MessageHandler
                 byte[] messageBytes = new byte[packet.getInt()];
                 packet.get(messageBytes);
                 String message = new String(messageBytes);
+                logger.log(Level.FINEST, "Processing {0} packet : {1}",
+                           new Object[]{code, message});
                 unit.chatMessage(message);
             	break;
             default:

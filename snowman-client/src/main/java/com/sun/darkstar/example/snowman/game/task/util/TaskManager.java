@@ -59,6 +59,7 @@ import com.sun.darkstar.example.snowman.game.task.state.battle.RespawnTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.StartGameTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.UpdateCursorStateTask;
 import com.sun.darkstar.example.snowman.game.task.state.battle.ScoreTask;
+import com.sun.darkstar.example.snowman.game.task.state.battle.ChatTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.AuthenticateTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ReadyTask;
 import com.sun.darkstar.example.snowman.game.task.state.login.ResetLoginTask;
@@ -220,7 +221,7 @@ public class TaskManager extends Manager {
                         }
                         break;
                     case AddMOB:
-                        task = new AddMOBTask(this.game, (Integer) args[0], (EMOBType) args[1], (ETeamColor) args[2], (Float) args[3], (Float) args[4], (Boolean) args[5]);
+                        task = new AddMOBTask(this.game, (Integer) args[0], (EMOBType) args[1], (ETeamColor) args[2], (Float) args[3], (Float) args[4], (String) args[5], (Boolean) args[6]);
                         break;
                     case Ready:
                         task = new ReadyTask(this.game);
@@ -275,6 +276,8 @@ public class TaskManager extends Manager {
                     case Score:
                         task = new ScoreTask(this.game, (ETeamColor) args[0], (Float) args[1], (Float) args[2]);
                         break;
+                    case Chat:
+                        task = new ChatTask(this.game, (Integer) args[0], (String)args[1], (Boolean) args[2]);
             }
             this.submit(task);
             return task;

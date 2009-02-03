@@ -53,8 +53,8 @@ public class SnowmanEntity extends CharacterEntity {
 	 * @param enumn The <code>EEntity</code> enumeration.
 	 * @param id The ID number of this snowman.
 	 */
-	public SnowmanEntity(EEntity enumn, int id) {
-		super(enumn, id);
+	public SnowmanEntity(EEntity enumn, int id, String name) {
+		super(enumn, id, name);
 		this.state = EState.Idle;
 	}
 	
