@@ -178,18 +178,12 @@ public class MessageHandlerImpl implements MessageHandler
                              respawnY);
                 break;
             case CHAT:
-            	// Read out channel.
-        		byte[] channelBytes = new byte[packet.getInt()];
-        		packet.get(channelBytes);
-        		String channel = new String(channelBytes);
-        		// Read out message.
-        		byte[] messageBytes = new byte[packet.getInt()];
-        		packet.get(messageBytes);
-        		String message = new String(messageBytes);
-        		// Read out source.
-        		int id = packet.getInt();
-        		String source = String.valueOf(id);
-        		unit.chatMessage(channel, source, message, id);
+                int sourceID = packet.getInt();
+                byte[] messageBytes = new byte[packet.getInt()];
+                packet.get(messageBytes);
+                String message = new String(messageBytes);
+                unit.chatMessage(sourceID,
+                                 message);
             	break;
             default:
                 //divert to common parser
@@ -249,15 +243,10 @@ public class MessageHandlerImpl implements MessageHandler
                            scoreY);
                 break;
             case CHAT:
-            	// Read out channel.
-        		byte[] channelBytes = new byte[packet.getInt()];
-        		packet.get(channelBytes);
-        		String channel = new String(channelBytes);
-        		// Read out message.
-        		byte[] messageBytes = new byte[packet.getInt()];
-        		packet.get(messageBytes);
-        		String message = new String(messageBytes);
-        		unit.chatMessage(channel, message);
+                byte[] messageBytes = new byte[packet.getInt()];
+                packet.get(messageBytes);
+                String message = new String(messageBytes);
+                unit.chatMessage(message);
             	break;
             default:
                 //divert to common parser

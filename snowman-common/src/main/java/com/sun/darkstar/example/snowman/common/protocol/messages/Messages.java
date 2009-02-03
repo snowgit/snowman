@@ -51,7 +51,7 @@ public abstract class Messages
      * @return A <code>ByteBuffer</code> "ready" packet
      */
     public static ByteBuffer createReadyPkt() {
-        byte[] bytes = new byte[1 + 8];
+        byte[] bytes = new byte[1];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte)EOPCODE.READY.ordinal());
         return buffer;

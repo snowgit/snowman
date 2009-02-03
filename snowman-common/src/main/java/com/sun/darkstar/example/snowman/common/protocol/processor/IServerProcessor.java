@@ -154,8 +154,7 @@ public interface IServerProcessor extends IProtocolProcessor {
     
     /**
      * Broadcast the chat message with inserted source name.
-     * @param channel The <code>String</code> channel value.
      * @param message The <code>String</code> actual chat message.
      */
-    public void chatMessage(String channel, String message);
+    public void chatMessage(String message);
 }

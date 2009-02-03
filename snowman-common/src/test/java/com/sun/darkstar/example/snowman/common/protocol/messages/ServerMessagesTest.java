@@ -220,4 +220,24 @@ public class ServerMessagesTest extends AbstractTestMessages
         Assert.assertFalse(packet.hasRemaining());
     }
     
+    @Test
+    public void testCreateChatPkt() {
+        ByteBuffer packet = ServerMessages.createChatPkt(10, "message");
+        packet.flip();
+        checkOpcode(packet, EOPCODE.CHAT);
+        
+        int id = packet.getInt();
+        int length = packet.getInt();
+        byte[] messageBytes = new byte[length];
+        packet.get(messageBytes);
+        String messageString = new String(messageBytes);
+
+        Assert.assertEquals(id, 10);
+        Assert.assertEquals(length, "message".length());
+        Assert.assertEquals(messageString, "message");
+        
+        //ensure we are at the end of the buffer
+        Assert.assertFalse(packet.hasRemaining());
+    }
+    
 }

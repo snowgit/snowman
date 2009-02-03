@@ -130,10 +130,8 @@ public interface IClientProcessor extends IProtocolProcessor {
     
     /**
      * Display the chat message on given channel with given source.
-     * @param channel The <code>String</code> channel to display on.
-     * @param source The <code>String</code> source of the message.
+     * @param sourceID The <code>Integer</code> ID of the sender.
      * @param message The <code>String</code> actual message.
-     * @param id The <code>Integer</code> ID of the sender.
      */
-    public void chatMessage(String channel, String source, String message, int id);
+    public void chatMessage(int sourceID, String message);
 }
