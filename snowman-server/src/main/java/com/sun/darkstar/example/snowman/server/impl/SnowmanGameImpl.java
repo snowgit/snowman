@@ -82,10 +82,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 	 * all the players in this game session
 	 */
 	private final ManagedReference<Channel> channelRef;
-	/**
-	 * The <code>ManagedReference</code> of the chat <code>Channel</code>.
-	 */
-	private final ManagedReference<Channel> chatChannel;
 
 	private int numPlayers;
 	private int realPlayers = 0;
@@ -130,10 +126,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 		this.channelRef = appContext.getDataManager().createReference(
 				appContext.getChannelManager().createChannel(
 						CHANPREFIX+gameName, null, Delivery.RELIABLE));
-		this.chatChannel = appContext.getDataManager().createReference(
-				appContext.getChannelManager().createChannel(
-						"ChatChannel"+gameName, null, Delivery.RELIABLE));
-
 		initFlags();
 	}
 
@@ -218,7 +210,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 		if (player.getSession() != null) {
 			realPlayers++;
 			channelRef.get().join(player.getSession());
-			this.chatChannel.get().join(player.getSession());
 		}
 	}
 
@@ -353,10 +344,5 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable
 
 	public Channel getGameChannel() {
 		return channelRef.get();
-	}
-
-	@Override
-	public Channel getChatChannel() {
-		return this.chatChannel.get();
 	}
 }
