@@ -51,6 +51,7 @@ import java.util.Random;
  * @author kbt
  */
 public class RobotImpl extends SnowmanPlayerImpl {
+
     private static final long serialVersionUID = 1L;
         
     private final int moveDelay;
@@ -76,6 +77,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
     }
     
     private void moveRobot() {
+
         if (gameRef == null) // game over
             return;
         

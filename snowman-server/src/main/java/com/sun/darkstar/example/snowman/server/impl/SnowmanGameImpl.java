@@ -28,8 +28,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
-
+ */
 package com.sun.darkstar.example.snowman.server.impl;
 
 import com.sun.darkstar.example.snowman.common.protocol.enumn.EEndState;
@@ -55,291 +54,295 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
 /**
  * This object represents an actual running game session of Project Snowman,
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @author Yi Wang (Neakor)
  */
-public class SnowmanGameImpl implements SnowmanGame, Serializable
-{
-	public static final long serialVersionUID = 1L;
+public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
-	protected static Logger logger = Logger.getLogger(SnowmanGameImpl.class.getName());
-	/**
-	 * A prefix that is appended to the darkstar bound name for
-	 * all game channels.
-	 */
-	public static final String CHANPREFIX = "_GAMECHAN_";
+    public static final long serialVersionUID = 1L;
+    protected static Logger logger = Logger.getLogger(SnowmanGameImpl.class.getName());
+    
+    /**
+     * A prefix that is appended to the darkstar bound name for
+     * all game channels.
+     */
+    public static final String CHANPREFIX = "_GAMECHAN_";
+    private static final int PLAYERIDSTART = 1;
+    private static final int CLEANUPDELAYMS = 5 * 1000;
+    
+    /**
+     * A reference to a channel that is used to send game packets to
+     * all the players in this game session
+     */
+    private final ManagedReference<Channel> channelRef;
+    private int numPlayers;
+    private int realPlayers = 0;
+    private int readyPlayers = 0;
+    private int nextPlayerId = PLAYERIDSTART;
+    private String gameName;
+    /**
+     * List of flags in the game
+     */
+    private final Map<Integer, ManagedReference<SnowmanFlag>> flagRefs;
+    /**
+     * Map of player IDs to players that are part of this game
+     */
+    private final Map<Integer, ManagedReference<SnowmanPlayer>> playerRefs;
+    private final EntityFactory entityFactory;
+    /**
+     * Keeps track of how many players from each team have joined the game
+     */
+    private int[] teamPlayers = new int[ETeamColor.values().length];
+    /**
+     * Keeps track of the maximum number of players per team
+     */
+    private int[] maxTeamPlayers = new int[ETeamColor.values().length];
 
-	private static final int PLAYERIDSTART = 1;
-	private static final int CLEANUPDELAYMS = 5*1000;
+    public SnowmanGameImpl(String gameName,
+                           int numPlayers,
+                           EntityFactory entityFactory) {
+        this.gameName = gameName;
+        this.numPlayers = numPlayers;
+        initMaxTeamPlayers();
 
-	/**
-	 * A reference to a channel that is used to send game packets to
-	 * all the players in this game session
-	 */
-	private final ManagedReference<Channel> channelRef;
+        this.flagRefs = new HashMap<Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
+        this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
 
-	private int numPlayers;
-	private int realPlayers = 0;
-	private int readyPlayers = 0;
-	private int nextPlayerId = PLAYERIDSTART;
-	private String gameName;
-	/**
-	 * List of flags in the game
-	 */
-	private final Map< Integer, ManagedReference<SnowmanFlag>> flagRefs;
-	/**
-	 * Map of player IDs to players that are part of this game
-	 */
-	private final Map<Integer, ManagedReference<SnowmanPlayer>>  playerRefs;
+        this.entityFactory = entityFactory;
+        this.channelRef = AppContext.getDataManager().createReference(
+                AppContext.getChannelManager().createChannel(
+                CHANPREFIX + gameName, null, Delivery.RELIABLE));
+        initFlags();
+    }
 
-	private final EntityFactory entityFactory;
+    /**
+     * Initialize the maximum number of players per team
+     * The total number of players is divided up evenly among the teams.
+     * If the division is not even, the last team will have the remainder
+     */
+    private void initMaxTeamPlayers() {
+        //special case when there are fewer players than teams
+        if (this.numPlayers < ETeamColor.values().length) {
+            for (int j = 0; j < maxTeamPlayers.length; j++) {
+                if (j < numPlayers) {
+                    maxTeamPlayers[j] = 1;
+                } else {
+                    maxTeamPlayers[j] = 0;
+                }
+            }
+            return;
+        }
 
-	/**
-	 * Keeps track of how many players from each team have joined the game
-	 */
-	private int[] teamPlayers = new int[ETeamColor.values().length];
-	/**
-	 * Keeps track of the maximum number of players per team
-	 */
-	private int[] maxTeamPlayers = new int[ETeamColor.values().length];
+        int playersPerTeam = this.numPlayers / ETeamColor.values().length;
+        int remainder = this.numPlayers % ETeamColor.values().length;
+        for (int i = 0; i < maxTeamPlayers.length - 1; i++) {
+            maxTeamPlayers[i] = playersPerTeam;
+        }
+        if (remainder == 0) {
+            maxTeamPlayers[maxTeamPlayers.length - 1] = playersPerTeam;
+        } else {
+            maxTeamPlayers[maxTeamPlayers.length - 1] = remainder;
+        }
+    }
 
-	public SnowmanGameImpl(String gameName,
-			int numPlayers,
-			EntityFactory entityFactory)
-	{
-		this.gameName = gameName;
-		this.numPlayers = numPlayers;
-		initMaxTeamPlayers();
+    /**
+     * Initialize the list of flags and their locations
+     */
+    private void initFlags() {
+        for (ETeamColor color : ETeamColor.values()) {
+            Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
+            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
+            SnowmanFlag flag =
+                    entityFactory.createSnowmanFlag(this,
+                                                    color,
+                                                    flagStart,
+                                                    flagGoal);
+            flag.setLocation(flagStart.getX(), flagStart.getY());
+            ManagedReference<SnowmanFlag> ref =
+                    AppContext.getDataManager().createReference(flag);
+            flagRefs.put(flag.getID(), ref);
+        }
+    }
 
-		this.flagRefs = new HashMap< Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
-		this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
+    public void send(ByteBuffer buff) {
+        buff.flip();
+        channelRef.get().send(null, buff);
+    }
 
-		this.entityFactory = entityFactory;
-		this.channelRef = AppContext.getDataManager().createReference(
-                        AppContext.getChannelManager().createChannel(
-						CHANPREFIX+gameName, null, Delivery.RELIABLE));
-		initFlags();
-	}
+    public void addPlayer(SnowmanPlayer player, ETeamColor color) {
+        AppContext.getDataManager().markForUpdate(this);
+        //ensure we are not going over the limit
+        if (teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
+            throw new SnowmanFullException("Player " + player.getName() + " cannot be added to game " +
+                                           this.getName() + " : too many players");
+        }
 
-	/**
-	 * Initialize the maximum number of players per team
-	 * The total number of players is divided up evenly among the teams.
-	 * If the division is not even, the last team will have the remainder
-	 */
-	private void initMaxTeamPlayers() {
-		//special case when there are fewer players than teams
-		if(this.numPlayers < ETeamColor.values().length) {
-			for(int j = 0; j < maxTeamPlayers.length; j++) {
-				if(j < numPlayers) maxTeamPlayers[j] = 1;
-				else maxTeamPlayers[j] = 0;
-			}
-			return;
-		}
+        //get a reference to the player and add to the list
+        ManagedReference<SnowmanPlayer> playerRef =
+                AppContext.getDataManager().createReference(player);
+        Integer playerId = new Integer(nextPlayerId++);
+        playerRefs.put(playerId, playerRef);
 
-		int playersPerTeam = this.numPlayers / ETeamColor.values().length;
-		int remainder = this.numPlayers % ETeamColor.values().length;
-		for (int i = 0; i < maxTeamPlayers.length - 1; i++)
-			maxTeamPlayers[i] = playersPerTeam;
+        //increment the total team players in this game
+        teamPlayers[color.ordinal()]++;
 
-		if(remainder == 0)
-			maxTeamPlayers[maxTeamPlayers.length-1]=playersPerTeam;
-		else
-			maxTeamPlayers[maxTeamPlayers.length-1]=remainder;
-	}
+        //update player information
+        player.setID(playerId.intValue());
+        Coordinate position = SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
+                                                              color,
+                                                              teamPlayers[color.ordinal()],
+                                                              maxTeamPlayers[color.ordinal()]);
+        player.setLocation(position.getX(), position.getY());
+        player.setTeamColor(color);
+        player.setGame(this);
 
-	/**
-	 * Initialize the list of flags and their locations
-	 */
-	private void initFlags() {
-		for(ETeamColor color : ETeamColor.values()){
-			Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
-			Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
-			SnowmanFlag flag =
-				entityFactory.createSnowmanFlag(this,
-						color,
-						flagStart,
-						flagGoal);
-			flag.setLocation(flagStart.getX(), flagStart.getY());
-			ManagedReference<SnowmanFlag> ref =
-				AppContext.getDataManager().createReference(flag);
-			flagRefs.put(flag.getID(), ref);
-		}
-	}
+        //add the real players session to the channels.
+        if (player.getSession() != null) {
+            realPlayers++;
+            channelRef.get().join(player.getSession());
+        }
+    }
 
-	public void send(ByteBuffer buff){
-		buff.flip();
-		channelRef.get().send(null, buff);
-	}
+    // A player disconnected
+    public void removePlayer(SnowmanPlayer player) {
+        AppContext.getDataManager().markForUpdate(this);
+        player.dropFlag();
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
+        Channel channel = channelRef.get();
+        if (player.getSession() != null) {
+            realPlayers--;
+            channel.leave(player.getSession());
+        }
 
-	public void addPlayer(SnowmanPlayer player, ETeamColor color) {
-		AppContext.getDataManager().markForUpdate(this);
-		//ensure we are not going over the limit
-		if(teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
-			throw new SnowmanFullException("Player "+player.getName()+" cannot be added to game "+
-					this.getName()+" : too many players");
-		}
+        // if all real players have gone, end the game
+        if (!channel.hasSessions()) {
+            endGame(EEndState.Draw);
+        } else {
+            send(ServerMessages.createRemoveMOBPkt(player.getID()));
+        }
+    }
 
-		//get a reference to the player and add to the list
-		ManagedReference<SnowmanPlayer> playerRef = 
-			AppContext.getDataManager().createReference(player);
-		Integer playerId = new Integer(nextPlayerId++);
-		playerRefs.put(playerId, playerRef);
+    public void sendMapInfo() {
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
+            SnowmanPlayer player = ref.get();
+            if (player.getSession() != null) {
+                player.send(ServerMessages.createNewGamePkt(player.getID(),
+                                                            "default_map"));
+            }
+        }
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
+            SnowmanPlayer player = ref.get();
+            multiSend(ServerMessages.createAddMOBPkt(
+                      player.getID(), player.getX(), player.getY(),
+                      EMOBType.SNOWMAN, player.getTeamColor(), player.getName()));
+        }
+        for (ManagedReference<SnowmanFlag> flagRef : flagRefs.values()) {
+            SnowmanFlag flag = flagRef.get();
+            multiSend(ServerMessages.createAddMOBPkt(
+                      flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor(),
+                      flag.getTeamColor().toString() + "Flag"));
 
-		//increment the total team players in this game
-		teamPlayers[color.ordinal()]++;
+            //TODO - encode goal color in the flag
+            //currently the add mob should swap the goal colors so that it is more intuitive for the players
+            multiSend(ServerMessages.createAddMOBPkt(
+                      flag.getID() + flagRefs.size(), flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL,
+                      flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
+        }
+        multiSend(ServerMessages.createReadyPkt());
+    }
 
-		//update player information
-		player.setID(playerId.intValue());
-		Coordinate position = SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
-				color,
-				teamPlayers[color.ordinal()],
-				maxTeamPlayers[color.ordinal()]);
-		player.setLocation(position.getX(), position.getY());
-		player.setTeamColor(color);
-		player.setGame(this);
+    private void multiSend(ByteBuffer buff) {
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
+            // send() will do a flip() on the buffer, so send a wrapped buffer
+            ref.get().send(buff.asReadOnlyBuffer());
+        }
+    }
 
-		//add the real players session to the channels.
-		if (player.getSession() != null) {
-			realPlayers++;
-			channelRef.get().join(player.getSession());
-		}
-	}
+    public void startGameIfReady() {
+        AppContext.getDataManager().markForUpdate(this);
+        readyPlayers++;
+        if (readyPlayers >= realPlayers) {
+            send(ServerMessages.createStartGamePkt());
+        }
+    }
 
-	// A player disconnected
-	public void removePlayer(SnowmanPlayer player){
-		AppContext.getDataManager().markForUpdate(this);
-		player.dropFlag();
-		ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
-		Channel channel = channelRef.get();
-		if (player.getSession() != null) {
-			realPlayers--;
-			channel.leave(player.getSession());
-		}
+    public Set<Integer> getPlayerIds() {
+        return playerRefs.keySet();
+    }
 
-		// if all real players have gone, end the game
-		if (!channel.hasSessions())
-			endGame(EEndState.Draw);
-		else {
-			send(ServerMessages.createRemoveMOBPkt(player.getID()));
-		}
-	}
+    public SnowmanPlayer getPlayer(int id) {
+        ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
+        if (playerRef != null) {
+            return playerRef.get();
+        }
+        return null;
+    }
 
-	public void sendMapInfo(){
-		for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
-			SnowmanPlayer player = ref.get();
-			if (player.getSession() != null) {
-				player.send(ServerMessages.createNewGamePkt(player.getID(),
-						"default_map"));
-			}
-		}
-		for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
-			SnowmanPlayer player = ref.get();
-			multiSend(ServerMessages.createAddMOBPkt(
-					player.getID(), player.getX(), player.getY(), 
-					EMOBType.SNOWMAN, player.getTeamColor(), player.getName()));
-		}
-		for(ManagedReference<SnowmanFlag> flagRef : flagRefs.values()){
-			SnowmanFlag flag = flagRef.get();
-			multiSend(ServerMessages.createAddMOBPkt(
-					flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor(),
-                                        flag.getTeamColor().toString()+"Flag"));
+    public void endGame(EEndState endState) {
+        send(ServerMessages.createEndGamePkt(endState));
 
-			//TODO - encode goal color in the flag
-			//currently the add mob should swap the goal colors so that it is more intuitive for the players
-			multiSend(ServerMessages.createAddMOBPkt(
-					flag.getID()+flagRefs.size(), flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL, 
-					flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
-		}
-		multiSend(ServerMessages.createReadyPkt());
-	}
+        // Attempt to clean up the game objects, including the channel, later
+        // so that the EndGame message is sent ASAP
+        AppContext.getTaskManager().scheduleTask(
+                new ObjectRemovalTask(AppContext.getDataManager().createReference(this)),
+                CLEANUPDELAYMS);
+    }
 
-	private void multiSend(ByteBuffer buff){
-		for(ManagedReference<SnowmanPlayer> ref : playerRefs.values()){
-			// send() will do a flip() on the buffer, so send a wrapped buffer
-			ref.get().send(buff.asReadOnlyBuffer());
-		}
-	}
+    static private class ObjectRemovalTask implements Task, Serializable {
 
-	public void startGameIfReady(){
-		AppContext.getDataManager().markForUpdate(this);
-		readyPlayers++;
-		if(readyPlayers >= realPlayers)
-			send(ServerMessages.createStartGamePkt());
-	}
+        final ManagedReference ref;
 
-	public Set<Integer> getPlayerIds() {
-		return playerRefs.keySet();
-	}
+        ObjectRemovalTask(ManagedReference ref) {
+            this.ref = ref;
+        }
 
-	public SnowmanPlayer getPlayer(int id){
-		ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
-		if(playerRef != null)
-			return playerRef.get();
-		return null;
-	}
+        public void run() throws Exception {
+            try {
+                AppContext.getDataManager().removeObject(ref.get());
+            } catch (ObjectNotFoundException alreadyRemoved) {
+            }
+        }
+    }
 
-	public void endGame(EEndState endState) {
-		send(ServerMessages.createEndGamePkt(endState));
+    public void removingObject() {
+        Channel c = getGameChannel();
+        c.leaveAll();
+        AppContext.getDataManager().removeObject(c);
 
-		// Attempt to clean up the game objects, including the channel, later
-		// so that the EndGame message is sent ASAP
-		AppContext.getTaskManager().scheduleTask(
-				new ObjectRemovalTask(AppContext.getDataManager().createReference(this)),
-				CLEANUPDELAYMS);
-	}
+        //only remove server side robots
+        //player listener is responsible for cleaning up client
+        //connected players
+        for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
+            try {
+                SnowmanPlayer p = ref.get();
+                if (p.isServerSide()) {
+                    AppContext.getDataManager().removeObject(p);
+                }
+            } catch (ObjectNotFoundException alreadyRemoved) {
+            }
+        }
 
-	static private class ObjectRemovalTask implements Task, Serializable {
-		final ManagedReference ref;
+        for (ManagedReference<SnowmanFlag> ref : flagRefs.values()) {
+            AppContext.getDataManager().removeObject(ref.get());
+        }
+    }
 
-		ObjectRemovalTask(ManagedReference ref) {
-			this.ref = ref;
-		}
+    public Set<Integer> getFLagIds() {
+        return flagRefs.keySet();
+    }
 
-		public void run() throws Exception {
-			try {
-				AppContext.getDataManager().removeObject(ref.get());
-			} catch (ObjectNotFoundException alreadyRemoved) {}
-		}
-	}
+    public SnowmanFlag getFlag(int id) {
+        return flagRefs.get(id).get();
+    }
 
-	public void removingObject() {
-		Channel c = getGameChannel();
-		c.leaveAll();
-		AppContext.getDataManager().removeObject(c);
+    public String getName() {
+        return gameName;
+    }
 
-		//only remove server side robots
-		//player listener is responsible for cleaning up client
-		//connected players
-		for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
-			try {
-				SnowmanPlayer p = ref.get();
-				if(p.isServerSide())
-					AppContext.getDataManager().removeObject(p);
-			} catch (ObjectNotFoundException alreadyRemoved) {}
-		}
-
-		for (ManagedReference<SnowmanFlag> ref : flagRefs.values()) {
-			AppContext.getDataManager().removeObject(ref.get());
-		}
-	}
-
-	public Set<Integer> getFLagIds() {
-		return flagRefs.keySet();
-	}
-
-	public SnowmanFlag getFlag(int id) {
-		return flagRefs.get(id).get();
-	}
-
-	public String getName() {
-		return gameName;
-	}
-
-	public Channel getGameChannel() {
-		return channelRef.get();
-	}
+    public Channel getGameChannel() {
+        return channelRef.get();
+    }
 }
