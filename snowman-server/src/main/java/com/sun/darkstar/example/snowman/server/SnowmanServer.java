@@ -78,7 +78,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
     private EntityFactory entityFactory;
 
     @SuppressWarnings("unchecked")
-    public void initialize(Properties arg0) {
+    public void initialize(Properties props) {
         this.gameFactory = new GameFactoryImpl();
         this.entityFactory = new EntityFactoryImpl();
         this.waitingDeques = new ManagedReference[NUMDEQUES];
@@ -87,7 +87,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
             waitingDeques[i] = AppContext.getDataManager().createReference(deque);
         }
 
-        this.config();
+        this.config(props);
         AppContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
                                                                     numRobotsPerGame,
                                                                     robotDelay,
@@ -96,22 +96,27 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                                     waitingDeques));
     }
 
-    private void config() {
-        numPlayersPerGame = Integer.getInteger(PLAYERS_PER_GAME_PROP,
-                                               DEFAULT_PLAYERS_PER_GAME);
+    private void config(Properties props) {
+        numPlayersPerGame = getPropertyAsInteger(props,
+                                                 PLAYERS_PER_GAME_PROP,
+                                                 DEFAULT_PLAYERS_PER_GAME);
         if (numPlayersPerGame <= 0) {
             throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + " must be > 0");
         }
         logger.log(Level.CONFIG,
                    "Number of players required to start a game set to {0}",
                    numPlayersPerGame);
-        numRobotsPerGame = Integer.getInteger(ROBOTS_PER_GAME_PROP,
-                                              DEFAULT_ROBOTS_PER_GAME);
+        
+        numRobotsPerGame = getPropertyAsInteger(props,
+                                                ROBOTS_PER_GAME_PROP,
+                                                DEFAULT_ROBOTS_PER_GAME);
         if (numRobotsPerGame < 0) {
             throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0");
         }
-        robotDelay = Integer.getInteger(ROBOT_DELAY_PROP,
-                                        DEFAULT_ROBOT_DELAY);
+        
+        robotDelay = getPropertyAsInteger(props,
+                                          ROBOT_DELAY_PROP,
+                                          DEFAULT_ROBOT_DELAY);
         if (robotDelay < 0) {
             throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
         }
@@ -131,5 +136,15 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
 
         waitingDeques[index.intValue()].get().add(player.getSnowmanPlayerRef());
         return player;
+    }
+    
+    private static Integer getPropertyAsInteger(Properties props,
+                                                String key,
+                                                Integer defaultValue) {
+        try {
+            return Integer.valueOf(props.getProperty(key));
+        } catch(NumberFormatException nfe) {
+            return defaultValue;
+        }
     }
 }
