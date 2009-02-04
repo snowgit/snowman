@@ -36,7 +36,7 @@ import com.sun.sgs.service.Service;
 
 
 /**
- * The <code>GameWorldService</code> provides utility methods to calculate
+ * The {@code GameWorldService} provides utility methods to calculate
  * collision detection and spatial information against the static
  * game world geometry.
  * 

@@ -95,7 +95,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
             potentialTargets.addAll(game.getPlayerIds());
             
             ArrayList<Integer> potentialFlagTargets = new ArrayList<Integer>();
-            potentialFlagTargets.addAll(game.getFLagIds());
+            potentialFlagTargets.addAll(game.getFlagIds());
             
             // find a target flag to go after
             while (theirFlagRef == null) {

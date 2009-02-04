@@ -54,19 +54,43 @@ import java.math.BigInteger;
 /**
  * This class is the app listener for Project Snowman
  * It is sort of like a "main class" in a traditional Java applciation
+ * 
  * @author Jeffrey Kesselman
+ * @author Owen Kellett
+ * @author Keith Thompson
  */
 public class SnowmanServer implements ManagedObject, Serializable, AppListener {
 
     public static long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
     
+    /**
+     * Number of queues to use for the matchmaking system
+     */
     private static final int NUMDEQUES = 10;
+    /**
+     * Name of the property used to define number of players per game
+     */
     private static final String PLAYERS_PER_GAME_PROP = "numPlayersPerGame";
+    /**
+     * Default number of players per game
+     */
     private static final int DEFAULT_PLAYERS_PER_GAME = 2;
+    /**
+     * Name of the property used to define number of robots per game
+     */
     private static final String ROBOTS_PER_GAME_PROP = "numRobotsPerGame";
+    /**
+     * Default number of robots per game
+     */
     private static final int DEFAULT_ROBOTS_PER_GAME = 2;
+    /**
+     * Name of the property used to delay until robots make first move
+     */
     private static final String ROBOT_DELAY_PROP = "robotDelay";
+    /**
+     * Default first move delay for robots
+     */
     private static final int DEFAULT_ROBOT_DELAY = 2000;
     
     private int numPlayersPerGame;
@@ -101,7 +125,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                  PLAYERS_PER_GAME_PROP,
                                                  DEFAULT_PLAYERS_PER_GAME);
         if (numPlayersPerGame <= 0) {
-            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + " must be > 0");
+            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + 
+                                               " must be > 0");
         }
         logger.log(Level.CONFIG,
                    "Number of players required to start a game set to {0}",
@@ -111,20 +136,32 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                 ROBOTS_PER_GAME_PROP,
                                                 DEFAULT_ROBOTS_PER_GAME);
         if (numRobotsPerGame < 0) {
-            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0");
+            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + 
+                                               " must be >= 0");
         }
         
         robotDelay = getPropertyAsInteger(props,
                                           ROBOT_DELAY_PROP,
                                           DEFAULT_ROBOT_DELAY);
         if (robotDelay < 0) {
-            throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
+            throw new IllegalArgumentException(ROBOT_DELAY_PROP + 
+                                               " must be >= 0");
         }
         logger.log(Level.CONFIG,
-                   "Number of robots per game: {0}, with delay of {1} milliseconds",
+                   "Number of robots per game: {0}, " +
+                   "with delay of {1} milliseconds",
                    new Object[]{numRobotsPerGame, robotDelay});
     }
 
+    /**
+     * When a player logs in, it is randomly added to one of the waiting
+     * deques.  The {@link MatchmakerTask} is responsible for pulling players
+     * off of these deques and matching them into games.
+     * 
+     * @param session the {@code ClientSession} of the connecting player
+     * @return a {@link SnowmanPlayerListener} associated with the connected
+     *         player
+     */
     public ClientSessionListener loggedIn(ClientSession session) {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Player {0} logged in", session.getName());
@@ -138,6 +175,19 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
         return player;
     }
     
+    /**
+     * Retrieves a property with the given key from the {@link Properties}
+     * object as an Integer value.  If the property does not exist, or it is
+     * an invalid number format, the {@code defaultValue} is returned instead.
+     * 
+     * @param props the {@code Properties} object
+     * @param key the key to get the property of
+     * @param defaultValue the default value if the property does not exist
+     * 
+     * @return the value of the property with the given key as an
+     *         {@code Integer} if it exists and is a valid number format,
+     *         otherwise, returns defaultValue
+     */
     private static Integer getPropertyAsInteger(Properties props,
                                                 String key,
                                                 Integer defaultValue) {

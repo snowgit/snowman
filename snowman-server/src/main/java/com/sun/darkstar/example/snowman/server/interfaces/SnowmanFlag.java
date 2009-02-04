@@ -35,7 +35,7 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 
 /**
- * The <code>SnowmanFlag</code> interface defines the basic behavior
+ * The {@code SnowmanFlag} interface defines the basic behavior
  * of a flag in the snowman game
  * 
  * @author Owen Kellett
@@ -46,22 +46,48 @@ public interface SnowmanFlag extends DynamicEntity
      * Returns the color of the team that owns this flag
      * @return the flag's color
      */
-    public ETeamColor getTeamColor();
+    ETeamColor getTeamColor();
 
     /**
      * This method sets the flag as held by a snowman.  Passing null sets it as 
      * held by no snowman.
      * @param player the snowman who holds the flag, or null
      */
-    public void setHeldBy(SnowmanPlayer player);
+    void setHeldBy(SnowmanPlayer player);
     
+    /**
+     * Relocates the flag to its original home position.
+     */
     void returnFlag();
     
-    public void drop(float x, float y);
+    /**
+     * Called when a player holding the flag dies, or disconnects from the game.
+     * The flag is dropped and placed in the given fixed position in the world.
+     * 
+     * @param x the x coordinate to drop the flag
+     * @param y the y coordinate to drop the flag
+     */
+    void drop(float x, float y);
 
-    public boolean isHeld();
+    /**
+     * Checks if the flag is currently being held by a player
+     * 
+     * @return true if the flag is currently held
+     */
+    boolean isHeld();
     
-    public float getGoalX();
-    public float getGoalY();
+    /**
+     * Returns the x coordinate of the goal location
+     * 
+     * @return the x coordinat of the goal location
+     */
+    float getGoalX();
+    
+    /**
+     * Returns the y coordinate of the goal location
+     * 
+     * @return the y coordinate of the goal location
+     */
+    float getGoalY();
     
 }

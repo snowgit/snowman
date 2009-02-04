@@ -43,13 +43,36 @@ import com.sun.sgs.app.ClientSession;
  */
 public interface EntityFactory 
 {
-    public SnowmanPlayer createSnowmanPlayer(ClientSession session);
+    /**
+     * Creates a new {@code SnowmanPlayer} object that is associated with
+     * the given {@link ClientSession}.
+     * 
+     * @param session the session of the connected player
+     * @return a {@code SnowmanPlayer} associated with the connected player
+     */
+    SnowmanPlayer createSnowmanPlayer(ClientSession session);
     
-    public SnowmanPlayer createRobotPlayer(String name,
-                                           int delay);
+    /**
+     * Creates a new {@code SnowmanPlayer} which is an AI robot.
+     * 
+     * @param name the name of the robot
+     * @param delay the time delay to wait before the robot makes its first move
+     * @return a {@code SnowmanPlayer} representing a new robot player
+     */
+    SnowmanPlayer createRobotPlayer(String name,
+                                    int delay);
     
-    public SnowmanFlag createSnowmanFlag(SnowmanGame game,
-                                         ETeamColor teamColor,
-                                         Coordinate flagHome,
-                                         Coordinate flagGoal);
+    /**
+     * Creates a new {@code SnowmanFlag}.
+     * 
+     * @param game the {@code SnowmanGame} the new flag is to be a part of
+     * @param teamColor the color of the team that owns the flag
+     * @param flagHome the location of the flag's home position
+     * @param flagGoal the location of the flag's goal position
+     * @return a new {@code SnowmanFlag}
+     */
+    SnowmanFlag createSnowmanFlag(SnowmanGame game,
+                                  ETeamColor teamColor,
+                                  Coordinate flagHome,
+                                  Coordinate flagGoal);
 }

@@ -77,11 +77,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     private final ManagedReference<ClientSession> sessionRef;    // The game's channel
     private ManagedReference<Channel> channelRef;
     /**
-     * Player information and overall statistics
+     * Player information
      */
     private final String name;
-    private int wins;
-    private int losses;
+
     /**
      * Current game information
      */
@@ -134,10 +133,6 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         AppContext.getDataManager().markForUpdate(this);
         gameRef = AppContext.getDataManager().createReference(game);
         channelRef = AppContext.getDataManager().createReference(game.getGameChannel());
-    }
-
-    public float ranking() {
-        return 1000f * wins / losses;
     }
 
     public float getX() {

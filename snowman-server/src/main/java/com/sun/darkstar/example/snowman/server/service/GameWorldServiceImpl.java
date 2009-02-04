@@ -48,7 +48,7 @@ import com.sun.sgs.service.TransactionProxy;
 
 
 /**
- * The <code>GameWorldServiceImpl</code> is an implementation of a Project
+ * The {@code GameWorldServiceImpl} is an implementation of a Project
  * Darkstar service that provides utility methods to calculate
  * collision detection and spatial information against the static
  * game world geometry.

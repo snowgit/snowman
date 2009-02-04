@@ -35,7 +35,7 @@ package com.sun.darkstar.example.snowman.server.service;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 
 /**
- * The <code>GameWorldManagerImpl</code> implements the {@link GameWorldManager}
+ * The {@code GameWorldManagerImpl} implements the {@link GameWorldManager}
  * and provides application level access
  * to the {@link GameWorldService} running inside of the 
  * Project Darkstar stack.  

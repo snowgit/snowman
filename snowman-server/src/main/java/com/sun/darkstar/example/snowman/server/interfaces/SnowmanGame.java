@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 
 /**
- * The <code>SnowmanGame</code> interface describes the basic behavior
+ * The {@code SnowmanGame} interface describes the basic behavior
  * for a game
  * 
  * @author Owen Kellett
@@ -53,34 +53,38 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * Send a message to all players in the game on the game's Channel
      * @param buff the message itself
      */
-    public void send(ByteBuffer buff);
+    void send(ByteBuffer buff);
     
     /**
      * Send the AddMOB packets to all of the players in the game
      * to initiate the game state
      */
-    public void sendMapInfo();
-
+    void sendMapInfo();
     
     /**
      * Add a player to the game
      * @param player
      * @param color
      */
-    public void addPlayer(SnowmanPlayer player, ETeamColor color);
+    void addPlayer(SnowmanPlayer player, ETeamColor color);
     
     /**
      * Remove player from the game
      * @param player
      */
-    public void removePlayer(SnowmanPlayer player);
+    void removePlayer(SnowmanPlayer player);
     
     /**
      * Verify that all players are ready to player and start the game 
      * by broadcasting a STARTGAME message if so
      */
-    public void startGameIfReady();
+    void startGameIfReady();
     
+    /**
+     * End the game, notify clients of the results, and cleanup the game state.
+     * 
+     * @param endState the result of the game
+     */
     void endGame(EEndState endState);
     
     /**
@@ -88,20 +92,36 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
      * @param id
      * @return the flag with the given id
      */
-    public SnowmanFlag getFlag(int id);
+    SnowmanFlag getFlag(int id);
 
-    public Set<Integer> getFLagIds();
+    /**
+     * Returns the complete set of flag ids from flags in the game.
+     * 
+     * @return the set of flag ids in the game
+     */
+    Set<Integer> getFlagIds();
     
     /**
      * Return the player from the game with the given id
-     * @param id
+     * 
+     * @param id the id of the player
      * @return the player with the given id
      */
-    public SnowmanPlayer getPlayer(int id);
+    SnowmanPlayer getPlayer(int id);
     
-    public Set<Integer> getPlayerIds();
+    /**
+     * Return the complete set of player ids from players in the game.
+     * 
+     * @return the set of player ids in the game
+     */
+    Set<Integer> getPlayerIds();
     
-    public String getName();
+    /**
+     * Return the name of the game.
+     * 
+     * @return the name of the game
+     */
+    String getName();
     
     /**
      * Return the channel for this game

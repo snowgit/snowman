@@ -330,7 +330,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
-    public Set<Integer> getFLagIds() {
+    public Set<Integer> getFlagIds() {
         return flagRefs.keySet();
     }
 
