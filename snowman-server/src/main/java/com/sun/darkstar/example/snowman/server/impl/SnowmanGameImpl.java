@@ -63,7 +63,8 @@ import java.util.logging.Logger;
 public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
     public static final long serialVersionUID = 1L;
-    protected static Logger logger = Logger.getLogger(SnowmanGameImpl.class.getName());
+    protected static Logger logger = 
+            Logger.getLogger(SnowmanGameImpl.class.getName());
     
     /**
      * A prefix that is appended to the darkstar bound name for
@@ -108,8 +109,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         this.numPlayers = numPlayers;
         initMaxTeamPlayers();
 
-        this.flagRefs = new HashMap<Integer, ManagedReference<SnowmanFlag>>(ETeamColor.values().length);
-        this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(numPlayers);
+        this.flagRefs = new HashMap<Integer, ManagedReference<SnowmanFlag>>(
+                ETeamColor.values().length);
+        this.playerRefs = new HashMap<Integer, ManagedReference<SnowmanPlayer>>(
+                numPlayers);
 
         this.entityFactory = entityFactory;
         this.channelRef = AppContext.getDataManager().createReference(
@@ -153,8 +156,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
      */
     private void initFlags() {
         for (ETeamColor color : ETeamColor.values()) {
-            Coordinate flagStart = SnowmanMapInfo.getFlagStart(SnowmanMapInfo.DEFAULT, color);
-            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(SnowmanMapInfo.DEFAULT, color);
+            Coordinate flagStart = SnowmanMapInfo.getFlagStart(
+                    SnowmanMapInfo.DEFAULT, color);
+            Coordinate flagGoal = SnowmanMapInfo.getFlagGoal(
+                    SnowmanMapInfo.DEFAULT, color);
             SnowmanFlag flag =
                     entityFactory.createSnowmanFlag(this,
                                                     color,
@@ -167,17 +172,21 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     public void send(ByteBuffer buff) {
         buff.flip();
         channelRef.get().send(null, buff);
     }
 
+    /** {@inheritDoc} */
     public void addPlayer(SnowmanPlayer player, ETeamColor color) {
         AppContext.getDataManager().markForUpdate(this);
         //ensure we are not going over the limit
         if (teamPlayers[color.ordinal()] == maxTeamPlayers[color.ordinal()]) {
-            throw new SnowmanFullException("Player " + player.getName() + " cannot be added to game " +
-                                           this.getName() + " : too many players");
+            throw new SnowmanFullException("Player " + player.getName() + 
+                                           " cannot be added to game " +
+                                           this.getName() + 
+                                           " : too many players");
         }
 
         //get a reference to the player and add to the list
@@ -191,10 +200,11 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
         //update player information
         player.setID(playerId.intValue());
-        Coordinate position = SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
-                                                              color,
-                                                              teamPlayers[color.ordinal()],
-                                                              maxTeamPlayers[color.ordinal()]);
+        Coordinate position = 
+                SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
+                                                color,
+                                                teamPlayers[color.ordinal()],
+                                                maxTeamPlayers[color.ordinal()]);
         player.setLocation(position.getX(), position.getY());
         player.setTeamColor(color);
         player.setGame(this);
@@ -206,11 +216,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
-    // A player disconnected
+    /** {@inheritDoc} */
     public void removePlayer(SnowmanPlayer player) {
         AppContext.getDataManager().markForUpdate(this);
         player.dropFlag();
-        ManagedReference<SnowmanPlayer> playerRef = playerRefs.remove(player.getID());
+        ManagedReference<SnowmanPlayer> playerRef = 
+                playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
         if (player.getSession() != null) {
             realPlayers--;
@@ -225,6 +236,14 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** 
+     * {@inheritDoc}
+     * 
+     * Since each player receives an individually customized NEWGAME message
+     * as private session messages, the game channel is not used to send
+     * the AddMOB packets.  The AddMOB messages are sent as private session
+     * messages instead.  This is done so as to preserve ordering.
+     */
     public void sendMapInfo() {
         for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
             SnowmanPlayer player = ref.get();
@@ -237,23 +256,33 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
             SnowmanPlayer player = ref.get();
             multiSend(ServerMessages.createAddMOBPkt(
                       player.getID(), player.getX(), player.getY(),
-                      EMOBType.SNOWMAN, player.getTeamColor(), player.getName()));
+                      EMOBType.SNOWMAN, player.getTeamColor(), 
+                      player.getName()));
         }
         for (ManagedReference<SnowmanFlag> flagRef : flagRefs.values()) {
             SnowmanFlag flag = flagRef.get();
             multiSend(ServerMessages.createAddMOBPkt(
-                      flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, flag.getTeamColor(),
+                      flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, 
+                      flag.getTeamColor(), 
                       flag.getTeamColor().toString() + "Flag"));
 
             //TODO - encode goal color in the flag
-            //currently the add mob should swap the goal colors so that it is more intuitive for the players
+            //currently the add mob should swap the goal colors so that
+            //it is more intuitive for the players
             multiSend(ServerMessages.createAddMOBPkt(
-                      flag.getID() + flagRefs.size(), flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL,
-                      flag.getTeamColor() == ETeamColor.Red ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
+                      flag.getID() + flagRefs.size(), 
+                      flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL,
+                      flag.getTeamColor() == ETeamColor.Red 
+                      ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
         }
         multiSend(ServerMessages.createReadyPkt());
     }
 
+    /**
+     * Send a message to all players in the game without using the game
+     * {@code Channel}.
+     * @param buff
+     */
     private void multiSend(ByteBuffer buff) {
         for (ManagedReference<SnowmanPlayer> ref : playerRefs.values()) {
             // send() will do a flip() on the buffer, so send a wrapped buffer
@@ -261,6 +290,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     public void startGameIfReady() {
         AppContext.getDataManager().markForUpdate(this);
         readyPlayers++;
@@ -269,28 +299,36 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     public Set<Integer> getPlayerIds() {
         return playerRefs.keySet();
     }
 
+    /** {@inheritDoc} */
     public SnowmanPlayer getPlayer(int id) {
-        ManagedReference<SnowmanPlayer> playerRef = playerRefs.get(new Integer(id));
+        ManagedReference<SnowmanPlayer> playerRef =
+                playerRefs.get(new Integer(id));
         if (playerRef != null) {
             return playerRef.get();
         }
         return null;
     }
 
+    /** {@inheritDoc} */
     public void endGame(EEndState endState) {
         send(ServerMessages.createEndGamePkt(endState));
 
         // Attempt to clean up the game objects, including the channel, later
         // so that the EndGame message is sent ASAP
         AppContext.getTaskManager().scheduleTask(
-                new ObjectRemovalTask(AppContext.getDataManager().createReference(this)),
+                new ObjectRemovalTask(
+                AppContext.getDataManager().createReference(this)),
                 CLEANUPDELAYMS);
     }
 
+    /**
+     * Asyncronously removes an object from the datastore.
+     */
     static private class ObjectRemovalTask implements Task, Serializable {
 
         final ManagedReference ref;
@@ -299,6 +337,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
             this.ref = ref;
         }
 
+        /** {@inheritDoc} */
         public void run() throws Exception {
             try {
                 AppContext.getDataManager().removeObject(ref.get());
@@ -307,6 +346,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     public void removingObject() {
         Channel c = getGameChannel();
         c.leaveAll();
@@ -330,18 +370,22 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         }
     }
 
+    /** {@inheritDoc} */
     public Set<Integer> getFlagIds() {
         return flagRefs.keySet();
     }
 
+    /** {@inheritDoc} */
     public SnowmanFlag getFlag(int id) {
         return flagRefs.get(id).get();
     }
 
+    /** {@inheritDoc} */
     public String getName() {
         return gameName;
     }
 
+    /** {@inheritDoc} */
     public Channel getGameChannel() {
         return channelRef.get();
     }

@@ -176,6 +176,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     }
     
     // Drop the flag. Must be currently held.
+    /** {@inheritDoc} */
     public void drop(float x, float y) {
         assert heldByRef != null;
         
@@ -202,6 +203,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         }
     }
     
+    /** {@inheritDoc} */
     public void returnFlag() {
         if (!isHeld()) {
             setLocation(homeX, homeY);
@@ -210,6 +212,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         }
     }
     
+    /** {@inheritDoc} */
     public void setID(int i) {
         assert false;
     }
@@ -223,13 +226,16 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         return id;
     }
 
+    /** {@inheritDoc} */
     public boolean isHeld() {
         return heldByRef != null;
     }
 
+    /** {@inheritDoc} */
     public float getGoalX() {
         return goalX;
     }
+    /** {@inheritDoc} */
     public float getGoalY() {
         return goalY;
     }

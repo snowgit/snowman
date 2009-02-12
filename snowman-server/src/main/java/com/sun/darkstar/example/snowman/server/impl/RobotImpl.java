@@ -72,8 +72,9 @@ public class RobotImpl extends SnowmanPlayerImpl {
     
     private void scheduleMove(int delay) {
         AppContext.getTaskManager().scheduleTask(
-                new MoveTask(AppContext.getDataManager().createReference((RobotImpl)this)),
-                             delay + random.nextInt(500));
+                new MoveTask(
+                AppContext.getDataManager().createReference((RobotImpl)this)),
+                delay + random.nextInt(500));
     }
     
     private void moveRobot() {
@@ -104,7 +105,8 @@ public class RobotImpl extends SnowmanPlayerImpl {
                 SnowmanFlag flag = gameRef.get().getFlag(
                         potentialFlagTargets.get(targetId));
                 if(flag.getTeamColor() != this.getTeamColor()) {
-                    theirFlagRef = AppContext.getDataManager().createReference(flag);
+                    theirFlagRef = 
+                            AppContext.getDataManager().createReference(flag);
                 }
                 else {
                     potentialFlagTargets.remove(targetId);
@@ -202,14 +204,17 @@ public class RobotImpl extends SnowmanPlayerImpl {
     // There is no session associated with the robot, so related methods
     // are overriden with noops
     
+    /** {@inheritDoc} */
     @Override
     public void send(ByteBuffer buff) {}
     
+    /** {@inheritDoc} */
     @Override
     public ClientSession getSession() {
         return null;
     }
     
+    /** {@inheritDoc} */
     @Override
     public boolean isServerSide() {
         return true;

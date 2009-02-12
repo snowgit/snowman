@@ -32,6 +32,7 @@
 package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
+import com.sun.darkstar.example.snowman.common.protocol.handlers.MessageHandler;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedReference;
@@ -52,7 +53,8 @@ import java.util.logging.Logger;
 public class SnowmanPlayerListener implements Serializable,
                                               ClientSessionListener {
 
-    private static Logger logger = Logger.getLogger(SnowmanPlayerListener.class.getName());
+    private static Logger logger = 
+            Logger.getLogger(SnowmanPlayerListener.class.getName());
     public static final long serialVersionUID = 1L;
     
     private final ManagedReference<SnowmanPlayer> playerRef;
@@ -61,14 +63,29 @@ public class SnowmanPlayerListener implements Serializable,
         this.playerRef = AppContext.getDataManager().createReference(player);
     }
 
-    public void receivedMessage(ByteBuffer arg0) {
+    /**
+     * Any message received from a player is passed on to be handled by the 
+     * singleton {@link MessageHandler} located with the
+     * {@link SingletonRegistry}.
+     * 
+     * @param message an incoming message from the player
+     */
+    public void receivedMessage(ByteBuffer message) {
         try {
-            SingletonRegistry.getMessageHandler().parseServerPacket(arg0, playerRef.get().getProcessor());
+            SingletonRegistry.getMessageHandler().parseServerPacket(
+                    message, playerRef.get().getProcessor());
         } catch (ObjectNotFoundException disconnected) {
         }
     }
 
-    public void disconnected(boolean arg0) {
+    /**
+     * When a player is disconnected, it is removed from the game that it
+     * is playing in (if it is in one), and it is also removed from the
+     * datastore.
+     * 
+     * @param graceful whether or not disconnection was graceful
+     */
+    public void disconnected(boolean graceful) {
         try {
             SnowmanPlayer player = playerRef.get();
 

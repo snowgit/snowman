@@ -45,6 +45,7 @@ public class GameFactoryImpl implements GameFactory, Serializable {
 
     public static long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public SnowmanGame createSnowmanGame(String gameName,
                                          int numPlayers,
                                          EntityFactory entityFactory) {

@@ -69,7 +69,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
                                           IServerProcessor {
 
     public static final long serialVersionUID = 1L;
-    protected static Logger logger = Logger.getLogger(SnowmanPlayerImpl.class.getName());
+    protected static Logger logger = 
+            Logger.getLogger(SnowmanPlayerImpl.class.getName());
     static long DEATHDELAYMS = 10 * 1000;
     static float POSITIONTOLERANCESQD = 4.0f;
     static int RESPAWNHP = (int) EStats.SnowmanFullStrength.getValue();
@@ -113,21 +114,25 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         DEAD
     }
 
+    /** {@inheritDoc} */
     public void setID(int id) {
         this.id = id;
     }
 
+    /** {@inheritDoc} */
     public void setLocation(float x, float y) {
         startX = destX = x;
         startY = destY = y;
         this.state = PlayerState.STOPPED;
     }
 
+    /** {@inheritDoc} */
     public void setTeamColor(ETeamColor color) {
         AppContext.getDataManager().markForUpdate(this);
         teamColor = color;
     }
 
+    /** {@inheritDoc} */
     public void setGame(SnowmanGame game) {
         assert game != null;
         AppContext.getDataManager().markForUpdate(this);
@@ -135,10 +140,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         channelRef = AppContext.getDataManager().createReference(game.getGameChannel());
     }
 
+    /** {@inheritDoc} */
     public float getX() {
         return startX;
     }
 
+    /** {@inheritDoc} */
     public float getY() {
         return startY;
     }
@@ -175,7 +182,8 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
             if (targetDistance <= distanceTraveled) {
                 currentX = destX;
                 currentY = destY;
-            } //otherwise, we need to calculate the new position based on
+            }
+            //otherwise, we need to calculate the new position based on
             //a system of equations (looking for realDX and realDY as variables):
             //  dx/dy = realDX/realDY
             //  realDX^2 + realDY^2 = distanceTraveled^2
@@ -214,10 +222,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         return distanceSqd < tolerance;
     }
 
+    /** {@inheritDoc} */
     public int getID() {
         return id;
     }
 
+    /** {@inheritDoc} */
     public void setReadyToPlay(boolean readyToPlay) {
         AppContext.getDataManager().markForUpdate(this);
 
@@ -228,11 +238,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public boolean getReadyToPlay() {
         return this.state != PlayerState.NONE;
     }
 
-    // Send a message to this player
+    /** {@inheritDoc} */
     public void send(ByteBuffer buff) {
         buff.flip();
         sessionRef.get().send(buff);
@@ -244,6 +255,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         channelRef.get().send(null, buff);
     }
 
+    /** {@inheritDoc} */
     public ClientSession getSession() {
         try {
             return sessionRef.get();
@@ -252,11 +264,14 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isServerSide() {
         return false;
     }
 
     // IServerProcessor Messages
+    
+    /** {@inheritDoc} */
     public void ready() {
         if (gameRef != null) {
             setReadyToPlay(true);
@@ -264,6 +279,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public void moveMe(float startx, float starty,
                        float endx, float endy) {
         //verify that the start location is valid
@@ -310,6 +326,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public void attack(int targetID, float x, float y) {
         Long now = System.currentTimeMillis();
         attack(now, targetID, x, y);
@@ -371,6 +388,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public void getFlag(int flagID, float x, float y) {
         Long now = System.currentTimeMillis();
         getFlag(now, flagID, x, y);
@@ -415,6 +433,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public void score(float x, float y) {
         Long now = System.currentTimeMillis();
         score(now, x, y);
@@ -460,7 +479,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         return false;
     }
 
-    // respawn
+    /** {@inheritDoc} */
     public void respawn() {
         if (gameRef != null) {
             AppContext.getDataManager().markForUpdate(this);
@@ -471,6 +490,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public int hit(int hp, float attackX, float attackY) {
         if (hitPoints > 0) { // not already dead
             AppContext.getDataManager().markForUpdate(this);
@@ -494,10 +514,12 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         return hp;
     }
 
+    /** {@inheritDoc} */
     public int getHitPoints() {
         return hitPoints;
     }
 
+    /** {@inheritDoc} */
     public void dropFlag() {
         SnowmanFlag flag = holdingFlagRef == null ? null : holdingFlagRef.get();
         if (flag != null) {
@@ -507,6 +529,10 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         holdingFlagRef = null;
     }
 
+    /**
+     * A private task which causes a player to respawn and be reinserted
+     * into the game world.
+     */
     static private class RespawnTask implements Task, Serializable {
 
         /**
@@ -519,6 +545,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
             this.playerRef = playerRef;
         }
 
+        /** {@inheritDoc} */
         public void run() throws Exception {
             try {
                 playerRef.get().respawn();
@@ -527,22 +554,27 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public SnowmanGame getGame() {
         return gameRef == null ? null : gameRef.get();
     }
 
+    /** {@inheritDoc} */
     public String getName() {
         return name;
     }
 
+    /** {@inheritDoc} */
     public IServerProcessor getProcessor() {
         return this;
     }
 
+    /** {@inheritDoc} */
     public ETeamColor getTeamColor() {
         return teamColor;
     }
 
+    /** {@inheritDoc} */
     public void removingObject() {
         if (sessionRef != null) {
             try {
@@ -554,6 +586,7 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
         }
     }
 
+    /** {@inheritDoc} */
     public void chatMessage(String message) {
         // Create new packet with ID.
         sendAll(ServerMessages.createChatPkt(id, message));

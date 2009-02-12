@@ -62,7 +62,8 @@ import java.math.BigInteger;
 public class SnowmanServer implements ManagedObject, Serializable, AppListener {
 
     public static long serialVersionUID = 1L;
-    private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
+    private static Logger logger = 
+            Logger.getLogger(SnowmanServer.class.getName());
     
     /**
      * Number of queues to use for the matchmaking system
@@ -101,23 +102,42 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
 
+    /**
+     * Initializes a Project Snowman server upon first bootup. This involves:
+     * <ol>
+     * <li>Initializing a list of queues that connecting players are placed
+     * into upon connecting to wait to be matched into a game.</li>
+     * <li>Initializing the self-rescheduling {@code link MatchmakerTask} which
+     * is responsible for pulling players off of the waiting queues and
+     * matching them into games.</li>
+     * </ol>
+     * Configuration parameters such as number of players in a game, number
+     * of robots in a game, and robot move delay are also parsed and 
+     * established from the given set of properties.
+     * 
+     * @param props a set of {@code Properties} used to configure the 
+     *        runtime state of the game
+     */
     @SuppressWarnings("unchecked")
     public void initialize(Properties props) {
         this.gameFactory = new GameFactoryImpl();
         this.entityFactory = new EntityFactoryImpl();
         this.waitingDeques = new ManagedReference[NUMDEQUES];
         for (int i = 0; i < waitingDeques.length; i++) {
-            Deque<ManagedReference<SnowmanPlayer>> deque = new ScalableDeque<ManagedReference<SnowmanPlayer>>();
-            waitingDeques[i] = AppContext.getDataManager().createReference(deque);
+            Deque<ManagedReference<SnowmanPlayer>> deque = 
+                    new ScalableDeque<ManagedReference<SnowmanPlayer>>();
+            waitingDeques[i] = 
+                    AppContext.getDataManager().createReference(deque);
         }
 
         this.config(props);
-        AppContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
-                                                                    numRobotsPerGame,
-                                                                    robotDelay,
-                                                                    gameFactory,
-                                                                    entityFactory,
-                                                                    waitingDeques));
+        AppContext.getTaskManager().scheduleTask(
+                new MatchmakerTask(numPlayersPerGame,
+                                   numRobotsPerGame,
+                                   robotDelay,
+                                   gameFactory,
+                                   entityFactory,
+                                   waitingDeques));
     }
 
     private void config(Properties props) {
@@ -167,7 +187,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
             logger.log(Level.FINE, "Player {0} logged in", session.getName());
         }
         SnowmanPlayerListener player =
-                new SnowmanPlayerListener(entityFactory.createSnowmanPlayer(session));
+                new SnowmanPlayerListener(
+                entityFactory.createSnowmanPlayer(session));
         BigInteger id = player.getSnowmanPlayerRef().getId();
         BigInteger index = id.mod(BigInteger.valueOf((long) NUMDEQUES));
 
