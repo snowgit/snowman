@@ -149,7 +149,7 @@ public class ChatGUI extends GUIPass {
 
     /**
      * Append the given chat message to the correct output fields.
-     * @param id The player who sent the message
+     * @param name The name of the player who sent the message
      * @param chatMessage The chat message needs to be appended.
      */
     public void appendChatMessage(String name, String chatMessage) {
