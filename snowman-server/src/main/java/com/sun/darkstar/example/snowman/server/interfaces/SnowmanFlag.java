@@ -36,14 +36,14 @@ import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 
 /**
  * The {@code SnowmanFlag} interface defines the basic behavior
- * of a flag in the snowman game
+ * of a flag in the snowman game.
  * 
  * @author Owen Kellett
  */
 public interface SnowmanFlag extends DynamicEntity
 {
     /**
-     * Returns the color of the team that owns this flag
+     * Returns the color of the team that owns this flag.
      * @return the flag's color
      */
     ETeamColor getTeamColor();
@@ -70,21 +70,21 @@ public interface SnowmanFlag extends DynamicEntity
     void drop(float x, float y);
 
     /**
-     * Checks if the flag is currently being held by a player
+     * Checks if the flag is currently being held by a player.
      * 
      * @return true if the flag is currently held
      */
     boolean isHeld();
     
     /**
-     * Returns the x coordinate of the goal location
+     * Returns the x coordinate of the goal location.
      * 
      * @return the x coordinat of the goal location
      */
     float getGoalX();
     
     /**
-     * Returns the y coordinate of the goal location
+     * Returns the y coordinate of the goal location.
      * 
      * @return the y coordinate of the goal location
      */

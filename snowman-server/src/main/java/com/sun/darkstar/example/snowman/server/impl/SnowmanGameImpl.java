@@ -55,15 +55,17 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * This object represents an actual running game session of Project Snowman,
+ * This object represents an actual running game session of Project Snowman.
+ * 
  * @author Jeffrey Kesselman
  * @author Owen Kellett
  * @author Yi Wang (Neakor)
  */
 public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
+    /** The version of the serialized form. */
     public static final long serialVersionUID = 1L;
-    protected static Logger logger = 
+    private static final Logger logger = 
             Logger.getLogger(SnowmanGameImpl.class.getName());
     
     /**
@@ -102,6 +104,14 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
      */
     private int[] maxTeamPlayers = new int[ETeamColor.values().length];
 
+    /**
+     * Creates a new instance of a game with the give name and maximum
+     * number of players.
+     * 
+     * @param gameName the name of the game
+     * @param numPlayers the maximum number of players that can join the game
+     * @param entityFactory the factory used to create artifacts for the game
+     */
     public SnowmanGameImpl(String gameName,
                            int numPlayers,
                            EntityFactory entityFactory) {
@@ -192,7 +202,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         //get a reference to the player and add to the list
         ManagedReference<SnowmanPlayer> playerRef =
                 AppContext.getDataManager().createReference(player);
-        Integer playerId = new Integer(nextPlayerId++);
+        Integer playerId = Integer.valueOf(nextPlayerId++);
         playerRefs.put(playerId, playerRef);
 
         //increment the total team players in this game
@@ -201,10 +211,11 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         //update player information
         player.setID(playerId.intValue());
         Coordinate position = 
-                SnowmanMapInfo.getSpawnPosition(SnowmanMapInfo.DEFAULT,
-                                                color,
-                                                teamPlayers[color.ordinal()],
-                                                maxTeamPlayers[color.ordinal()]);
+                SnowmanMapInfo.getSpawnPosition(
+                SnowmanMapInfo.DEFAULT,
+                color,
+                teamPlayers[color.ordinal()],
+                maxTeamPlayers[color.ordinal()]);
         player.setLocation(position.getX(), position.getY());
         player.setTeamColor(color);
         player.setGame(this);
@@ -220,8 +231,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
     public void removePlayer(SnowmanPlayer player) {
         AppContext.getDataManager().markForUpdate(this);
         player.dropFlag();
-        ManagedReference<SnowmanPlayer> playerRef = 
-                playerRefs.remove(player.getID());
+        playerRefs.remove(player.getID());
         Channel channel = channelRef.get();
         if (player.getSession() != null) {
             realPlayers--;
@@ -307,7 +317,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
     /** {@inheritDoc} */
     public SnowmanPlayer getPlayer(int id) {
         ManagedReference<SnowmanPlayer> playerRef =
-                playerRefs.get(new Integer(id));
+                playerRefs.get(Integer.valueOf(id));
         if (playerRef != null) {
             return playerRef.get();
         }
@@ -329,7 +339,10 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
     /**
      * Asyncronously removes an object from the datastore.
      */
-    static private class ObjectRemovalTask implements Task, Serializable {
+    private static class ObjectRemovalTask implements Task, Serializable {
+        
+        /** The version of the serialized form. */
+        public static final long serialVersionUID = 1L;
 
         final ManagedReference ref;
 

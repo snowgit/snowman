@@ -48,7 +48,7 @@ import java.nio.ByteBuffer;
 public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
 {
     /**
-     * Get the name of the player
+     * Get the name of the player.
      * @return the name of the player
      */
     String getName();
@@ -70,21 +70,21 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     Coordinate getExpectedPositionAtTime(long time);
 
     /**
-     * Set the team of the player
+     * Set the team of the player.
      * 
      * @param color the color of the player's team
      */
     void setTeamColor(ETeamColor color);
     
     /**
-     * Return the player's team color
+     * Return the player's team color.
      * 
      * @return the player's team color
      */
     ETeamColor getTeamColor();
 
     /**
-     * Set the game that the player is in
+     * Set the game that the player is in.
      * 
      * @param game the game the player is in
      */
@@ -99,14 +99,14 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     
     /**
      * Indicate that this player has received all game initialization info
-     * on the client side and is ready to begin play
+     * on the client side and is ready to begin play.
      * 
      * @param readyToPlay true if ready to play
      */
     void setReadyToPlay(boolean readyToPlay);
     
     /**
-     * Return whether this player is ready to play
+     * Return whether this player is ready to play.
      * 
      * @return whether this player is ready to play
      */
@@ -114,7 +114,7 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
     
     /**
      * Revive player, set hitpoints back to maximum value,
-     * and relocate it to a respawn position
+     * and relocate it to a respawn position.
      */
     void respawn();
     
@@ -122,12 +122,14 @@ public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
      * Hit this snowman with the given hit point value.
      * 
      * @param hp the hit point value
+     * @param attackX the x coordinate of the player
+     * @param attackY the y coordinate of the player
      * @return the number of hit points deducted from the player's value
      */
     int hit(int hp, float attackX, float attackY);
     
     /**
-     * If this snowman is holding the flag, drop the flag
+     * If this snowman is holding the flag, drop the flag.
      */
     void dropFlag();
     

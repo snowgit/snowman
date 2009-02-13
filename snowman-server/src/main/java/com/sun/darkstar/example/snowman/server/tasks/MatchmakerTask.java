@@ -46,6 +46,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * This task is a self re-scheduling task that polls the front of the
@@ -61,12 +62,17 @@ import java.util.Iterator;
  * 
  * @author Owen Kellett
  */
-public class MatchmakerTask implements Task, Serializable
-{
+public class MatchmakerTask implements Task, Serializable {
+    
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
+    private static final Logger logger = 
+            Logger.getLogger(MatchmakerTask.class.getName());
+    
     private static final int POLLINGINTERVAL = 2 * 1000;
-    private final String NAME_PREFIX = "Game";
+    private static final String NAME_PREFIX = "Game";
+    
     private int gameCount = 0;
-
     private final int numPlayersPerGame;
     private final int numRobotsPerGame;
     private final int robotDelay;
@@ -75,8 +81,20 @@ public class MatchmakerTask implements Task, Serializable
     private EntityFactory entityFactory;
     
     private List<ManagedReference<SnowmanPlayer>> waitingPlayers;
-    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
+    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] 
+            waitingDeques;
     
+    /**
+     * Constructs a {@code MatchmakerTask} with the given attributes
+     * and components.
+     * 
+     * @param numPlayersPerGame number of human players to include in a game
+     * @param numRobotsPerGame number of server controlled robots per game
+     * @param robotDelay configured delay between robot actions
+     * @param gameFactory factory to create game objects
+     * @param entityFactory factory to create in-game artifacts
+     * @param waitingDeques array of queues which contain connecting clients
+     */
     public MatchmakerTask(int numPlayersPerGame,
                           int numRobotsPerGame,
                           int robotDelay,
@@ -94,15 +112,19 @@ public class MatchmakerTask implements Task, Serializable
         this.waitingDeques = waitingDeques;
     }
 
+    /** {@inheritDoc} */
     public void run() throws Exception {
         boolean playersFound = false;
-        for(int i = 0; i < waitingDeques.length; i++) {
-            ManagedReference<SnowmanPlayer> nextPlayer = waitingDeques[i].get().poll();
-            if(nextPlayer != null) {
+        //cycle through the front of each queue, adding players to the waiting
+        //list as they are found
+        for (int i = 0; i < waitingDeques.length; i++) {
+            ManagedReference<SnowmanPlayer> nextPlayer = 
+                    waitingDeques[i].get().poll();
+            if (nextPlayer != null) {
                 playersFound = true;
                 waitingPlayers.add(nextPlayer);
             }
-            if(waitingPlayers.size() == numPlayersPerGame) {
+            if (waitingPlayers.size() == numPlayersPerGame) {
                 startGame();
                 break;
             }
@@ -111,40 +133,50 @@ public class MatchmakerTask implements Task, Serializable
         // if no players are found in the queue during this iteration
         // schedule a delay for the next polling cycle
         // otherwise, schedule the next cycle to occur immediately
-        if(playersFound)
+        if (playersFound) {
             AppContext.getTaskManager().scheduleTask(this);
-        else
+        } else {
             AppContext.getTaskManager().scheduleTask(this, POLLINGINTERVAL);
+        }
     }
     
     private void startGame() {
         //remove players from waiting list if they have disconnected
         boolean needMore = false;
-        for(Iterator<ManagedReference<SnowmanPlayer>> ip = waitingPlayers.iterator(); ip.hasNext(); ) {
+        for (Iterator<ManagedReference<SnowmanPlayer>> ip =
+                waitingPlayers.iterator(); ip.hasNext(); ) {
             try {
                 ip.next().get();
-            } catch(ObjectNotFoundException e) {
+            } catch (ObjectNotFoundException e) {
                 ip.remove();
                 needMore = true;
             }
         }
-        if(needMore)
+        if (needMore) {
             return;
+        }
         
         //start the game if all waiting players are still connected
         String gameName = NAME_PREFIX + (gameCount++);
-        SnowmanGame game = gameFactory.createSnowmanGame(gameName,
-                                                         numPlayersPerGame + numRobotsPerGame,
-                                                         entityFactory);
+        SnowmanGame game = 
+                gameFactory.createSnowmanGame(gameName,
+                                              numPlayersPerGame + 
+                                              numRobotsPerGame,
+                                              entityFactory);
         ETeamColor color = ETeamColor.values()[0];
-        for(Iterator<ManagedReference<SnowmanPlayer>> ip = waitingPlayers.iterator(); ip.hasNext(); ) {
+        for (Iterator<ManagedReference<SnowmanPlayer>> ip = 
+                waitingPlayers.iterator(); ip.hasNext(); ) {
             game.addPlayer(ip.next().get(), color);
-            color = ETeamColor.values()[(color.ordinal() + 1) % ETeamColor.values().length];
+            color = ETeamColor.values()[(color.ordinal() + 1) % 
+                    ETeamColor.values().length];
         }
         for (int i = 0; i < numRobotsPerGame; i++) {
-            game.addPlayer(entityFactory.createRobotPlayer(gameName + "_robot" + i, robotDelay),
+            game.addPlayer(entityFactory.createRobotPlayer(gameName + 
+                                                           "_robot" + i,
+                                                           robotDelay),
                            color);
-            color = ETeamColor.values()[(color.ordinal() + 1) % ETeamColor.values().length];
+            color = ETeamColor.values()[(color.ordinal() + 1) % 
+                    ETeamColor.values().length];
         }
         game.sendMapInfo();
         

@@ -37,7 +37,7 @@ import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.ClientSession;
 
 /**
- * Factory to create entities in the game world
+ * Factory to create entities in the game world.
  * 
  * @author Owen Kellett
  */

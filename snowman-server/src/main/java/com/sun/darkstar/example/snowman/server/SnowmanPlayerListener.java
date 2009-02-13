@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The <code>SnowmanPlayerListener</code> is responsible for receiving
+ * The {@code SnowmanPlayerListener} is responsible for receiving
  * incoming messages and forwarding them to the appropriate 
  * {@link SnowmanPlayer} for processing.
  * 
@@ -53,12 +53,19 @@ import java.util.logging.Logger;
 public class SnowmanPlayerListener implements Serializable,
                                               ClientSessionListener {
 
-    private static Logger logger = 
-            Logger.getLogger(SnowmanPlayerListener.class.getName());
+    /** The version of the serialized form. */
     public static final long serialVersionUID = 1L;
+    private static final Logger logger = 
+            Logger.getLogger(SnowmanPlayerListener.class.getName());
     
     private final ManagedReference<SnowmanPlayer> playerRef;
 
+    /**
+     * Initializes a {@code ClientSessionListener} associated with the
+     * given {@code SnowmanPlayer}.
+     * 
+     * @param player the player associated with the connected client
+     */
     protected SnowmanPlayerListener(SnowmanPlayer player) {
         this.playerRef = AppContext.getDataManager().createReference(player);
     }
@@ -101,6 +108,12 @@ public class SnowmanPlayerListener implements Serializable,
         }
     }
 
+    /**
+     * Retrieves a {@code ManagedReference} to the {@code SnowmanPlayer}
+     * associated with the connected client.
+     * 
+     * @return the associated player
+     */
     public ManagedReference<SnowmanPlayer> getSnowmanPlayerRef() {
         return playerRef;
     }

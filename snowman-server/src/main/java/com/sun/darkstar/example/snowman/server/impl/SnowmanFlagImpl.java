@@ -52,7 +52,8 @@ import java.io.Serializable;
  */
 public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
 
-    static public final long serialVersionbUID = 1L;
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
     
      /**
       * This is a base number for the flag IDs to keep them
@@ -101,7 +102,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     private final ManagedReference<SnowmanGame> gameRef;
     
     /**
-     * The constructor for a flag
+     * The constructor for a flag.
      * 
      * @param game The game that this flag is a part of
      * @param teamColor The color of the team that owns the flag
@@ -123,7 +124,8 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     }
 
     /**
-     * Returns the color of the team that owns this flag
+     * Returns the color of the team that owns this flag.
+     * 
      * @return the flag's color
      */
     public ETeamColor getTeamColor() {
@@ -131,7 +133,8 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     }
 
     /**
-     * This sets the flag's location on the map
+     * This sets the flag's location on the map.
+     * 
      * @param x the X coord of the flag
      * @param y the Y coord of the flag
      */
@@ -144,6 +147,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * Ths returns the current X coordof the flag. Can only be called when
      * not being held.
+     * 
      * @return the X coordinate of the flag
      */
     public float getX() {
@@ -155,6 +159,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * Ths returns the current Y coordof the flag. Can only be called when
      * not being held.
+     * 
      * @return the Y coordinate of the flag
      */
     public float getY() {
@@ -165,9 +170,10 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     /**
      * This method sets the flag as held by a snowman. Can only be called when
      * not already being held.
+     * 
      * @param player the snowman who holds the flag, or null
      */
-    public void setHeldBy(SnowmanPlayer player){
+    public void setHeldBy(SnowmanPlayer player) {
         assert player != null;
         assert heldByRef == null;
         
@@ -183,17 +189,25 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
         setLocation(x, y);
         heldByRef = null;
         AppContext.getTaskManager().scheduleTask(
-                        new FlagReturnTask(AppContext.getDataManager().createReference((SnowmanFlag)this)),
+                        new FlagReturnTask(AppContext.getDataManager().
+                                   createReference((SnowmanFlag) this)),
                         FLAG_RETURN_DELAY);
     }
     
-    static private class FlagReturnTask implements Task, Serializable {
+    /**
+     * Asynchronously returns the flag back to its starting position.
+     */
+    private static class FlagReturnTask implements Task, Serializable {
+        /** The version of the serialized form. */
+        public static final long serialVersionUID = 1L;
+        
         private final ManagedReference<SnowmanFlag> flagRef;
         
         FlagReturnTask(ManagedReference<SnowmanFlag> flagRef) {
             this.flagRef = flagRef;
         }
         
+        /** {@inheritDoc} */
         public void run() throws Exception {
             try {
                 flagRef.get().returnFlag();
@@ -207,8 +221,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
     public void returnFlag() {
         if (!isHeld()) {
             setLocation(homeX, homeY);
-            gameRef.get().send(
-                               ServerMessages.createRespawnPkt(id, x, y));
+            gameRef.get().send(ServerMessages.createRespawnPkt(id, x, y));
         }
     }
     
@@ -222,7 +235,7 @@ public class SnowmanFlagImpl implements SnowmanFlag, Serializable {
      * a game but may not be unique among all the objects in the game.
      * @return the flag's ID
      */
-    public int getID(){
+    public int getID() {
         return id;
     }
 

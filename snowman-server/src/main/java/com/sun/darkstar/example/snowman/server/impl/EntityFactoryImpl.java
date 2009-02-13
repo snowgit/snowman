@@ -42,13 +42,14 @@ import com.sun.sgs.app.ClientSession;
 import java.io.Serializable;
 
 /**
- * Factory to create entities in the game world
+ * Factory to create entities in the game world.
  * 
  * @author Owen Kellett
  */
-public class EntityFactoryImpl implements EntityFactory, Serializable
-{
-    public static long serialVersionUID = 1L;
+public class EntityFactoryImpl implements EntityFactory, Serializable {
+    
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
     
     /** {@inheritDoc} */
     public SnowmanPlayer createSnowmanPlayer(ClientSession session)

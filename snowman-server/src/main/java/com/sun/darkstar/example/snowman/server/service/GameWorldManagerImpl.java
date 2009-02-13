@@ -46,6 +46,11 @@ public class GameWorldManagerImpl implements GameWorldManager {
     
     private final GameWorldService backingService;
     
+    /**
+     * Constructs a {@code GameWorldManager} backed by the given service.
+     * 
+     * @param backingService the backing {@code GameWorldService}
+     */
     public GameWorldManagerImpl(GameWorldService backingService) {
         this.backingService = backingService;
     }

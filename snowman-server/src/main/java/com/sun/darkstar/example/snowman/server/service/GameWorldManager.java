@@ -58,8 +58,8 @@ public interface GameWorldManager {
      * @param end coordinate of the destination position
      * @return actual destination location when collisions are accounted for
      */
-    public Coordinate trimPath(Coordinate start,
-                               Coordinate end);
+    Coordinate trimPath(Coordinate start,
+                        Coordinate end);
     
     /**
      * <p>
@@ -73,7 +73,7 @@ public interface GameWorldManager {
      * @param end coordinate of the target position
      * @return true if there are no collisions with static entities between the two points
      */
-    public boolean validThrow(Coordinate start,
-                              Coordinate end);
+    boolean validThrow(Coordinate start,
+                       Coordinate end);
     
 }

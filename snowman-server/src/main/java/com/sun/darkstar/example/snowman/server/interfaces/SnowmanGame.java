@@ -42,7 +42,7 @@ import java.util.Set;
 
 /**
  * The {@code SnowmanGame} interface describes the basic behavior
- * for a game
+ * for a game.
  * 
  * @author Owen Kellett
  * @author Yi Wang (Neakor)
@@ -50,33 +50,33 @@ import java.util.Set;
 public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
 {
     /**
-     * Send a message to all players in the game on the game's Channel
+     * Send a message to all players in the game on the game's Channel.
      * @param buff the message itself
      */
     void send(ByteBuffer buff);
     
     /**
-     * Send the AddMOB packets to all of the players in the game
+     * Send the AddMOB packets to all of the players in the game.
      * to initiate the game state
      */
     void sendMapInfo();
     
     /**
-     * Add a player to the game
-     * @param player
-     * @param color
+     * Add a player to the game.
+     * @param player the player to add to the game
+     * @param color the team of the player
      */
     void addPlayer(SnowmanPlayer player, ETeamColor color);
     
     /**
-     * Remove player from the game
-     * @param player
+     * Remove player from the game.
+     * @param player the player to remove from the game
      */
     void removePlayer(SnowmanPlayer player);
     
     /**
-     * Verify that all players are ready to player and start the game 
-     * by broadcasting a STARTGAME message if so
+     * Verify that all players are ready to player and start the game
+     * by broadcasting a STARTGAME message if so.
      */
     void startGameIfReady();
     
@@ -88,8 +88,8 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     void endGame(EEndState endState);
     
     /**
-     * Return the flag from the game with the given id
-     * @param id
+     * Return the flag from the game with the given id.
+     * @param id the id of the flag
      * @return the flag with the given id
      */
     SnowmanFlag getFlag(int id);
@@ -102,7 +102,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     Set<Integer> getFlagIds();
     
     /**
-     * Return the player from the game with the given id
+     * Return the player from the game with the given id.
      * 
      * @param id the id of the player
      * @return the player with the given id
@@ -124,7 +124,7 @@ public interface SnowmanGame extends ManagedObject, ManagedObjectRemoval
     String getName();
     
     /**
-     * Return the channel for this game
+     * Return the channel for this game.
      * @return the game channel
      */
     Channel getGameChannel();

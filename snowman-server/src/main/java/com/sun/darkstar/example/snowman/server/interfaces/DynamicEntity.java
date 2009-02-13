@@ -43,32 +43,32 @@ import com.sun.sgs.app.ManagedObject;
 public interface DynamicEntity extends ManagedObject
 {
     /**
-     * This method sets the id
+     * This method sets the id.
      * @param i the ID
      */
     void setID(int i);
     
     /**
-     * This method gets the id
+     * This method gets the id.
      * @return the entity's ID
      */
     int getID();
     
     /**
-     * Set the location of the entity in the world
+     * Set the location of the entity in the world.
      * @param x the x coordinate of the entity
      * @param y the y coordinate of the entity
      */
     void setLocation(float x, float y);
     
     /**
-     * Get the X coordinate of the entity in the world at the given time
+     * Get the X coordinate of the entity in the world at the given time.
      * @return the X coordinate of the entity
      */
     float getX();
     
     /**
-     * Get the Y coordinate of the entity in the world at the given time
+     * Get the Y coordinate of the entity in the world at the given time.
      * @return the Y coordinate of the entity
      */
     float getY();

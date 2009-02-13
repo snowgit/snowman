@@ -52,7 +52,7 @@ import java.util.Deque;
 import java.math.BigInteger;
 
 /**
- * This class is the app listener for Project Snowman
+ * This class is the app listener for Project Snowman.
  * It is sort of like a "main class" in a traditional Java applciation
  * 
  * @author Jeffrey Kesselman
@@ -61,8 +61,9 @@ import java.math.BigInteger;
  */
 public class SnowmanServer implements ManagedObject, Serializable, AppListener {
 
-    public static long serialVersionUID = 1L;
-    private static Logger logger = 
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
+    private static final Logger logger = 
             Logger.getLogger(SnowmanServer.class.getName());
     
     /**
@@ -98,7 +99,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
     private int numRobotsPerGame;
     private int robotDelay;
     
-    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
+    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] 
+            waitingDeques;
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
 
@@ -214,7 +216,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                 Integer defaultValue) {
         try {
             return Integer.valueOf(props.getProperty(key));
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             return defaultValue;
         }
     }
