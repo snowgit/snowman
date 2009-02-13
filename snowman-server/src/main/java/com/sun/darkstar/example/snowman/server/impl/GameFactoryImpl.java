@@ -43,8 +43,10 @@ import java.io.Serializable;
  */
 public class GameFactoryImpl implements GameFactory, Serializable {
 
-    public static long serialVersionUID = 1L;
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     public SnowmanGame createSnowmanGame(String gameName,
                                          int numPlayers,
                                          EntityFactory entityFactory) {

@@ -35,7 +35,7 @@ package com.sun.darkstar.example.snowman.server.service;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 
 /**
- * The <code>GameWorldManager</code> interface exposes application level access
+ * The {@code GameWorldManager} interface exposes application level access
  * to the {@link GameWorldService} running inside of the 
  * Project Darkstar stack.  
  * 
@@ -48,24 +48,24 @@ public interface GameWorldManager {
      * Calculate the actual path of a snowman attempting to walk
      * from the given start point to the given end point.  This method
      * will check if any barriers are in the snowman's path by checking
-     * for an intersection with the <code>Spatial</code> game world by
-     * using the <code>CollisionManager</code>. 
+     * for an intersection with the {@code Spatial} game world by
+     * using the {@code CollisionManager}. 
      * If there is a collision, then a new destination location will be
-     * calculated and returned by the <code>CollisionManager</code>.
+     * calculated and returned by the {@code CollisionManager}.
      * </p>
      * 
      * @param start coordinate of the start position
      * @param end coordinate of the destination position
      * @return actual destination location when collisions are accounted for
      */
-    public Coordinate trimPath(Coordinate start,
-                               Coordinate end);
+    Coordinate trimPath(Coordinate start,
+                        Coordinate end);
     
     /**
      * <p>
      * Validate that a snowball can be thrown from the start position 
      * to the end position.  This will verify that there are no collisions
-     * with the <code>Spatial</code> game world between the two coordinates
+     * with the {@code Spatial} game world between the two coordinates
      * at the static THROWHEIGHT.
      * </p>
      * 
@@ -73,7 +73,7 @@ public interface GameWorldManager {
      * @param end coordinate of the target position
      * @return true if there are no collisions with static entities between the two points
      */
-    public boolean validThrow(Coordinate start,
-                              Coordinate end);
+    boolean validThrow(Coordinate start,
+                       Coordinate end);
     
 }

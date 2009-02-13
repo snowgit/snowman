@@ -48,7 +48,7 @@ import com.sun.sgs.service.TransactionProxy;
 
 
 /**
- * The <code>GameWorldServiceImpl</code> is an implementation of a Project
+ * The {@code GameWorldServiceImpl} is an implementation of a Project
  * Darkstar service that provides utility methods to calculate
  * collision detection and spatial information against the static
  * game world geometry.
@@ -58,12 +58,20 @@ import com.sun.sgs.service.TransactionProxy;
 public class GameWorldServiceImpl implements GameWorldService {
     
     /** The logger for this class. */
-    private static Logger logger = Logger.getLogger(GameWorldServiceImpl.class.getName());
+    private static final Logger logger = 
+            Logger.getLogger(GameWorldServiceImpl.class.getName());
     
     /** Current game world **/
     private Spatial gameWorld;
-    
-    
+
+    /**
+     * Constructs a {@code GameWorldService} that is initialized to
+     * use a static game world to calculated collisions.
+     * 
+     * @param properties application properties
+     * @param registry registry of darkstar components
+     * @param txnProxy transaction proxy
+     */
     public GameWorldServiceImpl(Properties properties,
                                 ComponentRegistry registry,
                                 TransactionProxy txnProxy) {
@@ -71,10 +79,12 @@ public class GameWorldServiceImpl implements GameWorldService {
         DummySystemProvider provider = new DummySystemProvider();
 	DisplaySystem.setSystemProvider(provider);
         
-        this.gameWorld = SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
+        this.gameWorld = 
+                SingletonRegistry.getDataImporter().getWorld(EWorld.Battle);
         this.gameWorld.updateGeometricState(0, false);
-        SnowmanMapInfo.setDimensions(gameWorld.getWorldBound().getCenter().getX() * 2.0f,
-                                     gameWorld.getWorldBound().getCenter().getZ() * 2.0f);
+        SnowmanMapInfo.setDimensions(
+                gameWorld.getWorldBound().getCenter().getX() * 2.0f,
+                gameWorld.getWorldBound().getCenter().getZ() * 2.0f);
     }
 
     /** {@inheritDoc} **/
@@ -96,7 +106,11 @@ public class GameWorldServiceImpl implements GameWorldService {
     public Coordinate trimPath(Coordinate start,
                                Coordinate end) {
         Vector3f destination = SingletonRegistry.getCollisionManager().
-                getDestination(start.getX(), start.getY(), end.getX(), end.getY(), gameWorld);
+                getDestination(start.getX(), 
+                               start.getY(),
+                               end.getX(),
+                               end.getY(),
+                               gameWorld);
         return new Coordinate(destination.getX(), destination.getZ());
 
     }

@@ -35,7 +35,7 @@ package com.sun.darkstar.example.snowman.server.interfaces;
 import com.sun.sgs.app.ManagedObject;
 
 /**
- * A <code>DynamicEntity</code> represents a movable entity in the snowman
+ * A {@code DynamicEntity} represents a movable entity in the snowman
  * world.  This could be a player, a flag, a campfire, etc.
  * 
  * @author Owen Kellett
@@ -43,35 +43,34 @@ import com.sun.sgs.app.ManagedObject;
 public interface DynamicEntity extends ManagedObject
 {
     /**
-     * This method sets the id
+     * This method sets the id.
      * @param i the ID
      */
-    public void setID(int i);
+    void setID(int i);
     
     /**
-     * This method gets the id
+     * This method gets the id.
      * @return the entity's ID
      */
-    
-    public int getID();
+    int getID();
     
     /**
-     * Set the location of the entity in the world
-     * @param x
-     * @param y
+     * Set the location of the entity in the world.
+     * @param x the x coordinate of the entity
+     * @param y the y coordinate of the entity
      */
-    public void setLocation(float x, float y);
+    void setLocation(float x, float y);
     
     /**
-     * Get the X coordinate of the entity in the world at the given time
+     * Get the X coordinate of the entity in the world at the given time.
      * @return the X coordinate of the entity
      */
-    public float getX();
+    float getX();
     
     /**
-     * Get the Y coordinate of the entity in the world at the given time
+     * Get the Y coordinate of the entity in the world at the given time.
      * @return the Y coordinate of the entity
      */
-    public float getY();
+    float getY();
 
 }

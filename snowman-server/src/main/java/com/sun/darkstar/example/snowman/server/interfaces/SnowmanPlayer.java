@@ -40,7 +40,7 @@ import com.sun.sgs.app.ManagedObjectRemoval;
 import java.nio.ByteBuffer;
 
 /**
- * The <code>SnowmanPlayer</code> interface defines the basic behavior
+ * The {@code SnowmanPlayer} interface defines the basic behavior
  * of a player in the snowman game.
  * 
  * @author Owen Kellett
@@ -48,75 +48,125 @@ import java.nio.ByteBuffer;
 public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
 {
     /**
-     * Get the name of the player
+     * Get the name of the player.
      * @return the name of the player
      */
-    public String getName();
+    String getName();
 
     /**
-     * Set the location of the player
-     * @param x
-     * @param y
+     * Set the location of the player.
+     * 
+     * @param x the x coordinate of the player
+     * @param y the y coordinate of the player
      */
-    public void setLocation(float x, float y);
+    void setLocation(float x, float y);
     
     /**
-     * Get the expected position of the player at the given time
-     * @param time
+     * Get the expected position of the player at the given time.
+     * 
+     * @param time the time to check the player's position
      * @return the position of the player at the given time
      */
-    public Coordinate getExpectedPositionAtTime(long time);
+    Coordinate getExpectedPositionAtTime(long time);
 
     /**
-     * Set the team of the player
-     * @param color
+     * Set the team of the player.
+     * 
+     * @param color the color of the player's team
      */
-    public void setTeamColor(ETeamColor color);
-    public ETeamColor getTeamColor();
+    void setTeamColor(ETeamColor color);
+    
+    /**
+     * Return the player's team color.
+     * 
+     * @return the player's team color
+     */
+    ETeamColor getTeamColor();
 
     /**
-     * Set the game that the player is in
-     * @param game
+     * Set the game that the player is in.
+     * 
+     * @param game the game the player is in
      */
-    public void setGame(SnowmanGame game);
-    public SnowmanGame getGame();
+    void setGame(SnowmanGame game);
     
-    public float ranking();
+    /**
+     * Return the game that the player is playing in.
+     * 
+     * @return the game the player is in
+     */
+    SnowmanGame getGame();
     
-    public void setReadyToPlay(boolean readyToPlay);
-    public boolean getReadyToPlay();
+    /**
+     * Indicate that this player has received all game initialization info
+     * on the client side and is ready to begin play.
+     * 
+     * @param readyToPlay true if ready to play
+     */
+    void setReadyToPlay(boolean readyToPlay);
+    
+    /**
+     * Return whether this player is ready to play.
+     * 
+     * @return whether this player is ready to play
+     */
+    boolean getReadyToPlay();
     
     /**
      * Revive player, set hitpoints back to maximum value,
-     * and relocate it to a respawn position
+     * and relocate it to a respawn position.
      */
-    public void respawn();
+    void respawn();
     
     /**
-     * Hit this snowman with the given hit point value
-     * @param hp
+     * Hit this snowman with the given hit point value.
+     * 
+     * @param hp the hit point value
+     * @param attackX the x coordinate of the player
+     * @param attackY the y coordinate of the player
      * @return the number of hit points deducted from the player's value
      */
-    public int hit(int hp, float attackX, float attackY);
+    int hit(int hp, float attackX, float attackY);
     
     /**
-     * If this snowman is holding the flag, drop the flag
+     * If this snowman is holding the flag, drop the flag.
      */
-    public void dropFlag();
-    
-    public int getHitPoints();
-    
-    public ClientSession getSession();
-    public boolean isServerSide();
+    void dropFlag();
     
     /**
-     * Send a message to the player
-     * @param buff
+     * Return the current hit point value for this player.
+     * 
+     * @return the current hit point value
      */
-    public void send(ByteBuffer buff);
+    int getHitPoints();
+    
     /**
-     * Get the protocol processor that processes messages for this player
+     * Return the {@code ClientSession} associated with this player.
+     * 
+     * @return the {@code ClientSession} associated with this player or
+     *         {@code null} if it is a robot
+     */
+    ClientSession getSession();
+    
+    /**
+     * Returns whether or not this player is controlled by a human
+     * or by a server side robot.
+     * 
+     * @return true if this player is a server side robot
+     */
+    boolean isServerSide();
+    
+    /**
+     * Send a message to the player's connected {@code ClientSession}.
+     * 
+     * @param buff the message to send
+     */
+    void send(ByteBuffer buff);
+    
+    /**
+     * Get the protocol processor that processes messages for this player.
+     * 
      * @return the processor used to process incoming messages for the player
      */
-    public IServerProcessor getProcessor();
+    IServerProcessor getProcessor();
 }

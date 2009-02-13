@@ -52,48 +52,94 @@ import java.util.Deque;
 import java.math.BigInteger;
 
 /**
- * This class is the app listener for Project Snowman
+ * This class is the app listener for Project Snowman.
  * It is sort of like a "main class" in a traditional Java applciation
+ * 
  * @author Jeffrey Kesselman
+ * @author Owen Kellett
+ * @author Keith Thompson
  */
 public class SnowmanServer implements ManagedObject, Serializable, AppListener {
 
-    public static long serialVersionUID = 1L;
-    private static Logger logger = Logger.getLogger(SnowmanServer.class.getName());
+    /** The version of the serialized form. */
+    public static final long serialVersionUID = 1L;
+    private static final Logger logger = 
+            Logger.getLogger(SnowmanServer.class.getName());
     
+    /**
+     * Number of queues to use for the matchmaking system
+     */
     private static final int NUMDEQUES = 10;
+    /**
+     * Name of the property used to define number of players per game
+     */
     private static final String PLAYERS_PER_GAME_PROP = "numPlayersPerGame";
+    /**
+     * Default number of players per game
+     */
     private static final int DEFAULT_PLAYERS_PER_GAME = 2;
+    /**
+     * Name of the property used to define number of robots per game
+     */
     private static final String ROBOTS_PER_GAME_PROP = "numRobotsPerGame";
+    /**
+     * Default number of robots per game
+     */
     private static final int DEFAULT_ROBOTS_PER_GAME = 2;
+    /**
+     * Name of the property used to delay until robots make first move
+     */
     private static final String ROBOT_DELAY_PROP = "robotDelay";
+    /**
+     * Default first move delay for robots
+     */
     private static final int DEFAULT_ROBOT_DELAY = 2000;
     
     private int numPlayersPerGame;
     private int numRobotsPerGame;
     private int robotDelay;
     
-    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques;
+    private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] 
+            waitingDeques;
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
 
+    /**
+     * Initializes a Project Snowman server upon first bootup. This involves:
+     * <ol>
+     * <li>Initializing a list of queues that connecting players are placed
+     * into upon connecting to wait to be matched into a game.</li>
+     * <li>Initializing the self-rescheduling {@code link MatchmakerTask} which
+     * is responsible for pulling players off of the waiting queues and
+     * matching them into games.</li>
+     * </ol>
+     * Configuration parameters such as number of players in a game, number
+     * of robots in a game, and robot move delay are also parsed and 
+     * established from the given set of properties.
+     * 
+     * @param props a set of {@code Properties} used to configure the 
+     *        runtime state of the game
+     */
     @SuppressWarnings("unchecked")
     public void initialize(Properties props) {
         this.gameFactory = new GameFactoryImpl();
         this.entityFactory = new EntityFactoryImpl();
         this.waitingDeques = new ManagedReference[NUMDEQUES];
         for (int i = 0; i < waitingDeques.length; i++) {
-            Deque<ManagedReference<SnowmanPlayer>> deque = new ScalableDeque<ManagedReference<SnowmanPlayer>>();
-            waitingDeques[i] = AppContext.getDataManager().createReference(deque);
+            Deque<ManagedReference<SnowmanPlayer>> deque = 
+                    new ScalableDeque<ManagedReference<SnowmanPlayer>>();
+            waitingDeques[i] = 
+                    AppContext.getDataManager().createReference(deque);
         }
 
         this.config(props);
-        AppContext.getTaskManager().scheduleTask(new MatchmakerTask(numPlayersPerGame,
-                                                                    numRobotsPerGame,
-                                                                    robotDelay,
-                                                                    gameFactory,
-                                                                    entityFactory,
-                                                                    waitingDeques));
+        AppContext.getTaskManager().scheduleTask(
+                new MatchmakerTask(numPlayersPerGame,
+                                   numRobotsPerGame,
+                                   robotDelay,
+                                   gameFactory,
+                                   entityFactory,
+                                   waitingDeques));
     }
 
     private void config(Properties props) {
@@ -101,7 +147,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                  PLAYERS_PER_GAME_PROP,
                                                  DEFAULT_PLAYERS_PER_GAME);
         if (numPlayersPerGame <= 0) {
-            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + " must be > 0");
+            throw new IllegalArgumentException(PLAYERS_PER_GAME_PROP + 
+                                               " must be > 0");
         }
         logger.log(Level.CONFIG,
                    "Number of players required to start a game set to {0}",
@@ -111,26 +158,39 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
                                                 ROBOTS_PER_GAME_PROP,
                                                 DEFAULT_ROBOTS_PER_GAME);
         if (numRobotsPerGame < 0) {
-            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + " must be >= 0");
+            throw new IllegalArgumentException(ROBOTS_PER_GAME_PROP + 
+                                               " must be >= 0");
         }
         
         robotDelay = getPropertyAsInteger(props,
                                           ROBOT_DELAY_PROP,
                                           DEFAULT_ROBOT_DELAY);
         if (robotDelay < 0) {
-            throw new IllegalArgumentException(ROBOT_DELAY_PROP + " must be >= 0");
+            throw new IllegalArgumentException(ROBOT_DELAY_PROP + 
+                                               " must be >= 0");
         }
         logger.log(Level.CONFIG,
-                   "Number of robots per game: {0}, with delay of {1} milliseconds",
+                   "Number of robots per game: {0}, " +
+                   "with delay of {1} milliseconds",
                    new Object[]{numRobotsPerGame, robotDelay});
     }
 
+    /**
+     * When a player logs in, it is randomly added to one of the waiting
+     * deques.  The {@link MatchmakerTask} is responsible for pulling players
+     * off of these deques and matching them into games.
+     * 
+     * @param session the {@code ClientSession} of the connecting player
+     * @return a {@link SnowmanPlayerListener} associated with the connected
+     *         player
+     */
     public ClientSessionListener loggedIn(ClientSession session) {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "Player {0} logged in", session.getName());
         }
         SnowmanPlayerListener player =
-                new SnowmanPlayerListener(entityFactory.createSnowmanPlayer(session));
+                new SnowmanPlayerListener(
+                entityFactory.createSnowmanPlayer(session));
         BigInteger id = player.getSnowmanPlayerRef().getId();
         BigInteger index = id.mod(BigInteger.valueOf((long) NUMDEQUES));
 
@@ -138,12 +198,25 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
         return player;
     }
     
+    /**
+     * Retrieves a property with the given key from the {@link Properties}
+     * object as an Integer value.  If the property does not exist, or it is
+     * an invalid number format, the {@code defaultValue} is returned instead.
+     * 
+     * @param props the {@code Properties} object
+     * @param key the key to get the property of
+     * @param defaultValue the default value if the property does not exist
+     * 
+     * @return the value of the property with the given key as an
+     *         {@code Integer} if it exists and is a valid number format,
+     *         otherwise, returns defaultValue
+     */
     private static Integer getPropertyAsInteger(Properties props,
                                                 String key,
                                                 Integer defaultValue) {
         try {
             return Integer.valueOf(props.getProperty(key));
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             return defaultValue;
         }
     }

@@ -59,7 +59,7 @@ import org.fenggui.util.Dimension;
  * 
  * @author Johannes, last edited by $Author: marcmenghin $, $Date: 2007-08-24 13:59:30 +0200 (Fr, 24 Aug 2007) $
  * @version $Revision: 344 $
- * @dedication Monkey Island 3 Theme - Using the Row Boat (http://www.scummbar.com/mi2/MI3-CD1/35%20-%20Using%20the%20Row%20Boat.mp3)
+ * Monkey Island 3 Theme - Using the Row Boat (http://www.scummbar.com/mi2/MI3-CD1/35%20-%20Using%20the%20Row%20Boat.mp3)
  */
 
 /*

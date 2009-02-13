@@ -42,17 +42,29 @@ import java.util.Random;
  * 
  * @author Owen Kellett
  */
-public class SnowmanMapInfo 
+public final class SnowmanMapInfo 
 {
-    public static String DEFAULT = "default_map";
-    private static float[] defaultXY = new float[]{96,96};
+    /**
+     * Name used for the default map.
+     */
+    public static final String DEFAULT = "default_map";
+    
+    private static float[] defaultXY = new float[]{96, 96};
     private static final Random generator = new Random();
     private static final float SPAWNMULTIPLIER = 2.0f;
     private static final float SPAWNTEAMWIDTH = 10.0f;
     private static final float FLAGMULTIPLIER = 3.0f;
     
     /**
+     * This class should not be instantiated
+     */
+    private SnowmanMapInfo() {
+        
+    }
+    
+    /**
      * Retrieve the x,y dimensions of the map with the given name.
+     * 
      * @param map name of the map
      * @return array of floats representing the x,y dimensions of the map
      */
@@ -60,6 +72,12 @@ public class SnowmanMapInfo
         return defaultXY;
     }
     
+    /**
+     * Set the overall dimensions of the map.
+     * 
+     * @param x the width
+     * @param y the height
+     */
     public static void setDimensions(float x, float y) {
         defaultXY[0] = x;
         defaultXY[1] = y;
@@ -82,8 +100,8 @@ public class SnowmanMapInfo
                                               int player,
                                               int teamPlayers) {
         float[] dimensions = getDimensions(map);
-        float xAxisMid = dimensions[0]/2.0f;
-        float yAxisMid = dimensions[1]/2.0f;
+        float xAxisMid = dimensions[0] / 2.0f;
+        float yAxisMid = dimensions[1] / 2.0f;
         
         //set the team coordinate to be either near the top or 
         //the bottom depending on the team
@@ -96,17 +114,21 @@ public class SnowmanMapInfo
             case Blue:
                 teamCoordinate = new Coordinate(xAxisMid, yAxisMid - yOffset);
                 break;
+            default:
+                //shouldn't happen
         }
         
         //if there is only one player on the team, return the team coordinate
-        //otherwise, spread the players out along a line with the team coordinate
-        //at the center
-        if(teamPlayers == 1)
+        //otherwise, spread the players out along a line with the team 
+        //coordinate at the center
+        if(teamPlayers == 1) {
             return teamCoordinate;
+        }
 
         return new Coordinate(teamCoordinate.getX() -
                               SPAWNTEAMWIDTH / 2.0f +
-                              SPAWNTEAMWIDTH / (float) (teamPlayers+1.0f) * player,
+                              SPAWNTEAMWIDTH / 
+                              (float) (teamPlayers + 1.0f) * player,
                               teamCoordinate.getY());
     }
     
@@ -125,26 +147,42 @@ public class SnowmanMapInfo
                                 10);
     }
     
+    /**
+     * Get the start position for the given team's flag on the given map.
+     * 
+     * @param map the map name
+     * @param team the team to check the flag position
+     * @return the start position of the flag
+     */
     public static Coordinate getFlagStart(String map,
                                           ETeamColor team) {
         float[] dimensions = getDimensions(map);
-        float xAxisMid = dimensions[0]/2.0f;
-        float yAxisMid = dimensions[1]/2.0f;
+        float xAxisMid = dimensions[0] / 2.0f;
+        float yAxisMid = dimensions[1] / 2.0f;
         
         float yOffset = yAxisMid / FLAGMULTIPLIER * (FLAGMULTIPLIER - 1);
         Coordinate coordinate = new Coordinate(xAxisMid, yAxisMid);
-        switch(team) {
+        switch (team) {
             case Red:
                 coordinate = new Coordinate(xAxisMid, yAxisMid + yOffset);
                 break;
             case Blue:
                 coordinate = new Coordinate(xAxisMid, yAxisMid - yOffset);
                 break;
+            default:
+                //shouldn't happen 
         }
         
         return coordinate;
     }
     
+    /**
+     * Get the goal position for the given team's flag on the given map.
+     * 
+     * @param map the map name
+     * @param team the team to check the flag position
+     * @return the goal position of the flag
+     */
     public static Coordinate getFlagGoal(String map,
                                          ETeamColor team) {
         switch(team) {
@@ -152,6 +190,8 @@ public class SnowmanMapInfo
                 return getFlagStart(map, ETeamColor.Blue);
             case Blue:
                 return getFlagStart(map, ETeamColor.Red);
+            default:
+                //shouldn't happen
         }
         return null;
     }

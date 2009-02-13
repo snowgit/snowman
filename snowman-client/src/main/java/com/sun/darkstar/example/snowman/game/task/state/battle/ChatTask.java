@@ -63,8 +63,8 @@ public class ChatTask extends RealTimeTask {
     /**
      * Constructor of <code>AttachTask</code>.
      * @param game The <code>Game</code> instance.
-     * @param flagID The ID number of the flag.
-     * @param targetID The ID number of the target to attach to.
+     * @param sourceID The ID number of the sending player
+     * @param message The chat message
      * @param local true if initiated by client side
      */
     public ChatTask(Game game, int sourceID, String message, boolean local) {

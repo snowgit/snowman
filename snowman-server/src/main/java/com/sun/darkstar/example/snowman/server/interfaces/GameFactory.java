@@ -40,8 +40,17 @@ package com.sun.darkstar.example.snowman.server.interfaces;
  */
 public interface GameFactory 
 {
-    public SnowmanGame createSnowmanGame(String gameName,
-                                         int numPlayers,
-                                         EntityFactory entityFactory);
+    /**
+     * Creates a new {@code SnowmanGame}.
+     * 
+     * @param gameName the name of the game
+     * @param numPlayers the maximum number of players in the game
+     * @param entityFactory a factory used to create players and flags for
+     *        the game
+     * @return a newly created {@code SnowmanGame}
+     */
+    SnowmanGame createSnowmanGame(String gameName,
+                                  int numPlayers,
+                                  EntityFactory entityFactory);
 
 }
