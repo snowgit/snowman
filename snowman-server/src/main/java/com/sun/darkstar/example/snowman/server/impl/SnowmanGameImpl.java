@@ -50,7 +50,6 @@ import com.sun.sgs.app.ObjectNotFoundException;
 import com.sun.sgs.app.util.ScalableHashMap;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -87,6 +86,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
     private int readyPlayers = 0;
     private int nextPlayerId = PLAYERIDSTART;
     private String gameName;
+    private boolean ending = false;
     /**
      * List of flags in the game
      */
@@ -333,6 +333,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
     /** {@inheritDoc} */
     public void endGame(EEndState endState) {
+        //if this method has already been called, skip
+        if(ending) {
+            return;
+        }
+        ending = true;
+        
         send(ServerMessages.createEndGamePkt(endState));
 
         // Attempt to clean up the game objects, including the channel, later

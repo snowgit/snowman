@@ -681,7 +681,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
     /** {@inheritDoc} */
     public SnowmanGame getGame() {
-        return gameRef == null ? null : gameRef.get();
+        try {
+            return gameRef == null ? null : gameRef.get();
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
     }
 
     /** {@inheritDoc} */
