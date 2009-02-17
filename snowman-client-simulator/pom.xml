@@ -114,7 +114,7 @@
   </profiles>
 
   <properties>
-    <jvm.args></jvm.args>
+    <jvm.args>-client -Xmx1g -Xms32m</jvm.args>
     <jvm.args.extra></jvm.args.extra>
     <logging.properties>${basedir}/src/test/properties/logging.properties</logging.properties>
     

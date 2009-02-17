@@ -681,7 +681,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
     /** {@inheritDoc} */
     public SnowmanGame getGame() {
-        return gameRef == null ? null : gameRef.get();
+        try {
+            return gameRef == null ? null : gameRef.get();
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
     }
 
     /** {@inheritDoc} */
@@ -697,18 +701,6 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     /** {@inheritDoc} */
     public ETeamColor getTeamColor() {
         return teamColor;
-    }
-
-    /** {@inheritDoc} */
-    public void removingObject() {
-        if (sessionRef != null) {
-            try {
-                AppContext.getDataManager().removeObject(sessionRef.get());
-            } catch (ObjectNotFoundException alreadyDisconnected) {
-            } catch (IllegalStateException workAroundIssue87) {
-                // workaround bug is ClientSessionImpl
-            }
-        }
     }
 
     /** {@inheritDoc} */
