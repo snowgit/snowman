@@ -36,7 +36,7 @@ import com.sun.darkstar.example.snowman.common.protocol.processor.IServerProcess
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.darkstar.example.snowman.common.util.Coordinate;
 import com.sun.sgs.app.ClientSession;
-import com.sun.sgs.app.ManagedObjectRemoval;
+import com.sun.sgs.app.ManagedObject;
 import java.nio.ByteBuffer;
 
 /**
@@ -45,7 +45,7 @@ import java.nio.ByteBuffer;
  * 
  * @author Owen Kellett
  */
-public interface SnowmanPlayer extends DynamicEntity, ManagedObjectRemoval
+public interface SnowmanPlayer extends DynamicEntity, ManagedObject
 {
     /**
      * Get the name of the player.

@@ -704,18 +704,6 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     }
 
     /** {@inheritDoc} */
-    public void removingObject() {
-        if (sessionRef != null) {
-            try {
-                AppContext.getDataManager().removeObject(sessionRef.get());
-            } catch (ObjectNotFoundException alreadyDisconnected) {
-            } catch (IllegalStateException workAroundIssue87) {
-                // workaround bug is ClientSessionImpl
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
     public void chatMessage(String message) {
         // Create new packet with ID.
         sendAll(ServerMessages.createChatPkt(id, message));
