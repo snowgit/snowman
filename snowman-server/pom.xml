@@ -178,7 +178,7 @@
   </build>
 
   <properties>
-    <jvm.args>-Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRatio=1</jvm.args>
+    <jvm.args>-server -Xmx1g -XX:+AggressiveOpts -XX:+UseParallelOldGC -XX:NewRatio=1</jvm.args>
     <jvm.args.extra></jvm.args.extra>
     <logging.properties>${basedir}/src/test/properties/logging.properties</logging.properties>
 
