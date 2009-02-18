@@ -35,6 +35,7 @@ import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity.EEntityType;
 import com.sun.darkstar.example.snowman.common.interfaces.IDynamicEntity;
 import com.sun.darkstar.example.snowman.common.interfaces.IEntity;
 import com.sun.darkstar.example.snowman.game.Game;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.scene.CharacterEntity;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
@@ -42,6 +43,8 @@ import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.task.RealTimeTask;
 import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
 import com.sun.darkstar.example.snowman.game.task.util.TaskManager;
+import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
+import com.sun.darkstar.example.snowman.game.state.scene.BattleState;
 
 /**
  * <code>RemoveMOBTask</code> extends <code>RealTimeTask</code> to define the
@@ -87,6 +90,8 @@ public class RemoveMOBTask extends RealTimeTask {
 			if(character.isCarrying()) {
 				TaskManager.getInstance().createTask(ETask.Attach, character.getFlag().getID(), 0, false);
 			}
+                        CharacterView v = (CharacterView)ViewManager.getInstance().getView(entity);
+                        ((BattleState) this.game.getGameState(EGameState.BattleState)).getWorld().getDynamicRoot().detachChild(v.getLabel());
 		}
 		// Step 3.
 		ViewManager.getInstance().removeView(entity);

@@ -33,9 +33,15 @@ package com.sun.darkstar.example.snowman.game.entity.view.scene;
 
 import com.jme.bounding.CollisionTreeManager;
 import com.jme.scene.Spatial;
+import com.jme.scene.Node;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jmex.font2d.Font2D;
+import com.jmex.font2d.Text2D;
 import com.model.md5.JointAnimation;
 import com.model.md5.ModelNode;
 import com.model.md5.controller.JointController;
+import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.data.enumn.EAnimation;
 import com.sun.darkstar.example.snowman.data.util.DataManager;
@@ -55,6 +61,10 @@ public class CharacterView extends DynamicView {
 	 * Serial version.
 	 */
 	private static final long serialVersionUID = 1082825580187469809L;
+        /**
+         * The actual snowman node
+         */
+        private Node snowmanNode;
 	/**
 	 * The <code>ModelNode</code> of this snowman view.
 	 */
@@ -83,19 +93,39 @@ public class CharacterView extends DynamicView {
 	 * The death animation.
 	 */
 	private JointAnimation animDeath;
+        /**
+         * Text label of the name of the character
+         */
+        private Text2D label;
 
 	/**
 	 * Constructor of <code>CharacterView</code>.
 	 * @param snowman The <code>CharacterEntity</code> instance.
 	 */
 	public CharacterView(CharacterEntity snowman) {
-		super(snowman);
+            super(snowman);
+            
+            Font2D font2d = new Font2D();
+            label = font2d.createText(snowman.getName(), 10, 0);
+            if(snowman.getEnumn() == EEntity.SnowmanDistributedBlue ||
+                    snowman.getEnumn() == EEntity.SnowmanLocalBlue) {
+                label.setTextColor(ColorRGBA.blue);
+            }
+            if(snowman.getEnumn() == EEntity.SnowmanDistributedRed ||
+                    snowman.getEnumn() == EEntity.SnowmanLocalRed) {
+                label.setTextColor(ColorRGBA.red);
+            }
+            label.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            label.updateRenderState();
+            
+            snowmanNode = new Node();
+            this.attachChild(snowmanNode);
 	}
 
 	@Override
 	public void attachSpatial(Spatial mesh) {
 		if(!(mesh instanceof ModelNode)) throw new IllegalArgumentException("Mesh is not a dynamic ModelNode.");
-		super.attachSpatial(mesh);
+		snowmanNode.attachChild(mesh);
 		this.model = (ModelNode)mesh;
 		this.jointController = new JointController(this.model.getJoints());
 		this.jointController.setActive(true);
@@ -116,10 +146,10 @@ public class CharacterView extends DynamicView {
 
 	@Override
 	public void update(float interpolation) {
-		this.setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()));
+		this.getSnowmanNode().setLocalScale(SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()));
 		this.getEntity().setMass(SingletonRegistry.getHPConverter().convertMass(this.getEntity().getHP()));
-		this.updateWorldBound();
-		CollisionTreeManager.getInstance().updateCollisionTree(this);
+		this.getSnowmanNode().updateWorldBound();
+		CollisionTreeManager.getInstance().updateCollisionTree(this.getSnowmanNode());
 		switch(this.getEntity().getState()) {
 		case Moving:
 			if(this.jointController.getActiveAnimation() == this.animMove) return;
@@ -148,6 +178,10 @@ public class CharacterView extends DynamicView {
 			break;
 		}
 	}
+        
+        public Text2D getLabel() {
+            return this.label;
+        }
 	
 	@Override
 	public CharacterEntity getEntity() {
@@ -161,6 +195,10 @@ public class CharacterView extends DynamicView {
 	public ModelNode getMesh() {
 		return this.model;
 	}
+        
+        public Node getSnowmanNode() {
+            return this.snowmanNode;
+        }
 
 	/**
 	 * Check if the current active animation is half complete.
