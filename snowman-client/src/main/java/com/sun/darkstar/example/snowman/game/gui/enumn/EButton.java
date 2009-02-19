@@ -45,7 +45,7 @@ public enum EButton {
 	/**
 	 * The play button in login scene.
 	 */
-	Play(EGameState.LoginState);
+	Connect(EGameState.LoginState);
 	
 	/**
 	 * The <code>EGameState</code> enumeration.

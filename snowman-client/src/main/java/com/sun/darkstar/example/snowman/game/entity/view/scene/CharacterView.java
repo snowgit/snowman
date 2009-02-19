@@ -34,10 +34,9 @@ package com.sun.darkstar.example.snowman.game.entity.view.scene;
 import com.jme.bounding.CollisionTreeManager;
 import com.jme.scene.Spatial;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jmex.font2d.Font2D;
-import com.jmex.font2d.Text2D;
 import com.model.md5.JointAnimation;
 import com.model.md5.ModelNode;
 import com.model.md5.controller.JointController;
@@ -96,7 +95,11 @@ public class CharacterView extends DynamicView {
         /**
          * Text label of the name of the character
          */
-        private Text2D label;
+        private Text label;
+        /**
+         * the label node
+         */
+        private Node labelNode;
 
 	/**
 	 * Constructor of <code>CharacterView</code>.
@@ -105,8 +108,11 @@ public class CharacterView extends DynamicView {
 	public CharacterView(CharacterEntity snowman) {
             super(snowman);
             
-            Font2D font2d = new Font2D();
-            label = font2d.createText(snowman.getName(), 10, 0);
+            labelNode = new Node();
+            labelNode.setLightCombineMode(Spatial.LightCombineMode.Off);
+            labelNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            
+            label = Text.createDefaultTextLabel("label", snowman.getName());
             if(snowman.getEnumn() == EEntity.SnowmanDistributedBlue ||
                     snowman.getEnumn() == EEntity.SnowmanLocalBlue) {
                 label.setTextColor(ColorRGBA.blue);
@@ -117,6 +123,9 @@ public class CharacterView extends DynamicView {
             }
             label.setRenderQueueMode(Renderer.QUEUE_ORTHO);
             label.updateRenderState();
+            
+            labelNode.attachChild(label);
+            labelNode.updateRenderState();
             
             snowmanNode = new Node();
             this.attachChild(snowmanNode);
@@ -179,8 +188,12 @@ public class CharacterView extends DynamicView {
 		}
 	}
         
-        public Text2D getLabel() {
+        public Text getLabel() {
             return this.label;
+        }
+        
+        public Node getLabelNode() {
+            return this.labelNode;
         }
 	
 	@Override

@@ -74,7 +74,7 @@ public class EndGUI extends GUIPass {
 	public EndGUI(int seconds) {
 		super();
 		this.message = "The game has ended.";
-                this.countdown = "New game will start in "+seconds+" seconds.";
+                this.countdown = "Auto-disconnect in "+seconds+" seconds.";
 	}
 	
 	@Override
@@ -142,7 +142,7 @@ public class EndGUI extends GUIPass {
 	}
         
         public void setCountdown(int seconds) {
-		this.labelCountdown.setText("New game will start in "+seconds+" seconds.");
+		this.labelCountdown.setText("Auto-disconnect in "+seconds+" seconds.");
 	}
 }
 

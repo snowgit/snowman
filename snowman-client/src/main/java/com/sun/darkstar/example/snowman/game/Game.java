@@ -258,9 +258,6 @@ public class Game extends BaseGame implements IComponent{
 
             // reinit stats as needed
             StatsManager.getInstance().recreateStatsDisplay();
-            
-            // login immediately with the current system time as the login name
-            TaskManager.getInstance().createTask(ETask.Authenticate, String.valueOf(System.currentTimeMillis()), "");
 	}
 	
 	@Override

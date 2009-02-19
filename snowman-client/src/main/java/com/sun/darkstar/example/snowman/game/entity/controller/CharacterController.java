@@ -97,7 +97,7 @@ public class CharacterController extends Controller {
             Vector3f v3 =
                     DisplaySystem.getDisplaySystem().getRenderer().getCamera().getScreenCoordinates(v2);
             v3.setX(v3.getX() - view.getLabel().getWidth()/2.0f);
-            view.getLabel().setLocalTranslation(v3);
+            view.getLabelNode().setLocalTranslation(v3);
             
             switch (this.getEntity().getState()) {
                 case Attacking:

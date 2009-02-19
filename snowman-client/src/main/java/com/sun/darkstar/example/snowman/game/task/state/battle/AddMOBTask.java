@@ -204,7 +204,7 @@ public class AddMOBTask extends RealTimeTask {
                         InputManager.getInstance().registerController(controller);
                         state.initializeCameraHandler((DynamicView) view);
                     }
-                    state.getWorld().getDynamicRoot().attachChild(((CharacterView)view).getLabel());
+                    state.getWorld().getDynamicRoot().attachChild(((CharacterView)view).getLabelNode());
                 }
                 if(this.enumn == EMOBType.FLAGGOAL) {
                     state.addFlagGoalId(color, id);

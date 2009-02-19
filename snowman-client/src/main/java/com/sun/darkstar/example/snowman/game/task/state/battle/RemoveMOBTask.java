@@ -91,7 +91,7 @@ public class RemoveMOBTask extends RealTimeTask {
 				TaskManager.getInstance().createTask(ETask.Attach, character.getFlag().getID(), 0, false);
 			}
                         CharacterView v = (CharacterView)ViewManager.getInstance().getView(entity);
-                        ((BattleState) this.game.getGameState(EGameState.BattleState)).getWorld().getDynamicRoot().detachChild(v.getLabel());
+                        ((BattleState) this.game.getGameState(EGameState.BattleState)).getWorld().getDynamicRoot().detachChild(v.getLabelNode());
 		}
 		// Step 3.
 		ViewManager.getInstance().removeView(entity);
