@@ -32,6 +32,8 @@
 package com.sun.darkstar.example.snowman.game.entity.controller;
 
 import com.jme.math.Vector3f;
+import com.jme.system.DisplaySystem;
+import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EState;
 import com.sun.darkstar.example.snowman.common.entity.enumn.EEntity;
 import com.sun.darkstar.example.snowman.common.entity.view.View;
@@ -67,6 +69,8 @@ public class CharacterController extends Controller {
 //	 * The flag indicates if a snow ball has been thrown for the current attack.
 //	 */
 //	private boolean thrown;
+        
+        private int count = 0;
 
 	/**
 	 * Constructor of <code>CharacterController</code>.
@@ -83,6 +87,18 @@ public class CharacterController extends Controller {
             if (!this.getEntity().isAlive()) {
                 return;
             }
+            
+            //update label position
+            CharacterView view = (CharacterView) ViewManager.getInstance().getView(this.entity);
+            Vector3f v1 = view.getLocalTranslation();
+            Vector3f v2 = v1.add(0.0f, 
+                                 SingletonRegistry.getHPConverter().convertScale(this.getEntity().getHP()), 
+                                 0.0f);
+            Vector3f v3 =
+                    DisplaySystem.getDisplaySystem().getRenderer().getCamera().getScreenCoordinates(v2);
+            v3.setX(v3.getX() - view.getLabel().getWidth()/2.0f);
+            view.getLabelNode().setLocalTranslation(v3);
+            
             switch (this.getEntity().getState()) {
                 case Attacking:
                     if (((CharacterView) ViewManager.getInstance().getView(this.entity)).isCurrentComplete()) {

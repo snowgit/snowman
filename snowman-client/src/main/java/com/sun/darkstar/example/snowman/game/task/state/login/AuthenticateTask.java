@@ -62,36 +62,50 @@ import com.sun.darkstar.example.snowman.game.task.enumn.ETask;
  * @version Modified date: 07-16-2008 11:33 EST
  */
 public class AuthenticateTask extends RealTimeTask {
-	/**
-	 * The <code>String</code> user name to login with.
-	 */
-	private final String username;
-	/**
-	 * The <code>String</code> password to login with.
-	 */
-	private final String password;
+    /**
+     * The <code>String</code> user name to login with.
+     */
+    private final String username;
+    /**
+     * The <code>String</code> password to login with.
+     */
+    private final String password;
+    /**
+     * The host to connect to
+     */
+    private final String host;
+    /**
+     * The port to connect to
+     */
+    private final String port;
 
-	/**
-	 * Constructor of <code>AuthenticateTask</code>.
-	 * @param game The <code>Game</code> instance.
-	 * @param username The <code>String</code> user name to login with.
-	 * @param password The <code>String</code> password to login with.
-	 */
-	public AuthenticateTask(Game game, String username, String password) {
-		super(ETask.Authenticate, game);
-		this.username = username;
-		this.password = password;
-	}
+    /**
+     * Constructor of <code>AuthenticateTask</code>.
+     * @param game The <code>Game</code> instance.
+     * @param username The <code>String</code> user name to login with.
+     * @param password The <code>String</code> password to login with.
+     */
+    public AuthenticateTask(Game game,
+                            String username,
+                            String password,
+                            String host,
+                            String port) {
+        super(ETask.Authenticate, game);
+        this.username = username;
+        this.password = password;
+        this.host = host;
+        this.port = port;
+    }
 
-	@Override
-	public void execute() {
-		final LoginGUI gui = ((LoginState)GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
-		gui.setStatus(gui.getDefaultStatus());
-		InputManager.getInstance().setInputActive(false);
-		this.game.getClient().getHandler().authenticate(this.username, this.password);
-		Properties properties = new Properties();
-		properties.setProperty("host", System.getProperty("server.host", "localhost"));
-		properties.setProperty("port", System.getProperty("server.port", "3000"));
-		this.game.getClient().login(properties);
-	}
+    @Override
+    public void execute() {
+        final LoginGUI gui = ((LoginState) GameStateManager.getInstance().getChild(EGameState.LoginState.toString())).getGUI();
+        gui.setStatus(gui.getConnectingStatus());
+        InputManager.getInstance().setInputActive(false);
+        this.game.getClient().getHandler().authenticate(this.username, this.password);
+        Properties properties = new Properties();
+        properties.setProperty("host", host);
+        properties.setProperty("port", port);
+        this.game.getClient().login(properties);
+    }
 }

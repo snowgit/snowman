@@ -43,6 +43,7 @@ import com.sun.darkstar.example.snowman.exception.DuplicatedIDException;
 import com.sun.darkstar.example.snowman.game.Game;
 import com.sun.darkstar.example.snowman.game.entity.util.EntityManager;
 import com.sun.darkstar.example.snowman.game.entity.view.DynamicView;
+import com.sun.darkstar.example.snowman.game.entity.view.scene.CharacterView;
 import com.sun.darkstar.example.snowman.game.entity.view.util.ViewManager;
 import com.sun.darkstar.example.snowman.game.input.util.InputManager;
 import com.sun.darkstar.example.snowman.game.state.enumn.EGameState;
@@ -203,6 +204,7 @@ public class AddMOBTask extends RealTimeTask {
                         InputManager.getInstance().registerController(controller);
                         state.initializeCameraHandler((DynamicView) view);
                     }
+                    state.getWorld().getDynamicRoot().attachChild(((CharacterView)view).getLabelNode());
                 }
                 if(this.enumn == EMOBType.FLAGGOAL) {
                     state.addFlagGoalId(color, id);

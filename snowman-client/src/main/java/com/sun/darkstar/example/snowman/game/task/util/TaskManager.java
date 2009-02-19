@@ -205,7 +205,7 @@ public class TaskManager extends Manager {
 		ITask task = null;
 		switch(enumn) {
                     case Authenticate:
-                        task = new AuthenticateTask(this.game, (String) args[0], (String) args[1]);
+                        task = new AuthenticateTask(this.game, (String) args[0], (String) args[1], (String) args[2], (String) args[3]);
                         break;
                     case ResetLogin:
                         task = new ResetLoginTask(this.game, (String) args[1]);
