@@ -45,7 +45,7 @@ public enum EOPCODE {
     /**
      * Client to server opcodes.
      */
-    MOVEME, ATTACK, GETFLAG, SCORE, CHAT,
+    MOVEME, ATTACK, GETFLAG, SCORE,
     /**
      * Server to client opcodes.
      */
@@ -53,5 +53,5 @@ public enum EOPCODE {
     /**
      * Common opcodes.
      */
-    READY
+    READY, CHAT
 }
