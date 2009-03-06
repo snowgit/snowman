@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.projectdarkstar.example.projectsnowman</groupId>
     <artifactId>projectsnowman</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>JavaOne2009</version>
   </parent>
 
   <artifactId>snowman-client</artifactId>

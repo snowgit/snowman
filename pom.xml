@@ -15,7 +15,7 @@
   <artifactId>projectsnowman</artifactId>
   <name>Project Snowman</name>
   <packaging>pom</packaging>
-  <version>0.2-SNAPSHOT</version>
+  <version>JavaOne2009</version>
   <description>
     Parent POM for the Project Snowman example.
   </description>
