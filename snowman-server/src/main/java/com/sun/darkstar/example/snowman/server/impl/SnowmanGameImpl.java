@@ -118,24 +118,12 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
     public SnowmanGameImpl(String gameName,
                            int numPlayers,
                            EntityFactory entityFactory) {
-        this.gameName = gameName;
-        this.numPlayers = numPlayers;
-        initMaxTeamPlayers();
-
-        Map<Integer, ManagedReference<SnowmanFlag>> f =
-                new ScalableHashMap<Integer, ManagedReference<SnowmanFlag>>(
-                ETeamColor.values().length);
-        this.flagRefs = AppContext.getDataManager().createReference(f);
-        Map<Integer, ManagedReference<SnowmanPlayer>> p =
-                new ScalableHashMap<Integer, ManagedReference<SnowmanPlayer>>(
-                numPlayers);
-        this.playerRefs = AppContext.getDataManager().createReference(p);
-
-        this.entityFactory = entityFactory;
-        this.channelRef = AppContext.getDataManager().createReference(
-                AppContext.getChannelManager().createChannel(
-                CHANPREFIX + gameName, null, Delivery.RELIABLE));
-        initFlags();
+        // REPLACE CODE HERE
+        this.channelRef = null;
+        this.flagRefs = null;
+        this.playerRefs = null;
+        this.entityFactory = null;
+        // REPLACE CODE HERE
     }
 
     /**
@@ -261,37 +249,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
      * messages instead.  This is done so as to preserve ordering.
      */
     public void sendMapInfo() {
-        for (ManagedReference<SnowmanPlayer> ref : playerRefs.get().values()) {
-            SnowmanPlayer player = ref.get();
-            if (player.getSession() != null) {
-                player.send(ServerMessages.createNewGamePkt(player.getID(),
-                                                            "default_map"));
-            }
-        }
-        for (ManagedReference<SnowmanPlayer> ref : playerRefs.get().values()) {
-            SnowmanPlayer player = ref.get();
-            multiSend(ServerMessages.createAddMOBPkt(
-                      player.getID(), player.getX(), player.getY(),
-                      EMOBType.SNOWMAN, player.getTeamColor(), 
-                      player.getName()));
-        }
-        for (ManagedReference<SnowmanFlag> flagRef : flagRefs.get().values()) {
-            SnowmanFlag flag = flagRef.get();
-            multiSend(ServerMessages.createAddMOBPkt(
-                      flag.getID(), flag.getX(), flag.getY(), EMOBType.FLAG, 
-                      flag.getTeamColor(), 
-                      flag.getTeamColor().toString() + "Flag"));
-
-            //TODO - encode goal color in the flag
-            //currently the add mob should swap the goal colors so that
-            //it is more intuitive for the players
-            multiSend(ServerMessages.createAddMOBPkt(
-                      flag.getID() + flagRefs.get().size(), 
-                      flag.getGoalX(), flag.getGoalY(), EMOBType.FLAGGOAL,
-                      flag.getTeamColor() == ETeamColor.Red 
-                      ? ETeamColor.Blue : ETeamColor.Red, "Goal"));
-        }
-        multiSend(ServerMessages.createReadyPkt());
+        // INSERT CODE HERE
     }
 
     /**

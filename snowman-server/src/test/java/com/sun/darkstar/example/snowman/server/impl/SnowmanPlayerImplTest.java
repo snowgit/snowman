@@ -110,7 +110,7 @@ public class SnowmanPlayerImplTest
      * the stopped position and the client sends a start position that is
      * in range
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerStoppedAndValidStart()
             throws Exception
     {
@@ -156,7 +156,7 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -164,7 +164,7 @@ public class SnowmanPlayerImplTest
      * the stopped position and the client sends a start position that is
      * out of range
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerStoppedAndInvalidStart()
             throws Exception
     {
@@ -204,7 +204,7 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -212,7 +212,7 @@ public class SnowmanPlayerImplTest
      * the moving position and the client sends a start position that is
      * in range
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerMovingAndValidStart()
             throws Exception
     {
@@ -267,7 +267,7 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -275,7 +275,7 @@ public class SnowmanPlayerImplTest
      * the moving position and the client sends a start position that is
      * out of range
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerMovingAndInvalidStart()
             throws Exception
     {
@@ -322,13 +322,13 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     /**
      * Test the processing of a MOVEME packet when the player is in
      * the dead state
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerDeadAndValidStart()
             throws Exception
     {
@@ -365,13 +365,13 @@ public class SnowmanPlayerImplTest
         
         //verify no message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     /**
      * Test the processing of a MOVEME packet when the player is not
      * in a game
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerNoneAndValidStart()
             throws Exception
     {
@@ -408,13 +408,13 @@ public class SnowmanPlayerImplTest
         
         //verify no message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     /**
      * Test non uniform start position and end position of moving player
      * Ensure that a rectangular move works properly
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerMovingAndValidStartAndNotSquareMovement()
             throws Exception
     {
@@ -467,13 +467,13 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
      * Test move where where delta x is 0
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerMovingAndValidStartAndVerticalMove()
             throws Exception
     {
@@ -519,7 +519,7 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -527,7 +527,7 @@ public class SnowmanPlayerImplTest
      * the stopped position and the client sends a start position that is
      * in range and a collision is detected
      */
-    @Test
+    /*@Test
     public void testMoveMePlayerStoppedAndValidStartAndCollision()
             throws Exception
     {
@@ -573,7 +573,7 @@ public class SnowmanPlayerImplTest
         
         //verify message has been sent
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -584,7 +584,7 @@ public class SnowmanPlayerImplTest
      *  - attackee is within range
      * @throws java.lang.Exception
      */
-    @Test
+    /*@Test
     public void testAttackPlayerStopped() 
             throws Exception
     {
@@ -635,7 +635,7 @@ public class SnowmanPlayerImplTest
         
         //validate messages
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -646,7 +646,7 @@ public class SnowmanPlayerImplTest
      *  - attackee is within range
      * @throws java.lang.Exception
      */
-    @Test
+    /*@Test
     public void testAttackPlayerMoving() 
             throws Exception
     {
@@ -709,7 +709,7 @@ public class SnowmanPlayerImplTest
         
         //validate messages
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
@@ -721,7 +721,7 @@ public class SnowmanPlayerImplTest
      *  - collision is detected between attacker and attackee
      * @throws java.lang.Exception
      */
-    @Test
+    /*@Test
     public void testAttackPlayerStoppedAndCollision() 
             throws Exception
     {
@@ -772,7 +772,7 @@ public class SnowmanPlayerImplTest
         
         //validate messages
         EasyMock.verify(currentGame);
-    }
+    }*/
     
     
     /**
