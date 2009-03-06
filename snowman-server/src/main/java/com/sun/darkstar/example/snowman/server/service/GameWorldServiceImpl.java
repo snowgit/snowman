@@ -98,8 +98,8 @@ public class GameWorldServiceImpl implements GameWorldService {
     }
 
     /** {@inheritDoc} **/
-    public boolean shutdown() {
-        return true;
+    public void shutdown() {
+
     }
     
     /** {@inheritDoc} */

@@ -40,12 +40,24 @@
       <outputDirectory></outputDirectory>
     </fileSet>
 
-    <!-- Include all of the LWJGL binaries -->
+    <!-- Include all of the LWJGL binaries except for the Windows dll -->
     <fileSet>
       <directory>${project.build.directory}/lwjgl-binaries</directory>
       <outputDirectory>lib/natives</outputDirectory>
+      <excludes>
+	<exclude>win32/</exclude>
+      </excludes>
     </fileSet>
 
+    <!-- Include the Windows LWJGL binary with executable permissions -->
+    <fileSet>
+      <directory>${project.build.directory}/lwjgl-binaries</directory>
+      <outputDirectory>lib/natives</outputDirectory>
+      <includes>
+	<include>win32/</include>
+      </includes>
+      <fileMode>755</fileMode>
+    </fileSet>
 
   </fileSets>
 

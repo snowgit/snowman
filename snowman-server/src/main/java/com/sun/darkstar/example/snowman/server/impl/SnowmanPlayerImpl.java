@@ -307,13 +307,11 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
     /** {@inheritDoc} */
     public void send(ByteBuffer buff) {
-        buff.flip();
         sessionRef.get().send(buff);
     }
 
     // Send a message to all the players
     private void sendAll(ByteBuffer buff) {
-        buff.flip();
         channelRef.get().send(null, buff);
     }
 

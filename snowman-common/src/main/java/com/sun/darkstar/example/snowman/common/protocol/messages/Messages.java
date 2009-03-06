@@ -54,6 +54,8 @@ public abstract class Messages
         byte[] bytes = new byte[1];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte)EOPCODE.READY.ordinal());
+        
+        buffer.flip();
         return buffer;
     }
 }

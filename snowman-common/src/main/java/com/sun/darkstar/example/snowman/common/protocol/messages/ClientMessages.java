@@ -62,6 +62,8 @@ public class ClientMessages extends Messages
         buffer.putFloat(y);
         buffer.putFloat(endx);
         buffer.putFloat(endy);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -80,6 +82,8 @@ public class ClientMessages extends Messages
         buffer.putInt(targetID);
         buffer.putFloat(x);
         buffer.putFloat(y);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -99,6 +103,8 @@ public class ClientMessages extends Messages
         buffer.putInt(flagID);
         buffer.putFloat(x);
         buffer.putFloat(y);
+        
+        buffer.flip();
         return buffer;
     }
     
@@ -116,6 +122,8 @@ public class ClientMessages extends Messages
         buffer.put((byte) EOPCODE.SCORE.ordinal());
         buffer.putFloat(x);
         buffer.putFloat(y);
+        
+        buffer.flip();
         return buffer;
     }
     
@@ -130,6 +138,8 @@ public class ClientMessages extends Messages
     	buffer.put((byte) EOPCODE.CHAT.ordinal());
     	buffer.putInt(message.length());
     	buffer.put(message.getBytes());
+        
+        buffer.flip();
     	return buffer;
     }
 }

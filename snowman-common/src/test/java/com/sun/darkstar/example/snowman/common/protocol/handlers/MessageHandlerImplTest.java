@@ -57,7 +57,6 @@ public class MessageHandlerImplTest
         MessageHandlerImpl parser = new MessageHandlerImpl();
         
         ByteBuffer readyPacket = Messages.createReadyPkt();
-        readyPacket.flip();
         
         IServerProcessor mockProcessor = EasyMock.createMock(IServerProcessor.class);
         //record expected processor calls
@@ -77,7 +76,6 @@ public class MessageHandlerImplTest
         MessageHandlerImpl parser = new MessageHandlerImpl();
         
         ByteBuffer readyPacket = Messages.createReadyPkt();
-        readyPacket.flip();
         
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
         //record expected processor calls
@@ -104,7 +102,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer newgame = ServerMessages.createNewGamePkt(10, "map");
-        newgame.flip();
         // record expected processor calls
         mockProcessor.newGame(10, "map");
         EasyMock.replay(mockProcessor);
@@ -128,7 +125,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createStartGamePkt();
-        packet.flip();
         // record expected processor calls
         mockProcessor.startGame();
         EasyMock.replay(mockProcessor);
@@ -152,7 +148,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.RedWin);
-        packet.flip();
         // record expected processor calls
         mockProcessor.endGame(EEndState.RedWin);
         EasyMock.replay(mockProcessor);        
@@ -176,7 +171,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
-        packet.flip();
         // record expected processor calls
         mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
         EasyMock.replay(mockProcessor);        
@@ -200,7 +194,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createRemoveMOBPkt(10);
-        packet.flip();
         // record expected processor calls
         mockProcessor.removeMOB(10);
         EasyMock.replay(mockProcessor);        
@@ -224,7 +217,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.moveMOB(10, 1.0f, 2.0f, 3.0f, 4.0f);
         EasyMock.replay(mockProcessor);        
@@ -248,7 +240,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createStopMOBPkt(10, 1.0f, 2.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.stopMOB(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
@@ -272,7 +263,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createAttachObjPkt(10, 20);
-        packet.flip();
         // record expected processor calls
         mockProcessor.attachObject(10, 20);
         EasyMock.replay(mockProcessor);        
@@ -296,7 +286,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20, 99);
-        packet.flip();
         // record expected processor calls
         mockProcessor.attacked(10, 20, 99);
         EasyMock.replay(mockProcessor);        
@@ -320,7 +309,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createRespawnPkt(10, 1.0f, 2.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.respawn(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
@@ -345,7 +333,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.moveMe(EasyMock.eq(1.0f),
                              EasyMock.eq(2.0f),
@@ -372,7 +359,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ClientMessages.createAttackPkt(10, 1.0f, 2.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.attack(EasyMock.eq(10),
                              EasyMock.eq(1.0f),
@@ -398,7 +384,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ClientMessages.createGetFlagPkt(10, 1.0f, 2.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.getFlag(10, 1.0f, 2.0f);
         EasyMock.replay(mockProcessor);        
@@ -422,7 +407,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ClientMessages.createScorePkt(1.0f, 2.0f);
-        packet.flip();
         // record expected processor calls
         mockProcessor.score(EasyMock.eq(1.0f),
                             EasyMock.eq(2.0f));
@@ -447,7 +431,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ClientMessages.createChatPkt("message");
-        packet.flip();
         // record expected processor calls
         mockProcessor.chatMessage("message");
         EasyMock.replay(mockProcessor);
@@ -472,7 +455,6 @@ public class MessageHandlerImplTest
 
         // generate packet
         ByteBuffer packet = ServerMessages.createChatPkt(10, "message");
-        packet.flip();
         // record expected processor calls
         mockProcessor.chatMessage(10, "message");
         EasyMock.replay(mockProcessor);        

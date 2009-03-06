@@ -51,7 +51,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateNewgamePkt() {
         ByteBuffer packet = ServerMessages.createNewGamePkt(10, "map");
-        packet.flip();
         checkOpcode(packet, EOPCODE.NEWGAME);
         
         int id = packet.getInt();
@@ -71,7 +70,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateStartgamePkt() {
         ByteBuffer packet = ServerMessages.createStartGamePkt();
-        packet.flip();
         checkOpcode(packet, EOPCODE.STARTGAME);
         
         //ensure we are at the end of the buffer
@@ -81,7 +79,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateEndgamePkt() {
         ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.RedWin);
-        packet.flip();
         checkOpcode(packet, EOPCODE.ENDGAME);
         
         EEndState state = EEndState.values()[packet.getInt()];
@@ -95,7 +92,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateAddMOBPkt() {
         ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
-        packet.flip();
         checkOpcode(packet, EOPCODE.ADDMOB);
         
         int id = packet.getInt();
@@ -123,7 +119,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateRemoveMOBPkt() {
         ByteBuffer packet = ServerMessages.createRemoveMOBPkt(10);
-        packet.flip();
         checkOpcode(packet, EOPCODE.REMOVEMOB);
         
         int id = packet.getInt();
@@ -137,7 +132,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateMoveMOBPkt() {
         ByteBuffer packet = ServerMessages.createMoveMOBPkt(10, 1.0f, 2.0f, 3.0f, 4.0f);
-        packet.flip();
         checkOpcode(packet, EOPCODE.MOVEMOB);
         
         int id = packet.getInt();
@@ -159,7 +153,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateStopMOBPkt() {
         ByteBuffer packet = ServerMessages.createStopMOBPkt(10, 1.0f, 2.0f);
-        packet.flip();
         checkOpcode(packet, EOPCODE.STOPMOB);
         
         int id = packet.getInt();
@@ -177,7 +170,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateAttachObjPkt() {
         ByteBuffer packet = ServerMessages.createAttachObjPkt(10, 20);
-        packet.flip();
         checkOpcode(packet, EOPCODE.ATTACHOBJ);
         
         int source = packet.getInt();
@@ -193,7 +185,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateAttackedPkt() {
         ByteBuffer packet = ServerMessages.createAttackedPkt(10, 20, 99);
-        packet.flip();
         checkOpcode(packet, EOPCODE.ATTACKED);
         
         int source = packet.getInt();
@@ -211,7 +202,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateRespawnPkt() {
         ByteBuffer packet = ServerMessages.createRespawnPkt(10, 1.0f, 2.0f);
-        packet.flip();
         checkOpcode(packet, EOPCODE.RESPAWN);
         
         int id = packet.getInt();
@@ -229,7 +219,6 @@ public class ServerMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateChatPkt() {
         ByteBuffer packet = ServerMessages.createChatPkt(10, "message");
-        packet.flip();
         checkOpcode(packet, EOPCODE.CHAT);
         
         int id = packet.getInt();
