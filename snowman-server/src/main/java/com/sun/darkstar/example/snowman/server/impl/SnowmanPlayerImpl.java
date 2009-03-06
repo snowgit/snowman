@@ -604,7 +604,6 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
 
     /** {@inheritDoc} */
     public void chatMessage(String message) {
-        // Create new packet with ID.
-        sendAll(ServerMessages.createChatPkt(id, message));
+        // INSERT CODE HERE
     }
 }
