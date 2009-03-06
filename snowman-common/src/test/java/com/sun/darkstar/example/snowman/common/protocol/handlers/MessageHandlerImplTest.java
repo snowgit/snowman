@@ -95,7 +95,7 @@ public class MessageHandlerImplTest
      * Test that the proper processor methods are called when
      * packets are sent to the ClientProtocol
      */
-    @Test
+    /*@Test
     public void parseNewgame() {
         MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
@@ -112,13 +112,13 @@ public class MessageHandlerImplTest
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(newgame.hasRemaining());
-    }
+    }*/
     
     /**
      * Test that the proper processor methods are called when
      * packets are sent to the ClientProtocol
      */
-    @Test
+    /*@Test
     public void parseStartgame() {
         MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
@@ -135,7 +135,7 @@ public class MessageHandlerImplTest
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
-    }
+    }*/
     
     /**
      * Test that the proper processor methods are called when
@@ -164,7 +164,7 @@ public class MessageHandlerImplTest
      * Test that the proper processor methods are called when
      * packets are sent to the ClientProtocol
      */
-    @Test
+    /*@Test
     public void parseAddMOB() {
         MessageHandlerImpl parser = new MessageHandlerImpl();
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
@@ -181,7 +181,7 @@ public class MessageHandlerImplTest
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
-    }
+    }*/
     
     /**
      * Test that the proper processor methods are called when
