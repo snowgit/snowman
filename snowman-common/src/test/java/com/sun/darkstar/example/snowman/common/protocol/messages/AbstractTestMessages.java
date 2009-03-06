@@ -51,7 +51,6 @@ public class AbstractTestMessages
     @Test
     public void testCreateReadyPkt() {
         ByteBuffer readyPacket = Messages.createReadyPkt();
-        readyPacket.flip();
         checkOpcode(readyPacket, EOPCODE.READY);
         
         //ensure we are at the end of the buffer

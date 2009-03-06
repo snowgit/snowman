@@ -48,7 +48,6 @@ public class ClientMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateMoveMePkt() {
         ByteBuffer movePacket = ClientMessages.createMoveMePkt(1.0f, 2.0f, 3.0f, 4.0f);
-        movePacket.flip();
         checkOpcode(movePacket, EOPCODE.MOVEME);
         
         float startx = movePacket.getFloat();
@@ -68,7 +67,6 @@ public class ClientMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateAttackPkt() {
         ByteBuffer attackPacket = ClientMessages.createAttackPkt(5, 1.0f, 2.0f);
-        attackPacket.flip();
         checkOpcode(attackPacket, EOPCODE.ATTACK);
         
         int id = attackPacket.getInt();
@@ -86,7 +84,6 @@ public class ClientMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateGetFlagPkg() {
         ByteBuffer getFlagPacket = ClientMessages.createGetFlagPkt(10, 1.0f, 2.0f);
-        getFlagPacket.flip();
         checkOpcode(getFlagPacket, EOPCODE.GETFLAG);
         
         int id = getFlagPacket.getInt();
@@ -104,7 +101,6 @@ public class ClientMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateScorePkt() {
         ByteBuffer packet = ClientMessages.createScorePkt(1.0f, 2.0f);
-        packet.flip();
         checkOpcode(packet, EOPCODE.SCORE);
         
         float x = packet.getFloat();
@@ -120,7 +116,6 @@ public class ClientMessagesTest extends AbstractTestMessages
     @Test
     public void testCreateChatPkt() {
         ByteBuffer packet = ClientMessages.createChatPkt("message");
-        packet.flip();
         checkOpcode(packet, EOPCODE.CHAT);
         
         int length = packet.getInt();

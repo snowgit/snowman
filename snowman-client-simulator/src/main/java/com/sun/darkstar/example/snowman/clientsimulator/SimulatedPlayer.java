@@ -485,7 +485,6 @@ class SimulatedPlayer implements SimpleClientListener {
     }
     
     private void send(ByteBuffer buff) throws IOException {
-        buff.flip();
         simpleClient.send(buff);
     }
     

@@ -64,6 +64,8 @@ public class ServerMessages extends Messages
         buffer.putInt(myID);
         buffer.putInt(mapname.length());
         buffer.put(mapname.getBytes());
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -75,6 +77,8 @@ public class ServerMessages extends Messages
         byte[] bytes = new byte[1];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.STARTGAME.ordinal());
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -89,6 +93,8 @@ public class ServerMessages extends Messages
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ENDGAME.ordinal());
         buffer.putInt(state.ordinal());
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -114,6 +120,8 @@ public class ServerMessages extends Messages
         buffer.putInt(team.ordinal());
         buffer.putInt(mobName.length());
         buffer.put(mobName.getBytes());
+        
+        buffer.flip();
         return buffer;
     }
     
@@ -128,6 +136,8 @@ public class ServerMessages extends Messages
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.REMOVEMOB.ordinal());
         buffer.putInt(targetID);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -150,6 +160,8 @@ public class ServerMessages extends Messages
         buffer.putFloat(starty);
         buffer.putFloat(endx);
         buffer.putFloat(endy);
+        
+        buffer.flip();
         return buffer;
     }
     
@@ -168,6 +180,8 @@ public class ServerMessages extends Messages
         buffer.putInt(targetID);
         buffer.putFloat(x);
         buffer.putFloat(y);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -184,6 +198,8 @@ public class ServerMessages extends Messages
         buffer.put((byte) EOPCODE.ATTACHOBJ.ordinal());
         buffer.putInt(sourceID);
         buffer.putInt(targetID);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -202,6 +218,8 @@ public class ServerMessages extends Messages
         buffer.putInt(sourceID);
         buffer.putInt(targetID);
         buffer.putInt(hp);
+        
+        buffer.flip();
         return buffer;
     }
 
@@ -220,6 +238,8 @@ public class ServerMessages extends Messages
         buffer.putInt(objectID);
         buffer.putFloat(x);
         buffer.putFloat(y);
+        
+        buffer.flip();
         return buffer;
     }
     
@@ -236,6 +256,8 @@ public class ServerMessages extends Messages
         buffer.putInt(sourceID);
     	buffer.putInt(message.length());
     	buffer.put(message.getBytes());
+        
+        buffer.flip();
     	return buffer;
     }
 }

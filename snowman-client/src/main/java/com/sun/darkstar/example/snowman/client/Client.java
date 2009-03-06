@@ -104,7 +104,6 @@ public class Client extends Component{
         }
 	
 	public void send(ByteBuffer message) {
-		message.flip();
 		try {
 			this.connection.send(message);
 		} catch (IOException e) {

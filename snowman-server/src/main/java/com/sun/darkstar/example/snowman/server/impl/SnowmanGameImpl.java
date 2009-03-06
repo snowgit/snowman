@@ -191,7 +191,6 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
 
     /** {@inheritDoc} */
     public void send(ByteBuffer buff) {
-        buff.flip();
         channelRef.get().send(null, buff);
     }
 
@@ -302,7 +301,7 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
      */
     private void multiSend(ByteBuffer buff) {
         for (ManagedReference<SnowmanPlayer> ref : playerRefs.get().values()) {
-            // send() will do a flip() on the buffer, so send a wrapped buffer
+            // send a wrapped buffer
             ref.get().send(buff.asReadOnlyBuffer());
         }
     }
