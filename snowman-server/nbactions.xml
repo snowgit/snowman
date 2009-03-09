@@ -6,10 +6,20 @@
                 <packaging>jar</packaging>
             </packagings>
             <goals>
-                <goal>process-test-resources</goal>
+                <goal>verify</goal>
             </goals>
             <activatedProfiles>
-                <activatedProfile>single-node-server</activatedProfile>
+                <activatedProfile>run-server</activatedProfile>
+            </activatedProfiles>
+        </action>
+        <action>
+            <actionName>CUSTOM-Stop</actionName>
+            <displayName>Stop</displayName>
+            <goals>
+                <goal>sgs:stop</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>run-server</activatedProfile>
             </activatedProfiles>
         </action>
     </actions>
