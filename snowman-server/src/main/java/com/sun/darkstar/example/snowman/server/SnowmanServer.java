@@ -59,7 +59,6 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      * @param props a set of {@code Properties} used to configure the 
      *        runtime state of the game
      */
-    @SuppressWarnings("unchecked")
     public void initialize(Properties props) {
         // INSERT CODE HERE
     }
