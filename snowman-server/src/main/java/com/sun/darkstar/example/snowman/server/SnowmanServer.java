@@ -38,6 +38,7 @@ import com.sun.sgs.app.ManagedObject;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class is the app listener for Project Snowman.
@@ -59,9 +60,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      * @param props a set of {@code Properties} used to configure the 
      *        runtime state of the game
      */
-    @SuppressWarnings("unchecked")
     public void initialize(Properties props) {
-        // INSERT CODE HERE
+        logger.log(Level.INFO, "Hello Project Darkstar!");
     }
 
     /**
@@ -72,7 +72,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      *         player
      */
     public ClientSessionListener loggedIn(ClientSession session) {
-        // INSERT CODE HERE
+        logger.log(Level.INFO, "Player " + session.getName() + " logging in");
         return null;
     }
 }
