@@ -38,6 +38,7 @@ import com.sun.sgs.app.ManagedObject;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This class is the app listener for Project Snowman.
