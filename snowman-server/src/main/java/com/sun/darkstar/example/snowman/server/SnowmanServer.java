@@ -32,18 +32,24 @@
 package com.sun.darkstar.example.snowman.server;
 
 import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.interfaces.GameFactory;
 import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
-import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
-import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.server.impl.GameFactoryImpl;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
+import com.sun.darkstar.example.snowman.server.interfaces.SnowmanGame;
 import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
+import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
 import com.sun.sgs.app.ManagedObject;
+import com.sun.sgs.app.ManagedReference;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class is the app listener for Project Snowman.
@@ -60,6 +66,9 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
             Logger.getLogger(SnowmanServer.class.getName());
     
     private EntityFactory entityFactory;
+    private GameFactory gameFactory;
+    private List<ManagedReference<SnowmanPlayer>> waitingPlayers;
+    private int gameNumber;
     
     /**
      * Initializes a Project Snowman server upon first bootup.
@@ -69,6 +78,9 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      */
     public void initialize(Properties props) {
         this.entityFactory = new EntityFactoryImpl();
+        this.gameFactory = new GameFactoryImpl();
+        this.waitingPlayers = new ArrayList<ManagedReference<SnowmanPlayer>>(2);
+        this.gameNumber = 0;
     }
 
     /**
@@ -79,16 +91,18 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      *         player
      */
     public ClientSessionListener loggedIn(ClientSession session) {
-        session.send(ServerMessages.createNewGamePkt(1, "default_map"));
-        session.send(ServerMessages.createAddMOBPkt(1,
-                                                    10, 
-                                                    10,
-                                                    EMOBType.SNOWMAN,
-                                                    ETeamColor.Blue,
-                                                    session.getName()));
-        session.send(ServerMessages.createReadyPkt());
+        SnowmanPlayer player = entityFactory.createSnowmanPlayer(session);
+        waitingPlayers.add(AppContext.getDataManager().createReference(player));
         
-        return new SnowmanPlayerListener(
-                entityFactory.createSnowmanPlayer(session));
+        if(waitingPlayers.size() == 2) {
+            SnowmanGame game = gameFactory.createSnowmanGame(
+                    "MyGame" + gameNumber++, 2, entityFactory);
+            game.addPlayer(waitingPlayers.get(0).get(), ETeamColor.Blue);
+            game.addPlayer(waitingPlayers.get(1).get(), ETeamColor.Red);
+            game.sendMapInfo();
+            waitingPlayers.clear();
+        }
+        
+        return new SnowmanPlayerListener(player);
     }
 }

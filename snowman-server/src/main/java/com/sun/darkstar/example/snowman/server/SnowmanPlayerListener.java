@@ -80,8 +80,10 @@ public class SnowmanPlayerListener implements Serializable,
      * @param message an incoming message from the player
      */
     public void receivedMessage(ByteBuffer message) {
-        if (EOPCODE.READY == EOPCODE.values()[message.get()]) {
-            playerRef.get().getSession().send(ServerMessages.createStartGamePkt());
+         try {
+            SingletonRegistry.getMessageHandler().parseServerPacket(
+                    message, playerRef.get().getProcessor());
+        } catch (ObjectNotFoundException disconnected) {
         }
     }
 
@@ -93,7 +95,19 @@ public class SnowmanPlayerListener implements Serializable,
      * @param graceful whether or not disconnection was graceful
      */
     public void disconnected(boolean graceful) {
-        // INSERT CODE HERE
+        try {
+            SnowmanPlayer player = playerRef.get();
+
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE,
+                           "Player {0} logged out", player.getName());
+            }
+            if (player.getGame() != null) {
+                player.getGame().removePlayer(player);
+            }
+            AppContext.getDataManager().removeObject(player);
+        } catch (ObjectNotFoundException alreadyDisconnected) {
+        }
     }
 
     /**
