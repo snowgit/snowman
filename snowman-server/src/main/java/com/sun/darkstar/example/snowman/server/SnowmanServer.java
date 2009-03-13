@@ -31,6 +31,11 @@
  */
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.darkstar.example.snowman.server.interfaces.EntityFactory;
+import com.sun.darkstar.example.snowman.server.impl.EntityFactoryImpl;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EMOBType;
+import com.sun.darkstar.example.snowman.common.protocol.enumn.ETeamColor;
 import com.sun.sgs.app.AppListener;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ClientSessionListener;
@@ -54,6 +59,8 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
     private static final Logger logger = 
             Logger.getLogger(SnowmanServer.class.getName());
     
+    private EntityFactory entityFactory;
+    
     /**
      * Initializes a Project Snowman server upon first bootup.
      * 
@@ -61,7 +68,7 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      *        runtime state of the game
      */
     public void initialize(Properties props) {
-        logger.log(Level.INFO, "Hello Project Darkstar!");
+        this.entityFactory = new EntityFactoryImpl();
     }
 
     /**
@@ -72,7 +79,16 @@ public class SnowmanServer implements ManagedObject, Serializable, AppListener {
      *         player
      */
     public ClientSessionListener loggedIn(ClientSession session) {
-        logger.log(Level.INFO, "Player " + session.getName() + " logging in");
-        return null;
+        session.send(ServerMessages.createNewGamePkt(1, "default_map"));
+        session.send(ServerMessages.createAddMOBPkt(1,
+                                                    10, 
+                                                    10,
+                                                    EMOBType.SNOWMAN,
+                                                    ETeamColor.Blue,
+                                                    session.getName()));
+        session.send(ServerMessages.createReadyPkt());
+        
+        return new SnowmanPlayerListener(
+                entityFactory.createSnowmanPlayer(session));
     }
 }

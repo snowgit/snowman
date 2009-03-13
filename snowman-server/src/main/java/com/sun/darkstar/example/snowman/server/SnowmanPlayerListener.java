@@ -31,6 +31,8 @@
  */
 package com.sun.darkstar.example.snowman.server;
 
+import com.sun.darkstar.example.snowman.common.protocol.enumn.EOPCODE;
+import com.sun.darkstar.example.snowman.common.protocol.messages.ServerMessages;
 import com.sun.darkstar.example.snowman.common.util.SingletonRegistry;
 import com.sun.darkstar.example.snowman.common.protocol.handlers.MessageHandler;
 import com.sun.darkstar.example.snowman.server.interfaces.SnowmanPlayer;
@@ -78,7 +80,9 @@ public class SnowmanPlayerListener implements Serializable,
      * @param message an incoming message from the player
      */
     public void receivedMessage(ByteBuffer message) {
-        // INSERT CODE HERE
+        if (EOPCODE.READY == EOPCODE.values()[message.get()]) {
+            playerRef.get().getSession().send(ServerMessages.createStartGamePkt());
+        }
     }
 
     /**

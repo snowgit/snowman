@@ -58,8 +58,15 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "new game" packet.
      */
     public static ByteBuffer createNewGamePkt(int myID, String mapname) {
-        // INSERT CODE HERE
-        return null;
+        byte[] bytes = new byte[1 + 4 + 4 + mapname.length()];
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.put((byte) EOPCODE.NEWGAME.ordinal());
+        buffer.putInt(myID);
+        buffer.putInt(mapname.length());
+        buffer.put(mapname.getBytes());
+        
+        buffer.flip();
+        return buffer;
     }
 
     /**
@@ -67,8 +74,12 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "start game" packet.
      */
     public static ByteBuffer createStartGamePkt() {
-        // INSERT CODE HERE
-        return null;
+        byte[] bytes = new byte[1];
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.put((byte) EOPCODE.STARTGAME.ordinal());
+        
+        buffer.flip();
+        return buffer;
     }
 
     /**
@@ -99,8 +110,19 @@ public class ServerMessages extends Messages
      * @return The <code>ByteBuffer</code> "add MOB" packet.
      */
     public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType, ETeamColor team, String mobName) {
-        // INSERT CODE HERE
-        return null;
+        byte[] bytes = new byte[1 + 20 + 4 + mobName.length()];
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        buffer.put((byte) EOPCODE.ADDMOB.ordinal());
+        buffer.putInt(targetID);
+        buffer.putFloat(x);
+        buffer.putFloat(y);
+        buffer.putInt(mobType.ordinal());
+        buffer.putInt(team.ordinal());
+        buffer.putInt(mobName.length());
+        buffer.put(mobName.getBytes());
+        
+        buffer.flip();
+        return buffer;
     }
     
     /**
