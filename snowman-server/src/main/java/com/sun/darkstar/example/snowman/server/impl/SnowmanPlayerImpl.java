@@ -361,7 +361,47 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
     protected void moveMe(long now,
                           float startx, float starty,
                           float endx, float endy) {
-       // INSERT CODE HERE
+        //no op if player is dead or not in a game
+        if (state == PlayerState.DEAD || state == PlayerState.NONE) {
+            return;
+        }
+        AppContext.getDataManager().markForUpdate(this);
+
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           startx, starty,
+                           POSITIONTOLERANCESQD)) {
+            //collision detection
+            Coordinate trimPosition = 
+                    AppContext.getManager(GameWorldManager.class).
+                    trimPath(new Coordinate(startx, starty),
+                             new Coordinate(endx, endy));
+
+            this.timestamp = now;
+            this.startX = startx;
+            this.startY = starty;
+            this.destX = trimPosition.getX();
+            this.destY = trimPosition.getY();
+            this.state = PlayerState.MOVING;
+
+            sendAll(ServerMessages.createMoveMOBPkt(id, 
+                                                    startX, 
+                                                    startY, 
+                                                    destX,
+                                                    destY));
+        } else {
+            logger.log(Level.FINE, 
+                       "move from {0} failed start position check", name);
+
+            this.timestamp = now;
+            this.setLocation(expectedPosition.getX(), expectedPosition.getY());
+            sendAll(ServerMessages.createStopMOBPkt(id,
+                                                    expectedPosition.getX(),
+                                                    expectedPosition.getY()));
+        }
+
     }
 
     /** {@inheritDoc} */
@@ -381,7 +421,67 @@ public class SnowmanPlayerImpl implements SnowmanPlayer,
      * @see IServerProcessor#attack(int, float, float) 
      */
     protected void attack(long now, int targetID, float x, float y) {
-        // INSERT CODE HERE
+        //no op if player is dead or not in a game
+        if (state == PlayerState.DEAD || state == PlayerState.NONE) {
+            return;
+        }
+        AppContext.getDataManager().markForUpdate(this);
+
+        //verify that the start location is valid
+        Coordinate expectedPosition = this.getExpectedPositionAtTime(now);
+
+        if (checkTolerance(expectedPosition.getX(), expectedPosition.getY(),
+                           x, y, POSITIONTOLERANCESQD)) {
+            //get the target player and determine its location
+            SnowmanPlayer target = gameRef.get().getPlayer(targetID);
+
+            if (target == null) {
+                return; // player no longer in game
+            }
+            Coordinate targetPosition = target.getExpectedPositionAtTime(now);
+
+            boolean success = true;
+            //verify that target is in range
+            float range = HPConverter.getInstance().convertRange(hitPoints);
+            if (!checkTolerance(expectedPosition.getX(), 
+                                expectedPosition.getY(),
+                                targetPosition.getX(),
+                                targetPosition.getY(),
+                                range * range)) {
+                logger.log(Level.FINE, "attack from {0} out of range", name);
+                success = false;
+            }
+
+            //collision detection
+            if (!AppContext.getManager(GameWorldManager.class).
+                    validThrow(new Coordinate(x, y),
+                               targetPosition)) {
+                logger.log(Level.FINE, 
+                           "attack from {0} detected a collision", name);
+                success = false;
+            }
+
+            //perform implicit stop
+            this.timestamp = now;
+            this.setLocation(x, y);
+
+            if (success) {
+                //stop the target
+                target.setLocation(targetPosition.getX(),
+                                   targetPosition.getY());
+                sendAll(ServerMessages.createAttackedPkt(
+                        id, targetID,
+                        target.hit(ATTACKHP, 
+                                   targetPosition.getX(), 
+                                   targetPosition.getY())));
+            } else {
+                sendAll(ServerMessages.createAttackedPkt(id, targetID, 0));
+            }
+        } else {
+            //ignore an invalid attack
+            logger.log(Level.FINE, 
+                       "attack from {0} failed attack position check", name);
+        }
     }
 
     /** {@inheritDoc} */
