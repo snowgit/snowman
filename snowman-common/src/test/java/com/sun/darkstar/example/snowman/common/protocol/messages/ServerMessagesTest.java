@@ -91,7 +91,12 @@ public class ServerMessagesTest extends AbstractTestMessages
     
     @Test
     public void testCreateAddMOBPkt() {
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 
+                                                           1.0f, 
+                                                           2.0f, 
+                                                           EMOBType.SNOWMAN, 
+                                                           ETeamColor.Red, 
+                                                           "name");
         checkOpcode(packet, EOPCODE.ADDMOB);
         
         int id = packet.getInt();
