@@ -109,7 +109,12 @@ public class ServerMessages extends Messages
      * @param team The <code>TeamColor</code> of object.
      * @return The <code>ByteBuffer</code> "add MOB" packet.
      */
-    public static ByteBuffer createAddMOBPkt(int targetID, float x, float y, EMOBType mobType, ETeamColor team, String mobName) {
+    public static ByteBuffer createAddMOBPkt(int targetID, 
+                                             float x, 
+                                             float y, 
+                                             EMOBType mobType, 
+                                             ETeamColor team, 
+                                             String mobName) {
         byte[] bytes = new byte[1 + 20 + 4 + mobName.length()];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.ADDMOB.ordinal());
@@ -151,7 +156,11 @@ public class ServerMessages extends Messages
      * @param endy The y coordinate of the ending position.
      * @return The <code>ByteBuffer</code> "move MOB" packet.
      */
-    public static ByteBuffer createMoveMOBPkt(int targetID, float startx, float starty, float endx, float endy) {
+    public static ByteBuffer createMoveMOBPkt(int targetID, 
+                                              float startx,
+                                              float starty, 
+                                              float endx,
+                                              float endy) {
         byte[] bytes = new byte[1 + 20];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.put((byte) EOPCODE.MOVEMOB.ordinal());
