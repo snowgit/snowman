@@ -170,7 +170,12 @@ public class MessageHandlerImplTest
         IClientProcessor mockProcessor = EasyMock.createMock(IClientProcessor.class);
 
         // generate packet
-        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
+        ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 
+                                                           1.0f, 
+                                                           2.0f, 
+                                                           EMOBType.SNOWMAN,
+                                                           ETeamColor.Red,
+                                                           "name");
         // record expected processor calls
         mockProcessor.addMOB(10, 1.0f, 2.0f, EMOBType.SNOWMAN, ETeamColor.Red, "name");
         EasyMock.replay(mockProcessor);        
