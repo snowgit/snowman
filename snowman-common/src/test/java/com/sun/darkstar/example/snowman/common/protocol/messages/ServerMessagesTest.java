@@ -48,7 +48,7 @@ import org.junit.Assert;
 public class ServerMessagesTest extends AbstractTestMessages
 {
     
-    @Test
+    /*@Test
     public void testCreateNewgamePkt() {
         ByteBuffer packet = ServerMessages.createNewGamePkt(10, "map");
         checkOpcode(packet, EOPCODE.NEWGAME);
@@ -65,7 +65,7 @@ public class ServerMessagesTest extends AbstractTestMessages
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
-    }
+    }*/
     
     @Test
     public void testCreateStartgamePkt() {
@@ -76,7 +76,7 @@ public class ServerMessagesTest extends AbstractTestMessages
         Assert.assertFalse(packet.hasRemaining());
     }
     
-    @Test
+    /*@Test
     public void testCreateEndgamePkt() {
         ByteBuffer packet = ServerMessages.createEndGamePkt(EEndState.RedWin);
         checkOpcode(packet, EOPCODE.ENDGAME);
@@ -87,9 +87,9 @@ public class ServerMessagesTest extends AbstractTestMessages
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
-    }
+    }*/
     
-    @Test
+    /*@Test
     public void testCreateAddMOBPkt() {
         ByteBuffer packet = ServerMessages.createAddMOBPkt(10, 
                                                            1.0f, 
@@ -119,7 +119,7 @@ public class ServerMessagesTest extends AbstractTestMessages
         
         //ensure we are at the end of the buffer
         Assert.assertFalse(packet.hasRemaining());
-    }
+    }*/
     
     @Test
     public void testCreateRemoveMOBPkt() {
