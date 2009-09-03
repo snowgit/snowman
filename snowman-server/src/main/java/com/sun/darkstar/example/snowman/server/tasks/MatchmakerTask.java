@@ -41,12 +41,14 @@ import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.Task;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
+import com.sun.sgs.app.util.ManagedSerializable;
+import com.sun.sgs.app.util.ScalableList;
 import java.io.Serializable;
 import java.util.Deque;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This task is a self re-scheduling task that polls the front of the
@@ -71,8 +73,10 @@ public class MatchmakerTask implements Task, Serializable {
     
     private static final int POLLINGINTERVAL = 2 * 1000;
     private static final String NAME_PREFIX = "Game";
+
+    private static int count = 0;
     
-    private int gameCount = 0;
+    private ManagedReference<ManagedSerializable<Integer>> gameCount;
     private final int numPlayersPerGame;
     private final int numRobotsPerGame;
     private final int robotDelay;
@@ -80,7 +84,8 @@ public class MatchmakerTask implements Task, Serializable {
     private GameFactory gameFactory;
     private EntityFactory entityFactory;
     
-    private List<ManagedReference<SnowmanPlayer>> waitingPlayers;
+    private ManagedReference<List<ManagedReference<SnowmanPlayer>>>
+            waitingPlayers;
     private ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] 
             waitingDeques;
     
@@ -101,19 +106,22 @@ public class MatchmakerTask implements Task, Serializable {
                           GameFactory gameFactory,
                           EntityFactory entityFactory,
                           ManagedReference<Deque<ManagedReference<SnowmanPlayer>>>[] waitingDeques) {
+        this.gameCount = AppContext.getDataManager().createReference(new ManagedSerializable<Integer>(new Integer(0)));
         this.numPlayersPerGame = numPlayersPerGame;
         this.numRobotsPerGame = numRobotsPerGame;
         this.robotDelay = robotDelay;
         
         this.gameFactory = gameFactory;
         this.entityFactory = entityFactory;
-        
-        this.waitingPlayers = new ArrayList<ManagedReference<SnowmanPlayer>>();
+
+        List<ManagedReference<SnowmanPlayer>> players = new ScalableList<ManagedReference<SnowmanPlayer>>();
+        this.waitingPlayers = AppContext.getDataManager().createReference(players);
         this.waitingDeques = waitingDeques;
     }
 
     /** {@inheritDoc} */
     public void run() throws Exception {
+        logger.log(Level.INFO, "START Matchmaker Task " + (count++));
         boolean playersFound = false;
         //cycle through the front of each queue, adding players to the waiting
         //list as they are found
@@ -122,10 +130,12 @@ public class MatchmakerTask implements Task, Serializable {
                     waitingDeques[i].get().poll();
             if (nextPlayer != null) {
                 playersFound = true;
-                waitingPlayers.add(nextPlayer);
+                waitingPlayers.get().add(nextPlayer);
             }
-            if (waitingPlayers.size() == numPlayersPerGame) {
-                startGame();
+            if (waitingPlayers.get().size() == numPlayersPerGame) {
+                AppContext.getTaskManager().scheduleTask(new StartGameTask(gameCount.get(), numPlayersPerGame, numRobotsPerGame, robotDelay, gameFactory, entityFactory, waitingPlayers));
+                List<ManagedReference<SnowmanPlayer>> players = new ScalableList<ManagedReference<SnowmanPlayer>>();
+                this.waitingPlayers = AppContext.getDataManager().createReference(players);
                 break;
             }
         }
@@ -138,49 +148,7 @@ public class MatchmakerTask implements Task, Serializable {
         } else {
             AppContext.getTaskManager().scheduleTask(this, POLLINGINTERVAL);
         }
+        logger.log(Level.INFO, "END Matchmaker Task" + (count));
     }
-    
-    private void startGame() {
-        //remove players from waiting list if they have disconnected
-        boolean needMore = false;
-        for (Iterator<ManagedReference<SnowmanPlayer>> ip =
-                waitingPlayers.iterator(); ip.hasNext(); ) {
-            try {
-                ip.next().get();
-            } catch (ObjectNotFoundException e) {
-                ip.remove();
-                needMore = true;
-            }
-        }
-        if (needMore) {
-            return;
-        }
-        
-        //start the game if all waiting players are still connected
-        String gameName = NAME_PREFIX + (gameCount++);
-        SnowmanGame game = 
-                gameFactory.createSnowmanGame(gameName,
-                                              numPlayersPerGame + 
-                                              numRobotsPerGame,
-                                              entityFactory);
-        ETeamColor color = ETeamColor.values()[0];
-        for (Iterator<ManagedReference<SnowmanPlayer>> ip = 
-                waitingPlayers.iterator(); ip.hasNext(); ) {
-            game.addPlayer(ip.next().get(), color);
-            color = ETeamColor.values()[(color.ordinal() + 1) % 
-                    ETeamColor.values().length];
-        }
-        for (int i = 0; i < numRobotsPerGame; i++) {
-            game.addPlayer(entityFactory.createRobotPlayer(gameName + 
-                                                           "_robot" + i,
-                                                           robotDelay),
-                           color);
-            color = ETeamColor.values()[(color.ordinal() + 1) % 
-                    ETeamColor.values().length];
-        }
-        game.sendMapInfo();
-        
-        //clear out the waiting list
-        waitingPlayers.clear();
-    }
+
 }

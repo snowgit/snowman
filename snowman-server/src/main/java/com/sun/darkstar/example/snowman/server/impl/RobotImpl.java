@@ -40,6 +40,7 @@ import com.sun.sgs.app.AppContext;
 import com.sun.sgs.app.ClientSession;
 import com.sun.sgs.app.ManagedReference;
 import com.sun.sgs.app.ObjectNotFoundException;
+import com.sun.sgs.app.RunWithNewIdentity;
 import com.sun.sgs.app.Task;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -84,7 +85,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
         super(name, null);
         moveDelay = delay;
         random = new Random(name.hashCode());
-        scheduleMove(10000); // TODO need to find out when the game starts
+        AppContext.getTaskManager().scheduleTask(new InitialMoveTask(AppContext.getDataManager().createReference((RobotImpl) this)));
     }
     
     /**
@@ -92,14 +93,12 @@ public class RobotImpl extends SnowmanPlayerImpl {
      * 
      * @param delay the delay to use to schedule the next move
      */
-    private void scheduleMove(int delay) {
-        AppContext.getTaskManager().scheduleTask(
-                new MoveTask(
-                AppContext.getDataManager().createReference((RobotImpl) this)),
-                delay + random.nextInt(500));
+    private void scheduleMove(MoveTask task, int delay) {
+        AppContext.getTaskManager().scheduleTask(task,
+                                                 delay + random.nextInt(500));
     }
     
-    private void moveRobot() {
+    private void moveRobot(MoveTask task) {
 
         // game over
         if (gameRef == null) {
@@ -108,7 +107,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
         
         // game has not started or robot is respawning
         if (state == PlayerState.NONE || state == PlayerState.DEAD) {
-            scheduleMove(moveDelay * 4);
+            scheduleMove(task, moveDelay * 4);
             return;
         }
         
@@ -145,7 +144,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
             }
             
         // randomly go after the flag
-        } else if (random.nextBoolean() && !theirFlagRef.get().isHeld()) {
+        } else if (random.nextInt(6) == 0 && !theirFlagRef.get().isHeld()) {
             SnowmanFlag flag = theirFlagRef.get();
             getFlag(now, flag.getID(), currentPos.getX(), currentPos.getY());
             
@@ -198,7 +197,7 @@ public class RobotImpl extends SnowmanPlayerImpl {
             }
         }
         
-        scheduleMove(moveDelay);
+        scheduleMove(task, moveDelay);
     }
     
     /**
@@ -246,9 +245,28 @@ public class RobotImpl extends SnowmanPlayerImpl {
         /** {@inheritDoc} */
         public void run() throws Exception {
             try {
-                robotRef.get().moveRobot();
+                robotRef.get().moveRobot(this);
             } catch (ObjectNotFoundException gameDone) {
             
+            }
+        }
+    }
+
+    @RunWithNewIdentity
+    private static class InitialMoveTask implements Task, Serializable {
+        private static final long serialVersionUID = 1L;
+        final ManagedReference<RobotImpl> robotRef;
+
+        InitialMoveTask(ManagedReference<RobotImpl> robotRef) {
+            this.robotRef = robotRef;
+        }
+
+        /** {@inheritDoc} */
+        public void run() throws Exception {
+            try {
+                robotRef.get().scheduleMove(new MoveTask(robotRef), 10000); // TODO need to find out when the game starts
+            } catch (ObjectNotFoundException gameDone) {
+
             }
         }
     }
