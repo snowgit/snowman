@@ -133,7 +133,7 @@ public class MatchmakerTask implements Task, Serializable {
                 waitingPlayers.get().add(nextPlayer);
             }
             if (waitingPlayers.get().size() == numPlayersPerGame) {
-                AppContext.getTaskManager().scheduleTask(new StartGameTask(gameCount.get(), numPlayersPerGame, numRobotsPerGame, robotDelay, gameFactory, entityFactory, waitingPlayers));
+                AppContext.getTaskManager().scheduleTask(new StartGameOnNewNodeTask(gameCount.get(), numPlayersPerGame, numRobotsPerGame, robotDelay, gameFactory, entityFactory, waitingPlayers));
                 List<ManagedReference<SnowmanPlayer>> players = new ScalableList<ManagedReference<SnowmanPlayer>>();
                 this.waitingPlayers = AppContext.getDataManager().createReference(players);
                 break;
