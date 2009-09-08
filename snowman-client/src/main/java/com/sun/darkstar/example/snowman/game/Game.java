@@ -258,6 +258,15 @@ public class Game extends BaseGame implements IComponent{
 
             // reinit stats as needed
             StatsManager.getInstance().recreateStatsDisplay();
+
+            // launch game if required
+            if (System.getProperty("username") != null) {
+                TaskManager.getInstance().createTask(ETask.Authenticate,
+                                                     login.getGUI().getUsername(),
+                                                     login.getGUI().getPassword(),
+                                                     login.getGUI().getHost(),
+                                                     login.getGUI().getPort());
+            }
 	}
 	
 	@Override
