@@ -393,6 +393,9 @@ public class SnowmanGameImpl implements SnowmanGame, Serializable {
         for (ManagedReference<SnowmanFlag> ref : flagRefs.get().values()) {
             AppContext.getDataManager().removeObject(ref.get());
         }
+
+        AppContext.getDataManager().removeObject(playerRefs.get());
+        AppContext.getDataManager().removeObject(flagRefs.get());
     }
 
     /** {@inheritDoc} */
