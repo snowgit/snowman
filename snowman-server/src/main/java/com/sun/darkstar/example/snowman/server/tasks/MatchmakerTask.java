@@ -121,7 +121,7 @@ public class MatchmakerTask implements Task, Serializable {
 
     /** {@inheritDoc} */
     public void run() throws Exception {
-        logger.log(Level.INFO, "START Matchmaker Task " + (count++));
+        //logger.log(Level.INFO, "START Matchmaker Task " + (count++));
         boolean playersFound = false;
         //cycle through the front of each queue, adding players to the waiting
         //list as they are found
@@ -148,7 +148,7 @@ public class MatchmakerTask implements Task, Serializable {
         } else {
             AppContext.getTaskManager().scheduleTask(this, POLLINGINTERVAL);
         }
-        logger.log(Level.INFO, "END Matchmaker Task" + (count));
+        //logger.log(Level.INFO, "END Matchmaker Task" + (count));
     }
 
 }
