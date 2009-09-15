@@ -319,7 +319,7 @@ public class ClientSimulator extends JFrame implements ChangeListener {
             properties.setProperty("host", serverHost);
             properties.setProperty("port", serverPort);
             properties.setProperty("connectTimeout", connectTimeout);
-            properties.setProperty("name", hostname + "_" + buildNumber + "_Sim" + id);
+            properties.setProperty("name", "a" + hostname + "_" + buildNumber + "_Sim" + id);
             try {
                 SimulatedPlayer player =
                         new SimulatedPlayer(properties, moveDelay);
